@@ -1,0 +1,14 @@
+{
+  "name": "@nzoth/vue",
+  "version": "0.1.0",
+  "main": "dist/vue.runtime.global.js",
+  "types": "dist/vue.d.ts",
+  "description": "fork vue",
+  "dependencies": {
+    "@vue/compiler-dom": "^3.2.31",
+    "@vue/runtime-dom": "^3.2.31"
+  },
+  "files": [
+    "dist"
+  ]
+}

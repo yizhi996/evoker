@@ -1,0 +1,23 @@
+{
+  "name": "@nzoth/bridge",
+  "version": "0.1.0",
+  "description": "nzoth js bridge",
+  "main": "dist/bridge.cjs.js",
+  "module": "dist/bridge.es.js",
+  "types": "dist/bridge.d.ts",
+  "scripts": {
+    "dev": "vite build --watch --mode 'development'",
+    "build": "vite build"
+  },
+  "buildOptions": {
+    "name": "NZothBridge"
+  },
+  "sideEffects": false,
+  "files": [
+    "package.json",
+    "dist"
+  ],
+  "dependencies": {
+    "@nzoth/shared": "workspace:^0.1.0"
+  }
+}

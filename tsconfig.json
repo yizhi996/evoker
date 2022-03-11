@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "sourceMap": false,
+    "target": "es2016",
+    "useDefineForClassFields": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "allowJs": false,
+    "strict": true,
+    "noUnusedLocals": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "removeComments": false,
+    "noUnusedParameters": false,
+    // "isolatedModules":true,
+    "jsx": "preserve",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "types": [
+      "jest",
+      "node"
+    ],
+    "rootDir": ".",
+    "paths": {
+      "@nzoth/*": [
+        "packages/*/src"
+      ],
+      "nzoth": [
+        "packages/nzoth/src"
+      ]
+    },
+  },
+  "include": [
+    "packages/nzoth/global.d.ts",
+    "packages/*/src",
+    "packages/*/__tests__",
+  ],
+  "exclude": [
+    "**/node_modules/*"
+  ]
+}

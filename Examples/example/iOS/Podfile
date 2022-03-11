@@ -1,0 +1,11 @@
+platform :ios, '11.0'
+
+use_frameworks!
+    
+target 'Runner' do
+  pod 'Bugly'
+  
+  pod 'NZoth', :path => '../../../iOS'
+  pod 'NZoth/Map', :path => '../../../iOS'
+  
+end

@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
+    "sourceMap": false,
+    "target": "es2016",
+    "useDefineForClassFields": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "allowJs": false,
+    "strict": true,
+    "noUnusedLocals": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "removeComments": false,
+    "jsx": "preserve",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "nzoth": [
+        "../../packages/nzoth/src"
+      ],
+      "@nzoth/vite-plugin": [
+        "../../packages/plugin/src"
+      ]
+    },
+  },
+  "include": [
+    "src/**/*",
+    "../../packages/nzoth/global.d.ts"
+  ],
+}

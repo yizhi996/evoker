@@ -1,0 +1,31 @@
+{
+  "name": "@nzoth/vite-plugin",
+  "version": "0.1.0",
+  "description": "nzoth vite plugins",
+  "main": "dist/plugin.cjs.js",
+  "module": "dist/plugin.es.js",
+  "types": "dist/plugin.d.ts",
+  "sideEffects": false,
+  "buildOptions": {
+    "name": "NZothPlugin"
+  },
+  "dependencies": {
+    "@nzoth/shared": "workspace:^0.1.0",
+    "@vitejs/plugin-vue": "^2.2.2",
+    "@vue/compiler-core": "^3.2.31",
+    "@vue/shared": "^3.2.31",
+    "archiver": "^5.3.0",
+    "picocolors": "^1.0.0",
+    "rollup-plugin-copy": "^3.4.0",
+    "tmp": "^0.2.1",
+    "vue": "^3.2.31"
+  },
+  "devDependencies": {
+    "@types/archiver": "^5.3.1",
+    "@types/tmp": "^0.2.3",
+    "@types/ws": "^8.5.1"
+  },
+  "files": [
+    "dist"
+  ]
+}

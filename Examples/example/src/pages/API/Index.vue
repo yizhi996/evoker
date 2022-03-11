@@ -1,0 +1,225 @@
+<template>
+  <page-index desc="以下将展示小程序接口能力" :list="list"></page-index>
+</template>
+
+<script setup lang="ts">
+import { reactive } from "vue"
+import PageIndex from "../../components/PageIndex.vue"
+
+const list = reactive([
+  {
+    id: 'page',
+    name: '界面',
+    open: false,
+    pages: [
+      {
+        name: '设置界面标题',
+        url: 'set-navigation-bar-title'
+      }, {
+        name: '标题栏加载动画',
+        url: 'navigation-bar-loading'
+      }, {
+        name: '设置TabBar',
+        url: '@set-tab-bar'
+      }, {
+        name: '页面跳转',
+        url: 'navigator/navigator'
+      }, {
+        name: '下拉刷新',
+        url: 'pull-down-refresh'
+      }, {
+        name: '创建动画',
+        url: 'animation/animation'
+      }, {
+        name: '创建绘画',
+        url: 'canvas/canvas'
+      }, {
+        name: '显示操作菜单',
+        url: 'action-sheet'
+      }, {
+        name: '显示模态弹窗',
+        url: 'modal'
+      }, {
+        name: '页面滚动',
+        url: 'page-scroll/page-scroll'
+      }, {
+        name: '显示消息提示框',
+        url: 'toast'
+      }, {
+        name: '获取 HTML 节点信息',
+        url: 'get-html-node-info'
+      }, {
+        name: 'HTML 节点布局相交状态',
+        url: 'intersection-observer/intersection-observer'
+      }
+    ]
+  }, {
+    id: 'device',
+    name: '设备',
+    open: false,
+    pages: [
+      {
+        name: '获取手机网络状态',
+        url: 'get-network-type/get-network-type'
+      }, {
+        name: '监听手机网络变化',
+        url: 'on-network-status-change/on-network-status-change'
+      }, {
+        name: '获取手机系统信息',
+        url: 'get-system-info/get-system-info'
+      }, {
+        name: '获取手机设备电量',
+        url: 'get-battery-info/get-battery-info'
+      }, {
+        name: '监听重力感应数据',
+        url: 'on-accelerometer-change/on-accelerometer-change'
+      }, {
+        name: '监听罗盘数据',
+        url: 'on-compass-change/on-compass-change'
+      }, {
+        name: '打电话',
+        url: 'make-phone-call/make-phone-call'
+      }, {
+        name: '扫码',
+        url: 'scan-code'
+      }, {
+        name: '剪切板',
+        url: 'clipboard-data/clipboard-data'
+      }, {
+        name: '蓝牙',
+        url: 'bluetooth/bluetooth'
+      }, {
+        name: 'iBeacon',
+        url: 'ibeacon/ibeacon'
+      }, {
+        name: '屏幕亮度',
+        url: 'screen-brightness/screen-brightness'
+      }, {
+        name: '用户截屏事件',
+        url: 'capture-screen/capture-screen'
+      }, {
+        name: '振动',
+        url: 'vibrate/vibrate'
+      }, {
+        name: '手机联系人',
+        url: 'add-contact/add-contact'
+      }, {
+        name: 'Wi-Fi',
+        url: 'wifi/wifi'
+      }
+    ]
+  }, {
+    id: 'performance',
+    name: '性能',
+    open: false,
+    pages: [
+      {
+        name: '获取性能数据',
+        url: 'get-performance/get-performance'
+      }
+    ]
+  }, {
+    id: 'network',
+    name: '网络',
+    open: false,
+    pages: [
+      {
+        name: '发起一个请求',
+        url: 'request/request'
+      }, {
+        name: 'WebSocket',
+        url: 'web-socket/web-socket'
+      }, {
+        name: '上传文件',
+        url: 'upload-file/upload-file'
+      }, {
+        name: '下载文件',
+        url: 'download-file/download-file'
+      }, {
+        name: 'UDPSocket',
+        url: 'udp-socket/udp-socket'
+      }, {
+        name: 'mDNS',
+        url: 'mdns/mdns'
+      }
+    ]
+  }, {
+    id: 'media',
+    name: '媒体',
+    open: false,
+    pages: [
+      {
+        name: '图片',
+        url: 'image/image'
+      }, {
+        name: '音频',
+        url: 'audio'
+      }, {
+        name: '录音',
+        url: 'voice/voice'
+      }, {
+        name: '背景音频',
+        url: 'background-audio/background-audio'
+      }, {
+        name: '文件',
+        url: 'file/file'
+      }, {
+        name: '视频',
+        url: 'video/video'
+      }, {
+        name: '音视频合成',
+        url: 'media-container/media-container'
+      }, {
+        name: '动态加载字体',
+        url: 'load-font-face/load-font-face'
+      }
+    ]
+  }, {
+    id: 'location',
+    name: '位置',
+    open: false,
+    pages: [
+      {
+        name: '获取当前位置',
+        url: 'get-location/get-location'
+      }, {
+        name: '使用原生地图查看位置',
+        url: 'open-location/open-location'
+      }, {
+        name: '使用原生地图选择位置',
+        url: 'choose-location/choose-location'
+      }
+    ]
+  }, {
+    id: 'storage',
+    name: '数据',
+    open: false,
+    pages: [{
+      name: '本地存储',
+      url: 'storage/storage'
+    }, {
+      name: '周期性更新',
+      url: 'get-background-fetch-data/get-background-fetch-data'
+
+    }, {
+      name: '数据预拉取',
+      url: 'get-background-prefetch-data/get-background-prefetch-data'
+    }],
+  }, {
+    id: 'framework',
+    name: '框架',
+    open: false,
+    pages: [{
+      name: '双向绑定 v-model',
+      url: 'v-model',
+    }, {
+      name: 'WXS',
+      url: 'wxs/wxs'
+    }, {
+      name: '屏幕旋转',
+      url: 'resizable/resizable'
+    }]
+  }
+])
+
+</script>

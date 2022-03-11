@@ -1,0 +1,247 @@
+import {
+  createApp,
+  reactive,
+  createVNode,
+  render,
+  ComponentInternalInstance
+} from "vue"
+import { toHandlerKey } from "@vue/shared"
+import { BuiltInComponent, requireBuiltInComponent } from "../element"
+import { restoreNode, NZVNode, NZothEventListener } from "./vnode"
+import { addClickEvent, dispatchEvent } from "./event"
+
+export type EL =
+  | Node
+  | Element
+  | HTMLElement
+  | NZothElement
+  | Text
+  | Comment
+  | SVGAElement
+
+const vueApp = createApp({})
+vueApp.config.warnHandler = msg => {
+  console.warn(msg)
+}
+vueApp.config.errorHandler = err => {
+  console.error(err)
+}
+
+export function isNZothElement(el: any): el is NZothElement {
+  return "__instance" in el
+}
+
+export interface NZothElement extends HTMLElement {
+  __nodeId: number
+  __instance: ComponentInternalInstance | null
+  __slot: HTMLElement | null
+}
+
+export interface ElementWithTransition extends NZothElement {
+  // _vtc = Vue Transition Classes.
+  // Store the temporarily-added transition classes on the element
+  // so that we can avoid overwriting them if the element's class is patched
+  // during the transition.
+  _vtc?: Set<string>
+}
+
+export const nodes = new Map<number, NZVNode>()
+
+const svgNS = "http://www.w3.org/2000/svg"
+
+export function createElement(data: any[]): EL | null {
+  const nodeId = data[0] as number
+  const has = nodes.get(nodeId)
+  if (has) {
+    return has.el
+  }
+
+  const node = restoreNode(data)
+  if (node.innerHTML) {
+    const el = document.createElement("template")
+    el.innerHTML = node.innerHTML
+    node.el = el.content
+    node.el.__nodeId = nodeId
+    nodes.set(nodeId, node)
+    return node.el
+  } else if (node.tagName) {
+    let el: NZothElement | HTMLElement | SVGElement
+    const component = requireBuiltInComponent(node.tagName)
+    if (component) {
+      el = createBuiltInComponent(node, component)
+    } else {
+      el = createNativeElement(node)
+    }
+    node.el = el
+    node.el.__nodeId = nodeId
+    nodes.set(node.nodeId, node)
+    return el
+  } else if (node.textContent || node.textContent === "") {
+    const el = document.createTextNode(node.textContent)
+    node.el = el
+    node.el.__nodeId = nodeId
+    nodes.set(node.nodeId, node)
+    return el
+  } else if (node.data || node.data === "") {
+    const el = document.createComment(node.data)
+    node.el = el
+    node.el.__nodeId = nodeId
+    nodes.set(node.nodeId, node)
+    return el
+  } else {
+    return null
+  }
+}
+
+function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
+  node.props = reactive({})
+
+  const {
+    nodeId,
+    props,
+    className,
+    style,
+    attributes,
+    listeners,
+    textContent
+  } = node
+
+  if (className) {
+    props.class = className
+  }
+
+  if (attributes) {
+    for (const [key, value] of Object.entries<string>(attributes)) {
+      props[key] = value
+    }
+  }
+
+  let haveClickEvent = false
+  let clickEventListener: NZothEventListener | undefined
+  if (listeners) {
+    for (const [name, listener] of Object.entries(listeners)) {
+      if (name !== "click") {
+        const eventName = toHandlerKey(name)
+        props[eventName] = (...args: any[]) => {
+          const ev = {
+            type: name,
+            args: args
+          }
+          dispatchEvent(nodeId, ev)
+        }
+      } else {
+        clickEventListener = listener
+        haveClickEvent = true
+      }
+    }
+  }
+
+  if (style) {
+    props.style = {}
+    for (const [name, value] of Object.entries<string>(style)) {
+      props.style[name] = value
+    }
+  }
+
+  let vnodeInstance: ComponentInternalInstance | null = null
+
+  const wrapper = createVNode(() => {
+    const vnode = createVNode(component.component, props)
+    vnode.appContext = vueApp._context
+    /** @ts-ignore */
+    vnode.ce = (instance: ComponentInternalInstance) => {
+      vnodeInstance = instance
+    }
+    return vnode
+  })
+  wrapper.appContext = vueApp._context
+
+  const template = document.createElement("template")
+  render(wrapper, template)
+
+  const el = template.firstElementChild as NZothElement
+  el.__instance = vnodeInstance
+
+  if (component.slot) {
+    const slot = el.querySelector(component.slot) as HTMLElement
+    slot && (el.__slot = slot)
+  }
+
+  if (textContent) {
+    ;(el.__slot || el).textContent = textContent
+  }
+
+  if (haveClickEvent) {
+    addClickEvent(nodeId, el, clickEventListener)
+  }
+
+  node.vnode = wrapper
+
+  return el
+}
+
+function createNativeElement(node: NZVNode) {
+  const {
+    isSVG,
+    tagName,
+    className,
+    id,
+    nodeId,
+    attributes,
+    listeners,
+    textContent,
+    style
+  } = node
+
+  let el: HTMLElement | SVGElement
+
+  if (isSVG) {
+    el = document.createElementNS(svgNS, tagName)
+    if (className) {
+      el.setAttribute("class", className)
+    }
+  } else {
+    el = document.createElement(tagName)
+    if (className) {
+      el.className = className
+    }
+  }
+
+  if (id) {
+    el.id = id
+  }
+
+  if (attributes) {
+    for (const [key, value] of Object.entries<string>(attributes)) {
+      el.setAttribute(key, value)
+    }
+  }
+
+  if (listeners) {
+    for (const [name, listener] of Object.entries(listeners)) {
+      if (name === "click") {
+        addClickEvent(nodeId, el, listener)
+      } else {
+        el.addEventListener(
+          name,
+          () => {
+            dispatchEvent(nodeId, name)
+          },
+          listener.options
+        )
+      }
+    }
+  }
+
+  if (textContent) {
+    el.textContent = textContent
+  }
+
+  if (style) {
+    for (const [name, value] of Object.entries<string>(style)) {
+      el.style[name as any] = value
+    }
+  }
+
+  return el
+}

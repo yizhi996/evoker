@@ -1,0 +1,225 @@
+{
+  "appId": "com.nzothdev.example",
+  "version": "1.0.0",
+  "mode": "miniProgram",
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "NZoth",
+    "navigationStyle": "default",
+    "backgroundColor": "#f3f4f6"
+  },
+  "tabBar": {
+    "color": "#86868b",
+    "selectedColor": "#1989fa",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "path": "component",
+        "text": "组件",
+        "iconPath": "assets/icon_component.png",
+        "selectedIconPath": "assets/icon_component_HL.png"
+      },
+      {
+        "path": "extension",
+        "text": "扩展能力",
+        "iconPath": "assets/icon_component.png",
+        "selectedIconPath": "assets/icon_component_HL.png"
+      },
+      {
+        "path": "api",
+        "text": "接口",
+        "iconPath": "assets/icon_API.png",
+        "selectedIconPath": "assets/icon_API_HL.png"
+      }
+    ]
+  },
+  "pages": [
+    {
+      "component": "pages/Component/Index.vue",
+      "path": "component",
+      "style": { "navigationBarTitleText": "小程序内置组件展示" }
+    },
+    {
+      "component": "pages/Component/View.vue",
+      "path": "view",
+      "style": {
+        "navigationBarTitleText": "view",
+        "navigationBarBackgroundColor": "#1989fa",
+        "navigationBarTextStyle": "white"
+      }
+    },
+    {
+      "component": "pages/Component/ScrollView.vue",
+      "path": "scroll-view",
+      "style": {
+        "navigationBarTitleText": "scroll-view"
+      }
+    },
+    {
+      "component": "pages/Component/Swiper.vue",
+      "path": "swiper",
+      "style": { "navigationBarTitleText": "swiper" }
+    },
+    {
+      "component": "pages/Component/Button.vue",
+      "path": "button",
+      "style": { "navigationBarTitleText": "button" }
+    },
+    {
+      "component": "pages/Component/Image.vue",
+      "path": "image",
+      "style": { "navigationBarTitleText": "image" }
+    },
+    {
+      "component": "pages/Component/Video.vue",
+      "path": "video",
+      "style": { "navigationBarTitleText": "video" }
+    },
+    {
+      "component": "pages/Component/Text.vue",
+      "path": "text",
+      "style": { "navigationBarTitleText": "text" }
+    },
+    {
+      "component": "pages/Component/Progress.vue",
+      "path": "progress",
+      "style": { "navigationBarTitleText": "progress" }
+    },
+    {
+      "component": "pages/Component/Switch.vue",
+      "path": "switch",
+      "style": { "navigationBarTitleText": "switch" }
+    },
+    {
+      "component": "pages/Component/Checkbox.vue",
+      "path": "checkbox",
+      "style": { "navigationBarTitleText": "checkbox" }
+    },
+    {
+      "component": "pages/Component/Input.vue",
+      "path": "input",
+      "style": { "navigationBarTitleText": "input" }
+    },
+    {
+      "component": "pages/Component/Navigator.vue",
+      "path": "navigator",
+      "style": { "navigationBarTitleText": "navigator" }
+    },
+    {
+      "component": "pages/Component/Icon.vue",
+      "path": "icon",
+      "style": { "navigationBarTitleText": "icon" }
+    },
+    {
+      "component": "pages/Component/Picker.vue",
+      "path": "picker",
+      "style": { "navigationBarTitleText": "picker" }
+    },
+    {
+      "component": "pages/Component/Radio.vue",
+      "path": "radio",
+      "style": { "navigationBarTitleText": "radio" }
+    },
+    {
+      "component": "pages/Component/Camera.vue",
+      "path": "camera",
+      "style": { "navigationBarTitleText": "camera" }
+    },
+    {
+      "component": "pages/Component/Movable.vue",
+      "path": "movable-view",
+      "style": { "navigationBarTitleText": "movable-view" }
+    },
+    {
+      "component": "pages/Component/Textarea.vue",
+      "path": "textarea",
+      "style": { "navigationBarTitleText": "textarea" }
+    },
+    {
+      "component": "pages/Component/Slider.vue",
+      "path": "slider",
+      "style": { "navigationBarTitleText": "slider" }
+    },
+    {
+      "component": "pages/Component/Map.vue",
+      "path": "map",
+      "style": { "navigationBarTitleText": "map" }
+    },
+    {
+      "component": "pages/Component/PickerView.vue",
+      "path": "picker-view",
+      "style": { "navigationBarTitleText": "picker-view" }
+    },
+    {
+      "component": "pages/Component/Form.vue",
+      "path": "form",
+      "style": { "navigationBarTitleText": "form" }
+    },
+    {
+      "component": "pages/API/Index.vue",
+      "path": "api",
+      "style": { "navigationBarTitleText": "小程序接口能力展示" }
+    },
+    {
+      "component": "pages/API/SetTitle.vue",
+      "path": "set-navigation-bar-title",
+      "style": { "navigationBarTitleText": "设置页面标题" }
+    },
+    {
+      "component": "pages/API/Modal.vue",
+      "path": "modal",
+      "style": { "navigationBarTitleText": "模态弹窗" }
+    },
+    {
+      "component": "pages/API/NavigationBarLoading.vue",
+      "path": "navigation-bar-loading",
+      "style": { "navigationBarTitleText": "标题栏加载动画" }
+    },
+    {
+      "component": "pages/API/PullDownRefresh.vue",
+      "path": "pull-down-refresh",
+      "style": { "navigationBarTitleText": "下拉刷新" }
+    },
+    {
+      "component": "pages/API/ActionSheet.vue",
+      "path": "action-sheet",
+      "style": { "navigationBarTitleText": "操作菜单" }
+    },
+    {
+      "component": "pages/API/HTML.vue",
+      "path": "get-html-node-info",
+      "style": { "navigationBarTitleText": "获取 HTML 节点信息" }
+    },
+    {
+      "component": "pages/API/Toast.vue",
+      "path": "toast",
+      "style": { "navigationBarTitleText": "消息提示框" }
+    },
+    {
+      "component": "pages/API/VModel.vue",
+      "path": "v-model",
+      "style": { "navigationBarTitleText": "v-model" }
+    },
+    {
+      "component": "pages/API/ScanCode.vue",
+      "path": "scan-code",
+      "style": { "navigationBarTitleText": "扫码" }
+    },
+    {
+      "component": "pages/API/Audio.vue",
+      "path": "audio",
+      "style": { "navigationBarTitleText": "音频" }
+    },
+    {
+      "component": "pages/Extension/Index.vue",
+      "path": "extension",
+      "style": { "navigationBarTitleText": "小程序扩展能力展示" }
+    },
+    {
+      "component": "pages/Extension/Icon.vue",
+      "path": "extension/icon",
+      "style": { "navigationBarTitleText": "Icon" }
+    }
+  ]
+}

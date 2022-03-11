@@ -1,0 +1,40 @@
+{
+  "name": "nzoth",
+  "version": "0.1.0",
+  "description": "The Vue mini program engine",
+  "author": "yizhi996",
+  "homepage": "https://github.com/yizhi996/nzoth",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yizhi996/nzoth.git"
+  },
+  "license": "MIT",
+  "main": "dist/nzoth.global.js",
+  "module": "dist/nzoth.esm.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "vite build --watch --mode 'development'",
+    "build": "vite build"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "nzoth",
+    "vue",
+    "mini-program",
+    "mini-app"
+  ],
+  "buildOptions": {
+    "name": "NZoth"
+  },
+  "dependencies": {
+    "@nzoth/service": "workspace:^0.1.0",
+    "@nzoth/webview": "workspace:^0.1.0"
+  },
+  "devDependencies": {
+    "vite": "^2.8.4",
+    "@nzoth/vite-plugin": "workspace:^0.1.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

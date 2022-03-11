@@ -1,0 +1,27 @@
+{
+  "name": "@nzoth/service",
+  "version": "0.1.0",
+  "description": "nzoth jscore runtime",
+  "main": "dist/service.global.js",
+  "module": "dist/service.esm.js",
+  "types": "dist/service.d.ts",
+  "scripts": {
+    "dev": "vite build --watch --mode 'development'",
+    "build": "vite build"
+  },
+  "sideEffects": false,
+  "buildOptions": {
+    "name": "NZothService"
+  },
+  "dependencies": {
+    "@nzoth/bridge": "workspace:^0.1.0",
+    "@nzoth/shared": "workspace:^0.1.0",
+    "@vue/shared": "^3.2.31",
+    "vue": "^3.2.31"
+  },
+  "devDependencies": {},
+  "files": [
+    "package.json",
+    "dist"
+  ]
+}

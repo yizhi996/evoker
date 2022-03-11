@@ -1,0 +1,20 @@
+{
+  "name": "@nzoth/shared",
+  "version": "0.1.0",
+  "description": "nzoth shared",
+  "main": "dist/shared.cjs.js",
+  "module": "dist/shared.es.js",
+  "types": "dist/shared.d.ts",
+  "scripts": {
+    "dev": "vite build --watch --mode 'development'",
+    "build": "vite build"
+  },
+  "buildOptions": {
+    "name": "NZothShared"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "nzoth"
+  ],
+  "dependencies": {}
+}

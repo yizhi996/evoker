@@ -1,0 +1,51 @@
+//
+//  NZVersionManager.swift
+//
+//  Copyright (c) NZoth. All rights reserved. (https://nzothdev.com)
+//
+//  This source code is licensed under The MIT license.
+//
+
+import Foundation
+import UIKit
+import Alamofire
+
+public class NZVersionManager {
+    
+    public static let shared = NZVersionManager()
+    
+    private let jsSDKVersionkey = "nzoth:version:js-sdk"
+    
+    public var localJSSDKVersion: String {
+        if NZEngine.shared.config.devServer.useDevJSSDK {
+            return "dev"
+        }
+        if let version = UserDefaults.standard.string(forKey: jsSDKVersionkey), !version.isEmpty {
+            return version
+        }
+        let version = Constant.jsSDKVersion
+        UserDefaults.standard.set(version, forKey: jsSDKVersionkey)
+        return version
+    }
+    
+    func setLocalJSSDKVersion(_ version: String) {
+        UserDefaults.standard.set(version, forKey: jsSDKVersionkey)
+    }
+
+    public func localAppVersion(appId: String, envVersion: NZAppEnvVersion) -> String {
+        return UserDefaults.standard.string(forKey: "nzoth:version:app:\(appId):\(envVersion)") ?? ""
+    }
+    
+    public func setLocalAppVersion(appId: String, envVersion: NZAppEnvVersion, version: String) {
+        UserDefaults.standard.set(version, forKey: "nzoth:version:app:\(appId):\(envVersion)")
+    }
+    
+    public func updateJSSDK(resultHandler handler: @escaping NZBoolBlock) {
+        if NZEngine.shared.config.devServer.useDevJSSDK {
+            handler(false)
+        } else {
+            handler(false)
+        }
+    }
+
+}

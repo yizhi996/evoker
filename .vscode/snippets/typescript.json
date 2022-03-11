@@ -1,0 +1,28 @@
+{
+  "NZothAsyncAPI": {
+    "prefix": "nzapi",
+    "body": [
+      "interface $1Options {",
+      "  success?: $1SuccessCallback",
+      "  fail?: $1FailCallback",
+      "  complete?: $1CompleteCallback",
+      "}",
+      "",
+      "type $1SuccessCallback = (res: GeneralCallbackResult) => void",
+      "",
+      "type $1FailCallback = (res: GeneralCallbackResult) => void",
+      "",
+      "type $1CompleteCallback = (res: GeneralCallbackResult) => void",
+      "",
+      "export function ${1/(^.)/${1:/downcase}/}<",
+      "  T extends $1Options = $1Options",
+      ">(options: T): AsyncReturn<T, $1Options> {",
+      "  return wrapperAsyncAPI<T>(options => {",
+      "    invoke<SuccessResult<T>>($2, { $0 }, result => {",
+      "      invokeCallback($2, options, result)",
+      "    })",
+      "  }, options)",
+      "}"
+    ]
+  }
+}

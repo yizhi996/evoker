@@ -1,0 +1,33 @@
+<template>
+  <page-index desc="以下组件使用 Vant Vue 版本，展示引入现有开源 UI 库的能力" :list="list"></page-index>
+</template>
+
+<script setup lang="ts">
+import { reactive } from "vue"
+import PageIndex from "../../components/PageIndex.vue"
+
+const list = reactive([
+  {
+    id: 'page',
+    name: '表单',
+    open: false,
+    pages: [
+      {
+        name: '设置界面标题',
+        url: 'set-navigation-bar-title'
+      }
+    ]
+  }, {
+    id: 'device',
+    name: '基础组件',
+    open: false,
+    pages: [
+      {
+        name: 'Icon',
+        url: 'extension/icon'
+      }
+    ]
+  }
+])
+
+</script>
