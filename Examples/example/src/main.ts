@@ -1,10 +1,8 @@
 import { createApp } from "nzoth"
 import App from "./App.vue"
-import config from "./app.json"
 import { CellGroup, Cell } from "vant"
 
 import "./tailwind.css"
-;(globalThis as any).__NZConfig = config
 
 const app = createApp(App)
 

@@ -1,5 +1,8 @@
-import type { Plugin, BuildOptions } from "vite"
+import type { Plugin, BuildOptions, ResolvedConfig } from "vite"
 import { resolve } from "path"
+import fs from "fs"
+
+let config: ResolvedConfig
 
 export default function vitePluginNZothConfig(
   options: BuildOptions = {}
@@ -28,6 +31,19 @@ export default function vitePluginNZothConfig(
           }
         }
       }
-    })
+    }),
+
+    configResolved: _config => {
+      config = _config
+    },
+
+    load(id) {
+      if (id === config.build.rollupOptions.input) {
+        const inject = `import config from "./app.json";globalThis.__NZConfig = config;`
+        const og = fs.readFileSync(id, "utf-8")
+        return inject + og
+      }
+      return null
+    }
   }
 }
