@@ -27,7 +27,7 @@ module.exports = {
       }
     },
     {
-      files: ["packages/plugin/**"],
+      files: ["packages/vite-plugin/**"],
       rules: {
         "no-restricted-globals": ["error", ...DOMGlobals]
       }

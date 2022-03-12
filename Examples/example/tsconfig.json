@@ -30,7 +30,7 @@
         "../../packages/service/src"
       ],
       "@nzoth/vite-plugin": [
-        "../../packages/plugin/src"
+        "../../packages/vite-plugin/src"
       ]
     },
   },

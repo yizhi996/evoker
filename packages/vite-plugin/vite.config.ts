@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
         name: pkg.buildOptions?.name,
-        fileName: foramt => `plugin.${foramt}.js`,
+        fileName: foramt => `vite-plugin.${foramt}.js`,
         formats: ["cjs", "es"]
       },
       rollupOptions: {

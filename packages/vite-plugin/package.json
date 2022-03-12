@@ -2,9 +2,9 @@
   "name": "@nzoth/vite-plugin",
   "version": "0.1.0",
   "description": "nzoth vite plugins",
-  "main": "dist/plugin.cjs.js",
-  "module": "dist/plugin.es.js",
-  "types": "dist/plugin.d.ts",
+  "main": "dist/vite-plugin.cjs.js",
+  "module": "dist/vite-plugin.es.js",
+  "types": "dist/vite-plugin.d.ts",
   "sideEffects": false,
   "buildOptions": {
     "name": "NZothPlugin"

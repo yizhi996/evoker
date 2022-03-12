@@ -64,10 +64,25 @@ importers:
       '@nzoth/service': link:../service
       '@nzoth/webview': link:../webview
     devDependencies:
-      '@nzoth/vite-plugin': link:../plugin
+      '@nzoth/vite-plugin': link:../vite-plugin
       vite: 2.8.4
 
-  packages/plugin:
+  packages/service:
+    specifiers:
+      '@nzoth/bridge': workspace:^0.1.0
+      '@nzoth/shared': workspace:^0.1.0
+      '@vue/shared': ^3.2.31
+      vue: ^3.2.31
+    dependencies:
+      '@nzoth/bridge': link:../bridge
+      '@nzoth/shared': link:../shared
+      '@vue/shared': 3.2.31
+      vue: 3.2.31
+
+  packages/shared:
+    specifiers: {}
+
+  packages/vite-plugin:
     specifiers:
       '@nzoth/shared': workspace:^0.1.0
       '@types/archiver': ^5.3.1
@@ -95,21 +110,6 @@ importers:
       '@types/archiver': 5.3.1
       '@types/tmp': 0.2.3
       '@types/ws': 8.5.1
-
-  packages/service:
-    specifiers:
-      '@nzoth/bridge': workspace:^0.1.0
-      '@nzoth/shared': workspace:^0.1.0
-      '@vue/shared': ^3.2.31
-      vue: ^3.2.31
-    dependencies:
-      '@nzoth/bridge': link:../bridge
-      '@nzoth/shared': link:../shared
-      '@vue/shared': 3.2.31
-      vue: 3.2.31
-
-  packages/shared:
-    specifiers: {}
 
   packages/vue:
     specifiers:
