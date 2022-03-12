@@ -3,7 +3,7 @@ import {
   getAppBaseInfo,
   getDeviceInfo,
   getSystemSetting
-} from "@nzoth/bridge"
+} from "./api/base/system"
 import {
   navigateTo,
   navigateBack,

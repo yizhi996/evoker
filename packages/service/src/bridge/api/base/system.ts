@@ -3,7 +3,7 @@ import {
   GeneralCallbackResult,
   invokeSuccess,
   wrapperAsyncAPI
-} from "../../bridge"
+} from "@nzoth/bridge"
 
 export function getSystemSetting() {
   return globalThis.__NZAppServiceNativeSDK.system.getSystemSetting()

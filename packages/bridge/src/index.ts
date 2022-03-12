@@ -1,6 +1,5 @@
 export * from "./bridge"
 
-export * from "./api/base/system"
 export * from "./api/device/screen"
 export * from "./api/device/battery"
 export * from "./api/device/vibrate"
