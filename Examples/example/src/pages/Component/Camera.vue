@@ -39,9 +39,9 @@ const videoInfo = reactive({
 const ctx = nz.createCameraContext()
 
 const takePohto = async () => {
-  const path = await ctx.takePhoto("high")
-  photoPath.value = path
-  nz.showToast({ title: path, icon: "none" })
+  const result = await ctx.takePhoto({ quality: "high" })
+  photoPath.value = result.tempImagePath
+  nz.showToast({ title: result.tempImagePath, icon: "none" })
 }
 
 const startRecord = async () => {
@@ -55,7 +55,7 @@ const stopRecord = async () => {
 }
 
 const setZoom = (zoom: number) => {
-  ctx.setZoom(zoom)
+  ctx.setZoom({ zoom })
 }
 
 const onInit = (maxZoom: number) => {
