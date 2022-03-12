@@ -117,9 +117,13 @@ final public class NZAppService {
                 viewController.loadViewIfNeeded()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.rootViewController?.viewControllers = [viewController]
+                    self.uiControl.addTabBar(to: viewController.view)
                 }
             } else {
                 self.rootViewController?.viewControllers = [viewController]
+                if page.isShowTabBar {
+                    self.uiControl.addTabBar(to: viewController.view)
+                }
             }
         }
         
@@ -197,6 +201,9 @@ final public class NZAppService {
         rootViewController = navigationController
         let presentViewController = viewController ?? UIViewController.visibleViewController()
         presentViewController?.present(navigationController, animated: true)
+        if info.page.isTabBarPage {
+            uiControl.addTabBar(to: info.viewController.view)
+        }
         state = .front
         publishAppOnShow(path: path)
         return nil
@@ -414,6 +421,7 @@ extension NZAppService {
             tabBarPages = info.tabBarPages
             pages.append(info.page)
             rootViewController?.viewControllers = [info.viewController]
+            uiControl.addTabBar(to: info.viewController.view)
             uiControl.removeGotoHomeButton()
         } else if let firstPage = config.pages.first,
                   let page = createWebPage(url: firstPage.path) {
@@ -613,13 +621,16 @@ public extension NZAppService {
             uiControl.tabBarViewControllers = [:]
             if info.page.isTabBarPage {
                 uiControl.tabBarViewControllers[info.page.url] = info.viewController
+                
             }
             tabBarPages = info.tabBarPages
         }
         pages.append(info.page)
         
         rootViewController.viewControllers = [info.viewController]
-        
+        if info.page.isTabBarPage {
+            uiControl.addTabBar(to: info.viewController.view)
+        }
         if info.needAddGotoHomeButton {
             uiControl.addGotoHomeButton(to: rootViewController.view)
         }

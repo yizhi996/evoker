@@ -36,6 +36,14 @@ public class NZAppUIControl {
         }
     }
     
+    public func addTabBar(to view: UIView) {
+        guard tabBarView.superview != view else { return }
+        tabBarView.removeFromSuperview()
+        let height = Constant.tabBarHeight
+        tabBarView.frame = CGRect(x: 0, y: view.frame.height - height, width: view.frame.width, height: height)
+        view.addSubview(tabBarView)
+    }
+    
     public func addGotoHomeButton(to view: UIView) {
         let homeIcon = UIImage(builtIn: "mini-program-home-icon")?.withRenderingMode(.alwaysOriginal)
         let button = UIButton()

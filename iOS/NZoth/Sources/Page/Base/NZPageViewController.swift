@@ -38,22 +38,21 @@ open class NZPageViewController: UIViewController {
         page.isVisible = true
         
         setupNavigationBar()
-        setupTabBar()
     }
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         page.isVisible = true
-        setupNavigationBar()
-        setupTabBar()
+        addInteractivePopGesture()
         addNavigationBarTransitionAnimate()
     }
     
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        setupNavigationBar()
+        addInteractivePopGesture()
+        
         guard let appService = page.appService else { return }
         appService.currentPage = page
         
@@ -115,11 +114,19 @@ open class NZPageViewController: UIViewController {
         })
     }
     
-    open func setupNavigationBar() {
+    func addInteractivePopGesture() {
         if let navigationController = navigationController, navigationController.viewControllers.count > 1 {
             navigationController.interactivePopGestureRecognizer?.delegate = self
+            
+            if page.navigationStyle == .default {
+                navigationBar.addBackButton() { [unowned self] in
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
         }
-        
+    }
+    
+    open func setupNavigationBar() {
         if page.navigationStyle == .default {
             navigationBar.setTitle(page.title)
             navigationBar.color = page.navigationBarTextStyle
@@ -129,25 +136,9 @@ open class NZPageViewController: UIViewController {
                                          width: view.frame.width,
                                          height: Constant.statusBarHeight + Constant.navigationBarHeight)
             view.addSubview(navigationBar)
-            
-            if let navigationController = navigationController, navigationController.viewControllers.count > 1 {
-                navigationBar.addBackButton() { [unowned self] in
-                    self.navigationController?.popViewController(animated: true)
-                }
-            }
         }
     }
     
-    open func setupTabBar() {
-        guard page.isTabBarPage,
-              page.isShowTabBar,
-              let appService = page.appService,
-              appService.uiControl.tabBarView.superview != view else { return }
-        appService.uiControl.tabBarView.removeFromSuperview()
-        let height = Constant.tabBarHeight
-        appService.uiControl.tabBarView.frame = CGRect(x: 0, y: view.frame.height - height, width: view.frame.width, height: height)
-        view.addSubview(appService.uiControl.tabBarView)
-    }
 }
 
 // InteractivePopGestureRecognizer required
