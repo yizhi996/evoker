@@ -56,15 +56,15 @@ enum NZUIAPI: String, NZBuiltInAPI {
         
         if page.isTabBarPage && !page.isShowTabBar {
             page.isShowTabBar = true
-            let y = viewController.view.bounds.maxY - appService.tabBarView.frame.height
+            let y = viewController.view.bounds.maxY - appService.uiControl.tabBarView.frame.height
             if params.animation {
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut) {
-                    appService.tabBarView.frame.origin = CGPoint(x: 0, y: y)
+                    appService.uiControl.tabBarView.frame.origin = CGPoint(x: 0, y: y)
                 }
             } else {
-                appService.tabBarView.frame.origin = CGPoint(x: 0, y: y)
+                appService.uiControl.tabBarView.frame.origin = CGPoint(x: 0, y: y)
             }
-            viewController.webView.frame.size.height -= appService.tabBarView.frame.height
+            viewController.webView.frame.size.height -= appService.uiControl.tabBarView.frame.height
         }
         bridge.invokeCallbackSuccess(args: args)
     }
@@ -95,12 +95,12 @@ enum NZUIAPI: String, NZBuiltInAPI {
             let y = viewController.view.bounds.maxY
             if params.animation {
                 UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut) {
-                    appService.tabBarView.frame.origin = CGPoint(x: 0, y: y)
+                    appService.uiControl.tabBarView.frame.origin = CGPoint(x: 0, y: y)
                 }
             } else {
-                appService.tabBarView.frame.origin = CGPoint(x: 0, y: y)
+                appService.uiControl.tabBarView.frame.origin = CGPoint(x: 0, y: y)
             }
-            viewController.webView.frame.size.height += appService.tabBarView.frame.height
+            viewController.webView.frame.size.height += appService.uiControl.tabBarView.frame.height
         }
         bridge.invokeCallbackSuccess(args: args)
     }

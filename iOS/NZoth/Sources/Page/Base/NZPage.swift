@@ -13,6 +13,8 @@ public protocol NZPage: AnyObject {
     
     var pageId: Int { get }
     
+    var url: String { get }
+    
     var appService: NZAppService? { get set }
     
     var viewController: NZPageViewController? { get set }
@@ -25,7 +27,7 @@ public protocol NZPage: AnyObject {
     
     var isVisible: Bool { get set }
     
-    init(appService: NZAppService)
+    init(appService: NZAppService, url: String)
     
     func generateViewController() -> NZPageViewController
     

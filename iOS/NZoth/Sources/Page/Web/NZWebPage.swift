@@ -22,6 +22,8 @@ open class NZWebPage: NZPage {
     
     public let pageId: Int
     
+    public let url: String
+    
     public weak var appService: NZAppService?
     
     public weak var viewController: NZPageViewController?
@@ -35,8 +37,6 @@ open class NZWebPage: NZPage {
     public var isVisible = false
     
     public internal(set) var state: State = .none
-    
-    public internal(set) var path: String = ""
     
     public internal(set) var route: String = ""
     
@@ -86,9 +86,20 @@ open class NZWebPage: NZPage {
         return .portrait
     }
     
-    public required init(appService: NZAppService) {
+    public required init(appService: NZAppService, url: String) {
         self.appService = appService
+        self.url = url
         pageId = appService.genPageId()
+        
+        if let url = URL(string: url) {
+            route = url.path
+        } else {
+            route = url
+        }
+        
+        if let pageConfig = appService.config.pages.first(where: { $0.path == route }) {
+            style = pageConfig.style
+        }
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(willEnterFullscreenVideoPlayer(_:)),
@@ -99,20 +110,6 @@ open class NZWebPage: NZPage {
                                                selector: #selector(willQuitFullscreenVideoPlayer(_:)),
                                                name: NZVideoPlayerView.willQuitFullscreenVideoPlayer,
                                                object: nil)
-    }
-    
-    public required convenience init?(appService: NZAppService, path: String) {
-        let path = path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? path
-        guard let url = URL(string: path) else { return nil }
-        
-        self.init(appService: appService)
-        
-        self.path = path
-        route = url.path
-        
-        if let pageConfig = appService.config.pages.first(where: { $0.path == route }) {
-            style = pageConfig.style
-        }
     }
     
     deinit {
@@ -145,7 +142,7 @@ open class NZWebPage: NZPage {
     public func mount() {
         guard let appService = appService else { return }
         
-        let message: [String: Any] = ["webViewId": pageId, "path": path]
+        let message: [String: Any] = ["webViewId": pageId, "path": url]
         appService.bridge.subscribeHandler(method:NZWebView.onLoadSubscribeKey, data: message)
     }
     
@@ -180,7 +177,7 @@ extension NZWebPage {
             viewController?.navigationBar.isHidden = true
         }
         if isTabBarPage {
-            appService?.tabBarView.isHidden = true
+            appService?.uiControl.tabBarView.isHidden = true
         }
         
         guard let view = viewController?.view else { return }
@@ -195,7 +192,7 @@ extension NZWebPage {
             viewController?.navigationBar.isHidden = false
         }
         if isTabBarPage {
-            appService?.tabBarView.isHidden = false
+            appService?.uiControl.tabBarView.isHidden = false
         }
         
         guard let view = viewController?.view else { return }

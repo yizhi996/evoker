@@ -16,7 +16,7 @@ open class NZBrowserViewController: NZPageViewController {
     
     let progressView = UIProgressView()
     
-    public var _page: NZBrowserPage {
+    public var browserPage: NZBrowserPage {
         return page as! NZBrowserPage
     }
     
@@ -31,12 +31,6 @@ open class NZBrowserViewController: NZPageViewController {
                                              action: #selector(onClose))
         
         let webConfig = WKWebViewConfiguration()
-        _page.cookies.forEach { cookie in
-            webConfig.websiteDataStore.httpCookieStore.setCookie(cookie) {
-                print("OK")
-            }
-        }
-
         webView = WKWebView(frame: view.bounds, configuration: webConfig)
         webView.navigationDelegate = self
         webView.addObserver(self, forKeyPath: "estimatedProgress", options: .new, context: nil)
@@ -47,7 +41,7 @@ open class NZBrowserViewController: NZPageViewController {
         }
         webView.scrollView.contentInsetAdjustmentBehavior = .automatic
         
-        if let url = _page.url {
+        if let url = URL(string: browserPage.url) {
             webView.load(URLRequest(url: url))
         }
         view.addSubview(webView)

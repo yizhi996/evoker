@@ -52,7 +52,7 @@ enum NZRouteAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let page = appService.createWebPage(path: params.url) else {
+        guard let page = appService.createWebPage(url: params.url) else {
             let error = NZError.bridgeFailed(reason: .appServiceNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -103,8 +103,11 @@ enum NZRouteAPI: String, NZBuiltInAPI {
             return
         }
         
-        appService.redirectTo(params.url)
-        bridge.invokeCallbackSuccess(args: args)
+        if let error = appService.redirectTo(params.url) {
+            bridge.invokeCallbackFail(args: args, error: error)
+        } else {
+            bridge.invokeCallbackSuccess(args: args)
+        }
     }
     
     private func switchTab(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
@@ -126,22 +129,24 @@ enum NZRouteAPI: String, NZBuiltInAPI {
     }
     
     private func reLaunch(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+        
+        struct Params: Decodable {
+            let url: String
+        }
+        
         guard let appService = bridge.appService else { return }
         
-        guard let params = args.paramsString.toDict() else {
+        guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        guard let path = params["path"] as? String, !path.isEmpty else {
-            let error = NZError.bridgeFailed(reason: .fieldRequired("path"))
+        if let error = appService.reLaunch(url: params.url) {
             bridge.invokeCallbackFail(args: args, error: error)
-            return
+        } else {
+            bridge.invokeCallbackSuccess(args: args)
         }
-        
-        appService.reLaunch(path: path)
-        bridge.invokeCallbackSuccess(args: args)
     }
     
     private func openBrowser(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {

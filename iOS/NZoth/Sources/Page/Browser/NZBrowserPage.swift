@@ -13,6 +13,8 @@ open class NZBrowserPage: NZPage {
     
     public let pageId: Int
     
+    public let url: String
+    
     public weak var appService: NZAppService?
     
     public weak var viewController: NZPageViewController?
@@ -25,24 +27,10 @@ open class NZBrowserPage: NZPage {
     
     public var isVisible: Bool = false
     
-    public private(set) var url: URL?
-    
-    public private(set) var cookies: [HTTPCookie] = []
-    
-    public required init(appService: NZAppService) {
+    public required init(appService: NZAppService, url: String) {
         self.appService = appService
-        pageId = appService.genPageId()
-    }
-    
-    public required convenience init?(appService: NZAppService, url: String, cookies: String) {
-        guard let url = URL(string: url) else { return nil }
-        
-        self.init(appService: appService)
         self.url = url
-        
-        if !cookies.isEmpty {
-            self.cookies.append(contentsOf: cookies.converToHTTPCookie())
-        }
+        pageId = appService.genPageId()
     }
     
     open func generateViewController() -> NZPageViewController {

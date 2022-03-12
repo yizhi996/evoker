@@ -142,11 +142,11 @@ open class NZPageViewController: UIViewController {
         guard page.isTabBarPage,
               page.isShowTabBar,
               let appService = page.appService,
-              appService.tabBarView.superview != view else { return }
-        appService.tabBarView.removeFromSuperview()
+              appService.uiControl.tabBarView.superview != view else { return }
+        appService.uiControl.tabBarView.removeFromSuperview()
         let height = Constant.tabBarHeight
-        appService.tabBarView.frame = CGRect(x: 0, y: view.frame.height - height, width: view.frame.width, height: height)
-        view.addSubview(appService.tabBarView)
+        appService.uiControl.tabBarView.frame = CGRect(x: 0, y: view.frame.height - height, width: view.frame.width, height: height)
+        view.addSubview(appService.uiControl.tabBarView)
     }
 }
 

@@ -33,6 +33,10 @@ final public class NZAppService {
     public var envVersion: NZAppEnvVersion {
         return launchOptions.envVersion
     }
+    
+    public var haveTabBar: Bool {
+        return config.tabBar?.list.isEmpty == false
+    }
 
     public internal(set) var state: State = .back
     
@@ -42,6 +46,8 @@ final public class NZAppService {
     
     public private(set) var bridge: NZJSBridge!
     
+    public let uiControl = NZAppUIControl()
+    
     public lazy var storage: NZAppStorage = {
         return NZAppStorage(appId: appId, envVersion: launchOptions.envVersion)
     }()
@@ -49,14 +55,12 @@ final public class NZAppService {
     public internal(set) var rootViewController: NZNavigationController? {
         didSet {
             if let rootViewController = rootViewController {
-                addMiniProgramNavigationBarButton(to: rootViewController.view)
+                uiControl.addMiniProgramNavigationBarButton(to: rootViewController.view)
             }
         }
     }
     
-    public lazy var tabBarControllers: [NZPageViewController] = []
-    
-    public lazy var tabBarView = NZTabBarView()
+    public lazy var tabBarPages: [NZPage] = []
     
     public lazy var requests: [Int: Request] = [:]
     
@@ -65,8 +69,6 @@ final public class NZAppService {
     private var incPageId = 0
     
     private var killTimer: Timer?
-    
-    public internal(set) var gotoHomeButton: UIButton?
     
     lazy var context: NZJSContext = {
         return NZEngine.shared.jsContextPool.idle()
@@ -94,6 +96,40 @@ final public class NZAppService {
         
         webViewPool = NZPool(autoGenerateWithEmpty: true) { [unowned self] in
             return self.createWebView()
+        }
+        
+        uiControl.closeHandler = { [unowned self] in
+            self.closeMiniProgram()
+        }
+        
+        uiControl.gotoHomeHandler = { [unowned self] in
+            self.gotoHomePage()
+        }
+        
+        uiControl.didSelectTabBarIndexHandler = { [unowned self] index in
+            let page = self.tabBarPages[index]
+            if !pages.contains(where: { $0.pageId == page.pageId }) {
+                pages.append(page)
+            }
+            let viewController = page.viewController ?? page.generateViewController()
+            uiControl.tabBarViewControllers[page.url] = viewController
+            if !viewController.isViewLoaded {
+                viewController.loadViewIfNeeded()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.rootViewController?.viewControllers = [viewController]
+                }
+            } else {
+                self.rootViewController?.viewControllers = [viewController]
+            }
+        }
+        
+        uiControl.showAppMoreActionBoardHandler = { [unowned self] in
+            guard let rootViewController = self.rootViewController else { return }
+            self.uiControl.showAppMoreActionBoard(appId: self.appId,
+                                                  appInfo: self.appInfo,
+                                                  to: rootViewController.view) { [unowned self] action in
+                self.invokeAppMoreAction(action)
+            }
         }
 
         context.invokeHandler = { [unowned self] message in
@@ -138,21 +174,29 @@ final public class NZAppService {
         NZEngine.shared.allModules().forEach { modules[$0.name] = $0.init(appService: self) }
     }
     
-    func launch(path: String) -> NZError? {
-        let (fitstViewController, needAddGoHomeButton) = getAppFirstViewController(path: path)
-        guard let fitstViewController = fitstViewController else { return NZError.appLaunchPathNotFound(path) }
-        setupTabBarView()
+    func launch(path: String, presentTo viewController: UIViewController? = nil) -> NZError? {
+        guard let info = generateFirstViewController(with: path) else { return .appLaunchPathNotFound(path) }
+        if haveTabBar {
+            uiControl.setupTabBar(config: config, envVersion: envVersion)
+            uiControl.tabBarView.setTabItemSelect(info.tabBarSelectedIndex)
+            uiControl.tabBarViewControllers = [:]
+            if info.page.isTabBarPage {
+                uiControl.tabBarViewControllers[info.page.url] = info.viewController
+            }
+            tabBarPages = info.tabBarPages
+        }
+        pages.append(info.page)
         loadAppPackage()
         publishAppOnLaunch(path: path)
         
-        let navigationController = NZNavigationController(rootViewController: fitstViewController)
+        let navigationController = NZNavigationController(rootViewController: info.viewController)
         navigationController.modalPresentationStyle = .fullScreen
-        if needAddGoHomeButton {
-            addGotoHomeButton(to: navigationController.view)
+        if info.needAddGotoHomeButton {
+            uiControl.addGotoHomeButton(to: navigationController.view)
         }
         rootViewController = navigationController
-        let visibleViewController = UIViewController.visibleViewController()
-        visibleViewController?.present(navigationController, animated: true)
+        let presentViewController = viewController ?? UIViewController.visibleViewController()
+        presentViewController?.present(navigationController, animated: true)
         state = .front
         publishAppOnShow(path: path)
         return nil
@@ -182,7 +226,7 @@ final public class NZAppService {
         return modules[T.name] as? T
     }
     
-    public func relaunch(launchOptions: NZAppLaunchOptions? = nil) {
+    public func reLaunch(launchOptions: NZAppLaunchOptions? = nil) {
         dismiss(animated: false) {
             self.killApp()
             if NZEngine.shared.config.devServer.useDevServer {
@@ -204,7 +248,10 @@ final public class NZAppService {
         context.clearAllTimer()
         cleanAllPages()
         rootViewController = nil
-        tabBarControllers = []
+        if haveTabBar {
+            tabBarPages = []
+            uiControl.tabBarViewControllers = [:]
+        }
         currentPage = nil
         modules.values.forEach { $0.willExitApp(self) }
         modules = [:]
@@ -214,6 +261,16 @@ final public class NZAppService {
         }
         if NZEngine.shared.currentApp === self {
             NZEngine.shared.currentApp = nil
+        }
+    }
+    
+    func cleanPage(_ page: NZPage) {
+        modules.values.forEach { $0.willExitPage(page) }
+        if let webPage = page as? NZWebPage {
+            webPage.onUnload()
+        }
+        if let index = pages.firstIndex(where: { $0.pageId == page.pageId }) {
+            pages.remove(at: index)
         }
     }
     
@@ -236,16 +293,6 @@ final public class NZAppService {
         }
     }
     
-    func cleanNotTabPages() {
-        pages.filter { !$0.isTabBarPage }.forEach { page in
-            modules.values.forEach { $0.willExitPage(page) }
-            if let webPage = page as? NZWebPage {
-                webPage.onUnload()
-            }
-        }
-        pages = pages.filter { $0.isTabBarPage }
-    }
-    
     func cleanKillTimer() {
         killTimer?.invalidate()
         killTimer = nil
@@ -254,7 +301,15 @@ final public class NZAppService {
 
 extension NZAppService {
     
-    func getAppFirstViewController(path: String) -> (UIViewController?, Bool) {
+    struct GenerateFirstViewControllerInfo {
+        let page: NZPage
+        let viewController: NZPageViewController
+        let tabBarSelectedIndex: Int
+        let needAddGotoHomeButton: Bool
+        let tabBarPages: [NZPage]
+    }
+    
+    func generateFirstViewController(with path: String) -> GenerateFirstViewControllerInfo? {
         var route = path
         var query = ""
         if let queryIndex = path.firstIndex(of: "?") {
@@ -282,72 +337,64 @@ extension NZAppService {
                     pagePath = item.path
                 }
                 
-                if let page = createWebPage(path: pagePath) {
+                if let page = createWebPage(url: pagePath) {
                     page.isTabBarPage = true
                     tabBarPages.append(page)
                 }
             }
         }
         
-        var firstViewController: UIViewController?
+        var firstTabBarPage: NZPage?
+        var tabBarSelectedIndex = 0
         
-        let tabBarViewControllers = tabBarPages.map { page -> UIViewController in
-            let viewController = page.generateViewController()
-            tabBarControllers.append(viewController)
-            if !path.isEmpty && page.path == path {
-                firstViewController = viewController
-                tabBarView.setTabItemSelect(tabBarControllers.count - 1)
+        for (i, page) in tabBarPages.enumerated() {
+            if !path.isEmpty && page.url == path {
+                firstTabBarPage = page
+                tabBarSelectedIndex = i
             }
-            return viewController
         }
         
         // 打开指定 tab
-        if firstViewController != nil {
-            return (firstViewController, false)
+        if let firstTabBarPage = firstTabBarPage {
+            return GenerateFirstViewControllerInfo(page: firstTabBarPage,
+                                                   viewController: firstTabBarPage.generateViewController(),
+                                                   tabBarSelectedIndex: tabBarSelectedIndex,
+                                                   needAddGotoHomeButton: false,
+                                                   tabBarPages: tabBarPages)
         }
         
         // 打开首个 tab
-        if route.isEmpty && firstViewController == nil && !tabBarViewControllers.isEmpty {
-            tabBarView.setTabItemSelect(0)
-            return (tabBarViewControllers[0], false)
+        if route.isEmpty && !tabBarPages.isEmpty {
+            let page = tabBarPages[0]
+            return GenerateFirstViewControllerInfo(page: page,
+                                                   viewController: page.generateViewController(),
+                                                   tabBarSelectedIndex: 0,
+                                                   needAddGotoHomeButton: false,
+                                                   tabBarPages: tabBarPages)
         }
         
         // 打开指定 page
-        if config.pages.contains(where: { $0.path == route }), let page = createWebPage(path: path) {
-            let viewController = page.generateViewController()
-            return (viewController, checkAddGotoHomeButton(path: path))
+        if config.pages.contains(where: { $0.path == route }), let page = createWebPage(url: path) {
+            return GenerateFirstViewControllerInfo(page: page,
+                                                   viewController: page.generateViewController(),
+                                                   tabBarSelectedIndex: 0,
+                                                   needAddGotoHomeButton: checkAddGotoHomeButton(path: path),
+                                                   tabBarPages: tabBarPages)
         } else if let first = config.pages.first { // 打开首页
-            let pagePath = first.path + query
-            if let page = createWebPage(path: pagePath) {
-                let viewController = page.generateViewController()
-                return (viewController, false)
+            if let page = createWebPage(url: first.path + query) {
+                return GenerateFirstViewControllerInfo(page: page,
+                                                       viewController: page.generateViewController(),
+                                                       tabBarSelectedIndex: 0,
+                                                       needAddGotoHomeButton: false,
+                                                       tabBarPages: tabBarPages)
             }
         }
-        
-        return (nil, false)
+        return nil
     }
 }
 
 //MARK: View
 extension NZAppService {
-    
-    func setupTabBarView() {
-        if let tabBarInfo = config.tabBar, !tabBarInfo.list.isEmpty {
-            tabBarView.backgroundColor = tabBarInfo.backgroundColor.hexColor()
-            tabBarView.load(config: config, envVersion: envVersion)
-            tabBarView.didSelectIndex = { [unowned self] index in
-                let viewController = self.tabBarControllers[index]
-                if !viewController.isViewLoaded {
-                    viewController.loadViewIfNeeded()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.rootViewController?.viewControllers = [viewController]
-                    }
-                } else {
-                    self.rootViewController?.viewControllers = [viewController]
-                }
-            }
-        }
-    }
     
     func checkAddGotoHomeButton(path: String) -> Bool {
         let (route, _) = path.decodeURL()
@@ -357,53 +404,28 @@ extension NZAppService {
         return config.pages.first?.path != route
     }
     
-    func addGotoHomeButton(to view: UIView) {
-        let homeIcon = UIImage(builtIn: "mini-program-home-icon")?.withRenderingMode(.alwaysOriginal)
-        let button = UIButton()
-        button.setImage(homeIcon, for: .normal)
-        button.addTarget(self, action: #selector(gotoHomePage), for: .touchUpInside)
-        view.addSubview(button)
-        let safeAreaTop = Constant.safeAreaInsets.top
-        let buttonSize = 32.0
-        let top = safeAreaTop + (Constant.navigationBarHeight - buttonSize) / 2
-        button.autoPinEdge(toSuperviewEdge: .top, withInset: top)
-        button.autoPinEdge(toSuperviewEdge: .left, withInset: 7)
-        button.autoSetDimensions(to: CGSize(width: buttonSize, height: buttonSize))
-        
-        gotoHomeButton = button
-    }
-    
-    func removeGotoHomeButton() {
-        gotoHomeButton?.removeFromSuperview()
-    }
-    
-    func addMiniProgramNavigationBarButton(to view: UIView) {
-        let actionView = MiniProgramNavigationBar()
-        actionView.closeButton.addTarget(self, action: #selector(closeMiniProgram), for: .touchUpInside)
-        actionView.moreButton.addTarget(self, action: #selector(openMoreActionBoard), for: .touchUpInside)
-        view.addSubview(actionView)
-        let safeAreaTop = Constant.safeAreaInsets.top
-        let top = safeAreaTop + (Constant.navigationBarHeight - actionView.buttonHeight) / 2
-        actionView.autoPinEdge(toSuperviewEdge: .top, withInset: top)
-        actionView.autoPinEdge(toSuperviewEdge: .right, withInset: 7)
-    }
-    
-    @objc func gotoHomePage() {
-        if let fitstViewController = tabBarControllers.first {
-            cleanNotTabPages()
-            rootViewController?.viewControllers = [fitstViewController]
-            tabBarView.setTabItemSelect(0)
-            removeGotoHomeButton()
-        } else if let firstPage = config.pages.first,
-                  let page = createWebPage(path: firstPage.path) {
+    func gotoHomePage() {
+        if let firstTabBar = config.tabBar?.list.first, let info = generateFirstViewController(with: firstTabBar.path) {
             cleanAllPages()
+            uiControl.setupTabBar(config: config, envVersion: envVersion)
+            uiControl.tabBarView.setTabItemSelect(info.tabBarSelectedIndex)
+            uiControl.tabBarViewControllers = [:]
+            uiControl.tabBarViewControllers[info.page.url] = info.viewController
+            tabBarPages = info.tabBarPages
+            pages.append(info.page)
+            rootViewController?.viewControllers = [info.viewController]
+            uiControl.removeGotoHomeButton()
+        } else if let firstPage = config.pages.first,
+                  let page = createWebPage(url: firstPage.path) {
+            cleanAllPages()
+            pages.append(page)
             let viewController = page.generateViewController()
             rootViewController?.viewControllers = [viewController]
-            removeGotoHomeButton()
+            uiControl.removeGotoHomeButton()
         }
     }
-    
-    @objc func closeMiniProgram() {
+
+    func closeMiniProgram() {
         dismiss()
         cleanKillTimer()
         state = .suspend
@@ -416,52 +438,17 @@ extension NZAppService {
         RunLoop.main.add(killTimer!, forMode: .common)
     }
     
-    @objc func openMoreActionBoard() {
-        guard let viewController = rootViewController else { return }
-
-        let firstActions: [NZMiniProgramAction] = []
-        let settingsAction = NZMiniProgramAction(key: "settings",
-                                                 icon: nil,
-                                                 iconImage: UIImage(builtIn: "mp-action-sheet-setting-icon"),
-                                                 title: "设置")
-        let relaunchAction = NZMiniProgramAction(key: "relaunch",
-                                                 icon: nil,
-                                                 iconImage: UIImage(builtIn: "mp-action-sheet-reload-icon"),
-                                                 title: "重新进入小程序")
-        let secondActions = [settingsAction, relaunchAction]
-        let params = NZMiniProgramActionSheet.Params(appId: appId,
-                                                     appName: appInfo.appName,
-                                                     appIcon: appInfo.appIconURL,
-                                                     firstActions: firstActions,
-                                                     secondActions: secondActions)
-        let cover = NZCoverView()
-        let actionSheet = NZMiniProgramActionSheet(params: params)
-        let onHide = {
-            actionSheet.hide()
-            cover.hide()
+    func invokeAppMoreAction(_ action: String) {
+        switch action {
+        case "settings":
+            break
+        case "relaunch":
+            var options = NZAppLaunchOptions()
+            options.envVersion = envVersion
+            reLaunch(launchOptions: options)
+        default:
+            break
         }
-        cover.clickHandler = {
-            onHide()
-        }
-        actionSheet.didSelectActionHandler = { [unowned self] action in
-            onHide()
-            switch action.key {
-            case "settings":
-                break
-            case "relaunch":
-                var options = NZAppLaunchOptions()
-                options.envVersion = self.envVersion
-                self.relaunch(launchOptions: options)
-            default: break
-            }
-        }
-        actionSheet.onCancel = {
-            onHide()
-        }
-        
-        viewController.view.endEditing(true)
-        cover.show(to: viewController.view)
-        actionSheet.show(to: cover)
     }
 }
 
@@ -546,22 +533,19 @@ extension NZAppService {
 
 extension NZAppService {
     
-    func createWebPage(path: String) -> NZWebPage? {
-        guard let page = NZEngine.shared.config.webPageClass.init(appService: self, path: path) else { return nil }
-        pages.append(page)
-        return page
+    func createWebPage(url: String) -> NZWebPage? {
+        return NZEngine.shared.config.webPageClass.init(appService: self, url: url)
     }
     
-    func createBrowserPage(url: String, cookies: String = "") -> NZBrowserPage? {
-        guard let page = NZEngine.shared.config.browserPageClass.init(appService: self, url: url, cookies: cookies) else { return nil }
-        pages.append(page)
-        return page
+    func createBrowserPage(url: String) -> NZBrowserPage? {
+        return NZEngine.shared.config.browserPageClass.init(appService: self, url: url)
     }
 }
 
 public extension NZAppService {
     
     func push(_ page: NZPage, animated: Bool = true, completedHandler: NZEmptyBlock? = nil) {
+        pages.append(page)
         let viewController = page.generateViewController()
         viewController.loadCompletedHandler = {
             completedHandler?()
@@ -572,27 +556,31 @@ public extension NZAppService {
         }
     }
     
-    func present(_ page: NZPage, animated: Bool = true, addNavigation: Bool = true) {
-        var viewController = page.generateViewController() as UIViewController
-        if addNavigation {
-            viewController = NZNavigationController(rootViewController: viewController)
+    func redirectTo(_ url: String) -> NZError? {
+        guard config.tabBar?.list.contains(where: { $0.path == url }) == false else {
+            return .bridgeFailed(reason: .cannotToTabbarPage)
         }
-        rootViewController?.present(viewController, animated: animated, completion: nil)
-    }
-    
-    func redirectTo(_ path: String) {
-        guard let rootViewController = rootViewController else { return }
-        
-        cleanAllPages()
-        tabBarControllers = []
-        
-        let (viewController, addGoToHomeButton) = getAppFirstViewController(path: path)
-        if let viewController = viewController {
-            rootViewController.viewControllers = [viewController]
-            if addGoToHomeButton {
-                addGotoHomeButton(to: rootViewController.view)
+        guard let rootViewController = rootViewController else {
+            return .appRootViewControllerNotFound
+        }
+        guard let info = generateFirstViewController(with: url) else {
+            return .appLaunchPathNotFound(url)
+        }
+        if let currentPage = currentPage {
+            if currentPage.isTabBarPage {
+                cleanAllPages()
+                uiControl.tabBarViewControllers = [:]
+                pages.append(info.page)
+                rootViewController.viewControllers = [info.viewController]
+                uiControl.addGotoHomeButton(to: rootViewController.view)
+            } else {
+                cleanPage(currentPage)
+                pages.append(info.page)
+                rootViewController.viewControllers.removeLast()
+                rootViewController.viewControllers.append(info.viewController)
             }
         }
+        return nil
     }
     
     func pop(delta: Int = 1, animated: Bool = true) {
@@ -612,25 +600,35 @@ public extension NZAppService {
         rootViewController?.dismiss(animated: animated, completion: completion)
     }
     
-    func reLaunch(path: String) {
+    func reLaunch(url: String) -> NZError? {
+        guard let rootViewController = rootViewController else { return .appRootViewControllerNotFound }
+        guard let info = generateFirstViewController(with: url) else { return .appLaunchPathNotFound(url) }
+        
         currentPage = nil
         cleanAllPages()
-        tabBarControllers = []
         
-        let (fitstViewController, needAddGoHomeButton) = getAppFirstViewController(path: path)
-        guard let fitstViewController = fitstViewController else { return }
-        guard let rootViewController = rootViewController else { return }
-        if needAddGoHomeButton {
-            addGotoHomeButton(to: rootViewController.view)
+        if haveTabBar {
+            uiControl.setupTabBar(config: config, envVersion: envVersion)
+            uiControl.tabBarView.setTabItemSelect(info.tabBarSelectedIndex)
+            uiControl.tabBarViewControllers = [:]
+            if info.page.isTabBarPage {
+                uiControl.tabBarViewControllers[info.page.url] = info.viewController
+            }
+            tabBarPages = info.tabBarPages
         }
-        rootViewController.viewControllers = [fitstViewController]
+        pages.append(info.page)
+        
+        rootViewController.viewControllers = [info.viewController]
+        
+        if info.needAddGotoHomeButton {
+            uiControl.addGotoHomeButton(to: rootViewController.view)
+        }
+        return nil
     }
     
     func switchTo(url: String) {
-        let index = tabBarControllers.filter(ofType: NZWebPageViewController.self)
-            .firstIndex { $0.webPage.route == url }
-        if let index = index {
-            tabBarView.didSelectIndex?(index)
+        if let index = tabBarPages.filter(ofType: NZWebPage.self).firstIndex(where: { $0.url == url }) {
+            uiControl.didSelectTabBarIndexHandler?(index)
         }
     }
 }

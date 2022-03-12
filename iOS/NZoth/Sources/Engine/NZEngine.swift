@@ -168,7 +168,7 @@ final public class NZEngine {
         options.envVersion = .develop
         let runningId = runningId(appId: appId, envVersion: options.envVersion)
         if let appService = runningApp.first(where: { $0.runningId == runningId }) {
-            appService.relaunch(launchOptions: options)
+            appService.reLaunch(launchOptions: options)
         } else {
             launchApp(appId: appId, launchOptions: options) { error in
                 if let error = error {
@@ -198,22 +198,23 @@ extension NZEngine {
                         launchOptions: NZAppLaunchOptions = NZAppLaunchOptions(),
                         presentTo viewController: UIViewController? = nil,
                         completionHandler: ((NZError?) -> Void)? = nil) {
-        assert(!appId.isEmpty, "必须传入 App id")
+        assert(!appId.isEmpty, "appId cannot be empty")
         let runningId = runningId(appId: appId, envVersion: launchOptions.envVersion)
         if let appService = runningApp.first(where: { $0.runningId == runningId }) {
             guard let rootViewController = appService.rootViewController else {
                 completionHandler?(.appRootViewControllerNotFound)
                 return
             }
-            guard let target = viewController ?? UIViewController.visibleViewController() else {
+            guard let presentViewController = viewController ?? UIViewController.visibleViewController() else {
                 completionHandler?(.presentViewControllerNotFound)
                 return
             }
             appService.publishAppOnShow(path: launchOptions.path)
-            if !launchOptions.path.isEmpty {
-                appService.redirectTo(launchOptions.path)
+            if !launchOptions.path.isEmpty, let error = appService.reLaunch(url: launchOptions.path) {
+                completionHandler?(error)
+                return
             }
-            target.present(rootViewController, animated: true)
+            presentViewController.present(rootViewController, animated: true)
             completionHandler?(nil)
         } else {
             let updateFinishedHandler: NZBoolBlock = { success in
@@ -246,14 +247,17 @@ extension NZEngine {
         runningApp.forEach { $0.killApp() }
     }
     
-    func launchApp(appId: String, launchOptions: NZAppLaunchOptions, completionHandler handler: @escaping NZErrorBlock) {
+    func launchApp(appId: String,
+                   launchOptions: NZAppLaunchOptions,
+                   presentTo viewController: UIViewController? = nil,
+                   completionHandler handler: @escaping NZErrorBlock) {
         assert(!appId.isEmpty, "appId cannot be empty")
         let getAppInfo: (NZAppInfo) -> Void = { appInfo in
             guard let appService = NZAppService(appId: appId, appInfo: appInfo, launchOptions: launchOptions) else {
                 handler(.loadAppConfigFailed)
                 return
             }
-            if let error = appService.launch(path: launchOptions.path) {
+            if let error = appService.launch(path: launchOptions.path, presentTo: viewController) {
                 handler(error)
             } else {
                 self.runningApp.append(appService)

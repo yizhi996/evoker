@@ -78,6 +78,8 @@ public enum NZError: Error {
         
         case storageSizeLimited
         
+        case cannotToTabbarPage
+        
         case custom(String)
     }
 }
@@ -140,6 +142,8 @@ extension NZError.BridgeFailureReason {
             return "input id: \(id) not found"
         case .storageSizeLimited:
             return "storage size limited"
+        case .cannotToTabbarPage:
+            return "cannot to tabbar page"
         case .custom(let error):
             return "\(error)"
         }
