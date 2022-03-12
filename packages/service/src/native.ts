@@ -1,6 +1,7 @@
 const nativeTimer = globalThis.__NZAppServiceNativeSDK.timer
 
 if (nativeTimer) {
+  /** @ts-ignore */
   globalThis.setTimeout = (
     callback: (args: void) => void,
     ms?: number
@@ -15,6 +16,7 @@ if (nativeTimer) {
     nativeTimer.clearTimeout(timeoutId)
   }
 
+  /** @ts-ignore */
   globalThis.setInterval = (
     callback: (args: void) => void,
     ms?: number

@@ -4,5 +4,9 @@
     "lib": [
       "esnext",
     ],
-  }
+  },
+  "include": [
+    "src/",
+    "../bridge/global.d.ts"
+  ]
 }

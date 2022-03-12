@@ -1,7 +1,7 @@
 import nz from "./bridge"
 import useApp from "./lifecycle/useApp"
 import usePage from "./lifecycle/usePage"
-import "./timer"
+import "./native"
 import Vue from "vue"
 import { extend } from "@vue/shared"
 

@@ -5,70 +5,24 @@ import {
   wrapperAsyncAPI
 } from "../../bridge"
 
-interface SystemSetting {
-  bluetoothEnabled: boolean
-  locationEnabled: boolean
-  wifiEnabled: boolean
-  deviceOrientation: "portrait" | "landscape"
+export function getSystemSetting() {
+  return globalThis.__NZAppServiceNativeSDK.system.getSystemSetting()
 }
 
-export function getSystemSetting(): SystemSetting {
-  return __NZAppServiceNativeSDK.system.getSystemSetting()
+export function getDeviceInfo() {
+  return globalThis.__NZAppServiceNativeSDK.system.getDeviceInfo()
 }
 
-interface DeviceInfo {
-  brand: string
-  model: string
-  system: string
-  platform: string
+export function getWindowInfo() {
+  return globalThis.__NZAppServiceNativeSDK.system.getWindowInfo()
 }
 
-export function getDeviceInfo(): DeviceInfo {
-  return __NZAppServiceNativeSDK.system.getDeviceInfo()
+export function getAppBaseInfo() {
+  return globalThis.__NZAppServiceNativeSDK.system.getAppBaseInfo()
 }
 
-interface WindowInfo {
-  pixelRatio: number
-  screenWidth: number
-  screenHeight: number
-  windowWidth: number
-  windowHeight: number
-  statusBarHeight: number
-  safeArea: SafeArea
-  screenTop: number
-}
-
-interface SafeArea {
-  left: number
-  right: number
-  top: number
-  bottom: number
-  width: number
-  height: number
-}
-
-export function getWindowInfo(): WindowInfo {
-  return __NZAppServiceNativeSDK.system.getWindowInfo()
-}
-
-interface AppBaseInfo {
-  SDKVersion: string
-  enableDebug: boolean
-  language: string
-  version: string
-  theme: "light" | "dark"
-}
-
-export function getAppBaseInfo(): AppBaseInfo {
-  return __NZAppServiceNativeSDK.system.getAppBaseInfo()
-}
-
-export function getSystemInfoSync(): SystemSetting &
-  DeviceInfo &
-  WindowInfo &
-  AppBaseInfo {
+export function getSystemInfoSync() {
   return Object.assign(
-    {},
     getSystemSetting(),
     getDeviceInfo(),
     getWindowInfo(),
@@ -83,7 +37,7 @@ interface GetSystemInfoOptions {
 }
 
 type GetSystemInfoSuccessCallback = (
-  res: SystemSetting & DeviceInfo & WindowInfo & AppBaseInfo
+  res: ReturnType<typeof getSystemInfoSync>
 ) => void
 
 type GetSystemInfoFailCallback = (res: GeneralCallbackResult) => void
