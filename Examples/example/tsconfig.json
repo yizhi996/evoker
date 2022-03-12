@@ -26,6 +26,9 @@
       "nzoth": [
         "../../packages/nzoth/src"
       ],
+      "@nzoth/service": [
+        "../../packages/service/src"
+      ],
       "@nzoth/vite-plugin": [
         "../../packages/plugin/src"
       ]

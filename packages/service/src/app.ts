@@ -1,4 +1,4 @@
-import { Component, AppContext, reactive, createVNode } from "vue"
+import { Component, AppContext, reactive, createVNode, App } from "vue"
 import { renderer } from "./runtime-jscore/renderer"
 import { InnerJSBridge } from "./bridge/bridge"
 import { NZothPage } from "./dom/page"
@@ -28,7 +28,7 @@ let vueContext: AppContext
 export function createApp(
   rootComponent: Component,
   rootProps?: Record<string, unknown> | null | undefined
-) {
+): App<Element> {
   const app = renderer.createApp(rootComponent, rootProps)
   const mount = app.mount
   app.mount = () => {
@@ -38,6 +38,7 @@ export function createApp(
     return mount(root, false, false)
   }
   vueContext = app._context
+  /** @ts-ignore */
   return app
 }
 

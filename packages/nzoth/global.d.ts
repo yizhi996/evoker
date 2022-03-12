@@ -1,5 +1,5 @@
-import { nz as NZ } from "@nzoth/service"
+import { nz as NZothGlobal } from "./src/index"
 
 declare global {
-  const nz: typeof NZ
+  const nz: typeof NZothGlobal
 }
