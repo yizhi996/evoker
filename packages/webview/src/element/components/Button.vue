@@ -18,8 +18,8 @@ import useHover from "../use/useHover"
 import Loading from "./Loading.vue"
 
 const props = withDefaults(defineProps<{
-  type?: "primary" | "default" | "success" | "warning" | "danger"
-  size?: "large" | "normal" | "small" | "mini"
+  type?: "primary" | "default" | "warn" | "success" | "danger"
+  size?: "default" | "mini" | "large" | "small"
   color?: string
   plain?: boolean
   disabled?: boolean
@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<{
   formType?: "submit" | "reset"
 }>(), {
   type: "default",
-  size: "normal",
+  size: "default",
   color: "",
   plain: false,
   disabled: false,
@@ -47,7 +47,7 @@ const { viewRef: buttonRef, finalHoverClass } = useHover(props)
 const classes = computed(() => {
   let cls = "nz-button "
   cls += `nz-button--${props.type} `
-  cls += `nz-button--${props.size} `
+  cls += `nz-button--size-${props.size} `
   if (isTrue(props.disabled)) {
     cls += "nz-button--disabled "
   }
@@ -167,23 +167,28 @@ nz-button {
     color: #ee0a24;
   }
 
-  &--warning {
+  &--warn {
     color: #fff;
     background-color: #ff976a;
     border: 1px solid #ff976a;
   }
 
-  &--large {
+  &--warn--plain {
+    background-color: white;
+    color: #ff976a;
+  }
+
+  &--size-large {
     width: 100%;
     min-height: 54px;
     font-size: 19px;
   }
 
-  &--normal {
+  &--size-default {
     width: 184px;
   }
 
-  &--small {
+  &--size-small {
     min-height: 36px;
     font-size: 14px;
     width: auto;
@@ -191,7 +196,7 @@ nz-button {
     padding: 6px 12px;
   }
 
-  &--mini {
+  &--size-mini {
     min-height: 28px;
     font-size: 12px;
     width: auto;
