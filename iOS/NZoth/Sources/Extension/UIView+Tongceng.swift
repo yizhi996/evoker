@@ -9,49 +9,49 @@
 import Foundation
 import UIKit
 
-extension UIView {
+public extension UIView {
     
-    public class func findWKChildScrollView(view: UIView, tongcengId: String, scrollHeight: CGFloat) -> UIView? {
-        let cls: AnyClass = NSClassFromString("WKCompositingView")!
-        if view.isKind(of: cls) {
-            if view.description.contains(tongcengId) {
-                if let scrollView = view.subviews.first as? UIScrollView {
-                    scrollView.gestureRecognizers?.forEach { gesture in
-                        scrollView.removeGestureRecognizer(gesture)
-                    }
-                    scrollView.tongcengId = tongcengId
-                    return scrollView
-                } else {
-                    return nil
-                }
+    func dfsFindSubview<T>(ofType: T.Type) -> T? {
+        return dfsFindSubview(where: { $0 as? T != nil }) as? T
+    }
+    
+    func dfsFindSubview(where predicate: (UIView) throws -> Bool) rethrows -> UIView? {
+        if try predicate(self) {
+            return self
+        }
+        for sub in subviews {
+            if let res = try sub.dfsFindSubview(where: predicate) {
+                return res
             }
         }
-        
-        for subview in view.subviews {
-            let childScrollView = findWKChildScrollView(view: subview, tongcengId: tongcengId, scrollHeight: scrollHeight)
-            if childScrollView != nil {
-                return childScrollView
-            }
-        }
-        
         return nil
     }
     
-    public class func findTongCengContainerView(view: UIView, tongcengId: String) -> UIView? {
-        if view.isKind(of: UIScrollView.self) {
-            let scrollView = view as! UIScrollView
-            if scrollView.tongcengId == tongcengId {
-                return scrollView.subviews.first { $0.isKind(of: NZNativelyContainerView.self) }
-            }
+    func findWKChildScrollView(tongcengId: String, scrollHeight: CGFloat) -> UIScrollView? {
+        let cls: AnyClass = NSClassFromString("WKCompositingView")!
+        let wkView = dfsFindSubview { view in
+            return view.isKind(of: cls) && view.description.contains(tongcengId)
         }
-        
-        for subview in view.subviews {
-            let container = findTongCengContainerView(view: subview, tongcengId: tongcengId)
-            if container != nil {
-                return container
+        if let scrollView = wkView?.subviews.first as? UIScrollView {
+            scrollView.gestureRecognizers?.forEach { gesture in
+                scrollView.removeGestureRecognizer(gesture)
             }
+            scrollView.tongcengId = tongcengId
+            return scrollView
         }
-        
+        return nil
+    }
+    
+    func findTongCengContainerView(tongcengId: String) -> NZNativelyContainerView? {
+        let wkScrollView = dfsFindSubview { view in
+            if let scrollView = view as? UIScrollView, scrollView.tongcengId == tongcengId {
+                return true
+            }
+            return false
+        }
+        if let wkScrollView = wkScrollView {
+            return wkScrollView.subviews.first(ofType: NZNativelyContainerView.self)
+        }
         return nil
     }
 }

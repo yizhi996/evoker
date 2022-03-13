@@ -96,8 +96,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let container = UIView.findTongCengContainerView(view: webView,
-                                                               tongcengId: params.parentId) else {
+        guard let container = webView.findTongCengContainerView(tongcengId: params.parentId) else {
             let error = NZError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -243,8 +242,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let container = UIView.findTongCengContainerView(view: webView,
-                                                               tongcengId: params.parentId) else {
+        guard let container = webView.findTongCengContainerView(tongcengId: params.parentId) else {
             let error = NZError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
             bridge.invokeCallbackFail(args: args, error: error)
             return

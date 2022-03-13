@@ -60,9 +60,8 @@ enum NZTongCengAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let scrollView = UIView.findWKChildScrollView(view: webView,
-                                                            tongcengId: params.tongcengId,
-                                                            scrollHeight: params.position.scrollHeight) else {
+        guard let scrollView = webView.findWKChildScrollView(tongcengId: params.tongcengId,
+                                                             scrollHeight: params.position.scrollHeight) else {
             let error = NZError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.tongcengId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -93,8 +92,7 @@ enum NZTongCengAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let container = UIView.findTongCengContainerView(view: webView,
-                                                               tongcengId: params.tongcengId) else {
+        guard let container = webView.findTongCengContainerView(tongcengId: params.tongcengId) else {
             let error = NZError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.tongcengId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -124,8 +122,7 @@ enum NZTongCengAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let container = UIView.findTongCengContainerView(view: webView,
-                                                               tongcengId: tongcengId) else {
+        guard let container = webView.findTongCengContainerView(tongcengId: tongcengId) else {
             bridge.invokeCallbackSuccess(args: args)
             return
         }

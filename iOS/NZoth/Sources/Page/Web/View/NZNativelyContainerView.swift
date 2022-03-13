@@ -9,9 +9,9 @@
 import Foundation
 import UIKit
 
-class NZNativelyContainerView: UIView {
+public final class NZNativelyContainerView: UIView {
     
-    override func conforms(to aProtocol: Protocol) -> Bool {
+    public override func conforms(to aProtocol: Protocol) -> Bool {
         if NSStringFromProtocol(aProtocol) == "WKNativelyInteractible" {
             return true
         }
