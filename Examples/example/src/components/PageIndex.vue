@@ -28,7 +28,7 @@
             :url="page.url"
             class="flex items-center justify-between w-full h-10 border-b dark:border-gray-300 last:border-0"
           >
-            <span class="mx-2.5 dark:text-white">{{ page.name }}</span>
+            <span class="mx-2.5 dark:text-white">{{ page.name ? page.name : page.url }}</span>
             <div class="navigator-arrow"></div>
           </navigator>
         </div>
@@ -47,7 +47,7 @@ interface PageGroup {
 }
 
 interface PageInfo {
-  name: string
+  name?: string
   url: string
 }
 

@@ -13,50 +13,56 @@ const list = reactive([
     name: "视图容器",
     open: false,
     pages: [
-      { name: "view", url: "view" },
-      { name: "scroll-view", url: "scroll-view" },
-      { name: "swiper", url: "swiper" },
-      { name: "movable-view", url: "movable-view" }]
+      { url: "view" },
+      { url: "scroll-view" },
+      { url: "swiper" },
+      { url: "movable-view" }]
   }, {
     id: "content",
     name: "基础内容",
     open: false,
     pages: [
-      { name: "text", url: "text" },
-      { name: "icon", url: "icon" },
-      { name: "progress", url: "progress" }]
+      { url: "text" },
+      { url: "icon" },
+      { url: "progress" }]
   }, {
     id: "form",
     name: "表单组件",
     open: false,
-    pages: [{ name: "button", url: "button" },
-    { name: "checkbox", url: "checkbox" },
-    { name: "form", url: "form" },
-    { name: "input", url: "input" },
-    { name: "label", url: "label" },
-    { name: "picker", url: "picker" },
-    { name: "picker-view", url: "picker-view" },
-    { name: "radio", url: "radio" },
-    { name: "slider", url: "slider" },
-    { name: "switch", url: "switch" },
-    { name: "textarea", url: "textarea" }]
+    pages: [
+      { url: "button" },
+      { url: "checkbox" },
+      { url: "form" },
+      { url: "input" },
+      { url: "label" },
+      { url: "picker" },
+      { url: "picker-view" },
+      { url: "radio" },
+      { url: "slider" },
+      { url: "switch" },
+      { url: "textarea" }]
   }, {
     id: "nav",
     name: "导航",
     open: false,
-    pages: [{ name: "navigator", url: "navigator" }]
+    pages: [
+      { url: "navigator" }
+    ]
   }, {
     id: "media",
     name: "媒体组件",
     open: false,
-    pages: [{ name: "image", url: "image" },
-    { name: "video", url: "video" },
-    { name: "camera", url: "camera" }]
+    pages: [
+      { url: "image" },
+      { url: "video" },
+      { url: "camera" }]
   }, {
     id: "map",
     name: "地图",
     open: false,
-    pages: [{ name: "map", url: "map" }]
+    pages: [
+      { url: "map" }
+    ]
   }, {
     id: "canvas",
     name: "画布",
@@ -68,12 +74,12 @@ const list = reactive([
     id: "open",
     name: "开放能力",
     open: false,
-    pages: [{ name: "web-view", url: "web-view" }]
+    pages: [{ url: "web-view" }]
   }, {
     id: "obstacle-free",
     name: "无障碍访问",
     open: false,
-    pages: [{ name: "aria-component", url: "aria-component" }]
+    pages: [{ url: "aria-component" }]
   }
 ])
 

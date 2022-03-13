@@ -1,6 +1,7 @@
 import { createApp } from "nzoth"
 import App from "./App.vue"
 import { CellGroup, Cell } from "vant"
+import Topic from "./components/Topic.vue"
 
 import "./tailwind.css"
 
@@ -16,5 +17,7 @@ app.config.warnHandler = (msg, vm, trace) => {
 
 /** @ts-ignore */
 app.use(CellGroup).use(Cell)
+
+app.component("topic", Topic)
 
 app.mount("#app")
