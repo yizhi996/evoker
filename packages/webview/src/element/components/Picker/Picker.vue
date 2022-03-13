@@ -3,152 +3,149 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { computed, watch, watchEffect } from "vue"
 import { NZJSBridge } from "../../../bridge"
 import { vTap } from "../../directive/tap"
-import { PickerOption, PickerColumn, PickerObjectColumn } from "./define"
 
+const emit = defineEmits(["change", "columnchange", "cancel"])
 
 const props = withDefaults(defineProps<{
-  mode: "selector" | "time" | "date"
-  columns?: PickerOption[] | PickerColumn[]
-  title?: string
-  defaultIndex?: number
+  headerText?: string
+  mode: "selector" | "multiSelector" | "time" | "date"
+  // for selector | multiSelector
+  range?: any[]
+  // for selector | multiSelector
+  rangeKey?: string
+  // for selector | multiSelector | time
+  value?: number | number[] | string
+  // for time | date
   start?: string
+  // for time | date
   end?: string
-  value?: string
+  // for date
+  fields?: "year" | "month" | "day"
+  disabled?: boolean
   name?: string
 }>(), {
   mode: "selector",
-  defaultIndex: 0,
-  columns: () => []
+  disabled: false,
+  range: () => [],
+  value: 0,
+  fields: "day"
 })
 
-let currentSelected: Record<string, any> = {}
+let isShow = false
 
-const emit = defineEmits(["confirm", "cancel"])
-
-const formattedColumns = ref<PickerObjectColumn[]>([])
-
-const valuesKey = computed(() => {
-  return "values"
-})
-
-const childrenKey = computed(() => {
-  return "text"
+watch(() => [...props.range], () => {
+  updateMultiPickerView({
+    columns: formatData.value,
+    current: props.value
+  })
 })
 
 const dataType = computed(() => {
-  const firstColumn = props.columns[0]
-  if (typeof firstColumn === 'object') {
-    if (childrenKey.value in firstColumn) {
-      return "cascade"
-    }
-    if (valuesKey.value in firstColumn) {
-      return 'object'
-    }
+  if (props.mode === "multiSelector") {
+    const firstColumns = props.range[0]
+    return typeof firstColumns[0] === "object" ? "object" : "plain"
+  } else {
+    return typeof props.range[0] === "object" ? "object" : "plain"
   }
-  return 'plain'
 })
 
-const format = () => {
-  if (dataType.value === 'plain') {
-    formattedColumns.value = [{ [valuesKey.value]: props.columns, defaultIndex: props.defaultIndex }]
-  } else if (dataType.value === 'cascade') {
-    formatCascade()
-  } else {
-    formattedColumns.value = props.columns as PickerObjectColumn[]
-  }
-}
-
-const formatCascade = () => {
-  const formatted: PickerObjectColumn[] = []
-
-  let cursor: PickerObjectColumn = {
-    [childrenKey.value]: props.columns,
-  };
-
-  while (cursor && cursor[childrenKey.value]) {
-    const children = cursor[childrenKey.value]
-    let defaultIndex = cursor.defaultIndex ?? +props.defaultIndex
-
-    while (children[defaultIndex] && children[defaultIndex].disabled) {
-      if (defaultIndex < children.length - 1) {
-        defaultIndex++
-      } else {
-        defaultIndex = 0
-        break
-      }
+const formatData = computed(() => {
+  if (props.mode === "multiSelector") {
+    let result: string[][] = []
+    if (dataType.value === "object") {
+      const key = props.rangeKey
+      props.range.forEach((col: any[]) => {
+        if (key) {
+          result.push(col.map(item => item[key] + ""))
+        } else {
+          result.push(col.map(item => item + ""))
+        }
+      })
+    } else {
+      props.range.forEach((col: any[]) => {
+        result.push(col.map(item => item + ""))
+      })
     }
-
-    formatted.push({
-      [valuesKey.value]: cursor[childrenKey.value],
-      className: cursor.className,
-      defaultIndex,
-    })
-
-    cursor = children[defaultIndex]
+    return result
+  } else if (dataType.value === "object") {
+    const key = props.rangeKey
+    if (key) {
+      return props.range.map(item => item[key] + "")
+    } else {
+      return props.range.map(item => item + "")
+    }
+  } else {
+    return props.range
   }
-
-  formattedColumns.value = formatted
-}
+})
 
 const onClick = () => {
   if (props.mode === "time" || props.mode === "date") {
-    NZJSBridge.invoke("showDatePickerView", {
+    isShow = true
+    NZJSBridge.invoke<{ value: string }>("showDatePickerView", {
       start: props.start,
       end: props.end,
       value: props.value,
       mode: props.mode,
-      title: props.title
+      title: props.headerText
     }, result => {
-      console.log(result)
-      if (result.data === "cancel") {
-        emit("cancel")
-      } else {
-        const value = result.data.value
-        currentSelected = { value }
-        emit("confirm", value)
+      if (result.data) {
+        result.data.value === "cancel" ? emit("cancel") : emit("change", { value: result.data.value })
       }
     })
   } if (props.mode === "selector") {
-    format()
-    NZJSBridge.invoke("showPickerView", {
-      columns: formattedColumns.value,
-      dataType: dataType.value,
-      title: props.title,
+    isShow = true
+    NZJSBridge.invoke<{ value: number }>("showPickerView", {
+      columns: formatData.value,
+      title: props.headerText,
+      current: props.value
     }, result => {
-      if (result.data === "cancel") {
-        emit("cancel")
-      } else {
-        if (dataType.value === "plain") {
-          const index = result.data.index
-          const value = result.data.value
-          currentSelected = { index, value }
-          emit("confirm", value, index)
-        } else {
-          const indexs = result.data.indexs
-          const values = result.data.values
-          currentSelected = { indexs, values }
-          emit("confirm", values, indexs)
-        }
+      isShow = false
+      if (result.data) {
+        result.data.value === -1 ? emit("cancel") : emit("change", { value: result.data.value })
+      }
+    })
+  } else if (props.mode === "multiSelector") {
+    isShow = true
+    NZJSBridge.invoke<{ value: number[] | string }>("showMultiPickerView", {
+      columns: formatData.value,
+      title: props.headerText,
+      current: props.value
+    }, result => {
+      isShow = false
+      if (result.data) {
+        result.data.value === "cancel" ? emit("cancel") : emit("change", { value: result.data.value })
+      }
+    })
+    NZJSBridge.subscribe<{ column: number, value: number }>("WEBVIEW_MULTI_PICKER_COLUMN_CHANGE", result => {
+      if (isShow) {
+        emit("columnchange", { column: result.column, value: result.value })
       }
     })
   }
 }
 
+const updateMultiPickerView = (data: Record<string, any>) => {
+  if (props.mode === "multiSelector" && isShow) {
+    NZJSBridge.invoke("updateMultiPickerView", data)
+  }
+}
+
 const formData = () => {
-  return currentSelected
+  return { value: props.value }
 }
 
 const resetFormData = () => {
-  currentSelected = {}
   if (props.mode === "time" || props.mode === "date") {
-    emit("confirm", "")
-  } else if (dataType.value === "plain") {
-    emit("confirm", "", 0)
+    emit("change", { value: "" })
+  } else if (props.mode === "multiSelector") {
+    const value = new Array((props.value as number[]).length).fill(0)
+    emit("change", { value })
   } else {
-    emit("confirm", [], [])
+    emit("change", { value: 0 })
   }
 }
 

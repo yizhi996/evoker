@@ -15,7 +15,9 @@ enum NZUIAPI: String, NZBuiltInAPI {
     case showTabBar
     case hideTabBar
     case showPickerView
+    case showMultiPickerView
     case showDatePickerView
+    case updateMultiPickerView
     
     func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         DispatchQueue.main.async {
@@ -26,8 +28,12 @@ enum NZUIAPI: String, NZBuiltInAPI {
                 hideTabBar(args: args, bridge: bridge)
             case .showPickerView:
                 showPickerView(args: args, bridge: bridge)
+            case .showMultiPickerView:
+                showMultiPickerView(args: args, bridge: bridge)
             case .showDatePickerView:
                 showDatePickerView(args: args, bridge: bridge)
+            case .updateMultiPickerView:
+                updateMultiPickerView(args: args, bridge: bridge)
             }
         }
     }
@@ -138,7 +144,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
         
         let onCancle = {
             onHide()
-            bridge.invokeCallbackSuccess(args: args, result: "cancel")
+            bridge.invokeCallbackSuccess(args: args, result: ["value": -1])
         }
         
         cover.clickHandler = onCancle
@@ -148,10 +154,64 @@ enum NZUIAPI: String, NZBuiltInAPI {
         container.frame = CGRect(x: 0, y: viewController.view.frame.height - height, width: width, height: height)
         container.onConfirmHandler = {
             onHide()
-            let result = picker.result()
-            bridge.invokeCallbackSuccess(args: args, result: result)
+            bridge.invokeCallbackSuccess(args: args, result: ["value": picker.currentIndex])
         }
         container.onCancelHandler = onCancle
+        cover.show(to: viewController.view)
+        cover.addSubview(container)
+        container.popup()
+    }
+    
+    private func showMultiPickerView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+        guard let webView = bridge.container as? NZWebView else {
+            let error = NZError.bridgeFailed(reason: .webViewNotFound)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let viewController = webView.page?.viewController else {
+            let error = NZError.bridgeFailed(reason: .webViewNotFound)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let params: NZMultiPickerView.PickData = args.paramsString.toModel() else {
+            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        let cover = NZCoverView()
+        let picker = NZMultiPickerView(data: params)
+        let container = NZPickerContainerView(picker: picker)
+        container.titleLabel.text = params.title
+        
+        let onHide = {
+            cover.hide()
+            container.popdown {
+                picker.removeFromSuperview()
+            }
+        }
+        
+        let onCancle = {
+            onHide()
+            bridge.invokeCallbackSuccess(args: args, result: ["value": "cancel"])
+        }
+        
+        cover.clickHandler = onCancle
+        
+        let width = viewController.view.frame.width
+        let height = width
+        container.frame = CGRect(x: 0, y: viewController.view.frame.height - height, width: width, height: height)
+        container.onConfirmHandler = {
+            onHide()
+            bridge.invokeCallbackSuccess(args: args, result: ["value": picker.currentIndex])
+        }
+        container.onCancelHandler = onCancle
+        picker.columnChangeHandler = { column, value in
+            bridge.subscribeHandler(method: NZMultiPickerView.onChangeColumnSubscribeKey,
+                                    data: ["column": column, "value": value])
+        }
         cover.show(to: viewController.view)
         cover.addSubview(container)
         container.popup()
@@ -190,7 +250,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
         
         let onCancle = {
             onHide()
-            bridge.invokeCallbackSuccess(args: args, result: "cancel")
+            bridge.invokeCallbackSuccess(args: args, result: ["value": "cancel"])
         }
         
         cover.clickHandler = onCancle
@@ -201,8 +261,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
         container.onConfirmHandler = {
             onHide()
             let value = picker.fmt.string(from: picker.picker.date)
-            let result: [String: Any] = ["value": value]
-            bridge.invokeCallbackSuccess(args: args, result: result)
+            bridge.invokeCallbackSuccess(args: args, result:  ["value": value])
         }
         container.onCancelHandler = onCancle
         cover.show(to: viewController.view)
@@ -210,4 +269,33 @@ enum NZUIAPI: String, NZBuiltInAPI {
         container.popup()
     }
     
+    private func updateMultiPickerView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+        guard let webView = bridge.container as? NZWebView else {
+            let error = NZError.bridgeFailed(reason: .webViewNotFound)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let viewController = webView.page?.viewController else {
+            let error = NZError.bridgeFailed(reason: .webViewNotFound)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let params: NZMultiPickerView.PickData = args.paramsString.toModel() else {
+            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let pickerView = viewController.view.dfsFindSubview(ofType: NZMultiPickerView.self) else {
+            let error = NZError.bridgeFailed(reason: .custom("picker view not found"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        pickerView.data = params
+        
+        bridge.invokeCallbackSuccess(args: args)
+    }
 }

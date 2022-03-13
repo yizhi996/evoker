@@ -75,7 +75,7 @@ const nodeOps: Omit<RendererOptions<NZothNode, NZothElement>, "patchProp"> = {
 }
 
 const forcePatchProp: Record<string, string[]> = {
-  picker: ["columns"]
+  picker: ["range", "value"]
 }
 
 const rendererOptions = extend({ patchProp }, nodeOps)

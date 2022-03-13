@@ -98,9 +98,9 @@ export interface InvokeCallbackResult<T = Record<string, any>> {
 
 const callbacks = new Map<number, InvokeCallback<any>>()
 
-export type SubscribeCallback = (result: any, webViewId: number) => void
+export type SubscribeCallback<T> = (result: T, webViewId: number) => void
 
-const subscribes = new Map<string, SubscribeCallback>()
+const subscribes = new Map<string, SubscribeCallback<any>>()
 
 export function publish(
   event: string,
@@ -124,7 +124,10 @@ export function publish(
   }
 }
 
-export function subscribe(event: string, callback: SubscribeCallback) {
+export function subscribe<T = unknown>(
+  event: string,
+  callback: SubscribeCallback<T>
+) {
   subscribes.set(event, callback)
 }
 

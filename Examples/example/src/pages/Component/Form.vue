@@ -32,13 +32,13 @@
         <cell title="Picker">
           <picker
             class="w-full"
-            title="📱品牌"
+            header-title="📱品牌"
             name="picker"
-            :columns="columns"
-            :default-index="info.pickerIndex"
-            @confirm="onConfirm"
+            :range="columns"
+            :value="info.pickerIndex"
+            @change="onChangePicker"
           >
-            <div class="w-full">当前选择： {{ info.pickerSelected }}</div>
+            <div class="w-full">当前选择： {{ columns[info.pickerIndex] }}</div>
           </picker>
         </cell>
       </cell-group>
@@ -53,7 +53,7 @@ import { reactive } from "vue"
 import CellGroup from "../../components/CellGroup.vue"
 import Cell from "../../components/Cell.vue"
 
-const info = reactive({ username: "", password: "", pickerSelected: "", pickerIndex: 0 })
+const info = reactive({ username: "", password: "", pickerIndex: 0 })
 
 const columns = ["Apple", "OPPO", "vivo", "Xiaomi", "Others"]
 
@@ -61,8 +61,7 @@ const onSubmit = (values: Record<string, any>) => {
   nz.showToast({ title: "Submit", icon: "success" })
 }
 
-const onConfirm = (value: string, index: number) => {
-  info.pickerSelected = value
-  info.pickerIndex = index
+const onChangePicker = ({ value }) => {
+  info.pickerIndex = value
 }
 </script>
