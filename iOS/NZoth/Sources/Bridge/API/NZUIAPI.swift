@@ -142,12 +142,12 @@ enum NZUIAPI: String, NZBuiltInAPI {
             }
         }
         
-        let onCancle = {
+        let onCancel = {
             onHide()
             bridge.invokeCallbackSuccess(args: args, result: ["value": -1])
         }
         
-        cover.clickHandler = onCancle
+        cover.clickHandler = onCancel
         
         let width = viewController.view.frame.width
         let height = width
@@ -156,7 +156,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
             onHide()
             bridge.invokeCallbackSuccess(args: args, result: ["value": picker.currentIndex])
         }
-        container.onCancelHandler = onCancle
+        container.onCancelHandler = onCancel
         cover.show(to: viewController.view)
         cover.addSubview(container)
         container.popup()
@@ -193,12 +193,12 @@ enum NZUIAPI: String, NZBuiltInAPI {
             }
         }
         
-        let onCancle = {
+        let onCancel = {
             onHide()
             bridge.invokeCallbackSuccess(args: args, result: ["value": "cancel"])
         }
         
-        cover.clickHandler = onCancle
+        cover.clickHandler = onCancel
         
         let width = viewController.view.frame.width
         let height = width
@@ -207,7 +207,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
             onHide()
             bridge.invokeCallbackSuccess(args: args, result: ["value": picker.currentIndex])
         }
-        container.onCancelHandler = onCancle
+        container.onCancelHandler = onCancel
         picker.columnChangeHandler = { column, value in
             bridge.subscribeHandler(method: NZMultiPickerView.onChangeColumnSubscribeKey,
                                     data: ["column": column, "value": value])
@@ -248,12 +248,12 @@ enum NZUIAPI: String, NZBuiltInAPI {
             }
         }
         
-        let onCancle = {
+        let onCancel = {
             onHide()
             bridge.invokeCallbackSuccess(args: args, result: ["value": "cancel"])
         }
         
-        cover.clickHandler = onCancle
+        cover.clickHandler = onCancel
         
         let width = viewController.view.frame.width
         let height = width
@@ -263,7 +263,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
             let value = picker.fmt.string(from: picker.picker.date)
             bridge.invokeCallbackSuccess(args: args, result:  ["value": value])
         }
-        container.onCancelHandler = onCancle
+        container.onCancelHandler = onCancel
         cover.show(to: viewController.view)
         cover.addSubview(container)
         container.popup()
