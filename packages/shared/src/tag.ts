@@ -23,6 +23,7 @@ const builtInComponentTags: string[] = [
   "map",
   "picker",
   "picker-view",
+  "picker-view-column",
   "from",
   "canvas"
 ]

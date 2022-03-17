@@ -115,6 +115,7 @@ final public class NZEngine {
         NZScanAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         NZScreenAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         NZCryptoAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
+        NZSoundAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
     }
     
     func setupBuiltInModules() {

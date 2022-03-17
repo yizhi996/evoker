@@ -1,25 +1,10 @@
-export type ColumnsFieldNames = {
-  text?: string
-  values?: string
-  children?: string
+import { InjectionKey } from "vue"
+
+export interface PickerViewProvide {
+  onChange: () => void
+  onPickStart: () => void
+  onPickEnd: () => void
 }
 
-export type PickerObjectOption = {
-  text?: string | number
-  disabled?: boolean
-  // for custom filed names
-  [key: PropertyKey]: any
-}
-
-export type PickerOption = string | number | PickerObjectOption
-
-export type PickerObjectColumn = {
-  values?: PickerOption[]
-  children?: PickerColumn
-  className?: unknown
-  defaultIndex?: number
-  // for custom filed names
-  [key: PropertyKey]: any
-}
-
-export type PickerColumn = PickerOption[] | PickerObjectColumn
+export const PICKER_VIEW_KEY: InjectionKey<PickerViewProvide> =
+  Symbol("picker-view")

@@ -161,6 +161,8 @@ const onMoveWithPropsChange = (x: number, y: number, animation: boolean) => {
 }
 
 let currentAnimation = 0
+let currentTween: any
+
 const animate = () => {
   currentAnimation = requestAnimationFrame(animate)
   TWEEN.update()
@@ -170,11 +172,12 @@ const onMove = (x: number, y: number, animation: boolean) => {
   const scale = 1
 
   cancelAnimationFrame(currentAnimation)
+  currentTween && currentTween.stop()
 
   if (animation && props.animation) {
     const position = { x: offset.x, y: offset.y }
     currentAnimation = requestAnimationFrame(animate)
-    new TWEEN.Tween(position)
+    currentTween = new TWEEN.Tween(position)
       .to({ x, y }, 1000)
       .easing(TWEEN.Easing.Quartic.Out)
       .onUpdate(({ x, y }) => {

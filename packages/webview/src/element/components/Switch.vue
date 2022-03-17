@@ -50,7 +50,7 @@ const onChange = () => {
     return
   }
   setChecked(!props.checked)
-  vibrateShort("light")
+  vibrateShort({ type: "light" })
 }
 
 const formData = () => {

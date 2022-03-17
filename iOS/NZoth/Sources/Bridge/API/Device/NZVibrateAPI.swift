@@ -54,8 +54,10 @@ enum NZVibrateAPI: String, NZBuiltInAPI {
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
-
-        UIImpactFeedbackGenerator(style: params.type.toNatively()).impactOccurred()
+        
+        let impactFeedback = UIImpactFeedbackGenerator(style: params.type.toNatively())
+        impactFeedback.prepare()
+        impactFeedback.impactOccurred()
         bridge.invokeCallbackSuccess(args: args)
     }
     
