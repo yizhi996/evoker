@@ -77,7 +77,8 @@ const handleStyle = computed(() => {
     width: size,
     height: size,
     'margin-left': margin,
-    'margin-top': margin
+    'margin-top': margin,
+    "background-color": props.blockColor
   }
 })
 
@@ -181,7 +182,6 @@ nz-slider {
 
     &__thumb {
       z-index: 2;
-      background-color: rgb(255, 255, 255);
       box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
     }
 
