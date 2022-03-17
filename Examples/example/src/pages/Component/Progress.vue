@@ -1,10 +1,9 @@
 <template>
-  <div class="mx-10 my-3 flex flex-col">
-    <progress class="mt-5" :percentage="10" :show-privot="false"></progress>
-    <progress class="mt-5" :percentage="30"></progress>
-    <progress class="mt-5" :percentage="50" stroke-width="8px" color="red" track-color="green"></progress>
-    <progress class="mt-5" :percentage="percent"></progress>
-    <progress class="mt-5" :percentage="9999"></progress>
+  <div class="mx-10 my-3 flex flex-col space-y-4">
+    <progress :percent="10" show-info></progress>
+    <progress :percent="30"></progress>
+    <progress :percent="50" stroke-width="8px" active-color="orange" background-color="green"></progress>
+    <progress :percent="percent" show-info active active-mode="forwards"></progress>
   </div>
 </template>
 
@@ -13,7 +12,7 @@ import { ref } from "vue"
 import { usePage } from "nzoth"
 const percent = ref(0)
 
-const { onLoad } = usePage()
+const { onLoad, onUnload } = usePage()
 
 let timer: ReturnType<typeof setTimeout>
 
@@ -23,6 +22,10 @@ onLoad(() => {
     if (percent.value >= 70) {
       clearInterval(timer)
     }
-  }, 200)
+  }, 1000)
+})
+
+onUnload(() => {
+  clearInterval(timer)
 })
 </script>
