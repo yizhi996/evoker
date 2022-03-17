@@ -1,11 +1,8 @@
 <template>
   <div class="w-full flex flex-col">
-    {{ value1 }}
-    <slider v-model="value1" :step="10"></slider>
-    <slider v-model="value2"></slider>
-    <slider v-model="value3" :min="50" :max="200"></slider>
-
-    <button @click="setValue">Change</button>
+    <slider :value="value1" :step="10"></slider>
+    <slider :value="value2" show-value></slider>
+    <slider :value="value3" :min="50" :max="200" show-value></slider>
   </div>
 </template>
 
@@ -16,9 +13,5 @@ const value1 = ref(50)
 const value2 = ref(50)
 const value3 = ref(50)
 
-const setValue = () => {
-  value1.value = 80
-  value2.value = 80
-  value3.value = 80
-}
+
 </script>

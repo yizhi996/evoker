@@ -5,7 +5,7 @@
         <div
           class="nz-slider__input__bar"
           ref="barRef"
-          :style="{ height: barHeight, 'background-color': inactiveColor }"
+          :style="{ 'background-color': backgroundColor }"
         >
           <div class="nz-slider__input__handle" ref="handleRef" :style="handleStyle"></div>
           <div class="nz-slider__input__thumb" :style="handleStyle"></div>
@@ -15,6 +15,7 @@
           ></div>
         </div>
       </div>
+      <span v-if="showValue" class="nz-slider__value" :style="{ width: valueWidth }">{{ value }}</span>
     </div>
   </nz-slider>
 </template>
@@ -25,28 +26,30 @@ import { unitToPx } from "../utils/format"
 import { useTouch } from "../use/useTouch"
 import { safeRangeValue } from "../utils"
 
-const emit = defineEmits(["update:modelValue", "change"])
+const emit = defineEmits(["change", "changing"])
 
 const props = withDefaults(defineProps<{
-  modelValue?: number,
+  value?: number,
   min?: number
   max?: number
   step?: number
-  barHeight?: number | string
-  buttonSize?: number | string
   activeColor?: string
-  inactiveColor?: string
+  backgroundColor?: string
+  blockSize?: number
+  blockColor?: string
+  showValue?: boolean
   disabled?: boolean
   name?: string
 }>(), {
-  modelValue: 0,
+  value: 0,
   min: 0,
   max: 100,
-  setp: 1,
-  barHeight: "2px",
-  buttonSize: "24px",
+  step: 1,
   activeColor: "#1989fa",
-  inactiveColor: "#e5e5e5",
+  backgroundColor: "#e5e5e5",
+  blockSize: 28,
+  blockColor: "#ffffff",
+  showValue: false,
   disabled: false
 })
 
@@ -56,14 +59,17 @@ const barRef = ref<HTMLElement>()
 const handleRef = ref<HTMLElement>()
 const touch = useTouch()
 
-let isTouching = false
-
 const width = computed(() => {
-  return `${(props.modelValue / props.max) * 100}%`
+  const value = safeRangeValue(props.value, props.min, props.max)
+  return `${((value - props.min) / (props.max - props.min)) * 100}%`
+})
+
+const valueWidth = computed(() => {
+  return `calc(${props.max.toString().length}ch + 1px)`
 })
 
 const handleStyle = computed(() => {
-  const value = unitToPx(props.buttonSize)
+  const value = unitToPx(props.blockSize)
   const size = value + "px"
   const margin = -(value / 2) + "px"
   return {
@@ -106,28 +112,24 @@ onUnmounted(() => {
 
 const onTouchStart = (event: TouchEvent) => {
   touch.start(event)
-  isTouching = true
 }
 
 const onTouchMove = (event: TouchEvent) => {
   touch.move(event)
   event.preventDefault()
-  isTouching = true
 
   const x = touch.deltaX.value + touch.startX.value - barRect.left
-
-  const width = barRect.width
-  let p = (x / width)
-  p = safeRangeValue(p, 0, 1)
-  const val = Math.round(props.max * p)
-  instance.props.modelValue = val
-  emit("update:modelValue", val)
+  const percent = x / barRect.width
+  let value = Math.round((props.max - props.min) * percent)
+  value = Math.round(value / props.step) * props.step + props.min
+  value = safeRangeValue(value, props.min, props.max)
+  instance.props.value = value
+  emit("changing", { value })
 }
 
-const onTouchEnd = (event: TouchEvent) => {
+const onTouchEnd = () => {
   touch.reset()
-  isTouching = false
-
+  emit("change", { value: props.value })
 }
 
 const barResize = () => {
@@ -135,12 +137,12 @@ const barResize = () => {
 }
 
 const formData = () => {
-  return props.modelValue
+  return props.value
 }
 
 const resetFormData = () => {
-  instance.props.modelValue = 0
-  emit("update:modelValue", instance.props.modelValue)
+  instance.props.value = 0
+  emit("change", { value: instance.props.value })
 }
 
 defineExpose({
@@ -200,6 +202,13 @@ nz-slider {
       height: 100%;
       transition: background-color 0.3s ease;
     }
+  }
+
+  &__value {
+    color: #888;
+    font-size: 14px;
+    margin-left: 1em;
+    text-align: center;
   }
 }
 </style>
