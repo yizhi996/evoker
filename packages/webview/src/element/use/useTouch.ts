@@ -15,7 +15,9 @@ function getDirection(x: number, y: number) {
   return ""
 }
 
-export function useTouch() {
+export type Touch = ReturnType<typeof Touch>
+
+function Touch() {
   const startX = ref(0)
   const startY = ref(0)
   const deltaX = ref(0)
@@ -67,5 +69,60 @@ export function useTouch() {
     direction,
     isVertical,
     isHorizontal
+  }
+}
+
+export default function useTouch(el: HTMLElement) {
+  const touch = Touch()
+
+  let touchStartCallback: (ev: TouchEvent, touch: Touch) => void
+
+  let touchMoveCallback: (ev: TouchEvent, touch: Touch) => void
+
+  let touchEndCallback: (ev: TouchEvent, touch: Touch) => void
+
+  const onTouchStart = (ev: TouchEvent) => {
+    touch.start(ev)
+    touchStartCallback && touchStartCallback(ev, touch)
+  }
+
+  const onTouchMove = (ev: TouchEvent) => {
+    touch.move(ev)
+    touchMoveCallback && touchMoveCallback(ev, touch)
+  }
+
+  const onTouchEnd = (ev: TouchEvent) => {
+    touchEndCallback && touchEndCallback(ev, touch)
+    touch.reset()
+  }
+
+  const addEventListener = () => {
+    el.addEventListener("touchstart", onTouchStart)
+    el.addEventListener("touchmove", onTouchMove)
+    el.addEventListener("touchend", onTouchEnd)
+    el.addEventListener("touchcancel", onTouchEnd)
+  }
+
+  const removeEventListener = () => {
+    el.removeEventListener("touchstart", onTouchStart)
+    el.removeEventListener("touchmove", onTouchMove)
+    el.removeEventListener("touchend", onTouchEnd)
+    el.removeEventListener("touchcancel", onTouchEnd)
+  }
+
+  addEventListener()
+
+  return {
+    addEventListener,
+    removeEventListener,
+    onTouchStart: (hook: typeof touchStartCallback) => {
+      touchStartCallback = hook
+    },
+    onTouchMove: (hook: typeof touchMoveCallback) => {
+      touchMoveCallback = hook
+    },
+    onTouchEnd: (hook: typeof touchEndCallback) => {
+      touchEndCallback = hook
+    }
   }
 }

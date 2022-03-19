@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick, getCurrentInstance } from "vue"
 import { unitToPx } from "../utils/format"
-import { useTouch } from "../use/useTouch"
+import useTouch from "../use/useTouch"
 import { safeRangeValue } from "../utils"
 
 const emit = defineEmits(["change", "changing"])
@@ -57,7 +57,6 @@ const instance = getCurrentInstance()!
 
 const barRef = ref<HTMLElement>()
 const handleRef = ref<HTMLElement>()
-const touch = useTouch()
 
 const width = computed(() => {
   const value = safeRangeValue(props.value, props.min, props.max)
@@ -87,10 +86,23 @@ let barRect = { left: 0, top: 0, width: 0 }
 onMounted(() => {
   nextTick(() => {
     if (handleRef.value) {
-      handleRef.value.addEventListener("touchstart", onTouchStart)
-      handleRef.value.addEventListener("touchmove", onTouchMove)
-      handleRef.value.addEventListener("touchend", onTouchEnd)
-      handleRef.value.addEventListener("touchcancel", onTouchEnd)
+      const { onTouchMove, onTouchEnd } = useTouch(handleRef.value)
+
+      onTouchMove((ev, touch) => {
+        ev.preventDefault()
+
+        const x = touch.deltaX.value + touch.startX.value - barRect.left
+        const percent = x / barRect.width
+        let value = Math.round((props.max - props.min) * percent)
+        value = Math.round(value / props.step) * props.step + props.min
+        value = safeRangeValue(value, props.min, props.max)
+        instance.props.value = value
+        emit("changing", { value })
+      })
+
+      onTouchEnd(() => {
+        emit("change", { value: props.value })
+      })
     }
     if (barRef.value) {
       barResize()
@@ -100,38 +112,10 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (handleRef.value) {
-    handleRef.value.removeEventListener("touchstart", onTouchStart)
-    handleRef.value.removeEventListener("touchmove", onTouchMove)
-    handleRef.value.removeEventListener("touchend", onTouchEnd)
-    handleRef.value.removeEventListener("touchcancel", onTouchEnd)
-  }
   if (barRef.value) {
     barRef.value.removeEventListener("resize", barResize)
   }
 })
-
-const onTouchStart = (event: TouchEvent) => {
-  touch.start(event)
-}
-
-const onTouchMove = (event: TouchEvent) => {
-  touch.move(event)
-  event.preventDefault()
-
-  const x = touch.deltaX.value + touch.startX.value - barRect.left
-  const percent = x / barRect.width
-  let value = Math.round((props.max - props.min) * percent)
-  value = Math.round(value / props.step) * props.step + props.min
-  value = safeRangeValue(value, props.min, props.max)
-  instance.props.value = value
-  emit("changing", { value })
-}
-
-const onTouchEnd = () => {
-  touch.reset()
-  emit("change", { value: props.value })
-}
 
 const barResize = () => {
   barRect = barRef.value!.getBoundingClientRect()

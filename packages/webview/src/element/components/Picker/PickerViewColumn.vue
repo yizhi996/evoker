@@ -22,16 +22,15 @@
 
 <script setup lang="ts">
 import { ref, getCurrentInstance, onMounted, nextTick } from "vue"
-import { useTouch } from "../../use/useTouch"
+import useTouch from "../../use/useTouch"
 import { useParent, ParentProvide } from "../../use/useRelation"
 import { PICKER_VIEW_KEY, PickerViewProvide } from "./define"
-import TWEEN from "@tweenjs/tween.js"
+import { Easing } from "@tweenjs/tween.js"
 import { vibrateShort, NZJSBridge } from "../../../bridge"
 import { safeRangeValue } from "../../utils"
+import useAnimation from "../../use/useAnimation"
 
 const instance = getCurrentInstance()!
-
-const touch = useTouch()
 
 const groupRef = ref<HTMLElement>()
 
@@ -60,13 +59,6 @@ onMounted(() => {
   })
 })
 
-const addTouchEvent = () => {
-  groupRef.value?.addEventListener("touchstart", onTouchStart)
-  groupRef.value?.addEventListener("touchmove", onTouchMove)
-  groupRef.value?.addEventListener("touchend", onTouchEnd)
-  groupRef.value?.addEventListener("touchcancel", onTouchEnd)
-}
-
 const getIndex = (y: number) => {
   return safeRangeValue(Math.round(-y / itemHeight), 0, totalCount - 1)
 }
@@ -77,100 +69,88 @@ let momentumOffsetY = 0
 let startTime = 0
 let prevIndex = 0
 
-const onTouchStart = (ev: TouchEvent) => {
-  touch.start(ev)
-  startPositionY = offsetY
-  startTime = Date.now()
-  momentumOffsetY = offsetY
+const addTouchEvent = () => {
+  const { onTouchStart, onTouchMove, onTouchEnd } = useTouch(groupRef.value!)
+  onTouchStart(() => {
+    startPositionY = offsetY
+    startTime = Date.now()
+    momentumOffsetY = offsetY
 
-  cancelAnimationFrame(currentAnimation)
-  currentTween && currentTween.stop()
+    stopAnimation()
 
-  parent && parent.onPickStart()
+    parent && parent.onPickStart()
+  })
+
+  onTouchMove((ev, touch) => {
+    ev.preventDefault()
+
+    stopAnimation()
+
+    let y = touch.deltaY.value + startPositionY
+    if (y > 0) {
+      y = y * 0.5
+    }
+
+    const index = getIndex(y)
+    index !== prevIndex && playSound()
+
+    translateY.value = y
+    offsetY = y
+    prevIndex = index
+    currentIndex = index
+
+    const now = Date.now()
+    if (now - startTime > momentumTimeThreshold) {
+      momentumOffsetY = y
+      startTime = now
+    }
+  })
+
+  onTouchEnd(() => {
+    let distance = offsetY - momentumOffsetY
+    const duration = Date.now() - startTime
+    if (duration < momentumTimeThreshold && Math.abs(distance) > momentumYThreshold) {
+      const speed = Math.abs(distance / duration)
+      distance = offsetY + (speed / 0.003) * (distance < 0 ? -1 : 1)
+      const index = getIndex(distance)
+      animationTranslate(-index * itemHeight, 1000, true)
+    } else if (offsetY > 0) {
+      animationTranslate(0, 200, true)
+    } else if (Math.abs(offsetY) > maxY) {
+      animationTranslate(-maxY, 200, true)
+    } else {
+      const index = getIndex(offsetY)
+      animationTranslate(-index * itemHeight, 200, true)
+    }
+
+    parent && parent.onPickEnd()
+  })
 }
 
-const onTouchMove = (ev: TouchEvent) => {
-  ev.preventDefault()
-
-  cancelAnimationFrame(currentAnimation)
-  currentTween && currentTween.stop()
-
-  touch.move(ev)
-  let y = touch.deltaY.value + startPositionY
-  if (y > 0) {
-    y = y * 0.5
-  }
-
-  const index = getIndex(y)
-  index !== prevIndex && playSound()
-
-  translateY.value = y
-  offsetY = y
-  prevIndex = index
-  currentIndex = index
-
-  const now = Date.now()
-  if (now - startTime > momentumTimeThreshold) {
-    momentumOffsetY = y
-    startTime = now
-  }
-}
-
-const onTouchEnd = (ev: TouchEvent) => {
-  let distance = offsetY - momentumOffsetY
-  const duration = Date.now() - startTime
-  if (duration < momentumTimeThreshold && Math.abs(distance) > momentumYThreshold) {
-    const speed = Math.abs(distance / duration)
-    distance = offsetY + (speed / 0.003) * (distance < 0 ? -1 : 1)
-    const index = getIndex(distance)
-    animationTranslate(-index * itemHeight, 1000, true)
-  } else if (offsetY > 0) {
-    animationTranslate(0, 200, true)
-  } else if (Math.abs(offsetY) > maxY) {
-    animationTranslate(-maxY, 200, true)
-  } else {
-    const index = getIndex(offsetY)
-    animationTranslate(-index * itemHeight, 200, true)
-  }
-  touch.reset()
-
-  parent && parent.onPickEnd()
-}
-
-let currentAnimation = 0
-let currentTween: any
-
-const animate = () => {
-  currentAnimation = requestAnimationFrame(animate)
-  TWEEN.update()
-}
+const { startAnimation, stopAnimation } = useAnimation<{ y: number }>()
 
 const animationTranslate = (y: number, duration: number, animation: boolean) => {
 
-  cancelAnimationFrame(currentAnimation)
-  currentTween && currentTween.stop()
-
   if (animation) {
-    const temp = { y: offsetY }
-    currentAnimation = requestAnimationFrame(animate)
-    currentTween = new TWEEN.Tween(temp)
-      .to({ y }, duration)
-      .easing(TWEEN.Easing.Cubic.Out)
-      .onUpdate(({ y }) => {
+    startAnimation({
+      begin: { y: offsetY },
+      end: { y },
+      duration,
+      easing: Easing.Cubic.Out,
+      onUpdate: ({ y }) => {
         translateY.value = y
         offsetY = y
         const index = getIndex(offsetY)
         index !== prevIndex && playSound()
         prevIndex = index
         currentIndex = index
-      })
-      .onComplete(() => {
-        cancelAnimationFrame(currentAnimation)
+      },
+      onComplete: () => {
         prevIndex = getIndex(offsetY)
         currentIndex = prevIndex
         parent && parent.onChange()
-      })
-      .start()
+      }
+    })
   } else {
     translateY.value = y
     offsetY = y
@@ -206,27 +186,11 @@ const setHeight = (height: number) => {
 
 const indicatorStyle = ref<string>()
 
-const setIndicatorStyle = (style: string) => {
-  indicatorStyle.value = style
-}
-
 const indicatorClass = ref<string>()
-
-const setIndicatorClass = (cls: string) => {
-  indicatorClass.value = cls
-}
 
 const maskStyle = ref<string>()
 
-const setMaskStyle = (style: string) => {
-  maskStyle.value = style
-}
-
 const maskClass = ref<string>()
-
-const setMaskClass = (cls: string) => {
-  maskClass.value = cls
-}
 
 const setValue = (value: number) => {
   nextTick(() => {
@@ -237,18 +201,24 @@ const setValue = (value: number) => {
   })
 }
 
-const getCurrent = () => {
-  return currentIndex
-}
-
 defineExpose({
-  setIndicatorStyle,
-  setIndicatorClass,
-  setMaskStyle,
-  setMaskClass,
+  setIndicatorStyle: (value: string) => {
+    indicatorStyle.value = value
+  },
+  setIndicatorClass: (value: string) => {
+    indicatorClass.value = value
+  },
+  setMaskStyle: (value: string) => {
+    maskStyle.value = value
+  },
+  setMaskClass: (value: string) => {
+    maskClass.value = value
+  },
   setHeight,
   setValue,
-  getCurrent
+  getCurrent: () => {
+    return currentIndex
+  }
 })
 
 </script>

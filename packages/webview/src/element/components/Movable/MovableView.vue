@@ -8,8 +8,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, getCurrentInstance } from "vue"
-import { extend } from "@vue/shared"
-import { useTouch } from "../../use/useTouch"
+import useTouch from "../../use/useTouch"
 import { useParent } from "../../use/useRelation"
 import { MOVABLE_KEY } from "./constant"
 import { unitToPx } from "../../utils/format"
@@ -43,7 +42,6 @@ const props = withDefaults(defineProps<{
 })
 
 const instance = getCurrentInstance()!
-const touch = useTouch()
 
 const movableRef = ref<HTMLElement>()
 const size = reactive({ width: 0, height: 0 })
@@ -80,60 +78,52 @@ onMounted(() => {
 })
 
 const addTouchEvent = () => {
-  movableRef.value?.addEventListener("touchstart", onTouchStart)
-  movableRef.value?.addEventListener("touchmove", onTouchMove)
-  movableRef.value?.addEventListener("touchend", onTouchEnd)
-  movableRef.value?.addEventListener("touchcancel", onTouchEnd)
-}
+  const { onTouchStart, onTouchMove, onTouchEnd } = useTouch(movableRef.value!)
+  onTouchStart(() => {
+    isTouching = true
+    startOffset.x = offset.x
+    startOffset.y = offset.y
+  })
 
-const onTouchStart = (event: TouchEvent) => {
-  touch.start(event)
-  isTouching = true
-  startOffset.x = offset.x
-  startOffset.y = offset.y
-}
+  onTouchMove((ev, touch) => {
+    ev.preventDefault()
 
-const onTouchMove = (event: TouchEvent) => {
-  touch.move(event)
-  event.preventDefault()
+    isTouching = true
 
-  isTouching = true
-
-  let x = 0
-  if (props.direction !== "vertical") {
-    x = startOffset.x + touch.deltaX.value - areaRect.left + areaRect.left
-    const maxX = areaRect.width - size.width
-    if (x < 0) {
-      x = 0
-    } else if (x > maxX) {
-      x = maxX
+    let x = 0
+    if (props.direction !== "vertical") {
+      x = startOffset.x + touch.deltaX.value - areaRect.left + areaRect.left
+      const maxX = areaRect.width - size.width
+      if (x < 0) {
+        x = 0
+      } else if (x > maxX) {
+        x = maxX
+      }
     }
-  }
 
-  let y = 0
-  if (props.direction !== "horizontal") {
-    y = startOffset.y + touch.deltaY.value - areaRect.top + areaRect.top
-    const maxY = areaRect.height - size.height
-    if (y < 0) {
-      y = 0
-    } else if (y > maxY) {
-      y = maxY
+    let y = 0
+    if (props.direction !== "horizontal") {
+      y = startOffset.y + touch.deltaY.value - areaRect.top + areaRect.top
+      const maxY = areaRect.height - size.height
+      if (y < 0) {
+        y = 0
+      } else if (y > maxY) {
+        y = maxY
+      }
     }
-  }
 
+    offset.x = x
+    offset.y = y
 
-  offset.x = x
-  offset.y = y
+    transform.value = `translateX(${x}px) translateY(${y}px) translateZ(0px) scale(${1})`
 
-  transform.value = `translateX(${x}px) translateY(${y}px) translateZ(0px) scale(${1})`
+    emitChange(x, y)
+  })
 
-  emitChange(x, y)
-}
-
-const onTouchEnd = (event: TouchEvent) => {
-  emitChange(offset.x, offset.y)
-  touch.reset()
-  isTouching = false
+  onTouchEnd(() => {
+    emitChange(offset.x, offset.y)
+    isTouching = false
+  })
 }
 
 const onMoveWithPropsChange = (x: number, y: number, animation: boolean) => {
@@ -233,7 +223,9 @@ const setAreaRect = (rect: DOMRect) => {
   isMounted = true
 }
 
-extend(instance.proxy, { setAreaRect })
+defineExpose({
+  setAreaRect
+})
 
 </script>
 
