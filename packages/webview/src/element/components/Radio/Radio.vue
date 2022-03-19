@@ -11,7 +11,6 @@
 
 <script setup lang="ts">
 import { ref, nextTick, onMounted, getCurrentInstance } from "vue"
-import { extend } from "@vue/shared"
 import Icon from "../Icon.vue"
 import { vTap } from "../../directive/tap"
 import { useParent } from "../../use/useRelation"
@@ -54,10 +53,13 @@ const setGroupChecked = () => {
   group && group.updateGroupChecked(props.name)
 }
 
-extend(instance.proxy, {
+defineExpose({
   childName: props.name,
-  checked,
+  setChecked: (value: boolean) => {
+    checked.value = value
+  },
 })
+
 </script>
 
 <style lang="less">

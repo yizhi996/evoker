@@ -3,19 +3,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, getCurrentInstance } from "vue"
+import { ref, watch } from "vue"
 import { useChildren } from "../../use/useRelation"
 import { MOVABLE_KEY } from "./constant"
 
 const areaRef = ref<HTMLElement>()
-const instance = getCurrentInstance()!
 
-const { children, linkChildren } = useChildren(instance, MOVABLE_KEY)
-linkChildren()
+const { children, linkChildren } = useChildren(MOVABLE_KEY)
+
+linkChildren({})
+
 watch(() => [...children], (children) => {
   const rect = areaRef.value?.getBoundingClientRect()
-  children.forEach((view: any) => {
-    view.setAreaRect(rect)
+  children.forEach(child => {
+    child.exposed!.setAreaRect(rect)
   })
 })
 </script>

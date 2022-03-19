@@ -1,15 +1,9 @@
-import {
-  reactive,
-  provide,
-  InjectionKey,
-  ComponentPublicInstance,
-  ComponentInternalInstance
-} from "vue"
+import { reactive, provide, InjectionKey, ComponentInternalInstance } from "vue"
 
 export type ParentProvide<T> = T & {
   link(child: ComponentInternalInstance): void
   unlink(child: ComponentInternalInstance): void
-  children: ComponentPublicInstance[]
+  children: ComponentInternalInstance[]
   internalChildren: ComponentInternalInstance[]
 }
 
@@ -67,19 +61,14 @@ export function useParent<T>(
   }
 }
 
-export function useChildren<T>(
-  instance: ComponentInternalInstance,
-  key: InjectionKey<ParentProvide<T>>
-) {
-  let publicChildren = reactive<ComponentPublicInstance[]>([])
+export function useChildren<T>(key: InjectionKey<ParentProvide<T>>) {
+  let publicChildren = reactive<ComponentInternalInstance[]>([])
   let internalChildren = reactive<ComponentInternalInstance[]>([])
 
   const linkChildren = (value?: any) => {
     const link = (child: ComponentInternalInstance) => {
-      if (child.proxy) {
-        internalChildren.push(child)
-        publicChildren.push(child.proxy)
-      }
+      internalChildren.push(child)
+      publicChildren.push(child)
     }
 
     const unlink = (child: ComponentInternalInstance) => {

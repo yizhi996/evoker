@@ -19,7 +19,7 @@ const emit = defineEmits(["update:modelValue", "change"])
 
 const instance = getCurrentInstance()!
 
-const { children, linkChildren } = useChildren(instance, CHECKBOX_GROUP_KEY)
+const { children, linkChildren } = useChildren(CHECKBOX_GROUP_KEY)
 
 watch(() => [...children], () => {
   setChecked()
@@ -31,8 +31,8 @@ watch(() => [...props.modelValue], () => {
 
 const setChecked = () => {
   children.forEach(child => {
-    const { childName, checked } = child as any
-    checked.value = childName && props.modelValue.includes(childName)
+    const { childName, setChecked } = child.exposed!
+    setChecked(childName && props.modelValue.includes(childName))
   })
 }
 

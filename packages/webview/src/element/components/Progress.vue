@@ -21,7 +21,8 @@
 import { ref, watch } from "vue"
 import { safeRangeValue } from "../utils"
 import { unitToPx } from "../utils/format"
-import { Tween, Easing, update } from "@tweenjs/tween.js"
+import { Easing } from "@tweenjs/tween.js"
+import useAnimation from "../use/useAnimation"
 
 const emit = defineEmits(["activeend"])
 
@@ -51,38 +52,29 @@ const props = withDefaults(defineProps<{
 
 const currentPercent = ref<number>(0)
 
-let currentAnimation = 0
-let currentTween: Tween<{ percent: number }>
 
-const animate = () => {
-  currentAnimation = requestAnimationFrame(animate)
-  update()
-}
+const { startAnimation } = useAnimation<{ percent: number }>()
 
 const execAnimation = (percent: number) => {
-  cancelAnimationFrame(currentAnimation)
-  currentTween && currentTween.stop()
-
-  currentAnimation = requestAnimationFrame(animate)
-
-  const temp = { percent: currentPercent.value }
+  const begin = { percent: currentPercent.value }
   let diff = Math.abs(currentPercent.value - percent)
   if (props.activeMode === "backwards") {
-    temp.percent = 0
+    begin.percent = 0
     diff = percent
   }
 
-  currentTween = new Tween(temp)
-    .to({ percent }, diff * props.duration)
-    .easing(Easing.Linear.None)
-    .onUpdate(({ percent }) => {
+  startAnimation({
+    begin,
+    end: { percent },
+    duration: diff * props.duration,
+    easing: Easing.Linear.None,
+    onUpdate: ({ percent }) => {
       currentPercent.value = percent
-    })
-    .onComplete(() => {
-      cancelAnimationFrame(currentAnimation)
+    },
+    onComplete: () => {
       emit("activeend", {})
-    })
-    .start()
+    }
+  })
 }
 
 watch(() => props.percent, (percent) => {

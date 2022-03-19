@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const emit = defineEmits(["update:modelValue", "change"])
 
-const { children, linkChildren } = useChildren(instance, RADIO_GROUP_KEY)
+const { children, linkChildren } = useChildren(RADIO_GROUP_KEY)
 
 watch(() => [...children], () => {
   setChecked()
@@ -29,8 +29,8 @@ watch(() => props.modelValue, () => {
 
 const setChecked = () => {
   children.forEach(child => {
-    const { childName, checked } = child as any
-    checked.value = props.modelValue === childName
+    const { childName, setChecked } = child.exposed!
+    setChecked(props.modelValue === childName)
   })
 }
 

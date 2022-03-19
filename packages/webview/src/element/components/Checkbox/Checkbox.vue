@@ -13,7 +13,6 @@
 
 <script setup lang="ts">
 import { ref, nextTick, watch, onMounted, getCurrentInstance } from "vue"
-import { extend } from "@vue/shared"
 import Icon from "../Icon.vue"
 import { vTap } from "../../directive/tap"
 import { useParent } from "../../use/useRelation"
@@ -65,11 +64,6 @@ const onClick = () => {
   }
 }
 
-extend(instance.proxy, {
-  childName: props.name,
-  checked,
-})
-
 const formData = () => {
   return props.modelValue
 }
@@ -88,6 +82,10 @@ const emitChange = (value: boolean) => {
 }
 
 defineExpose({
+  childName: props.name,
+  setChecked: (value: boolean) => {
+    checked.value = value
+  },
   group,
   formData,
   resetFormData
