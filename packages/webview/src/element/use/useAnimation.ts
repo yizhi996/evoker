@@ -37,6 +37,7 @@ export default function useAnimation<T>() {
 
   const stopAnimation = () => {
     cancelAnimationFrame(currentAnimation)
+    currentTween && currentTween.stop()
   }
 
   return {
