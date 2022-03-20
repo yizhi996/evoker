@@ -1,16 +1,19 @@
 <template>
   <nz-scroll-view>
     <div
-      ref="warpRef"
       class="nz-scroll-view__wrapper"
       :class="scrollX ? 'nz-scroll-view__wrapper--horizontal' : 'nz-scroll-view__wrapper--vertical'"
     >
       <div
         ref="mainRef"
         class="nz-scroll-view__wrapper"
-        :style="scrollX ? 'overflow: auto hidden; padding-bottom: 20px;' : 'overflow: hidden auto;'"
+        :id="tongcengKey"
+        :style="scrollX ? 'overflow: auto hidden' : 'overflow: hidden auto;'"
       >
-        <div id="content" :style="scrollX ? '' : 'height: 100%;'">
+        <div
+          id="content"
+          :style="{ height: scrollX ? '' : '100%', display: enableFlex ? 'flex' : '' }"
+        >
           <slot></slot>
         </div>
       </div>
@@ -19,13 +22,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch, getCurrentInstance } from "vue"
+import { onMounted, onUnmounted, watch, getCurrentInstance, nextTick, watchEffect } from "vue"
 import { unitToPx } from "../utils/format"
-import TWEEN from "@tweenjs/tween.js"
+import useAnimation from "../use/useAnimation";
+import { Easing } from "@tweenjs/tween.js"
+import useNative from "../use/useNative"
+import { NZJSBridge } from "../../bridge";
 
 const instance = getCurrentInstance()!
 
-const emit = defineEmits(["scrolltoupper", "scrolltolower", "scroll"])
+const emit = defineEmits(["scrolltoupper", "scrolltolower", "scroll", "dragstart", "dragging", "dragend"])
 
 const props = withDefaults(defineProps<{
   scrollX?: boolean
@@ -36,6 +42,12 @@ const props = withDefaults(defineProps<{
   upperThreshold?: number | string
   lowerThreshold?: number | string
   scrollWithAnimation?: boolean
+  enableFlex?: boolean
+  enhanced?: boolean
+  bounces?: boolean
+  showScrollbar?: boolean
+  pagingEnabled?: boolean
+  fastDeceleration?: boolean
 }>(), {
   scrollX: false,
   scrollY: false,
@@ -43,24 +55,32 @@ const props = withDefaults(defineProps<{
   scrollLeft: 0,
   upperThreshold: 50,
   lowerThreshold: 50,
-  scrollWithAnimation: false
+  scrollWithAnimation: false,
+  enableFlex: false,
+  enhanced: false,
+  bounces: true,
+  showScrollbar: true,
+  pagingEnabled: false,
+  fastDeceleration: false
 })
 
-const warpRef = ref<HTMLElement>()
-const mainRef = ref<HTMLElement>()
+const {
+  tongcengKey,
+  nativeId: scrollViewId,
+  containerRef: mainRef,
+  insertContainer
+} = useNative({ scrollEnabled: true })
 
 let lastScrollTime = 0
 let lastScrollTop = 0
 let lastScrollLeft = 0
-
-let currentAnimation = 0
 
 watch(() => props.scrollTop, (scrollTop) => {
   const target = unitToPx(scrollTop)
   if (target === lastScrollTop) {
     return
   }
-  props.scrollY && scrollTo(target, "y")
+  props.scrollY && scrollTo(target, Axis.Vetrical)
 })
 
 watch(() => props.scrollLeft, (scrollLeft) => {
@@ -68,21 +88,69 @@ watch(() => props.scrollLeft, (scrollLeft) => {
   if (target === lastScrollLeft) {
     return
   }
-  props.scrollX && scrollTo(target, "x")
+  props.scrollX && scrollTo(target, Axis.Horizontal)
 })
 
 watch(() => props.scrollIntoView, (scrollIntoView) => {
   if (scrollIntoView && /^[_a-zA-Z][-_a-zA-Z0-9:]*$/.test(scrollIntoView)) {
     const view = mainRef.value && mainRef.value.querySelector("#" + scrollIntoView)
-    if (view) {
-      scrollToElement(view)
-    }
+    view && scrollToElement(view)
   }
 })
+
+const onTouchStart = (ev: TouchEvent) => {
+  const el = ev.target as HTMLElement
+  emit("dragstart", { scrollTop: el.scrollTop, scrollLeft: el.scrollLeft })
+}
+
+const onTouchMove = (ev: TouchEvent) => {
+  const el = ev.target as HTMLElement
+  emit("dragging", { scrollTop: el.scrollTop, scrollLeft: el.scrollLeft })
+}
+
+const onTouchEnd = (ev: TouchEvent) => {
+  const el = ev.target as HTMLElement
+  emit("dragend", { scrollTop: el.scrollTop, scrollLeft: el.scrollLeft })
+}
+
+const addDragEvent = () => {
+  const el = mainRef.value!
+  el.addEventListener("touchstart", onTouchStart)
+  el.addEventListener("touchmove", onTouchMove)
+  el.addEventListener("touchend", onTouchEnd)
+  el.addEventListener("touchcancel", onTouchEnd)
+}
+
+const removeDragEvent = () => {
+  const el = mainRef.value!
+  el.removeEventListener("touchstart", onTouchStart)
+  el.removeEventListener("touchmove", onTouchMove)
+  el.removeEventListener("touchend", onTouchEnd)
+  el.removeEventListener("touchcancel", onTouchEnd)
+}
+
+watch(() => props.enhanced, (enhanced) => {
+  nextTick(() => {
+    if (enhanced) {
+      addDragEvent()
+    } else {
+      removeDragEvent()
+    }
+  })
+}, { immediate: true })
 
 onMounted(() => {
   if (mainRef.value) {
     mainRef.value.addEventListener('scroll', onScroll)
+    if (props.enhanced) {
+      setTimeout(() => {
+        insertContainer(success => {
+          if (success) {
+            operateScrollView()
+          }
+        })
+      })
+    }
   }
 })
 
@@ -91,6 +159,37 @@ onUnmounted(() => {
     mainRef.value.removeEventListener('scroll', onScroll)
   }
 })
+
+watchEffect(() => {
+  NZJSBridge.invoke("operateScrollView", {
+    parentId: tongcengKey,
+    scrollViewId,
+    bounces: props.bounces,
+    showScrollbar: props.showScrollbar,
+    pagingEnabled: props.pagingEnabled,
+    fastDeceleration: props.fastDeceleration
+  })
+})
+
+const operateScrollView = () => {
+  if (props.enhanced) {
+    NZJSBridge.invoke("operateScrollView", {
+      parentId: tongcengKey,
+      scrollViewId,
+      bounces: props.bounces,
+      showScrollbar: props.showScrollbar,
+      pagingEnabled: props.pagingEnabled,
+      fastDeceleration: props.fastDeceleration
+    })
+  }
+}
+
+const enum Directions {
+  Left = "left",
+  Right = "right",
+  Top = "top",
+  Bottom = "bottom"
+}
 
 const onScroll = (ev: Event) => {
   ev.preventDefault()
@@ -101,6 +200,7 @@ const onScroll = (ev: Event) => {
     const target = ev.target as HTMLElement
 
     instance.props.scrollTop = target.scrollTop
+    instance.props.scrollLeft = target.scrollLeft
     emit("scroll", {
       scrollLeft: target.scrollLeft,
       scrollTop: target.scrollTop,
@@ -117,11 +217,11 @@ const onScroll = (ev: Event) => {
       const x = lastScrollLeft - target.scrollLeft
       if (x > 0 && target.scrollLeft <= upperThreshold) {
         emit("scrolltoupper", {
-          direction: "left"
+          direction: Directions.Left
         })
       } else if (x < 0 && target.scrollLeft + target.offsetWidth + lowerThreshold >= target.scrollWidth) {
         emit("scrolltolower", {
-          direction: "right"
+          direction: Directions.Right
         })
       }
     }
@@ -130,11 +230,11 @@ const onScroll = (ev: Event) => {
       const y = lastScrollTop - target.scrollTop
       if (y > 0 && target.scrollTop <= upperThreshold) {
         emit("scrolltoupper", {
-          direction: "top"
+          direction: Directions.Top
         })
       } else if (y < 0 && target.scrollTop + target.offsetHeight + lowerThreshold >= target.scrollHeight) {
         emit("scrolltolower", {
-          direction: "bottom"
+          direction: Directions.Bottom
         })
       }
     }
@@ -150,46 +250,52 @@ const scrollToElement = (el: Element) => {
   if (props.scrollX) {
     const offsetX = elRect.left - mainRect.left
     const target = mainRef.value!.scrollLeft + offsetX
-    scrollTo(target, "x")
+    scrollTo(target, Axis.Horizontal)
   }
   if (props.scrollY) {
     const offsetY = elRect.top - mainRect.top
     const target = mainRef.value!.scrollTop + offsetY
-    scrollTo(target, "y")
+    scrollTo(target, Axis.Vetrical)
   }
 }
 
-const animate = () => {
-  currentAnimation = requestAnimationFrame(animate)
-  TWEEN.update()
+const { startAnimation, stopAnimation } = useAnimation<{ target: number }>()
+
+const enum Axis {
+  Horizontal,
+  Vetrical
 }
 
-const scrollTo = (target: number, direction: string) => {
-  function invoke(target: number) {
-    if (direction === "x") {
-      mainRef.value!.scrollLeft = target
-    } else {
-      mainRef.value!.scrollTop = target
+const scrollTo = (target: number, axis: Axis) => {
+  const el = mainRef.value!
+  function update(target: number) {
+    if (axis === Axis.Horizontal) {
+      el.scrollLeft = target
+    } else if (axis === Axis.Vetrical) {
+      el.scrollTop = target
     }
   }
+  stopAnimation()
   if (props.scrollWithAnimation) {
-    currentAnimation = requestAnimationFrame(animate)
-    const current = direction === "x" ? mainRef.value!.scrollLeft : mainRef.value!.scrollTop
-    new TWEEN.Tween({ target: current })
-      .to({ target }, 500)
-      .easing(TWEEN.Easing.Quadratic.InOut)
-      .onUpdate(({ target }) => {
-        invoke(target)
+    let current = 0
+    if (axis === Axis.Horizontal) {
+      current = el.scrollLeft
+    } else if (axis === Axis.Vetrical) {
+      current = el.scrollTop
+    }
+    startAnimation({
+      begin: { target: current },
+      end: { target },
+      duration: 500,
+      easing: Easing.Quadratic.InOut,
+      onUpdate: (({ target }) => {
+        update(target)
       })
-      .onComplete(() => {
-        cancelAnimationFrame(currentAnimation)
-      })
-      .start()
+    })
   } else {
-    invoke(target)
+    update(target)
   }
 }
-
 
 </script>
 

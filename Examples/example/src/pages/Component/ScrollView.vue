@@ -1,12 +1,13 @@
 <template>
   <div class="mx-5">
-    <div class="mt-3">Vertical Scroll 纵向滚动</div>
+    <topic>Vertical Scroll</topic>
     <scroll-view
       scroll-y
       class="w-full h-36"
       :scroll-top="scrollTop"
       :scroll-into-view="scrollIntoView"
-      scrollWithAnimation
+      enhanced
+      scroll-with-animation
       @scroll="onScroll"
     >
       <div id="green" class="w-full h-36 bg-green-500"></div>
@@ -17,7 +18,7 @@
     <button type="primary" @click="toNext">Next</button>
     <button type="success" @click="incScrollTop">Move</button>
 
-    <div class="mt-5">Horizontal Scroll 横向滚动</div>
+    <topic>Horizontal Scroll</topic>
     <div class="flex justify-center">
       <scroll-view scroll-x class="w-full h-36 whitespace-nowrap">
         <div class="inline-block w-full h-36 bg-green-500"></div>
@@ -37,7 +38,7 @@ const items = ["green", "blue", "gray"]
 let idx = 0
 
 const incScrollTop = () => {
-  scrollTop.value += 10
+  scrollTop.value += 44
 }
 
 const toNext = () => {
