@@ -10,7 +10,9 @@ const enum NativeInvokeKeys {
   REMOVE = "removeContainer"
 }
 
-export default function useNative() {
+export default function useNative(
+  options: { scrollEnabled?: boolean } = { scrollEnabled: false }
+) {
   const tongcengId = incTongcengId++
   const tongcengKey = "__nzoth_tongceng_id_" + tongcengId
   const containerRef = ref<HTMLElement>()
@@ -83,7 +85,11 @@ export default function useNative() {
       containerInserting = true
       NZJSBridge.invoke(
         NativeInvokeKeys.INSERT,
-        { tongcengId: tongcengKey, position },
+        {
+          tongcengId: tongcengKey,
+          position,
+          scrollEnabled: options.scrollEnabled
+        },
         result => {
           if (result.errMsg) {
             containerInserting = false

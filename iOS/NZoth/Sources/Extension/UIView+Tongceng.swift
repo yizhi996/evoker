@@ -27,15 +27,12 @@ public extension UIView {
         return nil
     }
     
-    func findWKChildScrollView(tongcengId: String, scrollHeight: CGFloat) -> UIScrollView? {
+    func findWKChildScrollView(tongcengId: String) -> UIScrollView? {
         let cls: AnyClass = NSClassFromString("WKCompositingView")!
         let wkView = dfsFindSubview { view in
             return view.isKind(of: cls) && view.description.contains(tongcengId)
         }
         if let scrollView = wkView?.subviews.first as? UIScrollView {
-            scrollView.gestureRecognizers?.forEach { gesture in
-                scrollView.removeGestureRecognizer(gesture)
-            }
             scrollView.tongcengId = tongcengId
             return scrollView
         }

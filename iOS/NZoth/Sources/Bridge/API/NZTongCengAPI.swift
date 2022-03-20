@@ -15,17 +15,18 @@ enum NZTongCengAPI: String, NZBuiltInAPI {
     case updateContainer
     case removeContainer
     
-    struct ContainerParams: Codable {
-        var tongcengId: String
-        var position: Position
+    struct ContainerParams: Decodable {
+        let tongcengId: String
+        let position: Position
+        let scrollEnabled: Bool
     }
     
-    struct Position: Codable {
-        var width: CGFloat
-        var height: CGFloat
-        var left: CGFloat
-        var top: CGFloat
-        var scrollHeight: CGFloat
+    struct Position: Decodable {
+        let width: CGFloat
+        let height: CGFloat
+        let left: CGFloat
+        let top: CGFloat
+        let scrollHeight: CGFloat
     }
     
     func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
@@ -60,16 +61,20 @@ enum NZTongCengAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let scrollView = webView.findWKChildScrollView(tongcengId: params.tongcengId,
-                                                             scrollHeight: params.position.scrollHeight) else {
+        guard let scrollView = webView.findWKChildScrollView(tongcengId: params.tongcengId) else {
             let error = NZError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.tongcengId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        let frame = CGRect(x: 0, y: 0, width: params.position.width, height: params.position.height)
-        let container = NZNativelyContainerView(frame: frame)
-        scrollView.addSubview(container)
+        if !params.scrollEnabled {
+            scrollView.gestureRecognizers?.forEach { scrollView.removeGestureRecognizer($0) }
+            
+            let frame = CGRect(x: 0, y: 0, width: params.position.width, height: params.position.height)
+            let container = NZNativelyContainerView(frame: frame)
+            scrollView.addSubview(container)
+        }
+        
         bridge.invokeCallbackSuccess(args: args)
     }
     
