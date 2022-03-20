@@ -6,7 +6,7 @@ interface AnimationOptions<T> {
   duration: number
   easing: (amount: number) => number
   onUpdate: (value: T) => void
-  onComplete: () => void
+  onComplete?: () => void
 }
 
 export default function useAnimation<T>() {
@@ -30,7 +30,7 @@ export default function useAnimation<T>() {
       })
       .onComplete(() => {
         cancelAnimationFrame(currentAnimation)
-        options.onComplete()
+        options.onComplete && options.onComplete()
       })
       .start()
   }
