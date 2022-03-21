@@ -7,9 +7,9 @@ export interface ImageLoadResult {
 }
 
 export const enum ImageLoadState {
-  pending = 0,
-  completion,
-  failed
+  PENDING = 0,
+  COMPLETED,
+  FAILED
 }
 
 export interface ImageLazyLoadInfo {

@@ -2,15 +2,15 @@ import { onUnmounted } from "vue"
 import { NZJSBridge } from "../../bridge"
 import { dispatch, on, off } from "@nzoth/shared"
 
-enum KeyboardSubscribeKeys {
-  WEBVIEW_KEYBOARD_SET_VALUE = "WEBVIEW_KEYBOARD_SET_VALUE",
-  WEBVIEW_KEYBOARD_ON_SHOW = "WEBVIEW_KEYBOARD_ON_SHOW",
-  WEBVIEW_KEYBOARD_ON_HIDE = "WEBVIEW_KEYBOARD_ON_HIDE",
-  WEBVIEW_KEYBOARD_ON_CONFIRM = "WEBVIEW_KEYBOARD_ON_CONFIRM",
-  WEBVIEW_KEYBOARD_HEIGHT_CHANGE = "WEBVIEW_KEYBOARD_HEIGHT_CHANGE"
+enum SubscribeKeys {
+  SET_VALUE = "WEBVIEW_KEYBOARD_SET_VALUE",
+  ON_SHOW = "WEBVIEW_KEYBOARD_ON_SHOW",
+  ON_HIDE = "WEBVIEW_KEYBOARD_ON_HIDE",
+  ON_CONFIRM = "WEBVIEW_KEYBOARD_ON_CONFIRM",
+  HEIGHT_CHANGE = "WEBVIEW_KEYBOARD_HEIGHT_CHANGE"
 }
 
-Object.values(KeyboardSubscribeKeys).forEach(key => {
+Object.values(SubscribeKeys).forEach(key => {
   NZJSBridge.subscribe(key, message => {
     dispatch(key, message)
   })
@@ -19,10 +19,7 @@ Object.values(KeyboardSubscribeKeys).forEach(key => {
 export default function useKeyboard(inputId: number) {
   const ids = new Map<string, number>()
 
-  function createListener(
-    key: KeyboardSubscribeKeys,
-    callback: (data: any) => void
-  ) {
+  function createListener(key: SubscribeKeys, callback: (data: any) => void) {
     const id = on(key, data => {
       if (data.inputId === inputId) {
         callback(data)
@@ -33,38 +30,23 @@ export default function useKeyboard(inputId: number) {
   }
 
   function onKeyboardSetValue(callback: (data: any) => void) {
-    return createListener(
-      KeyboardSubscribeKeys.WEBVIEW_KEYBOARD_SET_VALUE,
-      callback
-    )
+    return createListener(SubscribeKeys.SET_VALUE, callback)
   }
 
   function onKeyboardShow(callback: () => void) {
-    return createListener(
-      KeyboardSubscribeKeys.WEBVIEW_KEYBOARD_ON_SHOW,
-      callback
-    )
+    return createListener(SubscribeKeys.ON_SHOW, callback)
   }
 
   function onKeyboardHide(callback: (data: any) => void) {
-    return createListener(
-      KeyboardSubscribeKeys.WEBVIEW_KEYBOARD_ON_HIDE,
-      callback
-    )
+    return createListener(SubscribeKeys.ON_HIDE, callback)
   }
 
   function onKeyboardConfirm(callback: (data: any) => void) {
-    return createListener(
-      KeyboardSubscribeKeys.WEBVIEW_KEYBOARD_ON_CONFIRM,
-      callback
-    )
+    return createListener(SubscribeKeys.ON_CONFIRM, callback)
   }
 
   function onKeyboardHeightChange(callback: (data: any) => void) {
-    return createListener(
-      KeyboardSubscribeKeys.WEBVIEW_KEYBOARD_HEIGHT_CHANGE,
-      callback
-    )
+    return createListener(SubscribeKeys.HEIGHT_CHANGE, callback)
   }
 
   function removaAllListener() {

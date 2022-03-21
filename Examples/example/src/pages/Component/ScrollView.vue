@@ -16,7 +16,7 @@
     </scroll-view>
 
     <button type="primary" @click="toNext">Next</button>
-    <button type="success" @click="incScrollTop">Move</button>
+    <button type="success" @click="addScrollTop">Move</button>
 
     <topic>Horizontal Scroll</topic>
     <div class="flex justify-center">
@@ -37,7 +37,7 @@ const scrollIntoView = ref("")
 const items = ["green", "blue", "gray"]
 let idx = 0
 
-const incScrollTop = () => {
+const addScrollTop = () => {
   scrollTop.value += 44
 }
 
@@ -49,8 +49,8 @@ const toNext = () => {
   scrollIntoView.value = items[idx]
 }
 
-const onScroll = (object: any) => {
-  scrollTop.value = object.scrollTop
+const onScroll = ({ scrollTop }) => {
+  scrollTop.value = scrollTop
 }
 
 </script>

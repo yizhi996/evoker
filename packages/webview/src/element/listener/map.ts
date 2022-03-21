@@ -2,11 +2,9 @@ import { onUnmounted } from "vue"
 import { NZJSBridge } from "../../bridge"
 import { dispatch, on, off } from "@nzoth/shared"
 
-enum MapSubscribeKeys {
-  WEBVIEW_TEXTAREA_HEIGHT_CHANGE = "WEBVIEW_MAP"
-}
+enum SubscribeKeys {}
 
-Object.values(MapSubscribeKeys).forEach(key => {
+Object.values(SubscribeKeys).forEach(key => {
   NZJSBridge.subscribe(key, message => {
     dispatch(key, message)
   })
@@ -15,10 +13,7 @@ Object.values(MapSubscribeKeys).forEach(key => {
 export default function useMap(mapId: number) {
   const ids = new Map<string, number>()
 
-  function createListener(
-    key: MapSubscribeKeys,
-    callback: (data: any) => void
-  ) {
+  function createListener(key: SubscribeKeys, callback: (data: any) => void) {
     const id = on(key, data => {
       if (data.mapId === mapId) {
         callback(data)

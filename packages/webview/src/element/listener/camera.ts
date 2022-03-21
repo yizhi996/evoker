@@ -2,12 +2,12 @@ import { onUnmounted } from "vue"
 import { NZJSBridge } from "../../bridge"
 import { dispatch, on, off } from "@nzoth/shared"
 
-enum CameraSubscribeKeys {
-  WEBVIEW_CAMERA_INIT_DONE = "WEBVIEW_CAMERA_INIT_DONE",
-  WEBVIEW_CAMERA_SCAN_CODE = "WEBVIEW_CAMERA_SCAN_CODE"
+enum SubscribeKeys {
+  INIT_DONE = "WEBVIEW_CAMERA_INIT_DONE",
+  SCAN_CODE = "WEBVIEW_CAMERA_SCAN_CODE"
 }
 
-Object.values(CameraSubscribeKeys).forEach(key => {
+Object.values(SubscribeKeys).forEach(key => {
   NZJSBridge.subscribe(key, message => {
     dispatch(key, message)
   })
@@ -16,10 +16,7 @@ Object.values(CameraSubscribeKeys).forEach(key => {
 export default function useCamera(cameraId: number) {
   const ids = new Map<string, number>()
 
-  function createListener(
-    key: CameraSubscribeKeys,
-    callback: (data: any) => void
-  ) {
+  function createListener(key: SubscribeKeys, callback: (data: any) => void) {
     const id = on(key, data => {
       if (data.cameraId === cameraId) {
         callback(data)
@@ -30,17 +27,11 @@ export default function useCamera(cameraId: number) {
   }
 
   function onInit(callback: (data: { maxZoom: number }) => void) {
-    return createListener(
-      CameraSubscribeKeys.WEBVIEW_CAMERA_INIT_DONE,
-      callback
-    )
+    return createListener(SubscribeKeys.INIT_DONE, callback)
   }
 
   function onScanCode(callback: (data: { value: string }) => void) {
-    return createListener(
-      CameraSubscribeKeys.WEBVIEW_CAMERA_SCAN_CODE,
-      callback
-    )
+    return createListener(SubscribeKeys.SCAN_CODE, callback)
   }
 
   function removaAllListener() {

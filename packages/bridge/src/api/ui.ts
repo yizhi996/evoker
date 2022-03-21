@@ -8,8 +8,8 @@ import {
 } from "../bridge"
 
 const enum Events {
-  ShowTabBar = "showTabBar",
-  HideTabBar = "hideTabBar"
+  SHOW_TAB_BAR = "showTabBar",
+  HIDE_TAB_BAR = "hideTabBar"
 }
 
 interface ShowTabBarOptions {
@@ -30,10 +30,10 @@ export function showTabBar<T extends ShowTabBarOptions = ShowTabBarOptions>(
 ): AsyncReturn<T, ShowTabBarOptions> {
   return wrapperAsyncAPI<T>(options => {
     invoke<SuccessResult<T>>(
-      Events.ShowTabBar,
+      Events.SHOW_TAB_BAR,
       { animation: options.animation ?? false },
       result => {
-        invokeCallback(Events.ShowTabBar, options, result)
+        invokeCallback(Events.SHOW_TAB_BAR, options, result)
       }
     )
   }, options)
@@ -57,10 +57,10 @@ export function hideTabBar<T extends HideTabBarOptions = HideTabBarOptions>(
 ): AsyncReturn<T, HideTabBarOptions> {
   return wrapperAsyncAPI<T>(options => {
     invoke<SuccessResult<T>>(
-      Events.HideTabBar,
+      Events.HIDE_TAB_BAR,
       { animation: options.animation ?? false },
       result => {
-        invokeCallback(Events.HideTabBar, options, result)
+        invokeCallback(Events.HIDE_TAB_BAR, options, result)
       }
     )
   }, options)

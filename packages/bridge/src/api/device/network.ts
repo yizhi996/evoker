@@ -8,8 +8,8 @@ import {
 } from "../../bridge"
 
 const enum Events {
-  GetNetworkType = "getNetworkType",
-  GetLocalIPAddress = "getLocalIPAddress"
+  GET_NETWORK_TYOE = "getNetworkType",
+  GET_LOCAL_IP_ADDRESS = "getLocalIPAddress"
 }
 
 interface GetNetworkTypeOptions {
@@ -34,8 +34,8 @@ export function getNetworkType<
   T extends GetNetworkTypeOptions = GetNetworkTypeOptions
 >(options: T): AsyncReturn<T, GetNetworkTypeOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.GetNetworkType, {}, result => {
-      invokeCallback(Events.GetNetworkType, options, result)
+    invoke<SuccessResult<T>>(Events.GET_NETWORK_TYOE, {}, result => {
+      invokeCallback(Events.GET_NETWORK_TYOE, options, result)
     })
   }, options)
 }
@@ -62,8 +62,8 @@ export function getLocalIPAddress<
   T extends GetLocalIPAddressOptions = GetLocalIPAddressOptions
 >(options: T): AsyncReturn<T, GetLocalIPAddressOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.GetLocalIPAddress, {}, result => {
-      invokeCallback(Events.GetLocalIPAddress, options, result)
+    invoke<SuccessResult<T>>(Events.GET_LOCAL_IP_ADDRESS, {}, result => {
+      invokeCallback(Events.GET_LOCAL_IP_ADDRESS, options, result)
     })
   }, options)
 }

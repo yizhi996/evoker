@@ -2,11 +2,11 @@ import { onUnmounted } from "vue"
 import { NZJSBridge } from "../../bridge"
 import { dispatch, on, off } from "@nzoth/shared"
 
-enum TextAreaSubscribeKeys {
-  WEBVIEW_TEXTAREA_HEIGHT_CHANGE = "WEBVIEW_TEXTAREA_HEIGHT_CHANGE"
+enum SubscribeKeys {
+  HEIGHT_CHANGE = "WEBVIEW_TEXTAREA_HEIGHT_CHANGE"
 }
 
-Object.values(TextAreaSubscribeKeys).forEach(key => {
+Object.values(SubscribeKeys).forEach(key => {
   NZJSBridge.subscribe(key, message => {
     dispatch(key, message)
   })
@@ -15,10 +15,7 @@ Object.values(TextAreaSubscribeKeys).forEach(key => {
 export default function useTextArea(inputId: number) {
   const ids = new Map<string, number>()
 
-  function createListener(
-    key: TextAreaSubscribeKeys,
-    callback: (data: any) => void
-  ) {
+  function createListener(key: SubscribeKeys, callback: (data: any) => void) {
     const id = on(key, data => {
       if (data.inputId === inputId) {
         callback(data)
@@ -35,10 +32,7 @@ export default function useTextArea(inputId: number) {
       lineCount: number
     }) => void
   ) {
-    return createListener(
-      TextAreaSubscribeKeys.WEBVIEW_TEXTAREA_HEIGHT_CHANGE,
-      callback
-    )
+    return createListener(SubscribeKeys.HEIGHT_CHANGE, callback)
   }
 
   function removaAllListener() {

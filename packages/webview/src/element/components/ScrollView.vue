@@ -80,7 +80,7 @@ watch(() => props.scrollTop, (scrollTop) => {
   if (target === lastScrollTop) {
     return
   }
-  props.scrollY && scrollTo(target, Axis.Vetrical)
+  props.scrollY && scrollTo(target, Axis.VETRICAL)
 })
 
 watch(() => props.scrollLeft, (scrollLeft) => {
@@ -88,7 +88,7 @@ watch(() => props.scrollLeft, (scrollLeft) => {
   if (target === lastScrollLeft) {
     return
   }
-  props.scrollX && scrollTo(target, Axis.Horizontal)
+  props.scrollX && scrollTo(target, Axis.HORIZONTAL)
 })
 
 watch(() => props.scrollIntoView, (scrollIntoView) => {
@@ -185,10 +185,10 @@ const operateScrollView = () => {
 }
 
 const enum Directions {
-  Left = "left",
-  Right = "right",
-  Top = "top",
-  Bottom = "bottom"
+  LEFT = "left",
+  RIGHT = "right",
+  TOP = "top",
+  BOTTOM = "bottom"
 }
 
 const onScroll = (ev: Event) => {
@@ -217,11 +217,11 @@ const onScroll = (ev: Event) => {
       const x = lastScrollLeft - target.scrollLeft
       if (x > 0 && target.scrollLeft <= upperThreshold) {
         emit("scrolltoupper", {
-          direction: Directions.Left
+          direction: Directions.LEFT
         })
       } else if (x < 0 && target.scrollLeft + target.offsetWidth + lowerThreshold >= target.scrollWidth) {
         emit("scrolltolower", {
-          direction: Directions.Right
+          direction: Directions.RIGHT
         })
       }
     }
@@ -230,11 +230,11 @@ const onScroll = (ev: Event) => {
       const y = lastScrollTop - target.scrollTop
       if (y > 0 && target.scrollTop <= upperThreshold) {
         emit("scrolltoupper", {
-          direction: Directions.Top
+          direction: Directions.TOP
         })
       } else if (y < 0 && target.scrollTop + target.offsetHeight + lowerThreshold >= target.scrollHeight) {
         emit("scrolltolower", {
-          direction: Directions.Bottom
+          direction: Directions.BOTTOM
         })
       }
     }
@@ -250,37 +250,37 @@ const scrollToElement = (el: Element) => {
   if (props.scrollX) {
     const offsetX = elRect.left - mainRect.left
     const target = mainRef.value!.scrollLeft + offsetX
-    scrollTo(target, Axis.Horizontal)
+    scrollTo(target, Axis.HORIZONTAL)
   }
   if (props.scrollY) {
     const offsetY = elRect.top - mainRect.top
     const target = mainRef.value!.scrollTop + offsetY
-    scrollTo(target, Axis.Vetrical)
+    scrollTo(target, Axis.VETRICAL)
   }
 }
 
 const { startAnimation, stopAnimation } = useAnimation<{ target: number }>()
 
 const enum Axis {
-  Horizontal,
-  Vetrical
+  HORIZONTAL,
+  VETRICAL
 }
 
 const scrollTo = (target: number, axis: Axis) => {
   const el = mainRef.value!
   function update(target: number) {
-    if (axis === Axis.Horizontal) {
+    if (axis === Axis.HORIZONTAL) {
       el.scrollLeft = target
-    } else if (axis === Axis.Vetrical) {
+    } else if (axis === Axis.VETRICAL) {
       el.scrollTop = target
     }
   }
   stopAnimation()
   if (props.scrollWithAnimation) {
     let current = 0
-    if (axis === Axis.Horizontal) {
+    if (axis === Axis.HORIZONTAL) {
       current = el.scrollLeft
-    } else if (axis === Axis.Vetrical) {
+    } else if (axis === Axis.VETRICAL) {
       current = el.scrollTop
     }
     startAnimation({

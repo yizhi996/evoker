@@ -9,7 +9,7 @@ import {
 } from "../bridge"
 
 const enum Events {
-  NavigateToMiniProgram = "navigateToMiniProgram"
+  NAVIGATE_TO_MINI_PROGRAM = "navigateToMiniProgram"
 }
 
 interface NavigateToMiniProgramOptions {
@@ -44,7 +44,7 @@ export function navigateToMiniProgram<
 
     if (!finalOptions.appId) {
       invokeFailure(
-        Events.NavigateToMiniProgram,
+        Events.NAVIGATE_TO_MINI_PROGRAM,
         finalOptions,
         "options required appId"
       )
@@ -53,7 +53,7 @@ export function navigateToMiniProgram<
 
     if (!["release", "trial", "develop"].includes(finalOptions.envVersion!)) {
       invokeFailure(
-        Events.NavigateToMiniProgram,
+        Events.NAVIGATE_TO_MINI_PROGRAM,
         finalOptions,
         "options envVersion required release, trial or develop"
       )
@@ -67,10 +67,10 @@ export function navigateToMiniProgram<
     }
 
     invoke<SuccessResult<T>>(
-      Events.NavigateToMiniProgram,
+      Events.NAVIGATE_TO_MINI_PROGRAM,
       finalOptions,
       result => {
-        invokeCallback(Events.NavigateToMiniProgram, finalOptions, result)
+        invokeCallback(Events.NAVIGATE_TO_MINI_PROGRAM, finalOptions, result)
       }
     )
   }, options)

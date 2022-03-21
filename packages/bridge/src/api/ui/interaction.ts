@@ -8,12 +8,12 @@ import {
 } from "../../bridge"
 
 const enum Events {
-  ShowToast = "showToast",
-  HideToast = "hideToast",
-  ShowModal = "showModal",
-  ShowLoading = "showLoading",
-  HideLoading = "hideLoading",
-  ShowActionSheet = "showActionSheet"
+  SHOW_TOAST = "showToast",
+  HIDE_TOASE = "hideToast",
+  SHOW_MODAL = "showModal",
+  SHOW_LOADING = "showLoading",
+  HIDE_LOADING = "hideLoading",
+  SHOW_ACTION_SHEET = "showActionSheet"
 }
 
 interface ShowToastOptions {
@@ -46,8 +46,8 @@ export function showToast<T extends ShowToastOptions = ShowToastOptions>(
       },
       options
     )
-    invoke<SuccessResult<T>>(Events.ShowToast, finalOptions, result => {
-      invokeCallback(Events.ShowToast, finalOptions, result)
+    invoke<SuccessResult<T>>(Events.SHOW_TOAST, finalOptions, result => {
+      invokeCallback(Events.SHOW_TOAST, finalOptions, result)
     })
   }, options)
 }
@@ -68,8 +68,8 @@ export function hideToast<T extends HideToastOptions = HideToastOptions>(
   options: T
 ): AsyncReturn<T, HideToastOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.HideToast, {}, result => {
-      invokeCallback(Events.HideToast, options, result)
+    invoke<SuccessResult<T>>(Events.HIDE_TOASE, {}, result => {
+      invokeCallback(Events.HIDE_TOASE, options, result)
     })
   }, options)
 }
@@ -116,8 +116,8 @@ export function showModal<T extends ShowModalOptions = ShowModalOptions>(
       },
       options
     )
-    invoke<SuccessResult<T>>(Events.ShowModal, finalOptions, result => {
-      invokeCallback(Events.ShowModal, finalOptions, result)
+    invoke<SuccessResult<T>>(Events.SHOW_MODAL, finalOptions, result => {
+      invokeCallback(Events.SHOW_MODAL, finalOptions, result)
     })
   }, options)
 }
@@ -149,8 +149,8 @@ export function showLoading<T extends ShowLoadingOptions = ShowLoadingOptions>(
       },
       options
     )
-    invoke<SuccessResult<T>>(Events.ShowToast, finalOptions, result => {
-      invokeCallback(Events.ShowLoading, finalOptions, result)
+    invoke<SuccessResult<T>>(Events.SHOW_TOAST, finalOptions, result => {
+      invokeCallback(Events.SHOW_LOADING, finalOptions, result)
     })
   }, options)
 }
@@ -171,8 +171,8 @@ export function hideLoading<T extends HideLoadingOptions = HideLoadingOptions>(
   options: T
 ): AsyncReturn<T, HideLoadingOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.HideToast, {}, result => {
-      invokeCallback(Events.HideLoading, options, result)
+    invoke<SuccessResult<T>>(Events.HIDE_TOASE, {}, result => {
+      invokeCallback(Events.HIDE_LOADING, options, result)
     })
   }, options)
 }
@@ -208,8 +208,8 @@ export function showActionSheet<
       },
       options
     )
-    invoke<SuccessResult<T>>(Events.ShowActionSheet, finalOptions, result => {
-      invokeCallback(Events.ShowActionSheet, finalOptions, result)
+    invoke<SuccessResult<T>>(Events.SHOW_ACTION_SHEET, finalOptions, result => {
+      invokeCallback(Events.SHOW_ACTION_SHEET, finalOptions, result)
     })
   }, options)
 }

@@ -3,13 +3,13 @@ import { dispatch, on, off } from "@nzoth/shared"
 
 let audioId = 0
 
-const enum AudioOperateMethods {
-  play = "play",
-  pause = "pause",
-  stop = "stop",
-  seek = "seek",
-  destroy = "destroy",
-  setVolume = "setVolume"
+const enum OperateMethods {
+  PLAY = "play",
+  PAUSE = "pause",
+  STOP = "stop",
+  SEEK = "seek",
+  DESTORY = "destroy",
+  SET_VOLUME = "setVolume"
 }
 
 class InnerAudioContext {
@@ -63,11 +63,10 @@ class InnerAudioContext {
 
   set volume(newValue) {
     this._volume = newValue
-    this.src &&
-      this.operate(AudioOperateMethods.setVolume, { volume: newValue })
+    this.src && this.operate(OperateMethods.SET_VOLUME, { volume: newValue })
   }
 
-  private operate(method: AudioOperateMethods, data: Record<string, any> = {}) {
+  private operate(method: OperateMethods, data: Record<string, any> = {}) {
     invoke("operateInnerAudioContext", {
       audioId: this.id,
       method,
@@ -80,7 +79,7 @@ class InnerAudioContext {
       console.warn("[NZoth] InnerAudioContext src is empty")
       return
     }
-    this.operate(AudioOperateMethods.play, {
+    this.operate(OperateMethods.PLAY, {
       src: this.src,
       startTime: this.startTime,
       volume: this.volume,
@@ -89,19 +88,19 @@ class InnerAudioContext {
   }
 
   pause() {
-    this.operate(AudioOperateMethods.pause)
+    this.operate(OperateMethods.PAUSE)
   }
 
   stop() {
-    this.operate(AudioOperateMethods.stop)
+    this.operate(OperateMethods.STOP)
   }
 
   seek(position: number) {
-    this.operate(AudioOperateMethods.seek, { position })
+    this.operate(OperateMethods.SEEK, { position })
   }
 
   destroy() {
-    this.operate(AudioOperateMethods.destroy)
+    this.operate(OperateMethods.DESTORY)
     this.removaAllListener()
   }
 
@@ -158,12 +157,12 @@ export function createInnerAudioContext() {
   return new InnerAudioContext()
 }
 
-enum AudioSubscribeKeys {
-  APP_SERVICE_AUDIO_CONTEXT_ON_PLAY = "APP_SERVICE_AUDIO_CONTEXT_ON_PLAY",
-  APP_SERVICE_AUDIO_CONTEXT_ON_ENDED = "APP_SERVICE_AUDIO_CONTEXT_ON_ENDED"
+enum SubscribeKeys {
+  ON_PLAY = "APP_SERVICE_AUDIO_CONTEXT_ON_PLAY",
+  ON_ENDED = "APP_SERVICE_AUDIO_CONTEXT_ON_ENDED"
 }
 
-Object.values(AudioSubscribeKeys).forEach(key => {
+Object.values(SubscribeKeys).forEach(key => {
   subscribe(key, message => {
     dispatch(key, message)
   })
@@ -172,10 +171,7 @@ Object.values(AudioSubscribeKeys).forEach(key => {
 function useAudio(audioId: number) {
   const ids = new Map<string, number>()
 
-  function createListener(
-    key: AudioSubscribeKeys,
-    callback: (data: any) => void
-  ) {
+  function createListener(key: SubscribeKeys, callback: (data: any) => void) {
     const id = on(key, data => {
       if (data.audioId === audioId) {
         callback(data)
@@ -186,17 +182,11 @@ function useAudio(audioId: number) {
   }
 
   function onPlay(callback: () => void) {
-    return createListener(
-      AudioSubscribeKeys.APP_SERVICE_AUDIO_CONTEXT_ON_PLAY,
-      callback
-    )
+    return createListener(SubscribeKeys.ON_PLAY, callback)
   }
 
   function onEnded(callback: () => void) {
-    return createListener(
-      AudioSubscribeKeys.APP_SERVICE_AUDIO_CONTEXT_ON_ENDED,
-      callback
-    )
+    return createListener(SubscribeKeys.ON_ENDED, callback)
   }
 
   function removaAllListener() {

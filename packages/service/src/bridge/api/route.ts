@@ -34,11 +34,11 @@ export function urlGetQuery(path: string) {
 }
 
 const enum Events {
-  NavigateTo = "navigateTo",
-  NavigateBack = "navigateBack",
-  RedirectTo = "redirectTo",
-  ReLaunch = "reLaunch",
-  SwitchTab = "switchTab"
+  NAVIGATE_TO = "navigateTo",
+  NAVIGATE_BACK = "navigateBack",
+  REDIRECT_TO = "redirectTo",
+  RE_LAUNCH = "reLaunch",
+  SWITCH_TAB = "switchTab"
 }
 
 interface NavigateToOptions {
@@ -60,7 +60,7 @@ export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
   return wrapperAsyncAPI<T>(options => {
     if (innerAppData.routerLock) {
       invokeFailure(
-        Events.NavigateTo,
+        Events.NAVIGATE_TO,
         options,
         "防止重复多次打开页面，需要在新页面打开完成后才能调用。"
       )
@@ -68,19 +68,19 @@ export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
     }
 
     if (!options.url) {
-      invokeFailure(Events.NavigateTo, options, "options url can not be empty")
+      invokeFailure(Events.NAVIGATE_TO, options, "options url can not be empty")
       return
     }
 
     innerAppData.routerLock = true
-    InnerJSBridge.invoke(Events.NavigateTo, { url: options.url }, result => {
+    InnerJSBridge.invoke(Events.NAVIGATE_TO, { url: options.url }, result => {
       innerAppData.routerLock = false
       if (result.errMsg) {
-        invokeFailure(Events.NavigateTo, options, result.errMsg)
+        invokeFailure(Events.NAVIGATE_TO, options, result.errMsg)
       } else {
         const query = urlGetQuery(options.url)
         innerAppData.query = query
-        invokeSuccess(Events.NavigateTo, options, {})
+        invokeSuccess(Events.NAVIGATE_TO, options, {})
       }
     })
   }, options)
@@ -105,7 +105,7 @@ export function navigateBack<
   return wrapperAsyncAPI<T>(options => {
     if (innerAppData.routerLock) {
       invokeFailure(
-        Events.NavigateBack,
+        Events.NAVIGATE_BACK,
         options,
         "防止重复多次打开页面，需要在新页面打开完成后才能调用。"
       )
@@ -114,11 +114,11 @@ export function navigateBack<
 
     innerAppData.routerLock = true
     InnerJSBridge.invoke<SuccessResult<T>>(
-      Events.NavigateBack,
+      Events.NAVIGATE_BACK,
       { delta: options.delta || 1 },
       result => {
         innerAppData.routerLock = false
-        invokeCallback(Events.NavigateBack, options, result)
+        invokeCallback(Events.NAVIGATE_BACK, options, result)
       }
     )
   }, options)
@@ -142,15 +142,15 @@ export function redirectTo<T extends RedirectToOptions = RedirectToOptions>(
 ): AsyncReturn<T, RedirectToOptions> {
   return wrapperAsyncAPI<T>(options => {
     if (!options.url) {
-      invokeFailure(Events.NavigateTo, options, "options url cannot be empty")
+      invokeFailure(Events.REDIRECT_TO, options, "options url cannot be empty")
       return
     }
 
     InnerJSBridge.invoke<SuccessResult<T>>(
-      Events.RedirectTo,
+      Events.REDIRECT_TO,
       { url: options.url },
       result => {
-        invokeCallback(Events.RedirectTo, options, result)
+        invokeCallback(Events.REDIRECT_TO, options, result)
       }
     )
   }, options)
@@ -174,15 +174,15 @@ export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
 ): AsyncReturn<T, ReLaunchOptions> {
   return wrapperAsyncAPI<T>(options => {
     if (!options.url) {
-      invokeFailure(Events.NavigateTo, options, "options url can not be empty")
+      invokeFailure(Events.RE_LAUNCH, options, "options url can not be empty")
       return
     }
 
     InnerJSBridge.invoke<SuccessResult<T>>(
-      Events.ReLaunch,
+      Events.RE_LAUNCH,
       { url: options.url },
       result => {
-        invokeCallback(Events.ReLaunch, options, result)
+        invokeCallback(Events.RE_LAUNCH, options, result)
       }
     )
   }, options)
@@ -206,15 +206,15 @@ export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
 ): AsyncReturn<T, SwitchTabOptions> {
   return wrapperAsyncAPI<T>(options => {
     if (!options.url) {
-      invokeFailure(Events.NavigateTo, options, "options url can not be empty")
+      invokeFailure(Events.SWITCH_TAB, options, "options url can not be empty")
       return
     }
 
     InnerJSBridge.invoke<SuccessResult<T>>(
-      Events.SwitchTab,
+      Events.SWITCH_TAB,
       { url: options.url },
       result => {
-        invokeCallback(Events.SwitchTab, options, result)
+        invokeCallback(Events.SWITCH_TAB, options, result)
       }
     )
   }, options)

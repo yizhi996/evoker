@@ -312,16 +312,8 @@ enum NZUIAPI: String, NZBuiltInAPI {
             let fastDeceleration: Bool
         }
         
-        guard let appService = bridge.appService else { return }
-        
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
-            bridge.invokeCallbackFail(args: args, error: error)
-            return
-        }
-        
-        guard let page = webView.page else {
-            let error = NZError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

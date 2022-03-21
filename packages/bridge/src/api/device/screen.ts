@@ -8,9 +8,9 @@ import {
 } from "../../bridge"
 
 const enum Events {
-  GetScreenBrightness = "getScreenBrightness",
-  SetScreenBrightness = "setScreenBrightness",
-  SetKeepScreenOn = "setKeepScreenOn"
+  GET_SCREEN_BRIGHTNESS = "getScreenBrightness",
+  SET_SCREEN_BRIGHTNESS = "setScreenBrightness",
+  SET_KEEP_SCREEN_ON = "setKeepScreenOn"
 }
 
 interface GetScreenBrightnessOptions {
@@ -35,8 +35,8 @@ export function getScreenBrightness<
   T extends GetScreenBrightnessOptions = GetScreenBrightnessOptions
 >(options: T): AsyncReturn<T, GetScreenBrightnessOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.GetScreenBrightness, {}, result => {
-      invokeCallback(Events.GetScreenBrightness, options, result)
+    invoke<SuccessResult<T>>(Events.GET_SCREEN_BRIGHTNESS, {}, result => {
+      invokeCallback(Events.GET_SCREEN_BRIGHTNESS, options, result)
     })
   }, options)
 }
@@ -64,9 +64,13 @@ export function setScreenBrightness<
     } else if (value > 1) {
       value = 1
     }
-    invoke<SuccessResult<T>>(Events.SetScreenBrightness, { value }, result => {
-      invokeCallback(Events.SetScreenBrightness, options, result)
-    })
+    invoke<SuccessResult<T>>(
+      Events.SET_SCREEN_BRIGHTNESS,
+      { value },
+      result => {
+        invokeCallback(Events.SET_SCREEN_BRIGHTNESS, options, result)
+      }
+    )
   }, options)
 }
 
@@ -88,10 +92,10 @@ export function setKeepScreenOn<
 >(options: T): AsyncReturn<T, SetKeepScreenOnOptions> {
   return wrapperAsyncAPI<T>(options => {
     invoke<SuccessResult<T>>(
-      Events.SetKeepScreenOn,
+      Events.SET_KEEP_SCREEN_ON,
       { keepScreenOn: options.keepScreenOn },
       result => {
-        invokeCallback(Events.SetKeepScreenOn, options, result)
+        invokeCallback(Events.SET_KEEP_SCREEN_ON, options, result)
       }
     )
   }, options)

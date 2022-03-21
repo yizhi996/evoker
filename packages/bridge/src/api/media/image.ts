@@ -13,7 +13,7 @@ import {
 } from "../../bridge"
 
 const enum Events {
-  PreviewImage = "previewImage"
+  PREVIEW_IMAGE = "previewImage"
 }
 
 interface PreviewImageOptions {
@@ -36,14 +36,14 @@ export function previewImage<
   return wrapperAsyncAPI<T>(options => {
     if (!options.urls) {
       invokeFailure(
-        Events.PreviewImage,
+        Events.PREVIEW_IMAGE,
         options,
         "options urls cannot be empty"
       )
       return
     }
-    invoke<SuccessResult<T>>(Events.PreviewImage, options, result => {
-      invokeCallback(Events.PreviewImage, options, result)
+    invoke<SuccessResult<T>>(Events.PREVIEW_IMAGE, options, result => {
+      invokeCallback(Events.PREVIEW_IMAGE, options, result)
     })
   }, options)
 }

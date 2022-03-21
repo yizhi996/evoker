@@ -14,12 +14,12 @@ const observer = new IntersectionObserver(
       if (isIntersecting) {
         const info = imageLazyLoadInfos.find(info => info.el === target)
         if (info) {
-          if (info.state === ImageLoadState.completion) {
+          if (info.state === ImageLoadState.COMPLETED) {
             removeIntersectionObserve(info.el)
             return
           }
           loadImage(info.src).then(result => {
-            info.state = ImageLoadState.completion
+            info.state = ImageLoadState.COMPLETED
             removeIntersectionObserve(info.el)
             info.callback(result)
           })
@@ -44,7 +44,7 @@ export function addIntersectionObserve(
   imageLazyLoadInfos.push({
     el,
     src,
-    state: ImageLoadState.pending,
+    state: ImageLoadState.PENDING,
     attempt: 0,
     callback
   })

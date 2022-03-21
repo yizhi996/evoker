@@ -8,7 +8,7 @@ import {
 } from "../../bridge"
 
 const enum Events {
-  GetBatteryInfo = "getBatteryInfo"
+  GET_BATTERY_INFO = "getBatteryInfo"
 }
 
 interface GetBatteryInfoOptions {
@@ -34,8 +34,8 @@ export function getBatteryInfo<
   T extends GetBatteryInfoOptions = GetBatteryInfoOptions
 >(options: T): AsyncReturn<T, GetBatteryInfoOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.GetBatteryInfo, {}, result => {
-      invokeCallback(Events.GetBatteryInfo, options, result)
+    invoke<SuccessResult<T>>(Events.GET_BATTERY_INFO, {}, result => {
+      invokeCallback(Events.GET_BATTERY_INFO, options, result)
     })
   }, options)
 }

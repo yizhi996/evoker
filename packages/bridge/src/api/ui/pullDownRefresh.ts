@@ -7,8 +7,8 @@ import {
 } from "../../bridge"
 
 const enum Events {
-  StartPullDownRefresh = "startPullDownRefresh",
-  StopPullDownRefresh = "stopPullDownRefresh"
+  START_PULL_DOWN_REFRESH = "startPullDownRefresh",
+  STOP_PULL_DOWN_REFRESH = "stopPullDownRefresh"
 }
 
 interface StartPullDownRefreshOptions {
@@ -27,8 +27,8 @@ export function startPullDownRefresh<
   T extends StartPullDownRefreshOptions = StartPullDownRefreshOptions
 >(options: T): AsyncReturn<T, StartPullDownRefreshOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke(Events.StartPullDownRefresh, {}, result => {
-      invokeCallback(Events.StartPullDownRefresh, options, result)
+    invoke(Events.START_PULL_DOWN_REFRESH, {}, result => {
+      invokeCallback(Events.START_PULL_DOWN_REFRESH, options, result)
     })
   }, options)
 }
@@ -49,8 +49,8 @@ export function stopPullDownRefresh<
   T extends StopPullDownRefreshOptions = StopPullDownRefreshOptions
 >(options: T): AsyncReturn<T, StopPullDownRefreshOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke(Events.StopPullDownRefresh, {}, result => {
-      invokeCallback(Events.StopPullDownRefresh, options, result)
+    invoke(Events.STOP_PULL_DOWN_REFRESH, {}, result => {
+      invokeCallback(Events.STOP_PULL_DOWN_REFRESH, options, result)
     })
   }, options)
 }

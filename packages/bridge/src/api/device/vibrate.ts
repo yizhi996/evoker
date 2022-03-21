@@ -8,8 +8,8 @@ import {
 } from "../../bridge"
 
 const enum Events {
-  Short = "vibrateShort",
-  Long = "vibrateLong"
+  SHORT = "vibrateShort",
+  LONG = "vibrateLong"
 }
 
 interface VibrateShortOptions {
@@ -29,8 +29,8 @@ export function vibrateShort<
   T extends VibrateShortOptions = VibrateShortOptions
 >(options: T): AsyncReturn<T, VibrateShortOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.Short, { type: options.type }, result => {
-      invokeCallback(Events.Short, options, result)
+    invoke<SuccessResult<T>>(Events.SHORT, { type: options.type }, result => {
+      invokeCallback(Events.SHORT, options, result)
     })
   }, options)
 }
@@ -51,8 +51,8 @@ export function vibrateLong<T extends VibrateLongOptions = VibrateLongOptions>(
   options: T
 ): AsyncReturn<T, VibrateLongOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.Long, {}, result => {
-      invokeCallback(Events.Long, options, result)
+    invoke<SuccessResult<T>>(Events.LONG, {}, result => {
+      invokeCallback(Events.LONG, options, result)
     })
   }, options)
 }
