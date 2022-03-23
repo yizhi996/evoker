@@ -13,7 +13,7 @@
 import { ref, nextTick, onMounted, getCurrentInstance } from "vue"
 import Icon from "../Icon.vue"
 import { vTap } from "../../directive/tap"
-import { useParent } from "../../use/useRelation"
+import { useParent, ParentProvide } from "../../use/useRelation"
 import { RADIO_GROUP_KEY, RadioProvide } from "./constant"
 
 const props = withDefaults(defineProps<{
@@ -30,14 +30,13 @@ const emit = defineEmits(["update:modelValue", "click"])
 const instance = getCurrentInstance()!
 
 const containerRef = ref<HTMLElement>()
-let group: RadioProvide | null
+let group: ParentProvide<RadioProvide> | undefined
 
 const checked = ref(false)
 
 onMounted(() => {
   nextTick(() => {
-    const { parent } = useParent(instance, RADIO_GROUP_KEY)
-    group = parent
+    group = useParent(instance, RADIO_GROUP_KEY)
   })
 })
 

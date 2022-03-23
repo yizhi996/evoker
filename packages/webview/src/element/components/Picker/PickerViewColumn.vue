@@ -40,7 +40,7 @@ const contentRef = ref<HTMLElement>()
 
 const translateY = ref<number>(0)
 
-let parent: ParentProvide<PickerViewProvide> | null = null
+let parent: ParentProvide<PickerViewProvide> | undefined
 
 let startPositionY = 0
 let offsetY = 0
@@ -51,8 +51,7 @@ onMounted(() => {
   addTouchEvent()
 
   setTimeout(() => {
-    const { parent: _parent } = useParent(instance, PICKER_VIEW_KEY)
-    parent = _parent
+    parent = useParent(instance, PICKER_VIEW_KEY)
     if (!parent) {
       console.warn("picker-view-column 必须添加在 picker-view 内")
     }

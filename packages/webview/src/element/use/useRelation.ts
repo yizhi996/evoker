@@ -51,13 +51,7 @@ export function useParent<T>(
   if (parent) {
     const { link } = parent
     link(instance)
-    return {
-      parent
-    }
-  }
-
-  return {
-    parent: null
+    return parent
   }
 }
 

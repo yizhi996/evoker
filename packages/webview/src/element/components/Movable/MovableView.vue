@@ -12,7 +12,8 @@ import useTouch from "../../use/useTouch"
 import { useParent } from "../../use/useRelation"
 import { MOVABLE_KEY } from "./constant"
 import { unitToPx } from "../../utils/format"
-import TWEEN from "@tweenjs/tween.js"
+import { Easing } from "@tweenjs/tween.js"
+import useAnimation from "../../use/useAnimation"
 
 const emit = defineEmits(["update:x", "update:y", "change", "scale"])
 
@@ -70,7 +71,7 @@ onMounted(() => {
   addTouchEvent()
 
   setTimeout(() => {
-    const { parent } = useParent(instance, MOVABLE_KEY)
+    const parent = useParent(instance, MOVABLE_KEY)
     if (!parent) {
       console.warn("MovableView 必须添加在 MovableArea 内")
     }
@@ -150,36 +151,29 @@ const onMoveWithPropsChange = (x: number, y: number, animation: boolean) => {
   onMove(sfaeX, safeY, animation)
 }
 
-let currentAnimation = 0
-let currentTween: any
-
-const animate = () => {
-  currentAnimation = requestAnimationFrame(animate)
-  TWEEN.update()
-}
+const { startAnimation, stopAnimation } = useAnimation<{ x: number, y: number, scale: number }>()
 
 const onMove = (x: number, y: number, animation: boolean) => {
   const scale = 1
 
-  cancelAnimationFrame(currentAnimation)
-  currentTween && currentTween.stop()
+  stopAnimation()
 
   if (animation && props.animation) {
-    const position = { x: offset.x, y: offset.y }
-    currentAnimation = requestAnimationFrame(animate)
-    currentTween = new TWEEN.Tween(position)
-      .to({ x, y }, 1000)
-      .easing(TWEEN.Easing.Quartic.Out)
-      .onUpdate(({ x, y }) => {
+
+    startAnimation({
+      begin: { x: offset.x, y: offset.y, scale },
+      end: { x, y, scale },
+      duration: 1000,
+      easing: Easing.Quartic.Out,
+      onUpdate: ({ x, y, scale }) => {
         offset.x = x
         offset.y = y
         transform.value = `translateX(${x}px) translateY(${y}px) translateZ(0px) scale(${scale})`
-      })
-      .onComplete(() => {
-        cancelAnimationFrame(currentAnimation)
-        emitChange(position.x, position.y)
-      })
-      .start()
+      },
+      onComplete: () => {
+        emitChange(x, y)
+      }
+    })
   } else {
     transform.value = `translateX(${x}px) translateY(${y}px) translateZ(0px) scale(${scale})`
     offset.x = x

@@ -15,7 +15,7 @@
 import { ref, nextTick, watch, onMounted, getCurrentInstance } from "vue"
 import Icon from "../Icon.vue"
 import { vTap } from "../../directive/tap"
-import { useParent } from "../../use/useRelation"
+import { useParent, ParentProvide } from "../../use/useRelation"
 import { CHECKBOX_GROUP_KEY, CheckboxProvide } from "./constant"
 
 const props = withDefaults(defineProps<{
@@ -35,7 +35,7 @@ const instance = getCurrentInstance()!
 
 const containerRef = ref<HTMLElement>()
 
-let group: CheckboxProvide | null = null
+let group: ParentProvide<CheckboxProvide> | undefined
 
 const checked = ref(false)
 
@@ -47,8 +47,7 @@ watch(() => props.modelValue, (value) => {
 
 onMounted(() => {
   nextTick(() => {
-    const { parent } = useParent(instance, CHECKBOX_GROUP_KEY)
-    group = parent
+    group = useParent(instance, CHECKBOX_GROUP_KEY)
   })
 })
 
