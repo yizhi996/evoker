@@ -44,11 +44,11 @@ export function addTap(
       isMoved = false
       return
     }
-    
+
     singleTouch = -1
     let cancel = false
     if (isNZothElement(el)) {
-      const props = el.__instance!.props
+      const props = el.__instance.props
       const disabled = props.disabled as boolean
       const loading = props.loading as boolean
       cancel = disabled || loading

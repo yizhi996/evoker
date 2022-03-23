@@ -6,7 +6,7 @@ export const vTap: Directive = {
   mounted(el, binding) {
     const modifiers = Object.keys(binding.modifiers)
     addTap(el, { modifiers }, (ev: TouchEvent) => {
-      isFunction(binding.value) && binding.value()
+      isFunction(binding.value) && binding.value(ev)
     })
   }
 }

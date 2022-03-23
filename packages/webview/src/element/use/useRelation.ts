@@ -1,4 +1,5 @@
 import { reactive, provide, InjectionKey, ComponentInternalInstance } from "vue"
+import { isNZothElement } from "../../dom/element"
 
 export type ParentProvide<T> = T & {
   link(child: ComponentInternalInstance): void
@@ -18,10 +19,10 @@ function getParent<T>(
   let parentInstance: ComponentInstance | undefined
   let parent: any = container
   while ((parent = parent && parent.parentNode)) {
-    if ("__instance" in parent) {
+    if (isNZothElement(parent)) {
       const instance = parent.__instance as ComponentInstance
-      if (instance && instance.provides) {
-        const provides = instance.provides
+      const provides = instance.provides
+      if (provides) {
         if (provides && (key as string | symbol) in provides) {
           parentInstance = instance
           break
@@ -91,30 +92,4 @@ export function useChildren<T>(key: InjectionKey<ParentProvide<T>>) {
     children: publicChildren,
     linkChildren
   }
-}
-
-function flattenChildren(
-  children: HTMLCollection,
-  key: InjectionKey<any> | string
-) {
-  const result: ComponentInternalInstance[] = []
-
-  const traverse = (children: HTMLCollection) => {
-    for (let i = 0; i < children.length; i++) {
-      const child = children[i] as Element & {
-        __instance: ComponentInternalInstance
-      }
-      if ("__instance" in child) {
-        const instance = child.__instance
-        if (instance) result.push(child.__instance)
-      }
-      if (child.children) {
-        traverse(child.children)
-      }
-    }
-  }
-
-  traverse(children)
-
-  return result
 }
