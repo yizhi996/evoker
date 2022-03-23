@@ -1,7 +1,7 @@
 <template>
   <nz-radio ref="containerRef" v-tap.stop="onClick" :class="disabled ? 'nz-radio--disabled' : ''">
     <slot name="icon">
-      <icon :type="checked ? 'success' : 'circle'" :color="checkedColor" />
+      <icon :type="checked ? 'success' : 'circle'" :color="color" />
     </slot>
     <span class="nz-radio__label">
       <slot></slot>
@@ -10,53 +10,59 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onMounted, getCurrentInstance } from "vue"
+import { ref, watch, nextTick, onMounted, getCurrentInstance } from "vue"
 import Icon from "../Icon.vue"
 import { vTap } from "../../directive/tap"
 import { useParent, ParentProvide } from "../../use/useRelation"
 import { RADIO_GROUP_KEY, RadioProvide } from "./constant"
 
 const props = withDefaults(defineProps<{
-  name: unknown
-  checkedColor?: string
+  value?: string
+  checked?: boolean
   disabled?: boolean
+  color?: string
 }>(), {
-  checkedColor: "#1989fa",
-  disabled: false
+  checked: false,
+  disabled: false,
+  color: "#1989fa"
 })
-
-const emit = defineEmits(["update:modelValue", "click"])
 
 const instance = getCurrentInstance()!
 
 const containerRef = ref<HTMLElement>()
-let group: ParentProvide<RadioProvide> | undefined
 
-const checked = ref(false)
+let group: ParentProvide<RadioProvide> | undefined
 
 onMounted(() => {
   nextTick(() => {
     group = useParent(instance, RADIO_GROUP_KEY)
+    props.checked && onChecked(false)
   })
+})
+
+watch(() => props.checked, () => {
+  props.checked && onChecked(false)
 })
 
 const onClick = () => {
   if (props.disabled) {
     return
   }
-  group && setGroupChecked()
-  emit("click")
+  !props.checked && onChecked(true)
 }
 
-const setGroupChecked = () => {
-  group && group.updateGroupChecked(props.name)
+const onChecked = (dispatch: boolean) => {
+  props.value && group && group.onChecked(props.value, dispatch)
 }
 
 defineExpose({
-  childName: props.name,
-  setChecked: (value: boolean) => {
-    checked.value = value
+  value: props.value,
+  getChecked: () => {
+    return props.checked
   },
+  setChecked: (checked: boolean) => {
+    instance.props.checked = checked
+  }
 })
 
 </script>

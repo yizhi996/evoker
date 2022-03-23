@@ -1,13 +1,36 @@
 <template>
-  <radio-group v-model="value1">
-    <radio name="1">单选框 1</radio>
-    <radio name="2">单选框 2</radio>
-  </radio-group>
+  <div class="mx-2.5 mt-2.5">
+    <topic>{{ checked }}</topic>
+    <radio-group class="mt-2.5" @change="onChange">
+      <cell-group>
+        <cell v-for="fruit of fruits" :key="fruit.value">
+          <radio
+            class="w-full h-full"
+            :value="fruit.value"
+            :checked="fruit.checked"
+          >{{ fruit.name }}</radio>
+        </cell>
+      </cell-group>
+    </radio-group>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, reactive } from "vue"
+import CellGroup from "../../components/CellGroup.vue"
+import Cell from "../../components/Cell.vue"
 
-const value1 = ref("1")
+const fruits = reactive([
+  { name: "苹果", value: "apple" },
+  { name: "香蕉", value: "banana" },
+  { name: "菠萝", value: "pineapple", checked: true },
+  { name: "葡萄", value: "grape" },
+  { name: "柠檬", value: "lemon" }
+])
 
+let checked = ref("菠萝")
+
+const onChange = ({ value: selected }) => {
+  checked.value = fruits.find(item => item.value === selected)!.name
+}
 </script>
