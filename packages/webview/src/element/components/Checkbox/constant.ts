@@ -1,7 +1,7 @@
 import { InjectionKey } from "vue"
 
 export interface CheckboxProvide {
-  updateGroupChecked: (x: unknown) => void
+  onChecked: (value: string, checked: boolean, dispatch: boolean) => void
 }
 
 export const CHECKBOX_GROUP_KEY: InjectionKey<CheckboxProvide> =

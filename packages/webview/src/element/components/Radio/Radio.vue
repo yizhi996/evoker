@@ -1,8 +1,6 @@
 <template>
   <nz-radio ref="containerRef" v-tap.stop="onClick" :class="disabled ? 'nz-radio--disabled' : ''">
-    <slot name="icon">
-      <icon :type="checked ? 'success' : 'circle'" :color="color" />
-    </slot>
+    <icon :type="checked ? 'success' : 'circle'" :color="color" />
     <span class="nz-radio__label">
       <slot></slot>
     </span>

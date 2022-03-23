@@ -1,23 +1,43 @@
 <template>
-  <div class="mx-5">
-    <checkbox class="mt-5" v-model="value1">复选框</checkbox>
-    <checkbox class="mt-5" v-model="value2" disabled>复选框</checkbox>
-    <checkbox class="mt-5" v-model="value3" disabled>复选框</checkbox>
-    <checkbox class="mt-5" v-model="value4" color="red">自定义颜色</checkbox>
+  <div class="mx-2.5 mt-2.5">
+    <topic>{{ checked }}</topic>
+    <checkbox-group class="mt-2.5" @change="onChange">
+      <cell-group>
+        <cell v-for="fruit of fruits" :key="fruit.value">
+          <checkbox
+            class="w-full h-full"
+            :value="fruit.value"
+            :checked="fruit.checked"
+          >{{ fruit.name }}</checkbox>
+        </cell>
+      </cell-group>
+    </checkbox-group>
   </div>
-  <checkbox-group class="mx-5 mt-5" v-model="value5">
-    <checkbox class="mb-1.5" name="a">复选框 a</checkbox>
-    <checkbox name="b">复选框 b</checkbox>
-  </checkbox-group>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, reactive } from "vue"
+import CellGroup from "../../components/CellGroup.vue"
+import Cell from "../../components/Cell.vue"
 
-const value1 = ref(true)
-const value2 = ref(false)
-const value3 = ref(true)
-const value4 = ref(true)
-const value5 = ref(["a"])
+const fruits = reactive([
+  { name: "苹果", value: "apple" },
+  { name: "香蕉", value: "banana" },
+  { name: "菠萝", value: "pineapple", checked: true },
+  { name: "葡萄", value: "grape" },
+  { name: "柠檬", value: "lemon" }
+])
 
+const checked = ref("菠萝")
+
+const onChange = ({ value }) => {
+  let res: string[] = []
+  value.forEach(x => {
+    const fruit = fruits.find(y => y.value === x)
+    if (fruit) {
+      res.push(fruit.name)
+    }
+  })
+  checked.value = res.join(" ")
+}
 </script>

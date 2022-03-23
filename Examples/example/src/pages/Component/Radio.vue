@@ -28,7 +28,7 @@ const fruits = reactive([
   { name: "柠檬", value: "lemon" }
 ])
 
-let checked = ref("菠萝")
+const checked = ref("菠萝")
 
 const onChange = ({ value: selected }) => {
   checked.value = fruits.find(item => item.value === selected)!.name

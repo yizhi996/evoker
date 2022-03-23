@@ -19,17 +19,15 @@ import { useParent, ParentProvide } from "../../use/useRelation"
 import { CHECKBOX_GROUP_KEY, CheckboxProvide } from "./constant"
 
 const props = withDefaults(defineProps<{
-  modelValue?: boolean
-  name?: unknown
-  color?: string
+  value?: string
+  checked?: boolean
   disabled?: boolean
+  color?: string
 }>(), {
-  modelValue: false,
-  color: "#1989fa",
-  disabled: false
+  checked: false,
+  disabled: false,
+  color: "#1989fa"
 })
-
-const emit = defineEmits(["update:modelValue", "change"])
 
 const instance = getCurrentInstance()!
 
@@ -37,57 +35,37 @@ const containerRef = ref<HTMLElement>()
 
 let group: ParentProvide<CheckboxProvide> | undefined
 
-const checked = ref(false)
-
-watch(() => props.modelValue, (value) => {
-  checked.value = value
-}, {
-  immediate: true
-})
-
 onMounted(() => {
   nextTick(() => {
     group = useParent(instance, CHECKBOX_GROUP_KEY)
+    onChecked(false)
   })
+})
+
+watch(() => props.checked, () => {
+  onChecked(false)
 })
 
 const onClick = () => {
   if (props.disabled) {
     return
   }
-  if (group) {
-    group.updateGroupChecked(props.name)
-  } else {
-    instance.props.modelValue = !props.modelValue
-    emitChange(instance.props.modelValue as boolean)
-  }
+  instance.props.checked = !instance.props.checked
+  onChecked(true)
 }
 
-const formData = () => {
-  return props.modelValue
-}
-
-const resetFormData = () => {
-  if (group) {
-    return
-  }
-  instance.props.modelValue = false
-  emitChange(instance.props.modelValue as boolean)
-}
-
-const emitChange = (value: boolean) => {
-  emit("update:modelValue", value)
-  emit("change", value)
+const onChecked = (dispatch: boolean) => {
+  props.value && group && group.onChecked(props.value, props.checked, dispatch)
 }
 
 defineExpose({
-  childName: props.name,
-  setChecked: (value: boolean) => {
-    checked.value = value
+  value: props.value,
+  getChecked: () => {
+    return props.checked
   },
-  group,
-  formData,
-  resetFormData
+  setChecked: (checked: boolean) => {
+    props.checked = checked
+  },
 })
 
 </script>

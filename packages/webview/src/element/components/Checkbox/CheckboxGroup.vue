@@ -3,67 +3,45 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, watch } from "vue"
 import { useChildren } from "../../use/useRelation"
 import { CHECKBOX_GROUP_KEY } from "./constant"
 
-const props = withDefaults(defineProps<{
-  modelValue?: unknown[]
-  disabled?: boolean
+const emit = defineEmits(["change"])
+
+defineProps<{
   name?: string
-}>(), {
-  modelValue: () => []
-})
-
-const emit = defineEmits(["update:modelValue", "change"])
-
-const instance = getCurrentInstance()!
+}>()
 
 const { children, linkChildren } = useChildren(CHECKBOX_GROUP_KEY)
 
-watch(() => [...children], () => {
-  setChecked()
-})
-
-watch(() => [...props.modelValue], () => {
-  setChecked()
-})
-
-const setChecked = () => {
-  children.forEach(child => {
-    const { childName, setChecked } = child.exposed!
-    setChecked(childName && props.modelValue.includes(childName))
-  })
-}
-
-const updateGroupChecked = (name: unknown) => {
-  const modelValue = props.modelValue as unknown[]
-  const idx = modelValue.indexOf(name)
-  if (idx > -1) {
-    modelValue.splice(idx, 1)
-  } else {
-    modelValue.push(name)
-  }
-  instance.props.modelValue = [...modelValue]
-  emitChange(modelValue)
-}
+let checkeds: Record<string, boolean> = {}
 
 linkChildren({
-  updateGroupChecked
+  onChecked: (value: string, checked: boolean, dispatch: boolean) => {
+    checkeds[value] = checked
+    dispatch && emit("change", { value: getValue() })
+  }
 })
 
+const getValue = () => {
+  let res = []
+  for (const [value, checked] of Object.entries(checkeds)) {
+    checked && res.push(value)
+  }
+  return res
+}
+
 const formData = () => {
-  return props.modelValue
+  return getValue()
 }
 
 const resetFormData = () => {
-  instance.props.modelValue = []
-  emitChange(instance.props.modelValue as unknown[])
-}
-
-const emitChange = (value: unknown[]) => {
-  emit("update:modelValue", value)
-  emit("change", value)
+  checkeds = {}
+  children.forEach(child => {
+    const { setChecked } = child.exposed!
+    setChecked(false)
+  })
+  emit("change", { value: [] })
 }
 
 defineExpose({
