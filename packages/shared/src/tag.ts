@@ -25,7 +25,8 @@ const builtInComponentTags: string[] = [
   "picker-view",
   "picker-view-column",
   "from",
-  "canvas"
+  "canvas",
+  "label"
 ]
 
 export function isBuiltInComponent(tag: string) {

@@ -157,6 +157,11 @@
       "style": { "navigationBarTitleText": "form" }
     },
     {
+      "component": "pages/Component/Label.vue",
+      "path": "label",
+      "style": { "navigationBarTitleText": "label" }
+    },
+    {
       "component": "pages/API/Index.vue",
       "path": "api",
       "style": { "navigationBarTitleText": "小程序接口能力展示" }

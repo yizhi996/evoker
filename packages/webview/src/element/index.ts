@@ -28,6 +28,7 @@ import View from "./components/View.vue"
 import PickerView from "./components/Picker/PickerView.vue"
 import PickerViewColumn from "./components/Picker/PickerViewColumn.vue"
 import Form from "./components/Form.vue"
+import Label from "./components/Label.vue"
 
 import "./index.less"
 
@@ -70,7 +71,8 @@ const builtInComponent: Record<string, BuiltInComponent> = {
     component: PickerViewColumn,
     slot: ".nz-picker-view-column__content"
   },
-  form: { component: Form }
+  form: { component: Form },
+  label: { component: Label }
 }
 
 export function requireBuiltInComponent(

@@ -107,6 +107,15 @@ const insert = () => {
   })
 }
 
+defineExpose({
+  onTapLabel: () => {
+    NZJSBridge.invoke("operateInput", {
+      inputId,
+      method: "becomeFirstResponder",
+      data: {}
+    })
+  }
+})
 </script>
 
 <style lang="less">

@@ -320,6 +320,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
         
         enum Method: String, Decodable {
             case changeValue
+            case becomeFirstResponder
         }
         
         guard let appService = bridge.appService else { return }
@@ -359,6 +360,8 @@ enum NZInputAPI: String, NZBuiltInAPI {
             if let text = params.data["text"] as? String {
                 input.setText(text)
             }
+        case .becomeFirstResponder:
+            input.input.becomeFirstResponder()
         }
         
         bridge.invokeCallbackSuccess(args: args)

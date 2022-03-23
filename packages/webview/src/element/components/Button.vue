@@ -11,11 +11,12 @@
 
 <script setup lang="ts">
 import { computed, watch, nextTick } from "vue"
-import { NZothElement } from "../../dom/element";
+import { NZothElement } from "../../dom/element"
 import { addTap } from "../../dom/event";
 import { isTrue } from "../../utils"
 import useHover from "../use/useHover"
 import Loading from "./Loading.vue"
+import { dispatchEvent } from "../../dom/event"
 
 const props = withDefaults(defineProps<{
   type?: "primary" | "default" | "warn" | "success" | "danger"
@@ -79,28 +80,46 @@ const findForm = (el: HTMLElement): NZothElement | undefined => {
 
 let clickEventRemove: Function
 
+const onTapForm = () => {
+  const button = buttonRef.value!
+  const form = findForm(button)
+  if (form) {
+    const { onSubmit, onReset } = form.__instance.exposed!
+    if (props.formType === "submit") {
+      onSubmit()
+    } else if (props.formType === "reset") {
+      onReset()
+    }
+  }
+}
+
 watch(() => props.formType, (formType) => {
   clickEventRemove && clickEventRemove()
   if (formType === "submit" || formType === "reset") {
     nextTick(() => {
       if (buttonRef.value) {
-        const button = buttonRef.value
-        clickEventRemove = addTap(button, {}, args => {
-          const form = findForm(button)
-          if (form && form.__instance) {
-            const expose = form.__instance.exposed!
-            if (formType === "submit") {
-              expose.onSubmit()
-            } else if (formType === "reset") {
-              expose.onReset()
-            }
-          }
+        clickEventRemove = addTap(buttonRef.value, {}, args => {
+          onTapForm()
         })
       }
     })
   }
 }, {
   immediate: true
+})
+
+defineExpose({
+  onTapLabel: () => {
+    if (props.formType === "submit" || props.formType === "reset") {
+      onTapForm()
+    } else {
+      const nodeId = (buttonRef.value as NZothElement).__nodeId
+      dispatchEvent(nodeId, {
+        type: "click",
+        args: []
+      })
+    }
+  }
 })
 
 </script>

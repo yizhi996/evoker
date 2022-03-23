@@ -1,5 +1,5 @@
 <template>
-  <nz-switch v-tap.stop="onChange" :class="disabled ? 'nz-switch--disabled' : ''">
+  <nz-switch v-tap.stop="onClick" :class="disabled ? 'nz-switch--disabled' : ''">
     <icon v-if="type === 'checkbox'" :type="checked ? 'success' : 'circle'" :color="color" />
     <div v-else class="nz-switch__wrapper">
       <div
@@ -41,7 +41,7 @@ const props = withDefaults(defineProps<{
   color: "#1989fa"
 })
 
-const onChange = () => {
+const onClick = () => {
   if (props.disabled) {
     return
   }
@@ -65,7 +65,10 @@ const setChecked = (checked: boolean) => {
 
 defineExpose({
   formData,
-  resetFormData
+  resetFormData,
+  onTapLabel: () => {
+    onClick()
+  }
 })
 
 </script>

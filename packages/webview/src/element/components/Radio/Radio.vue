@@ -58,6 +58,9 @@ defineExpose({
   },
   setChecked: (checked: boolean) => {
     instance.props.checked = checked
+  },
+  onTapLabel: () => {
+    onClick()
   }
 })
 

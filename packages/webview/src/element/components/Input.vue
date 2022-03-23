@@ -132,7 +132,14 @@ const resetFormData = () => {
 
 defineExpose({
   formData,
-  resetFormData
+  resetFormData,
+  onTapLabel: () => {
+    NZJSBridge.invoke("operateInput", {
+      inputId,
+      method: "becomeFirstResponder",
+      data: {}
+    })
+  }
 })
 </script>
 
