@@ -28,12 +28,12 @@ vueApp.config.errorHandler = err => {
 }
 
 export function isNZothElement(el: any): el is NZothElement {
-  return "__instance" in el
+  return el && "__instance" in el
 }
 
 export interface NZothElement extends HTMLElement {
   __nodeId: number
-  __instance: ComponentInternalInstance | null
+  __instance: ComponentInternalInstance
   __slot: HTMLElement | null
 }
 
@@ -97,6 +97,7 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
   node.props = reactive({})
 
   const {
+    id,
     nodeId,
     props,
     className,
@@ -105,6 +106,10 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
     listeners,
     textContent
   } = node
+
+  if (id) {
+    props.id = id
+  }
 
   if (className) {
     props.class = className
@@ -143,7 +148,7 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
     }
   }
 
-  let vnodeInstance: ComponentInternalInstance | null = null
+  let vnodeInstance: ComponentInternalInstance
 
   const wrapper = createVNode(() => {
     const vnode = createVNode(component.component, props)
@@ -160,7 +165,7 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
   render(wrapper, template)
 
   const el = template.firstElementChild as NZothElement
-  el.__instance = vnodeInstance
+  el.__instance = vnodeInstance!
 
   if (component.slot) {
     const slot = el.querySelector(component.slot) as HTMLElement
