@@ -49,7 +49,7 @@ const builtInComponent: Record<string, BuiltInComponent> = {
   progress: { component: Progress },
   slider: { component: Slider },
   navigator: { component: Navigator },
-  switch: { component: Switch },
+  switch: { component: Switch, slot: ".nz-switch__label" },
   checkbox: { component: Checkbox, slot: ".nz-checkbox__label" },
   "checkbox-group": { component: CheckboxGroup },
   input: { component: Input },

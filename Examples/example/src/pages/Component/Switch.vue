@@ -1,13 +1,15 @@
 <template>
   <div class="flex flex-col items-center mt-5">
-    <span>选中</span>
+    <topic>选中</topic>
     <switch :checked="value1" @change="onChange"></switch>
-    <span>未选中</span>
+    <topic>未选中</topic>
     <switch v-model:checked="value2"></switch>
-    <span>禁用</span>
+    <topic>禁用</topic>
     <switch v-model:checked="value3" disabled></switch>
-    <span>自定义颜色</span>
+    <topic>自定义颜色</topic>
     <switch v-model:checked="value4" color="#07c160"></switch>
+    <topic>checkbox</topic>
+    <switch type="checkbox">yes / no</switch>
     <button @click="onSwitch">点击切换</button>
   </div>
 </template>

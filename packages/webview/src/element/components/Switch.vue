@@ -1,6 +1,7 @@
 <template>
-  <nz-switch v-tap.stop="onChange">
-    <div class="nz-switch__wrapper" :class="disabled ? 'nz-switch--disabled' : ''">
+  <nz-switch v-tap.stop="onChange" :class="disabled ? 'nz-switch--disabled' : ''">
+    <icon v-if="type === 'checkbox'" :type="checked ? 'success' : 'circle'" :color="color" />
+    <div v-else class="nz-switch__wrapper">
       <div
         class="nz-switch__input"
         :class="checked ? 'nz-switch__input--checked' : ''"
@@ -10,15 +11,10 @@
         }"
       >
         <div class="nz-switch__input__background"></div>
-        <div class="nz-switch__input__handle">
-          <loading
-            v-if="loading"
-            class="nz-switch__input__loading"
-            :color="checked ? color : '#fff'"
-          ></loading>
-        </div>
+        <div class="nz-switch__input__handle"></div>
       </div>
     </div>
+    <span class="nz-switch__label"></span>
   </nz-switch>
 </template>
 
@@ -26,27 +22,27 @@
 import { vibrateShort } from "../../bridge"
 import { getCurrentInstance } from "vue"
 import { vTap } from "../directive/tap"
-import Loading from "./Loading.vue"
+import Icon from "./Icon.vue"
 
 const instance = getCurrentInstance()!
 
 const emit = defineEmits(["update:checked", "change"])
 
 const props = withDefaults(defineProps<{
+  type?: "switch" | "checkbox"
   checked?: boolean
   disabled?: boolean
   color?: string
-  loading?: boolean
   name?: string
 }>(), {
+  type: "switch",
   checked: false,
   disabled: false,
-  color: "#1989fa",
-  loading: false
+  color: "#1989fa"
 })
 
 const onChange = () => {
-  if (props.disabled || props.loading) {
+  if (props.disabled) {
     return
   }
   setChecked(!props.checked)

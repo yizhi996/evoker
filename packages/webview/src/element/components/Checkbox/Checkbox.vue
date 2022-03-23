@@ -1,9 +1,5 @@
 <template>
-  <nz-checkbox
-    ref="containerRef"
-    v-tap.stop="onClick"
-    :class="disabled ? 'nz-checkbox--disabled' : ''"
-  >
+  <nz-checkbox v-tap.stop="onClick" :class="disabled ? 'nz-checkbox--disabled' : ''">
     <icon :type="checked ? 'success' : 'circle'" :color="color" />
     <span class="nz-checkbox__label">
       <slot></slot>
@@ -12,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, watch, onMounted, getCurrentInstance } from "vue"
+import { nextTick, watch, onMounted, getCurrentInstance } from "vue"
 import Icon from "../Icon.vue"
 import { vTap } from "../../directive/tap"
 import { useParent, ParentProvide } from "../../use/useRelation"
@@ -30,8 +26,6 @@ const props = withDefaults(defineProps<{
 })
 
 const instance = getCurrentInstance()!
-
-const containerRef = ref<HTMLElement>()
 
 let group: ParentProvide<CheckboxProvide> | undefined
 
@@ -79,7 +73,7 @@ nz-checkbox {
 
 .nz-checkbox {
   &__label {
-    margin-left: 8px;
+    margin-left: 5px;
     color: #323233;
     line-height: 20px;
   }
