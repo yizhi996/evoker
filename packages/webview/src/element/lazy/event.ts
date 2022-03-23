@@ -13,7 +13,7 @@ if (!supportIntersectionObserver) {
 
 function onScroll() {
   const needLoadImageInfos = imageLazyLoadInfos.filter(
-    info => info.state === ImageLoadState.pending && checkInView(info.el)
+    info => info.state === ImageLoadState.PENDING && checkInView(info.el)
   )
 
   needLoadImageInfos.forEach(info => {
@@ -40,7 +40,7 @@ export function addEventObserve(
     imageLazyLoadInfos.push({
       el,
       src,
-      state: ImageLoadState.pending,
+      state: ImageLoadState.PENDING,
       attempt: 0,
       callback
     })

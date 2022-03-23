@@ -1,15 +1,21 @@
 <template>
   <nz-swiper ref="containerRef">
     <div class="nz-swiper__wrapper">
-      <div class="nz-swiper__slide">
-        <div class="nz-swiper__slide__frame" :style="{ width: frameWidth, transform: transform }">
-          <slot></slot>
-        </div>
-        <div v-if="showIndicators" class="nz-swiper__indicators">
+      <div class="nz-swiper__slide" :style="slideMargin">
+        <div
+          class="nz-swiper__slide__frame"
+          :style="{ width: '100%', height: '100%', transform: transform }"
+        ></div>
+        <div
+          v-if="indicatorDots"
+          class="nz-swiper__indicators"
+          :class="vertical ? 'nz-swiper__indicators--vertical' : ''"
+        >
           <i
             v-for="i of itemCount"
             class="nz-swiper__indicators__item"
-            :style="i - 1 === currentIndex ? `opacity: 1;background-color: ${indicatorColor};` : ''"
+            :class="vertical ? 'nz-swiper__indicators__item--vertical' : ''"
+            :style="{ 'background-color': i - 1 === currentIndex ? indicatorActiveColor : indicatorColor }"
           ></i>
         </div>
       </div>
@@ -18,44 +24,53 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, computed, getCurrentInstance, nextTick, onUnmounted } from "vue"
+import { onMounted, ref, watch, computed, getCurrentInstance, nextTick } from "vue"
 import { useChildren } from "../../use/useRelation"
 import { SWIPE_KEY } from "./constant"
-import { useTouch } from "../../use/useTouch"
-import TWEEN from "@tweenjs/tween.js"
-import { isString } from "@vue/shared"
+import useTouch from "../../use/useTouch"
+import { Easing } from "@tweenjs/tween.js"
+import useAnimation from "../../use/useAnimation"
+import useResize from "../../use/useResize"
 
 const containerRef = ref<HTMLElement>()
 
-const emit = defineEmits(["change"])
+const emit = defineEmits(["change", "transition", "animationfinish"])
 
 const props = withDefaults(defineProps<{
-  autoplay?: number | string
-  duration?: number | string
-  initialSwipe?: number
-  width?: number | string
-  height?: number | string
-  loop?: boolean
-  showIndicators?: boolean
-  touchable?: boolean
-  stopPropagation?: boolean
+  indicatorDots?: boolean
   indicatorColor?: string
+  indicatorActiveColor?: string
+  autoplay?: boolean
+  current?: number
+  interval?: number
+  duration?: number
+  circular?: boolean
+  vertical?: boolean
+  previousMargin?: string
+  nextMargin?: string
+  snapToEdge?: boolean
+  displayMultipleItems?: number
+  easingFunction?: "default" | "linear" | "easeInCubic" | "easeOutCubic" | "easeInOutCubic"
 }>(), {
+  indicatorDots: false,
+  indicatorColor: "rgba(0, 0, 0, .3)",
+  indicatorActiveColor: "#000",
+  autoplay: false,
+  current: 0,
+  interval: 5000,
   duration: 500,
-  initialSwipe: 0,
-  width: "auto",
-  height: "auto",
-  loop: true,
-  showIndicators: true,
-  touchable: true,
-  stopPropagation: true,
-  indicatorColor: "#1989fa"
+  circular: false,
+  vertical: false,
+  previousMargin: "0px",
+  nextMargin: "0px",
+  snapToEdge: false,
+  displayMultipleItems: 1,
+  easingFunction: "default"
 })
 
 const instance = getCurrentInstance()!
 
-const touch = useTouch()
-const { children, linkChildren } = useChildren(instance, SWIPE_KEY)
+const { children, linkChildren } = useChildren(SWIPE_KEY)
 
 linkChildren({})
 
@@ -63,35 +78,42 @@ const itemCount = computed(() => {
   return children.length
 })
 
+const currentIndex = ref(0)
+const nextIndex = ref(0)
+
+const offset = ref(0)
+
 watch(() => [...children], () => {
   nextTick(() => {
-    animateScrollTo(props.initialSwipe, TWEEN.Easing.Linear.None, 0)
+    setChildStyle()
+    scrollTo(props.current, Easing.Linear.None, 0, Sources.OTHER)
   })
 })
 
-const currentIndex = ref(0)
-const offset = ref(0)
+watch(() => props.circular, () => {
+  setChildStyle()
+})
 
 const transform = computed(() => {
-  return `translate(${-offset.value}px, 0px) translateZ(0px)`
+  const boxSize = getBoxSize()
+  const pos = -(offset.value / boxSize) * 100
+  return props.vertical ? `translate(0px, ${pos}%) translateZ(0px)` : `translate(${pos}%, 0px) translateZ(0px)`
 })
 
-const autoScrollDelay = computed(() => {
-  const value = props.autoplay
-  return isString(value) ? parseInt(value) : value
-})
-
-const autoScrollDuration = computed(() => {
-  const value = props.duration
-  return isString(value) ? parseInt(value) : value
-})
-
-watch(() => props.touchable, (touchable) => {
-  if (touchable) {
-    removeTouchEvent()
-    addTouchEvent()
+const slideMargin = computed(() => {
+  let top = "0px"
+  let left = "0px"
+  let bottom = "0px"
+  let right = "0px"
+  if (props.vertical) {
+    top = props.previousMargin
+    bottom = props.nextMargin
   } else {
-    removeTouchEvent()
+    left = props.previousMargin
+    right = props.nextMargin
+  }
+  return {
+    top, left, bottom, right
   }
 })
 
@@ -99,17 +121,15 @@ watch(() => props.autoplay, () => {
   autoScroll()
 })
 
-onMounted(() => {
-  nextTick(() => {
-    if (props.touchable) {
-      addTouchEvent()
-    }
-    autoScroll()
-  })
+watch(() => props.current, () => {
+  scrollTo(props.current, Easing.Linear.None, 0, Sources.OTHER)
 })
 
-onUnmounted(() => {
-  removeTouchEvent()
+onMounted(() => {
+  nextTick(() => {
+    addTouchEvent()
+    autoScroll()
+  })
 })
 
 let autoScrollTimer: ReturnType<typeof setTimeout>
@@ -118,92 +138,157 @@ const autoScroll = () => {
   clearTimeout(autoScrollTimer)
   if (props.autoplay) {
     autoScrollTimer = setTimeout(() => {
-      animateScrollTo(currentIndex.value + 1, TWEEN.Easing.Quadratic.InOut, autoScrollDuration.value)
-      autoScroll()
-    }, autoScrollDelay.value)
-  }
-}
-
-const addTouchEvent = () => {
-  if (containerRef.value) {
-    containerRef.value.addEventListener("touchstart", onTouchStart)
-    containerRef.value.addEventListener("touchmove", onTouchMove)
-    containerRef.value.addEventListener("touchend", onTouchEnd)
-    containerRef.value.addEventListener("touchcancel", onTouchEnd)
-    containerRef.value.addEventListener("resize", onResize)
-  }
-}
-
-const removeTouchEvent = () => {
-  if (containerRef.value) {
-    containerRef.value.removeEventListener("touchstart", onTouchStart)
-    containerRef.value.removeEventListener("touchmove", onTouchMove)
-    containerRef.value.removeEventListener("touchend", onTouchEnd)
-    containerRef.value.removeEventListener("touchcancel", onTouchEnd)
-    containerRef.value.removeEventListener("resize", onResize)
+      let easing: (amount: number) => number
+      switch (props.easingFunction) {
+        case "easeInCubic":
+          easing = Easing.Cubic.In
+          break
+        case "easeInOutCubic":
+          easing = Easing.Cubic.InOut
+          break
+        case "easeOutCubic":
+          easing = Easing.Cubic.Out
+          break
+        case "linear":
+          easing = Easing.Linear.None
+          break
+        case "default":
+        default:
+          easing = Easing.Quadratic.InOut
+          break
+      }
+      nextIndex.value += 1
+      if (nextIndex.value > itemCount.value - 1) {
+        nextIndex.value = 0
+      }
+      scrollTo(nextIndex.value, easing, props.duration, Sources.AUTOPLAY)
+    }, props.interval)
   }
 }
 
 let rect: DOMRect | undefined
 
-const onResize = () => {
-  rect = containerRef.value && containerRef.value.getBoundingClientRect()
-}
-
-const frameWidth = computed(() => {
-  onResize()
+const getBoxSize = () => {
   if (rect) {
-    return itemCount.value * rect.width + "px"
+    return (props.vertical ? rect.height : rect.width) / props.displayMultipleItems
   }
-  return "100%"
-})
+  return 0
+}
 
 let touching = false
 let touchStartTimestamp = 0
 
-const onTouchStart = (event: TouchEvent) => {
-  touchStartTimestamp = event.timeStamp
-  touching = true
-  touch.start(event)
-  clearTimeout(autoScrollTimer)
-}
+let direction = 0
 
-const onTouchMove = (event: TouchEvent) => {
-  touching = true
-  touch.move(event)
-  event.preventDefault()
-  const currentLeft = currentIndex.value * rect!.width
-  offset.value = currentLeft - touch.deltaX.value
-}
+const addTouchEvent = () => {
+  if (containerRef.value) {
+    const { onResize } = useResize(containerRef.value)
+    onResize(_rect => {
+      rect = _rect
+    })
 
-const onTouchEnd = (event: TouchEvent) => {
-  const duration = event.timeStamp - touchStartTimestamp
-  const x = touch.deltaX.value
-  const speed = x / duration
+    const { onTouchStart, onTouchMove, onTouchEnd } = useTouch(containerRef.value)
+    onTouchStart((ev) => {
+      touchStartTimestamp = ev.timeStamp
+      touching = true
+      clearTimeout(autoScrollTimer)
+    })
 
-  touching = false
-  touch.reset()
+    onTouchMove((ev, touch) => {
+      touching = true
+      ev.preventDefault()
 
-  let next = currentIndex.value
-  if (Math.abs(speed) > 0.25 || Math.abs(x) > rect!.width * 0.5) {
-    if (x > 0) {
-      next -= 1
-    } else if (x < 0) {
-      next += 1
-    }
+      stopAnimation()
+
+      const boxSize = getBoxSize()
+
+      let pos = currentIndex.value * boxSize
+      if (props.vertical) {
+        pos = pos - touch.deltaY.value
+        if (!props.circular && pos < 0) {
+          pos *= 0.5
+        }
+      } else {
+        pos = pos - touch.deltaX.value
+        if (!props.circular && pos < 0) {
+          pos *= 0.5
+        }
+      }
+
+      if (offset.value > pos) {
+        direction = -1
+      } else if (offset.value < pos) {
+        direction = 1
+      } else {
+        direction = 0
+      }
+
+      offset.value = pos
+
+      setChildStyleFromTouch(direction)
+    })
+
+    onTouchEnd((ev, touch) => {
+      const duration = ev.timeStamp - touchStartTimestamp
+
+      let current = currentIndex.value
+      let next = current
+
+      if (duration < 200) {
+        if (direction < 0) {
+          next -= 1
+          if (next < 0) {
+            if (props.circular) {
+              next = itemCount.value - 1
+            } else {
+              next = 0
+            }
+          }
+        } else if (direction > 0) {
+          next += 1
+          if (next > itemCount.value - 1) {
+            if (props.circular) {
+              next = 0
+            } else {
+              next = itemCount.value - 1
+            }
+          }
+        }
+        nextIndex.value = next
+      } else {
+        const boxSize = getBoxSize()
+        next = Math.round(offset.value / boxSize)
+        if (next < 0) {
+          if (props.circular) {
+            next = itemCount.value - Math.abs(next % itemCount.value)
+          } else {
+            next = 0
+          }
+        } else if (next > itemCount.value - 1) {
+          if (props.circular) {
+            next = Math.abs(next % itemCount.value)
+          } else {
+            next = itemCount.value - 1
+          }
+        }
+        nextIndex.value = next
+      }
+      touching = false
+      scrollTo(next, Easing.Linear.None, 250, Sources.TOUCH)
+      autoScroll()
+    })
   }
-  animateScrollTo(next, TWEEN.Easing.Linear.None, 250)
-  autoScroll()
 }
 
-let currentAnimation = 0
+const { startAnimation, stopAnimation } = useAnimation<{ position: number }>()
 
-const animate = () => {
-  currentAnimation = requestAnimationFrame(animate)
-  TWEEN.update()
+const enum Sources {
+  AUTOPLAY = "autoplay",
+  TOUCH = "touch",
+  OTHER = ""
 }
 
-const animateScrollTo = (index: number, easing: any, duration: number) => {
+const scrollTo = (next: number, easing: (amount: number) => number, duration: number, source: Sources) => {
   if (touching) {
     return
   }
@@ -211,32 +296,136 @@ const animateScrollTo = (index: number, easing: any, duration: number) => {
     return
   }
 
-  if (index > itemCount.value - 1) {
-    if (props.loop) {
-      currentIndex.value = 0
-    } else {
-      currentIndex.value = itemCount.value - 1
+  const boxSize = getBoxSize()
+
+  let begin = offset.value
+  let end = next * boxSize
+
+  if (props.circular) {
+    if (source === Sources.AUTOPLAY) {
+      if (currentIndex.value === itemCount.value - 1 && next === 0) {
+        begin = -boxSize
+      }
+    } else if (currentIndex.value === 0 && next === itemCount.value - 1) {
+      begin = itemCount.value * boxSize + offset.value
+    } else if (currentIndex.value === itemCount.value - 1 && next === 0) {
+      begin = -(itemCount.value * boxSize - offset.value)
     }
-  } else if (index < 0) {
-    currentIndex.value = 0
-  } else {
-    currentIndex.value = index
   }
 
-  const target = currentIndex.value * rect!.width
+  startAnimation({
+    begin: { position: begin },
+    end: { position: end },
+    duration,
+    easing,
+    onUpdate: ({ position }) => {
+      offset.value = position
+      setChildStyle()
+    },
+    onComplete: () => {
+      if (source !== Sources.OTHER) {
+        instance.props.current = next
+      }
+      if (currentIndex.value !== next) {
+        emit("change", { current: next, source })
+      }
+      currentIndex.value = next
+      autoScroll()
+    }
+  })
+}
 
-  currentAnimation = requestAnimationFrame(animate)
-  new TWEEN.Tween({ target: offset.value })
-    .to({ target }, duration)
-    .easing(easing)
-    .onUpdate(({ target }) => {
-      offset.value = target
-    })
-    .onComplete(() => {
-      emit("change", currentIndex.value)
-      cancelAnimationFrame(currentAnimation)
-    })
-    .start()
+const setChildStyle = () => {
+  const min = 0
+  const max = children.length - 1
+  const boxSize = getBoxSize()
+  let current = Math.round(offset.value / boxSize)
+
+  if (current < min) {
+    current = min
+  } else if (current > max) {
+    current = max
+  }
+
+  let width = "100%"
+  let height = "100%"
+
+  if (props.vertical) {
+    height = (100 / props.displayMultipleItems) + "%"
+  } else {
+    width = (100 / props.displayMultipleItems) + "%"
+  }
+
+  children.forEach((child, i) => {
+    const calcPos = () => {
+      if (props.circular) {
+        if (current === min) {
+          if (i === max) {
+            return "-100%"
+          }
+        } else if (current === max) {
+          if (i === min) {
+            return 100 * children.length + "%"
+          }
+        }
+      }
+      return 100 * i + "%"
+    }
+
+    let x = "0px"
+    let y = "0px"
+    if (props.vertical) {
+      y = calcPos()
+    } else {
+      x = calcPos()
+    }
+
+    child.exposed!.setStyle(width, height, `translate(${x}, ${y}) translateZ(0px)`)
+  })
+}
+
+const setChildStyleFromTouch = (direction: number) => {
+  const boxSize = getBoxSize()
+  let current = Math.round(offset.value / boxSize)
+
+  if (!props.circular) {
+    if (current < 0) {
+      current = 0
+    } else if (current > children.length - 1) {
+      current = children.length - 1
+    }
+  }
+
+  const setTransform = (index: number) => {
+    let childIndex = Math.abs(index % children.length)
+    if (index < 0) {
+      childIndex = children.length - childIndex
+      if (childIndex === children.length) {
+        childIndex = 0
+      }
+    }
+    const child = children[childIndex]
+    if (child) {
+      let x = "0px"
+      let y = "0px"
+      if (props.vertical) {
+        y = 100 * index + "%"
+      } else {
+        x = 100 * index + "%"
+      }
+      child.exposed!.setTransform(`translate(${x}, ${y}) translateZ(0px)`)
+    }
+  }
+
+  setTransform(current)
+
+  if (props.circular) {
+    if (direction < 0) {
+      setTransform(Math.floor(offset.value / boxSize))
+    } else {
+      setTransform(Math.ceil(offset.value / boxSize))
+    }
+  }
 }
 
 </script>
@@ -264,7 +453,6 @@ nz-swiper {
     right: 0;
 
     &__frame {
-      display: flex;
       position: absolute;
       top: 0;
       left: 0;
@@ -279,7 +467,16 @@ nz-swiper {
     display: flex;
     left: 50%;
     bottom: 12px;
-    transform: translate(-50%);
+    transform: translateX(-50%);
+
+    &--vertical {
+      left: auto;
+      top: 50%;
+      bottom: auto;
+      right: 10px;
+      transform: translateY(-50%);
+      flex-direction: column;
+    }
 
     &__item {
       width: 6px;
@@ -288,10 +485,15 @@ nz-swiper {
       opacity: 0.3;
       background-color: #ebedf0;
       transition: opacity 0.2s, background-color 0.2s;
-    }
 
-    &__item:not(:last-child) {
-      margin-right: 6px;
+      &:not(:last-child) {
+        margin-right: 6px;
+      }
+
+      &--vertical:not(:last-child) {
+        margin-right: 0;
+        margin-bottom: 6px;
+      }
     }
   }
 }
