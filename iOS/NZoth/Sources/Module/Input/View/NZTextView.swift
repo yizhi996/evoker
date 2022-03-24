@@ -29,7 +29,7 @@ open class NZTextView: UIView, NZInput {
     
     public var needFocus: Bool = false
     
-    public var input: UIResponder {
+    public var field: UIResponder {
         return textView
     }
     

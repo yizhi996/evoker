@@ -16,7 +16,8 @@ public protocol NZInput: UIView {
     var textChanged: NZStringBlock? { get set }
     var onKeyboardReturn: NZEmptyBlock? { get set }
     
-    var input: UIResponder { get }
+    var field: UIResponder { get }
+    
     var inputId: Int { get set }
     var maxLength: Int { get set }
     var adjustPosition: Bool { get set }

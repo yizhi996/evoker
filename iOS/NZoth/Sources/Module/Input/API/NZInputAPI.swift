@@ -361,7 +361,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
                 input.setText(text)
             }
         case .becomeFirstResponder:
-            input.input.becomeFirstResponder()
+            input.field.becomeFirstResponder()
         }
         
         bridge.invokeCallbackSuccess(args: args)

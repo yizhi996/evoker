@@ -27,7 +27,7 @@ open class NZTextFieldView: UIView, NZInput {
     
     public var needFocus = false
     
-    public var input: UIResponder {
+    public var field: UIResponder {
         return textField
     }
     

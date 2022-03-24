@@ -74,7 +74,7 @@ open class NZWebPageViewController: NZPageViewController {
         guard let inputModule: NZInputModule = webPage.appService?.getModule(),
               let needFocusInput = inputModule.findInput(pageId: page.pageId, where: { $0.needFocus }) else { return }
         needFocusInput.needFocus = false
-        needFocusInput.input.becomeFirstResponder()
+        needFocusInput.field.becomeFirstResponder()
     }
     
     open override func viewDidDisappear(_ animated: Bool) {
@@ -111,8 +111,8 @@ extension NZWebPageViewController: UIScrollViewDelegate {
     open func scrollViewDidScroll(_ scrollView: UIScrollView) {
         onScroll.invoke { [unowned self] in
             guard let inputModule: NZInputModule = self.webPage.appService?.getModule(),
-                  let needResignFirstInput = inputModule.findInput(pageId: self.webPage.pageId, where: { $0.input.isFirstResponder }) else { return }
-            needResignFirstInput.input.resignFirstResponder()
+                  let needResignFirstInput = inputModule.findInput(pageId: self.webPage.pageId, where: { $0.field.isFirstResponder }) else { return }
+            needResignFirstInput.field.resignFirstResponder()
         }
     }
 }

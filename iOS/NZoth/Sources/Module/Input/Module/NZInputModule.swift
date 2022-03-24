@@ -112,7 +112,7 @@ extension NZInputModule: KeyboardObserver {
         
         if transition.toVisible {
             if keyboardHeightUpdated {
-                if let input = findInput(pageId: page.pageId, where: { $0.input.isFirstResponder }), input.adjustPosition {
+                if let input = findInput(pageId: page.pageId, where: { $0.field.isFirstResponder }), input.adjustPosition {
                     let data: [String: Any] = ["inputId": input.inputId, "height": keyboardHeight]
                     webView.bridge.subscribeHandler(method: KeyboardManager.onShowSubscribeKey, data: data)
                     let keyboardY = transition.toFrame.minY
