@@ -1,11 +1,28 @@
 import { rgbToHex } from "./format"
 
-export function getInputStyle(e: HTMLElement) {
-  const style = window.getComputedStyle(e)
+function defaultParseFloat(string: string, def: number = 0): number {
+  return parseFloat(string) || def
+}
 
-  const fontSize = parseFloat(style.fontSize) || 16.0
+export function getInputStyle(el: HTMLElement) {
+  const style = window.getComputedStyle(el)
 
-  const lineHeight = parseFloat(style.lineHeight) || 0
+  const left =
+    defaultParseFloat(style.borderLeftWidth) +
+    defaultParseFloat(style.paddingLeft)
+  const right =
+    defaultParseFloat(style.borderRightWidth) +
+    defaultParseFloat(style.paddingRight)
+  const top =
+    defaultParseFloat(style.borderTopWidth) +
+    defaultParseFloat(style.paddingTop)
+  const bottom =
+    defaultParseFloat(style.borderBottomWidth) +
+    defaultParseFloat(style.paddingBottom)
+
+  const fontSize = defaultParseFloat(style.fontSize, 16)
+
+  const lineHeight = defaultParseFloat(style.lineHeight)
 
   const color = rgbToHex(style.color)
 
@@ -18,41 +35,52 @@ export function getInputStyle(e: HTMLElement) {
     textAlign = "left"
   }
 
-  let fontWeight = "normal"
-  const fontWeigthNumber = parseInt(style.fontWeight, 10)
-  if (isNaN(fontWeigthNumber)) {
-    fontWeight = style.fontWeight
-  } else if (fontWeigthNumber < 500) {
-    fontWeight = "normal"
-  } else {
-    fontWeight = "bold"
-  }
-
+  const rect = el.getBoundingClientRect()
   return {
+    width: rect.width - left - right,
+    height: rect.height - top - bottom,
     color,
     fontSize,
-    fontWeight,
+    fontWeight: getFontWeight(style),
     textAlign,
     lineHeight
   }
 }
 
-export function getInputPlaceholderStyle(e: HTMLElement) {
-  const style = window.getComputedStyle(e)
+export function getInputPlaceholderStyle(el: HTMLElement) {
+  const style = window.getComputedStyle(el)
+  return {
+    fontSize: defaultParseFloat(style.fontSize, 16),
+    fontWeight: getFontWeight(style),
+    color: rgbToHex(style.color)
+  }
+}
+
+function getFontWeight(style: CSSStyleDeclaration) {
   let fontWeight = "normal"
   const fontWeigthNumber = parseInt(style.fontWeight, 10)
   if (isNaN(fontWeigthNumber)) {
     fontWeight = style.fontWeight
-  } else if (fontWeigthNumber < 500) {
-    fontWeight = "normal"
-  } else {
+  } else if (fontWeigthNumber >= 850) {
+    fontWeight = "black"
+  } else if (fontWeigthNumber >= 750) {
+    fontWeight = "heavy"
+  } else if (fontWeigthNumber >= 650) {
     fontWeight = "bold"
+  } else if (fontWeigthNumber >= 550) {
+    fontWeight = "semibold"
+  } else if (fontWeigthNumber >= 450) {
+    fontWeight = "medium"
+  } else if (fontWeigthNumber >= 350) {
+    fontWeight = "normal"
+  } else if (fontWeigthNumber >= 250) {
+    fontWeight = "light"
+  } else if (fontWeigthNumber >= 150) {
+    fontWeight = "thin"
+  } else {
+    fontWeight = "ultraLight"
   }
-  return {
-    fontSize: parseFloat(style.fontSize) || 16,
-    fontWeight,
-    color: rgbToHex(style.color)
-  }
+  return fontWeight
 }
 
 export type ImageMode =

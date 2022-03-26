@@ -58,8 +58,8 @@ export default function useNative(
       return {
         left: rect.left + window.scrollX,
         top: rect.top + window.scrollY,
-        width: rect.width,
-        height: rect.height,
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
         scrollHeight: containerRef.value.scrollHeight
       }
     }
@@ -111,14 +111,22 @@ export default function useNative(
     })
   }
 
+  let onUpdatedContainerCallback: () => void
+
   const updateContainer = () => {
     if (containerInserted) {
       const position = getContainerBox()
       nextTick(() => {
-        NZJSBridge.invoke(NativeInvokeKeys.UPDATE, {
-          tongcengId: tongcengKey,
-          position
-        })
+        NZJSBridge.invoke(
+          NativeInvokeKeys.UPDATE,
+          {
+            tongcengId: tongcengKey,
+            position
+          },
+          () => {
+            onUpdatedContainerCallback && onUpdatedContainerCallback()
+          }
+        )
       })
     }
   }
@@ -131,6 +139,10 @@ export default function useNative(
     }
   }
 
+  const onUpdatedContainer = (callback: () => void) => {
+    onUpdatedContainerCallback = callback
+  }
+
   return {
     tongcengId,
     tongcengKey,
@@ -141,6 +153,7 @@ export default function useNative(
     getContainerBox,
     insertContainer,
     updateContainer,
-    removeContainer
+    removeContainer,
+    onUpdatedContainer
   }
 }

@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, getCurrentInstance } from "vue"
+import { ref, onMounted, watch, watchEffect, getCurrentInstance } from "vue"
 import useNative from "../use/useNative"
 import useKeyboard from "../listener/keyboard"
 import { getInputStyle, getInputPlaceholderStyle } from "../utils/style"
@@ -21,60 +21,94 @@ import { NZJSBridge } from "../../bridge"
 
 const instance = getCurrentInstance()!
 
+const emit = defineEmits([
+  "focus",
+  "blur",
+  "input",
+  "confirm",
+  "keyboard-height-change",
+  "update:value"
+])
+
 const props = withDefaults(defineProps<{
-  modelValue?: string
+  value?: string
   type?: "text" | "number" | "digit"
   password?: boolean
-  focus?: boolean
   placeholder?: string
-  confirmType?: "send" | "search" | "next" | "go" | "done"
-  maxlength?: number
-  adjustPosition?: boolean
-  placeholderClass?: string
   placeholderStyle?: string
+  placeholderClass?: string
   disabled?: boolean
+  maxlength?: number
+  cursorSpacing?: number
+  focus?: boolean
+  confirmType?: "send" | "search" | "next" | "go" | "done"
+  confirmHold?: boolean
+  cursor?: number
+  selectionStart?: number
+  selectionEnd?: number
+  adjustPosition?: boolean
+  holdKeyboard?: boolean
   name?: string
 }>(), {
-  modelValue: "",
+  value: "",
   type: "text",
   password: false,
-  focus: false,
   placeholder: "",
-  confirmType: "done",
+  placeholderClass: "nz-input__placeholder",
+  disabled: false,
   maxlength: 140,
+  cursorSpacing: 0,
+  focus: false,
+  confirmType: "done",
+  confirmHold: false,
+  cursor: -1,
+  selectionStart: -1,
+  selectionEnd: -1,
   adjustPosition: true,
-  placeholderClass: "input-placeholder",
-  disabled: false
+  holdKeyboard: false,
 })
 
-const emit = defineEmits(["focus", "blur", "input", "confirm", "keyboard-height-change", "update:modelValue"])
+const {
+  tongcengKey,
+  nativeId: inputId,
+  containerRef,
+  innerRef,
+  height,
+  insertContainer,
+  onUpdatedContainer
+} = useNative()
 
-const { tongcengKey, nativeId: inputId, containerRef, innerRef, height, insertContainer } = useNative()
-
-const { onKeyboardSetValue, onKeyboardShow, onKeyboardHide, onKeyboardConfirm, onKeyboardHeightChange } = useKeyboard(inputId)
+const {
+  onKeyboardSetValue,
+  onKeyboardShow,
+  onKeyboardHide,
+  onKeyboardConfirm,
+  onKeyboardHeightChange
+} = useKeyboard(inputId)
 
 const rootRef = ref<HTMLElement>()
 const placeholderRef = ref<HTMLElement>()
 
-watch(() => props.modelValue, () => {
-  updateValue()
-})
+const onInput = (value: string) => {
+  emit("update:value", value)
+  emit("input", { value })
+}
 
 onKeyboardSetValue(data => {
-  emit("update:modelValue", data.value)
-  emit("input", data.value)
+  instance.props.value = data.value
+  onInput(data.value)
 })
 
 onKeyboardShow(() => {
-  emit("focus", props.modelValue)
+  emit("focus", { value: props.value })
 })
 
 onKeyboardHide(() => {
-  emit("blur", props.modelValue)
+  emit("blur", { value: props.value })
 })
 
 onKeyboardConfirm(() => {
-  emit("confirm", props.modelValue)
+  emit("confirm", { value: props.value })
 })
 
 onKeyboardHeightChange(data => {
@@ -93,7 +127,7 @@ const insert = () => {
       NZJSBridge.invoke("insertInput", {
         parentId: tongcengKey,
         inputId,
-        text: props.modelValue,
+        text: props.value,
         style: getInputStyle(rootRef.value!),
         placeholder: props.placeholder,
         placeholderStyle: getInputPlaceholderStyle(placeholderRef.value!),
@@ -103,42 +137,88 @@ const insert = () => {
         password: props.password,
         type: props.type,
         adjustPosition: props.adjustPosition,
-        disabled: props.disabled
+        disabled: props.disabled,
+        cursor: props.cursor,
+        selectionStart: props.selectionStart,
+        selectionEnd: props.selectionEnd,
+        confirmHold: props.confirmHold,
+        holdKeyboard: props.holdKeyboard,
+        cursorSpacing: props.cursorSpacing
       })
     }
   })
 }
 
-const updateValue = () => {
-  NZJSBridge.invoke("operateInput", {
-    inputId,
-    method: "changeValue",
-    data: {
-      text: props.modelValue,
-    }
-  })
+const enum OperateMethods {
+  CHANGE_VALUE = "changeValue",
+  FOCUS = "focus",
+  BLUR = "blur",
+  UPDATE = "update",
+  UPDATE_STYLE = "updateStyle",
+  UPDATE_PLACEHOLDER_STYLE = "updatePlaceholderStyle"
 }
 
+const operateInput = (method: OperateMethods, data: Record<string, any> = {}) => {
+  NZJSBridge.invoke("operateInput", { inputId, method, data })
+}
+
+watch(() => props.value, () => {
+  changeValue()
+})
+
+const changeValue = () => {
+  operateInput(OperateMethods.CHANGE_VALUE, { text: props.value })
+}
+
+watch(() => props.focus, () => {
+  props.focus ? operateInput(OperateMethods.FOCUS) : operateInput(OperateMethods.BLUR)
+})
+
+watch(() => props.placeholderClass, () => {
+  operateInput(OperateMethods.UPDATE_PLACEHOLDER_STYLE, getInputPlaceholderStyle(placeholderRef.value!))
+})
+
+watch(() => props.placeholderStyle, () => {
+  operateInput(OperateMethods.UPDATE_PLACEHOLDER_STYLE, getInputPlaceholderStyle(placeholderRef.value!))
+})
+
+onUpdatedContainer(() => {
+  operateInput(OperateMethods.UPDATE_STYLE, getInputStyle(rootRef.value!))
+})
+
+watchEffect(() => {
+  operateInput(OperateMethods.UPDATE, {
+    placeholder: props.placeholder,
+    confirmType: props.confirmType,
+    maxlength: props.maxlength,
+    password: props.password,
+    type: props.type,
+    adjustPosition: props.adjustPosition,
+    disabled: props.disabled,
+    cursor: props.cursor,
+    selectionStart: props.selectionStart,
+    selectionEnd: props.selectionEnd,
+    confirmHold: props.confirmHold,
+    holdKeyboard: props.holdKeyboard,
+    cursorSpacing: props.cursorSpacing
+  })
+})
+
 const formData = () => {
-  return props.modelValue
+  return props.value
 }
 
 const resetFormData = () => {
-  instance.props.modelValue = ""
-  emit("update:modelValue", instance.props.modelValue)
-  emit("input", instance.props.modelValue)
-  updateValue()
+  instance.props.value = ""
+  onInput("")
+  changeValue()
 }
 
 defineExpose({
   formData,
   resetFormData,
   onTapLabel: () => {
-    NZJSBridge.invoke("operateInput", {
-      inputId,
-      method: "becomeFirstResponder",
-      data: {}
-    })
+    operateInput(OperateMethods.FOCUS)
   }
 })
 </script>

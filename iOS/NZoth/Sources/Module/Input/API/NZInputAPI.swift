@@ -29,47 +29,28 @@ enum NZInputAPI: String, NZBuiltInAPI {
     
     private func insertTextArea(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         
-        struct InsertTextAreaParams: Decodable  {
+        struct Params: Decodable {
             let parentId: String
             let inputId: Int
             let text: String
             let placeholder: String
-            var focus: Bool
+            let focus: Bool
             let maxlength: Int
             let adjustPosition: Bool
-            let autoHeight: Bool
-            let disableDefaultPadding: Bool
-            let confirmType: ConfirmType
             let style: NZInputStyle
             let placeholderStyle: NZInputPlaceholderStyle
-            
-            enum ConfirmType: String, Decodable {
-                case send
-                case search
-                case next
-                case go
-                case done
-                case `return`
-                
-                func toNatively() -> UIReturnKeyType {
-                    switch self {
-                    case .send:
-                        return .send
-                    case .search:
-                        return .search
-                    case .next:
-                        return .next
-                    case .go:
-                        return .go
-                    case .done:
-                        return .done
-                    case .return:
-                        return .default
-                    }
-                }
-            }
+            let disabled: Bool
+            let cursor: Int
+            let selectionStart: Int
+            let selectionEnd: Int
+            let confirmHold: Bool
+            let holdKeyboard: Bool
+            let cursorSpacing: CGFloat
+            let autoHeight: Bool
+            let disableDefaultPadding: Bool
+            let confirmType: NZTextView.ConfirmType
         }
-        
+            
         guard let appService = bridge.appService else { return }
         
         guard let inputModule: NZInputModule = appService.getModule() else {
@@ -90,7 +71,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let params: InsertTextAreaParams = args.paramsString.toModel() else {
+        guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -102,16 +83,21 @@ enum NZInputAPI: String, NZBuiltInAPI {
             return
         }
         
-        let input = NZTextView(frame: CGRect(x: 0, y: 0, width: container.frame.width, height: container.frame.height))
+        let input = NZTextView(frame: CGRect(x: 0, y: 0, width: params.style.width, height: params.style.height))
         input.needFocus = params.focus
         input.inputId = params.inputId
-        input.adjustPosition = params.adjustPosition
         input.maxLength = params.maxlength
+        input.adjustPosition = params.adjustPosition
+        input.selectionStart = params.selectionStart
+        input.selectionEnd = params.selectionEnd
+        input.cursor = params.cursor
+        input.confirmHold = params.confirmHold
+        input.cursorSpacing = params.cursorSpacing
+        input.holdKeyboard = params.holdKeyboard
         input.isAutoHeight = params.autoHeight
-        
+        input.textView.isEditable = !params.disabled
         input.textView.font = UIFont.systemFont(ofSize: params.style.fontSize,
                                                 weight: params.style.fontWeight.toNatively())
-        input.textView.isScrollEnabled = !params.autoHeight
         input.textView.text = params.text
         input.textView.textColor = params.style.color.hexColor()
         input.textView.textAlignment = params.style.textAlign.toNatively()
@@ -124,8 +110,13 @@ enum NZInputAPI: String, NZBuiltInAPI {
         input.placeholderLabel.font = UIFont.systemFont(ofSize: params.placeholderStyle.fontSize,
                                                         weight: params.placeholderStyle.fontWeight.toNatively())
         input.placeholderLabel.textColor = params.placeholderStyle.color.hexColor()
-        input.placeholderLabel.autoPinEdgesToSuperviewEdges(with: input.textView.textContainerInset, excludingEdge: .bottom)
-         
+        input.placeholderLabel.textAlignment = params.style.textAlign.toNatively()
+        var containerInset = input.textView.textContainerInset
+        containerInset.left += input.textView.textContainer.lineFragmentPadding
+        containerInset.right += input.textView.textContainer.lineFragmentPadding
+        input.placeholderLabel.autoPinEdgesToSuperviewEdges(with: containerInset, excludingEdge: .bottom)
+        input.placeholderLabel.isHidden = !params.text.isEmpty
+        
         input.onFocus = {
             let message: [String: Any] = ["inputId": params.inputId]
             bridge.subscribeHandler(method: KeyboardManager.onShowSubscribeKey, data: message)
@@ -152,68 +143,37 @@ enum NZInputAPI: String, NZBuiltInAPI {
         }
         
         container.addSubview(input)
-        input.autoPinEdgesToSuperviewEdges()
         
         inputModule.inputs.set(page.pageId, params.inputId, value: input)
-
-        bridge.invokeCallbackSuccess(args: args)
+        
+        let height = input.getContentHeight()
+        let lineCount = Int(floor(height / input.textView.font!.lineHeight))
+        bridge.invokeCallbackSuccess(args: args, result: ["height": height,
+                                                          "lineCount": lineCount])
     }
     
     private func insertInput(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         
-        struct InsertFieldParams: Decodable  {
+        struct Params: Decodable  {
             let parentId: String
             let inputId: Int
             let text: String
             let placeholder: String
-            let type: KeyboardType
+            let type: NZTextFieldView.KeyboardType
             let password: Bool
             let focus: Bool
             let maxlength: Int
             let adjustPosition: Bool
-            let confirmType: ConfirmType
+            let confirmType: NZTextFieldView.ConfirmType
             let style: NZInputStyle
             let placeholderStyle: NZInputPlaceholderStyle
-        }
-        
-        enum ConfirmType: String, Decodable {
-            case send
-            case search
-            case next
-            case go
-            case done
-            
-            func toNatively() -> UIReturnKeyType {
-                switch self {
-                case .send:
-                    return .send
-                case .search:
-                    return .search
-                case .next:
-                    return .next
-                case .go:
-                    return .go
-                case .done:
-                    return .done
-                }
-            }
-        }
-        
-        enum KeyboardType: String, Decodable {
-            case text
-            case number
-            case digit
-            
-            func toNatively() -> UIKeyboardType {
-                switch self {
-                case .text:
-                    return .default
-                case .number:
-                    return .numberPad
-                case .digit:
-                    return .decimalPad
-                }
-            }
+            let disabled: Bool
+            let cursor: Int
+            let selectionStart: Int
+            let selectionEnd: Int
+            let confirmHold: Bool
+            let holdKeyboard: Bool
+            let cursorSpacing: CGFloat
         }
         
         guard let appService = bridge.appService else { return }
@@ -236,7 +196,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let params: InsertFieldParams = args.paramsString.toModel() else {
+        guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -248,12 +208,19 @@ enum NZInputAPI: String, NZBuiltInAPI {
             return
         }
         
-        let rect = CGRect(x: 0, y: 0, width: container.frame.width, height: container.frame.height)
+        let rect = CGRect(x: 0, y: 0, width: params.style.width, height: params.style.height)
         let input = NZTextFieldView(frame: rect)
         input.needFocus = params.focus
         input.inputId = params.inputId
         input.maxLength = params.maxlength
         input.adjustPosition = params.adjustPosition
+        input.selectionStart = params.selectionStart
+        input.selectionEnd = params.selectionEnd
+        input.cursor = params.cursor
+        input.confirmHold = params.confirmHold
+        input.cursorSpacing = params.cursorSpacing
+        input.holdKeyboard = params.holdKeyboard
+        input.textField.isEnabled = !params.disabled
         input.textField.text = params.text
         input.textField.textColor = params.style.color.hexColor()
         input.textField.font = UIFont.systemFont(ofSize: params.style.fontSize,
@@ -276,7 +243,6 @@ enum NZInputAPI: String, NZBuiltInAPI {
         }
         
         input.onKeyboardReturn = {
-            input.textField.resignFirstResponder()
             let message: [String: Any] = ["inputId": params.inputId]
             bridge.subscribeHandler(method: KeyboardManager.onConfirmSubscribeKey, data: message)
         }
@@ -292,7 +258,6 @@ enum NZInputAPI: String, NZBuiltInAPI {
         }
         
         container.addSubview(input)
-        input.autoPinEdgesToSuperviewEdges()
         
         inputModule.inputs.set(page.pageId, params.inputId, value: input)
         
@@ -320,7 +285,11 @@ enum NZInputAPI: String, NZBuiltInAPI {
         
         enum Method: String, Decodable {
             case changeValue
-            case becomeFirstResponder
+            case focus
+            case blur
+            case update
+            case updateStyle
+            case updatePlaceholderStyle
         }
         
         guard let appService = bridge.appService else { return }
@@ -360,8 +329,107 @@ enum NZInputAPI: String, NZBuiltInAPI {
             if let text = params.data["text"] as? String {
                 input.setText(text)
             }
-        case .becomeFirstResponder:
-            input.field.becomeFirstResponder()
+        case .focus:
+            input.startEdit()
+        case .blur:
+            input.endEdit()
+        case .update:
+            if let input = input as? NZTextView {
+                struct Params: Decodable {
+                    let placeholder: String
+                    let maxlength: Int
+                    let adjustPosition: Bool
+                    let confirmType: NZTextView.ConfirmType
+                    let disabled: Bool
+                    let cursor: Int
+                    let selectionStart: Int
+                    let selectionEnd: Int
+                    let confirmHold: Bool
+                    let holdKeyboard: Bool
+                    let cursorSpacing: CGFloat
+                    let showConfirmBar: Bool
+                    let autoHeight: Bool
+                    let disableDefaultPadding: Bool
+                }
+                
+                if let params: Params = params.data.toModel() {
+                    input.maxLength = params.maxlength
+                    input.adjustPosition = params.adjustPosition
+                    input.selectionStart = params.selectionStart
+                    input.selectionEnd = params.selectionEnd
+                    input.cursor = params.cursor
+                    input.confirmHold = params.confirmHold
+                    input.cursorSpacing = params.cursorSpacing
+                    input.holdKeyboard = params.holdKeyboard
+                    input.isAutoHeight = params.autoHeight
+                    input.textView.isEditable = !params.disabled
+                    input.placeholderLabel.text = params.placeholder
+                    input.textView.returnKeyType = params.confirmType.toNatively()
+                }
+            } else if let input = input as? NZTextFieldView {
+                struct Params: Decodable {
+                    let type: NZTextFieldView.KeyboardType
+                    let placeholder: String
+                    let password: Bool
+                    let maxlength: Int
+                    let adjustPosition: Bool
+                    let confirmType: NZTextFieldView.ConfirmType
+                    let disabled: Bool
+                    let cursor: Int
+                    let selectionStart: Int
+                    let selectionEnd: Int
+                    let confirmHold: Bool
+                    let holdKeyboard: Bool
+                    let cursorSpacing: CGFloat
+                }
+                
+                if let params: Params = params.data.toModel() {
+                    input.maxLength = params.maxlength
+                    input.adjustPosition = params.adjustPosition
+                    input.selectionStart = params.selectionStart
+                    input.selectionEnd = params.selectionEnd
+                    input.cursor = params.cursor
+                    input.confirmHold = params.confirmHold
+                    input.cursorSpacing = params.cursorSpacing
+                    input.holdKeyboard = params.holdKeyboard
+                    input.textField.isEnabled = !params.disabled
+                    input.textField.placeholder = params.placeholder
+                    input.textField.isSecureTextEntry = params.password
+                    input.textField.returnKeyType = params.confirmType.toNatively()
+                    input.textField.keyboardType = params.type.toNatively()
+                }
+            }
+        case .updateStyle:
+            if let style: NZInputStyle = params.data.toModel() {
+                let rect = CGRect(x: 0, y: 0, width: style.width, height: style.height)
+                input.frame = rect
+                if let input = input as? NZTextFieldView {
+                    input.textField.textColor = style.color.hexColor()
+                    input.textField.font = UIFont.systemFont(ofSize: style.fontSize,
+                                                             weight: style.fontWeight.toNatively())
+                    input.textField.textAlignment = style.textAlign.toNatively()
+                } else if let input = input as? NZTextView {
+                    input.textView.font = UIFont.systemFont(ofSize: style.fontSize,
+                                                            weight: style.fontWeight.toNatively())
+                    input.textView.textColor = style.color.hexColor()
+                    input.textView.textAlignment = style.textAlign.toNatively()
+                    input.placeholderLabel.textAlignment = style.textAlign.toNatively()
+                }
+            }
+        case .updatePlaceholderStyle:
+            if let style: NZInputPlaceholderStyle = params.data.toModel() {
+                if let input = input as? NZTextFieldView {
+                    let font = UIFont.systemFont(ofSize: style.fontSize, weight: style.fontWeight.toNatively())
+                    let attributes: [NSAttributedString.Key : Any] = [.font: font,
+                                                                      .foregroundColor: style.color.hexColor()]
+                    let string = input.textField.attributedPlaceholder?.string ?? ""
+                    input.textField.attributedPlaceholder = NSAttributedString(string: string, attributes: attributes)
+                } else if let input = input as? NZTextView {
+                    input.placeholderLabel.font = UIFont.systemFont(ofSize: style.fontSize,
+                                                                    weight: style.fontWeight.toNatively())
+                    input.placeholderLabel.textColor = style.color.hexColor()
+                }
+            }
         }
         
         bridge.invokeCallbackSuccess(args: args)

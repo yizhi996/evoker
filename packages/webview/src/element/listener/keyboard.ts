@@ -29,7 +29,7 @@ export default function useKeyboard(inputId: number) {
     return id
   }
 
-  function onKeyboardSetValue(callback: (data: any) => void) {
+  function onKeyboardSetValue(callback: (data: { value: string }) => void) {
     return createListener(SubscribeKeys.SET_VALUE, callback)
   }
 
@@ -37,15 +37,17 @@ export default function useKeyboard(inputId: number) {
     return createListener(SubscribeKeys.ON_SHOW, callback)
   }
 
-  function onKeyboardHide(callback: (data: any) => void) {
+  function onKeyboardHide(callback: () => void) {
     return createListener(SubscribeKeys.ON_HIDE, callback)
   }
 
-  function onKeyboardConfirm(callback: (data: any) => void) {
+  function onKeyboardConfirm(callback: () => void) {
     return createListener(SubscribeKeys.ON_CONFIRM, callback)
   }
 
-  function onKeyboardHeightChange(callback: (data: any) => void) {
+  function onKeyboardHeightChange(
+    callback: (data: { height: number; duration: number }) => void
+  ) {
     return createListener(SubscribeKeys.HEIGHT_CHANGE, callback)
   }
 

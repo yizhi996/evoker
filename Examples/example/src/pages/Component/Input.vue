@@ -1,61 +1,46 @@
 <template>
-    <div class="mx-3 mt-3">auto focus input, isFocus: {{ focus }}, keyboard height: {{ kbHeight }}</div>
-    <div class="p-4 bg-white">
-        <input
-            v-model="value"
-            placeholder="请输入"
-            focus
-            @focus="onFocus"
-            @blur="onBlur"
-            @confirm="onConfirm"
-            @keyboard-height-change="onKeybardHeightChange"
-        />
-    </div>
-    <div class="mx-3 mt-3">max length is 10 input</div>
-    <div class="p-4 bg-white">
-        <input v-model="value1" placeholder="请输入" :maxlength="10" />
-    </div>
-    <div class="mx-3 mt-3">input value: {{ inputText }}</div>
-    <div class="p-4 bg-white">
-        <input v-model="inputText" placeholder="请输入" />
-    </div>
-    <div class="mx-3 mt-3">password: {{ password }}</div>
-    <div class="p-4 bg-white">
-        <input v-model="password" password placeholder="请输入" />
-    </div>
-    <div class="mx-3 mt-3">number input</div>
-    <div class="p-4 bg-white">
-        <input type="number" placeholder="请输入" :model-value="inputText" />
-    </div>
-    <div class="mx-3 mt-3">decimal input</div>
-    <div class="p-4 bg-white">
-        <input type="digit" placeholder="请输入" :model-value="inputText" />
-    </div>
+  <div class="mx-2.5 mt-2.5">
+    <topic>isFocus: {{ focus }}</topic>
+    <input
+      class="w-full h-12 bg-white px-2.5"
+      value="NZoth"
+      placeholder="请输入"
+      focus
+      @focus="onFocus"
+      @blur="onBlur"
+    />
+    <topic>Maxlength 10</topic>
+    <input class="w-full h-12 bg-white px-2.5" placeholder="请输入" :maxlength="10" />
+    <topic>Account: {{ account }}</topic>
+    <input class="w-full h-12 bg-white px-2.5" v-model:value="account" placeholder="请输入" />
+    <topic>Password: {{ password }}</topic>
+    <input class="w-full h-12 bg-white px-2.5" v-model:value="password" password placeholder="请输入" />
+    <topic>Number Type</topic>
+    <input class="w-full h-12 bg-white px-2.5" type="number" placeholder="请输入" />
+    <topic>Decimal Type</topic>
+    <input class="w-full h-12 bg-white px-2.5" type="digit" placeholder="请输入" />
+    <topic>Custom Style</topic>
+    <input
+      class="w-full h-12 bg-white px-2.5 text-red-400 text-xl text-center font-light"
+      placeholder="请输入"
+      placeholder-class="text-blue-400 text-xl font-light"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue"
 
 const focus = ref(false)
-const value = ref("")
-const value1 = ref("默认值")
-const inputText = ref("")
+const account = ref("")
 const password = ref("")
-const kbHeight = ref(0)
 
 const onFocus = () => {
-    focus.value = true
+  focus.value = true
 }
 
 const onBlur = () => {
-    focus.value = false
+  focus.value = false
 }
 
-const onConfirm = (value: string) => {
-    console.log(value)
-}
-
-const onKeybardHeightChange = (data: { height: number }) => {
-    kbHeight.value = data.height
-}
 </script>

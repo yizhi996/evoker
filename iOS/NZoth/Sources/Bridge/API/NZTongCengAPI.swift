@@ -18,7 +18,7 @@ enum NZTongCengAPI: String, NZBuiltInAPI {
     struct ContainerParams: Decodable {
         let tongcengId: String
         let position: Position
-        let scrollEnabled: Bool
+        let scrollEnabled: Bool?
     }
     
     struct Position: Decodable {
@@ -67,7 +67,7 @@ enum NZTongCengAPI: String, NZBuiltInAPI {
             return
         }
         
-        if !params.scrollEnabled {
+        if params.scrollEnabled == false {
             scrollView.gestureRecognizers?.forEach { scrollView.removeGestureRecognizer($0) }
             
             let frame = CGRect(x: 0, y: 0, width: params.position.width, height: params.position.height)

@@ -26,7 +26,7 @@ class NZInputModule: NZModule {
     
     weak var appService: NZAppService?
     
-    lazy var inputs: DoubleLevelDictionary<PageId, InputId, NZInput> = DoubleLevelDictionary()
+    lazy var inputs: DoubleLevelDictionary<PageId, InputId, NZTextInput> = DoubleLevelDictionary()
     
     var prevKeyboardHeight: CGFloat = 0
     
@@ -54,12 +54,17 @@ class NZInputModule: NZModule {
         inputs.remove(page.pageId)
     }
     
-    func findInput(pageId: PageId, where predicate: (NZInput) throws -> Bool) rethrows -> NZInput? {
+    func first(pageId: PageId, where predicate: (NZTextInput) throws -> Bool) rethrows -> NZTextInput? {
         guard let inputs = inputs.get(pageId) else { return nil }
         return try? inputs.values.first(where: predicate)
     }
     
-    func allInputs(pageId: PageId) -> [NZInput] {
+    func last(pageId: PageId, where predicate: (NZTextInput) throws -> Bool) rethrows -> NZTextInput? {
+        guard let inputs = inputs.get(pageId) else { return nil }
+        return try? Array(inputs.values).last(where: predicate)
+    }
+    
+    func allInputs(pageId: PageId) -> [NZTextInput] {
         guard let inputs = inputs.get(pageId) else { return [] }
         return Array(inputs.values)
     }
@@ -69,17 +74,20 @@ class NZInputModule: NZModule {
               let page = appService.currentPage as? NZWebPage,
               page.isVisible,
               let input = notify.object as? NZTextView,
-              let transition = KeyboardManager.shared.currentTransition,
-              let selectedTextRange = input.textView.selectedTextRange else { return }
-        let caretRect = input.textView.caretRect(for: selectedTextRange.start)
-        let rect = input.textView.convert(caretRect, to: UIApplication.shared.keyWindow)
+              let transition = KeyboardManager.shared.currentTransition else { return }
+        var rect = input.frame
+        if let selectedTextRange = input.field.selectedTextRange {
+            rect = input.field.caretRect(for: selectedTextRange.end)
+        }
+        let inputMaxY = input.convert(rect,
+                                      to: UIApplication.shared.keyWindow).maxY + input.cursorSpacing
         let keyboardY = transition.toFrame.minY
-        if rect.maxY > keyboardY {
+        if inputMaxY > keyboardY {
             page.webView.adjustPosition = true
             UIView.animate(withDuration: transition.animationDuration,
                            delay: 0,
                            options: transition.animationOptions) {
-                page.webView.frame.origin.y -= rect.maxY - keyboardY
+                page.webView.frame.origin.y -= inputMaxY - keyboardY
             }
         }
     }
@@ -112,18 +120,23 @@ extension NZInputModule: KeyboardObserver {
         
         if transition.toVisible {
             if keyboardHeightUpdated {
-                if let input = findInput(pageId: page.pageId, where: { $0.field.isFirstResponder }), input.adjustPosition {
+                if let input = first(pageId: page.pageId, where: { $0.isFirstResponder }),
+                   input.adjustPosition {
                     let data: [String: Any] = ["inputId": input.inputId, "height": keyboardHeight]
                     webView.bridge.subscribeHandler(method: KeyboardManager.onShowSubscribeKey, data: data)
                     let keyboardY = transition.toFrame.minY
-                    let rect = input.convert(input.frame, to: UIApplication.shared.keyWindow)
-                    if rect.maxY > keyboardY {
+                    var rect = input.frame
+                    if let selectedTextRange = input.field.selectedTextRange {
+                        rect = input.field.caretRect(for: selectedTextRange.end)
+                    }
+                    let inputMaxY = input.convert(rect,
+                                                  to: UIApplication.shared.keyWindow).maxY + input.cursorSpacing
+                    if inputMaxY > keyboardY {
                         webView.adjustPosition = true
-                        webView.adjustOldY = webView.frame.minY
                         UIView.animate(withDuration: transition.animationDuration,
                                        delay: 0,
                                        options: transition.animationOptions) {
-                            webView.frame.origin.y -= rect.maxY - keyboardY
+                            webView.frame.origin.y -= inputMaxY - keyboardY
                         }
                     }
                 }
@@ -135,7 +148,7 @@ extension NZInputModule: KeyboardObserver {
                 UIView.animate(withDuration: transition.animationDuration,
                                delay: 0,
                                options: transition.animationOptions) {
-                    webView.frame.origin.y = webView.adjustOldY
+                    webView.frame.origin.y = page.navigationStyle == .default ? Constant.navigationBarHeight + Constant.statusBarHeight : 0
                 }
             }
         }

@@ -39,8 +39,6 @@ final public class NZWebView: WKWebView {
     
     public var adjustPosition = false
     
-    public var adjustOldY: CGFloat = 0
-    
     private var pendingFunctions: [() -> Any?] = []
 
     private var didHandleWKContentGestrues = false
