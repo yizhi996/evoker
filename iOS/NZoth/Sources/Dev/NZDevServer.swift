@@ -24,11 +24,23 @@ public struct NZDevServerConfig {
 
 class NZDevServer: NZWebSocket {
     
+    struct AppUpdateOptions: Decodable {
+        let appId: String
+        var files: [String]
+        let version: String
+        var launchOptions: LaunchOptions?
+        
+        struct LaunchOptions: Decodable {
+            let page: String
+            var query: String?
+        }
+    }
+    
     public static let shared = NZDevServer()
     
     private let lock = Lock()
     
-    private var needUploadFiles: Set<String> = []
+    private var needUpdateApps: [String: AppUpdateOptions] = [:]
     
     override func onRecv(_ data: Data) {
         guard data.count > 64 else { return }
@@ -63,13 +75,12 @@ private extension NZDevServer {
     }
     
     func update(_ body: Data) {
-        guard let message = body.toDict(),
-              let appId = message["appId"] as? String,
-              let version = message["version"] as? String,
-              let files = message["files"] as? [String] else { return }
-        NZVersionManager.shared.setLocalAppVersion(appId: appId, envVersion: .develop, version: version)
+        guard let options: AppUpdateOptions = body.toModel() else { return }
+        NZVersionManager.shared.setLocalAppVersion(appId: options.appId,
+                                                   envVersion: .develop,
+                                                   version: options.version)
         lock.lock()
-        files.forEach { needUploadFiles.insert("\(appId)_\($0)") }
+        needUpdateApps[options.appId] = options
         lock.unlock()
     }
     
@@ -80,11 +91,8 @@ private extension NZDevServer {
         let package = header[1]
         
         lock.lock()
-        let contains = needUploadFiles.contains("\(appId)_\(package)")
-        lock.unlock()
-        if !contains {
-            return
-        }
+        defer { lock.unlock() }
+        guard var options = needUpdateApps[appId] else { return }
         
         var packageURL: URL
         if package == "sdk" {
@@ -95,6 +103,11 @@ private extension NZDevServer {
             return
         }
         
+        
+        
+        
+        
+        
         do {
             let (filePath, _) =  FilePath.createTempNZFilePath(ext: "zip")
             try FilePath.createDirectory(at: filePath.deletingLastPathComponent())
@@ -102,16 +115,21 @@ private extension NZDevServer {
             if FileManager.default.createFile(atPath: filePath.path, contents: body, attributes: nil) {
                 try FilePath.createDirectory(at: packageURL)
                 try Zip.unzipFile(filePath, destination: packageURL, overwrite: true, password: nil, progress: nil)
-                lock.lock()
-                if let i = needUploadFiles.firstIndex(of: "\(appId)_\(package)") {
-                    needUploadFiles.remove(at: i)
+                
+                if let index = options.files.firstIndex(of: package) {
+                    options.files.remove(at: index)
+                    needUpdateApps[appId] = options
                 }
-                let finished = needUploadFiles.filter { $0.starts(with: "\(appId)_") }.isEmpty
-                lock.unlock()
-                if finished {
+                
+                if options.files.isEmpty {
                     DispatchQueue.main.async {
                         NZNotifyType.success("DEV_RELOAD").show()
-                        NotificationCenter.default.post(name: NZDevServer.didUpdateNotification, object: appId)
+                        self.needUpdateApps[appId] = nil
+                        var info: [String: Any] = ["appId": appId]
+                        if let launchOptions = options.launchOptions {
+                            info["launchOptions"] = launchOptions
+                        }
+                        NotificationCenter.default.post(name: NZDevServer.didUpdateNotification, object: info)
                     }
                 }
             }

@@ -24,15 +24,6 @@ export interface Options {
   build?: BuildOptions
 }
 
-const warpperCompile = (
-  template: string | RootNode,
-  options?: CompilerOptions | undefined
-) => {
-  // disabled createStaticVNode
-  options && (options.transformHoist = null)
-  return compiler.baseCompile(template, options)
-}
-
 export default function plugins(options: Options = {}) {
   let plugins: Plugin[] = [
     buildConfig(options.build),
@@ -57,7 +48,14 @@ export default function plugins(options: Options = {}) {
       },
       transformAssetUrls: { image: ["src"] },
       compiler: {
-        compile: warpperCompile,
+        compile: (
+          template: string | RootNode,
+          options?: CompilerOptions | undefined
+        ) => {
+          // disabled createStaticVNode
+          options && (options.transformHoist = null)
+          return compiler.baseCompile(template, options)
+        },
         parse: baseParse
       }
     }

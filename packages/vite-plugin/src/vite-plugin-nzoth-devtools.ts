@@ -23,10 +23,16 @@ interface DevSDKOptions {
   root: string
 }
 
+interface DevLaunchOptions {
+  page: string
+  query?: string
+}
+
 export interface Options {
   host?: string | boolean
   port?: number
   devSDK?: DevSDKOptions
+  launchOptions?: DevLaunchOptions
 }
 
 export default function vitePluginNZothDevtools(options: Options = {}): Plugin {
@@ -57,8 +63,8 @@ let options: Options
  * 启动 WebSocket Server
  * @param options
  */
-function createWebSocketServer(op: Options) {
-  options = op
+function createWebSocketServer(opts: Options) {
+  options = opts
   runWebSocketServer({
     host: options.host,
     port: options.port,
@@ -169,7 +175,8 @@ function sendAllPackageFile() {
         const message = JSON.stringify({
           appId,
           files,
-          version: serviceVersion.toString()
+          version: serviceVersion.toString(),
+          launchOptions: options.launchOptions
         })
 
         const data = createMessage("--UPDATE--", message)

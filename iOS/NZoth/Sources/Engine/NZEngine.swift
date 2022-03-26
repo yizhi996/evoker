@@ -164,9 +164,15 @@ final public class NZEngine {
     }
     
     @objc private func appDevelopUpdateNotification(_ notification: Notification) {
-        guard let appId = notification.object as? String, !appId.isEmpty else { return }
+        guard let info = notification.object as? [String: Any],
+              let appId = info["appId"] as? String,
+              !appId.isEmpty else { return }
         var options = NZAppLaunchOptions()
         options.envVersion = .develop
+        if let launchOptions = info["launchOptions"] as? NZDevServer.AppUpdateOptions.LaunchOptions {
+            options.path = launchOptions.page
+            options.query = launchOptions.query ?? ""
+        }
         let runningId = runningId(appId: appId, envVersion: options.envVersion)
         if let appService = runningApp.first(where: { $0.runningId == runningId }) {
             appService.reLaunch(launchOptions: options)
