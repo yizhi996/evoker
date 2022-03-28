@@ -225,6 +225,16 @@
       "component": "pages/Extension/Icon.vue",
       "path": "extension/icon",
       "style": { "navigationBarTitleText": "Icon" }
+    },
+    {
+      "component": "pages/API/Request.vue",
+      "path": "request",
+      "style": { "navigationBarTitleText": "Request" }
+    },
+    {
+      "component": "pages/API/DownloadFile.vue",
+      "path": "download-file",
+      "style": { "navigationBarTitleText": "DownloadFile" }
     }
   ]
 }

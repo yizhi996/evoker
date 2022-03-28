@@ -54,6 +54,10 @@ final public class NZWebView: WKWebView {
         configuration.userContentController.add(scriptMessageHandler, name: "invokeHandler")
         configuration.userContentController.add(scriptMessageHandler, name: "publishHandler")
         configuration.userContentController.add(scriptMessageHandler, name: "DOMContentLoaded")
+        
+        if NZEngine.shared.userAgent.isEmpty, let userAgent = value(forKey: "userAgent") as? String {
+            NZEngine.shared.userAgent = userAgent + " NZoth/\(Constant.version)(\(Constant.jsSDKVersion))"
+        }
     }
     
     required public init?(coder: NSCoder) {

@@ -38,7 +38,6 @@ import { startPullDownRefresh, stopPullDownRefresh } from "@nzoth/bridge"
 import { previewImage, chooseImage } from "@nzoth/bridge"
 import { createCameraContext } from "@nzoth/bridge"
 import { createInnerAudioContext } from "@nzoth/bridge"
-import { request, downloadFile, uploadFile } from "@nzoth/bridge"
 import { vibrateShort, vibrateLong } from "@nzoth/bridge"
 import { getNetworkType, getLocalIPAddress } from "@nzoth/bridge"
 import { scanCode } from "@nzoth/bridge"
@@ -47,9 +46,13 @@ import { rsa } from "@nzoth/bridge"
 import { createSelectorQuery } from "./api/html/selector"
 import { getBatteryInfo } from "@nzoth/bridge"
 import { showTabBar, hideTabBar } from "@nzoth/bridge"
+import { request, downloadFile, uploadFile } from "./api/request"
 import "./webview"
 
+const env = { USER_DATA_PATH: "nzfile://usr" }
+
 export {
+  env,
   navigateTo,
   navigateBack,
   redirectTo,
@@ -100,6 +103,7 @@ export {
 }
 
 export default {
+  env,
   navigateTo,
   navigateBack,
   redirectTo,

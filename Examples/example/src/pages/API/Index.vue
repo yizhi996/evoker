@@ -125,7 +125,7 @@ const list = reactive([
     pages: [
       {
         name: '发起一个请求',
-        url: 'request/request'
+        url: 'request'
       }, {
         name: 'WebSocket',
         url: 'web-socket/web-socket'
@@ -134,7 +134,7 @@ const list = reactive([
         url: 'upload-file/upload-file'
       }, {
         name: '下载文件',
-        url: 'download-file/download-file'
+        url: 'download-file'
       }, {
         name: 'UDPSocket',
         url: 'udp-socket/udp-socket'

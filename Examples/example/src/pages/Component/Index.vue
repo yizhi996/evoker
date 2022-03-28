@@ -70,16 +70,6 @@ const list = reactive([
     pages: [
       { name: "canvas-2d 暂未支持", url: "canvas-2d" },
       { name: "webgl 暂未支持", url: "webgl" }]
-  }, {
-    id: "open",
-    name: "开放能力",
-    open: false,
-    pages: [{ url: "web-view" }]
-  }, {
-    id: "obstacle-free",
-    name: "无障碍访问",
-    open: false,
-    pages: [{ url: "aria-component" }]
   }
 ])
 

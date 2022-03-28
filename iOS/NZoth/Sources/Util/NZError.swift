@@ -125,7 +125,7 @@ extension NZError.BridgeFailureReason {
         case .fieldRequired(let filed):
             return "filed -\(filed)- is required"
         case .networkError(let error):
-            return "network request error: \(error)"
+            return error
         case .visibleViewControllerNotFound:
             return "visible view controller not found"
         case .tongCengContainerViewNotFound(let tongcengId):

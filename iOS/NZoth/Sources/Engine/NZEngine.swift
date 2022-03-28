@@ -58,6 +58,8 @@ final public class NZEngine {
     
     var webViewPool: NZPool<NZWebView>!
     
+    var userAgent = ""
+    
     private var isLaunch = false
     
     private init() {

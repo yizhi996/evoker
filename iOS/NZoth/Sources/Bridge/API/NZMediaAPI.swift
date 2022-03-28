@@ -56,7 +56,7 @@ enum NZMediaAPI: String, NZBuiltInAPI {
             return
         }
         
-        var filePath = FilePath.nzFilePathToRealFilePath(filePath: path)
+        var filePath = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: path)
         let isNZFile = filePath != nil
         if !isNZFile {
             filePath = FilePath.appStaticFilePath(appId: appService.appId,

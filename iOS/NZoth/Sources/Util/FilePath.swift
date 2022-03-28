@@ -28,12 +28,19 @@ public struct FilePath {
         return tempDirectory().appendingPathComponent("nzfile")
     }
     
-    static func nzFilePathToRealFilePath(filePath: String) -> URL? {
+    static func nzFilePathToRealFilePath(appId: String, filePath: String) -> URL? {
         let scheme = "nzfile://"
         if filePath.hasPrefix(scheme) {
-            let start = filePath.index(filePath.startIndex, offsetBy: scheme.count)
-            let fileName = filePath[start..<filePath.endIndex]
-            return FilePath.nzFileDirectory().appendingPathComponent("\(fileName)")
+            let usr = scheme + "usr/"
+            if filePath.hasPrefix(usr) {
+                let start = filePath.index(filePath.startIndex, offsetBy: usr.count)
+                let path = filePath[start..<filePath.endIndex]
+                return FilePath.createUserNZFilePath(appId: appId, path: String(path))
+            } else {
+                let start = filePath.index(filePath.startIndex, offsetBy: scheme.count)
+                let fileName = filePath[start..<filePath.endIndex]
+                return FilePath.nzFileDirectory().appendingPathComponent(String(fileName))
+            }
         }
         return nil
     }
@@ -48,9 +55,7 @@ public struct FilePath {
     
     static func createDirectory(at url: URL) throws {
         if !FileManager.default.fileExists(atPath: url.path, isDirectory: nil) {
-            try FileManager.default.createDirectory(at: url,
-                                                    withIntermediateDirectories: true,
-                                                    attributes: nil)
+            try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         }
     }
 }
@@ -82,6 +87,10 @@ public extension FilePath {
         let id = UUID().uuidString.md5()
         let fileName = "temp_\(id).\(ext)"
         return (nzFileDirectory().appendingPathComponent(fileName), "nzfile://\(fileName)")
+    }
+    
+    static func createUserNZFilePath(appId: String, path: String) -> URL {
+        return app(appId: appId).appendingPathComponent("file").appendingPathComponent(path)
     }
     
     static func networkLog() -> URL {

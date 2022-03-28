@@ -12,12 +12,15 @@ import CryptoSwift
 enum NZCryptoAPI: String, NZBuiltInAPI {
     
     case rsa
+    case getRandomValues
     
     func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         DispatchQueue.global().async {
             switch self {
             case .rsa:
                 rsa(args: args, bridge: bridge)
+            case .getRandomValues:
+                getRandomValues(args:args, bridge: bridge)
             }
         }
     }
@@ -73,6 +76,28 @@ enum NZCryptoAPI: String, NZBuiltInAPI {
                 let error = NZError.bridgeFailed(reason: .custom("decrypt fail"))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
+        }
+    }
+    
+    private func getRandomValues(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+        guard let params = args.paramsString.toDict() else {
+            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let length = params["length"] as? Int else {
+            let error = NZError.bridgeFailed(reason: .fieldRequired("length"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        var bytes = [Int8](repeating: 0, count: length)
+        let status = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+        if status == errSecSuccess {
+            bridge.invokeCallbackSuccess(args: args, result: ["randomValues": bytes])
+        } else {
+            bridge.invokeCallbackFail(args: args, error: .bridgeFailed(reason: .custom("")))
         }
     }
     
