@@ -1,3 +1,4 @@
+import { isString } from "@nzoth/shared"
 import { queuePostFlushCb } from "vue"
 
 class CanvasPattern {
@@ -137,7 +138,7 @@ export class CanvasRenderingContext2D {
   set fillStyle(value) {
     this._fillStyle = value
 
-    if (typeof value === "string") {
+    if (isString(value)) {
       this.enqueue(["F", value])
     } else if (value instanceof CanvasPattern) {
       const image = value.image
@@ -192,7 +193,7 @@ export class CanvasRenderingContext2D {
   set strokeStyle(value) {
     this._strokeStyle = value
 
-    if (typeof value == "string") {
+    if (isString(value)) {
       this.enqueue(["S", value])
     } else if (value instanceof CanvasPattern) {
       const image = value.image

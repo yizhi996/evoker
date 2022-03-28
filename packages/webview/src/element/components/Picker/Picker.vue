@@ -3,9 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, watchEffect } from "vue"
+import { computed, watch } from "vue"
 import { NZJSBridge } from "../../../bridge"
 import { vTap } from "../../directive/tap"
+import { isObject } from "@nzoth/shared"
 
 const emit = defineEmits(["change", "columnchange", "cancel"])
 
@@ -46,9 +47,9 @@ watch(() => [...props.range], () => {
 const dataType = computed(() => {
   if (props.mode === "multiSelector") {
     const firstColumns = props.range[0]
-    return typeof firstColumns[0] === "object" ? "object" : "plain"
+    return isObject(firstColumns[0]) ? "object" : "plain"
   } else {
-    return typeof props.range[0] === "object" ? "object" : "plain"
+    return isObject(props.range[0]) ? "object" : "plain"
   }
 })
 

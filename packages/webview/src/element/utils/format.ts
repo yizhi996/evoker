@@ -1,3 +1,5 @@
+import { isNumber } from "@nzoth/shared"
+
 export function zeroPad(nr: number, base: number) {
   var len = String(base).length - String(nr).length + 1
   return len > 0 ? new Array(len).join("0") + nr : nr.toString()
@@ -76,7 +78,7 @@ function convertVh(value: string) {
 }
 
 export function unitToPx(value: string | number): number {
-  if (typeof value === "number") {
+  if (isNumber(value)) {
     return value
   }
 

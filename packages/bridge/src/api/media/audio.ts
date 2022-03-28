@@ -1,5 +1,5 @@
 import { invoke, subscribe } from "../../bridge"
-import { dispatch, on, off } from "@nzoth/shared"
+import { dispatch, on, off, isFunction } from "@nzoth/shared"
 
 let audioId = 0
 
@@ -35,7 +35,7 @@ class InnerAudioContext {
     const { onPlay, onEnded, removaAllListener } = useAudio(this.id)
 
     onPlay(() => {
-      typeof this.onPlayCallback === "function" && this.onPlayCallback()
+      isFunction(this.onPlayCallback) && this.onPlayCallback()
     })
 
     onEnded(() => {
@@ -43,7 +43,7 @@ class InnerAudioContext {
         this.seek(0)
         this.play()
       }
-      typeof this.onPlayCallback === "function" && this.onPlayCallback()
+      isFunction(this.onPlayCallback) && this.onPlayCallback()
     })
     this.removaAllListener = removaAllListener
   }

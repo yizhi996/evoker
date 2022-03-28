@@ -2,6 +2,7 @@ import { InnerJSBridge } from "../../bridge"
 import { getCurrentPages } from "../../../app"
 import { NZothPage } from "../../../dom/page"
 import { createCanvasNode } from "./node"
+import { isFunction } from "@nzoth/shared"
 
 const SelectorQueryKey = "selectorQuery"
 const selectorQueryCallbacks = new Map<string, Function>()
@@ -9,7 +10,7 @@ const selectorQueryCallbacks = new Map<string, Function>()
 InnerJSBridge.subscribe(SelectorQueryKey, res => {
   const { id } = res
   const callback = selectorQueryCallbacks.get(id)
-  if (typeof callback === "function") {
+  if (isFunction(callback)) {
     callback(res.list)
     selectorQueryCallbacks.delete(id)
   }
@@ -62,7 +63,7 @@ class SelectorQuery {
               createCanvasNode(node.nodeId, node.canvasType, node.canvasId)
             }
           }
-          typeof callback === "function" && callback(res[i])
+          isFunction(callback) && callback(res[i])
         }
         resolve(res)
       }

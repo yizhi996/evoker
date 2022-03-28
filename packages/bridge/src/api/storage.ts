@@ -1,3 +1,4 @@
+import { isNumber, isObject, isString, isBoolean } from "@nzoth/shared"
 import {
   invoke,
   GeneralCallbackResult,
@@ -53,7 +54,7 @@ export function getStorage<
   U extends GetStorageOptions<T> = GetStorageOptions<T>
 >(options: U): AsyncReturn<U, GetStorageOptions<T>> {
   return wrapperAsyncAPI<U>(options => {
-    if (typeof options.key !== "string") {
+    if (!isString(options.key)) {
       invokeFailure(Events.GET, options, "key type required string")
       return
     }
@@ -124,22 +125,22 @@ export function setStorage<
   U extends SetStorageOptions<T> = SetStorageOptions<T>
 >(options: U): AsyncReturn<U, SetStorageOptions<T>> {
   return wrapperAsyncAPI<U>(options => {
-    if (typeof options.key !== "string") {
+    if (!isString(options.key)) {
       invokeFailure(Events.SET, options, "key type required string")
       return
     }
 
     let data = options.data as unknown
     let type = ""
-    if (typeof data === "string") {
+    if (isString(data)) {
       type = "String"
-    } else if (typeof data === "number") {
+    } else if (isNumber(data)) {
       data = data.toString()
       type = DataType.NUMBER
-    } else if (typeof data === "boolean") {
+    } else if (isBoolean(data)) {
       data = data ? "true" : "false"
       type = DataType.OBJECT
-    } else if (typeof data === "object") {
+    } else if (isObject(data)) {
       data = JSON.stringify(data)
       type = DataType.OBJECT
     } else if (Array.isArray(data)) {
@@ -193,7 +194,7 @@ export function removeStorage<
   T extends RemoveStorageOptions = RemoveStorageOptions
 >(options: T): AsyncReturn<T, RemoveStorageOptions> {
   return wrapperAsyncAPI<T>(options => {
-    if (typeof options.key !== "string") {
+    if (!isString(options.key)) {
       invokeFailure(Events.REMOVE, options, "key type required string")
       return
     }

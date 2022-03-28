@@ -1,3 +1,5 @@
+import { isFunction, isString } from "@nzoth/shared"
+
 export interface GeneralCallbackResult {
   errMsg: string
 }
@@ -60,8 +62,8 @@ export function invokeSuccess<
   U extends CallbackOptions = CallbackOptions
 >(event: string, options: U, result: T) {
   ;(result as T & { errMsg: string }).errMsg = `${event}:ok`
-  typeof options.success === "function" && options.success(result)
-  typeof options.complete == "function" && options.complete(result)
+  isFunction(options.success) && options.success(result)
+  isFunction(options.complete) && options.complete(result)
 }
 
 export function invokeFailure<T extends CallbackOptions = CallbackOptions>(
@@ -70,8 +72,8 @@ export function invokeFailure<T extends CallbackOptions = CallbackOptions>(
   errMsg: string
 ) {
   const final = `${event}:fail ${errMsg}`
-  typeof options.fail === "function" && options.fail({ errMsg: final })
-  typeof options.complete == "function" && options.complete({ errMsg: final })
+  isFunction(options.fail) && options.fail({ errMsg: final })
+  isFunction(options.complete) && options.complete({ errMsg: final })
 }
 
 export function invokeCallback<
@@ -174,7 +176,7 @@ export function invoke<T = unknown>(
 export function invokeCallbackHandler(result: InvokeCallbackResult<unknown>) {
   const callback = callbacks.get(result.id)
   if (callback) {
-    if (typeof result.data === "string") {
+    if (isString(result.data)) {
       try {
         result.data = JSON.parse(result.data)
       } catch (e) {}
