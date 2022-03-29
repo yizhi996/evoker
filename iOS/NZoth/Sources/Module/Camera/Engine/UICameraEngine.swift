@@ -98,12 +98,12 @@ extension UICameraEngine: UIImagePickerControllerDelegate {
                 return
             }
             
-            let dest = FilePath.createTempNZFilePath(ext: "jpg")
-            let success = FileManager.default.createFile(atPath: dest.0.path,
+            let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: "jpg")
+            let success = FileManager.default.createFile(atPath: filePath.path,
                                                          contents: imageData,
                                                          attributes: nil)
             if success {
-                let photo = Photo(tempFilePath: dest.1, tempFile: File(path: dest.1, size: imageData.count))
+                let photo = Photo(tempFilePath: nzfile, tempFile: File(path: nzfile, size: imageData.count))
                 takePhotoHandler?(photo)
             } else {
                 errorHandler?("save image to disk fail")

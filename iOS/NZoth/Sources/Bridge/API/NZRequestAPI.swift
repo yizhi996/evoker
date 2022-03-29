@@ -172,11 +172,11 @@ enum NZRequestAPI: String, NZBuiltInAPI {
             
             let dest: URL
             if !params.filePath.isEmpty {
-                dest = FilePath.createUserNZFilePath(appId: appService.appId, path: params.filePath)
+                dest = FilePath.usr(appId: appService.appId, userId: NZEngine.shared.userId, path: params.filePath)
             } else {
-                let (destURL, destNZFile) = FilePath.createTempNZFilePath(ext: ext)
-                dest = destURL
-                destinationNZFilePath = destNZFile
+                let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
+                destinationNZFilePath = nzfile
+                dest = filePath
             }
             return (dest, [.removePreviousFile, .createIntermediateDirectories])
         }
@@ -234,7 +234,9 @@ enum NZRequestAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let filePath = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: params.filePath) else {
+        guard let filePath = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
+                                                               userId: NZEngine.shared.userId,
+                                                               filePath: params.filePath) else {
             let error = NZError.bridgeFailed(reason: .filePathNotExist(params.filePath))
             bridge.invokeCallbackFail(args: args, error: error)
             return

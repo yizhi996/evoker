@@ -12,6 +12,8 @@ import SDWebImage
 import CryptoSwift
 import ZLPhotoBrowser
 import SDWebImageWebPCoder
+import Photos
+import MobileCoreServices
 
 enum NZMediaAPI: String, NZBuiltInAPI {
    
@@ -56,7 +58,9 @@ enum NZMediaAPI: String, NZBuiltInAPI {
             return
         }
         
-        var filePath = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: path)
+        var filePath = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
+                                                         userId: NZEngine.shared.userId,
+                                                         filePath: path)
         let isNZFile = filePath != nil
         if !isNZFile {
             filePath = FilePath.appStaticFilePath(appId: appService.appId,
@@ -158,12 +162,44 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         ps.selectImageBlock = { [unowned bridge] (images, assets, isOriginal) in
             var filePaths: [String] = []
             var files: [[String: Any]] = []
-            images.forEach { image in
-                let dest = FilePath.createTempNZFilePath(ext: "jpg")
-                filePaths.append(dest.1)
-                let imageData = image.jpegData(compressionQuality: 1.0)!
-                FileManager.default.createFile(atPath: dest.0.path, contents: imageData, attributes: nil)
-                let file: [String: Any] = ["path": dest.1, "size": imageData.count]
+            
+            for (i, image) in images.enumerated() {
+                var ext = "jpg"
+                var fmt = SDImageFormat.JPEG
+                var imageData: Data
+                if isOriginal {
+                    let asset = assets[i]
+                    if let uType = PHAssetResource.assetResources(for: asset).first?.uniformTypeIdentifier {
+                        if let fileExtension = UTTypeCopyPreferredTagWithClass(uType as CFString,
+                                                 kUTTagClassFilenameExtension) {
+                            ext = String(fileExtension.takeRetainedValue())
+                        }
+                    }
+                    let allowExts = ["jpg", "jpeg", "png", "gif", "webp"]
+                    if !allowExts.contains(ext) {
+                        ext = "jpg"
+                    }
+                    
+                    if ext == "jpg" || ext == "jpeg" {
+                        fmt = SDImageFormat.JPEG
+                    } else if ext == "png" {
+                        fmt = SDImageFormat.PNG
+                    } else if ext == "gif" {
+                        fmt = SDImageFormat.GIF
+                    } else if ext == "webp" {
+                        fmt = SDImageFormat.webP
+                    }
+                    imageData = image.sd_imageData(as: fmt)!
+                } else {
+                    ext = "jpg"
+                    imageData = image.jpegData(compressionQuality: 0.7)!
+                }
+                
+                let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
+                filePaths.append(nzfile)
+                
+                FileManager.default.createFile(atPath: filePath.path, contents: imageData, attributes: nil)
+                let file: [String: Any] = ["path": nzfile, "size": imageData.count]
                 files.append(file)
             }
             let result: [String: Any] = ["tempFilePaths": filePaths, "tempFiles": files]

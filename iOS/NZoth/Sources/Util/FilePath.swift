@@ -20,35 +20,10 @@ public struct FilePath {
                                            in: .userDomainMask).first!.appendingPathComponent("com.nozthdev")
     }
     
-    static func tempDirectory() -> URL {
+    static func tmpDirectory() -> URL {
         return URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("com.nozthdev")
     }
-    
-    static func nzFileDirectory() -> URL {
-        return tempDirectory().appendingPathComponent("nzfile")
-    }
-    
-    static func nzFilePathToRealFilePath(appId: String, filePath: String) -> URL? {
-        let scheme = "nzfile://"
-        if filePath.hasPrefix(scheme) {
-            let usr = scheme + "usr/"
-            if filePath.hasPrefix(usr) {
-                let start = filePath.index(filePath.startIndex, offsetBy: usr.count)
-                let path = filePath[start..<filePath.endIndex]
-                return FilePath.createUserNZFilePath(appId: appId, path: String(path))
-            } else {
-                let start = filePath.index(filePath.startIndex, offsetBy: scheme.count)
-                let fileName = filePath[start..<filePath.endIndex]
-                return FilePath.nzFileDirectory().appendingPathComponent(String(fileName))
-            }
-        }
-        return nil
-    }
-    
-    static func filePathToNZFilePath(url: URL) -> String {
-        return "nzfile://" + url.lastPathComponent
-    }
-    
+        
     static func mainDatabase() -> URL {
         return documentDirectory().appendingPathComponent("database/nzoth.db")
     }
@@ -63,7 +38,7 @@ public struct FilePath {
 public extension FilePath {
     
     static func cleanTemp() {
-        try? FileManager.default.removeItem(at: tempDirectory())
+        try? FileManager.default.removeItem(at: tmpDirectory())
     }
 }
 
@@ -83,21 +58,63 @@ public extension FilePath {
     
     typealias NZFile = String
     
-    static func createTempNZFilePath(ext: String) -> (URL, NZFile) {
+    /// Document/com.nzothdev/sandbox/{userId}
+    static func sandbox(userId: String) -> URL {
+        return documentDirectory().appendingPathComponent("sandbox").appendingPathComponent(userId)
+    }
+    
+    /// Document/com.nzothdev/sandbox/{userId}/{appId}/usr/{path}
+    static func usr(appId: String, userId: String, path: String) -> URL {
+        return sandbox(userId: userId)
+            .appendingPathComponent(appId)
+            .appendingPathComponent("usr")
+            .appendingPathComponent(path)
+    }
+    
+    /// Document/com.nzothdev/sandbox/{userId}/{appId}/store/{filename}
+    static func store(appId: String, userId: String, filename: String) -> URL {
+        return sandbox(userId: userId)
+            .appendingPathComponent(appId)
+            .appendingPathComponent("store")
+            .appendingPathComponent(filename)
+    }
+    
+    /// tmp/com.nzothdev/{filename}
+    static func tmp(filename: String) -> URL {
+        return tmpDirectory().appendingPathComponent(filename)
+    }
+    
+    static func generateStoreNZFilePath(appId: String, userId: String, ext: String) -> (NZFile, URL) {
         let id = UUID().uuidString.md5()
-        let fileName = "temp_\(id).\(ext)"
-        return (nzFileDirectory().appendingPathComponent(fileName), "nzfile://\(fileName)")
+        let filename = "store_\(id).\(ext)"
+        return ("nzfile://\(filename)", FilePath.store(appId: appId, userId: userId, filename: filename))
     }
     
-    static func createUserNZFilePath(appId: String, path: String) -> URL {
-        return app(appId: appId).appendingPathComponent("file").appendingPathComponent(path)
+    static func generateTmpNZFilePath(ext: String) -> (NZFile, URL) {
+        let id = UUID().uuidString.md5()
+        let filename = "tmp_\(id).\(ext)"
+        return ("nzfile://\(filename)", FilePath.tmp(filename: filename))
     }
     
-    static func networkLog() -> URL {
-        let fmt = DateFormatter()
-        fmt.dateFormat = "yyyy-MM-dd"
-        let day = fmt.string(from: Date())
-        return FilePath.cacheDirectory().appendingPathComponent("log/net/net-\(day).log")
+    static func nzFilePathToRealFilePath(appId: String, userId: String, filePath: String) -> URL? {
+        let scheme = "nzfile://"
+        let usr = scheme + "usr"
+        let store = scheme + "store_"
+        let tmp = scheme + "tmp_"
+        if filePath.hasPrefix(usr) {
+            let start = filePath.index(filePath.startIndex, offsetBy: usr.count)
+            let path = filePath[start..<filePath.endIndex]
+            return FilePath.usr(appId: appId, userId: userId, path: String(path))
+        } else if filePath.hasPrefix(store) {
+            let start = filePath.index(filePath.startIndex, offsetBy: scheme.count)
+            let filename = filePath[start..<filePath.endIndex]
+            return FilePath.store(appId: appId, userId: userId, filename: String(filename))
+        } else if filePath.hasPrefix(tmp) {
+            let start = filePath.index(filePath.startIndex, offsetBy: scheme.count)
+            let filename = filePath[start..<filePath.endIndex]
+            return FilePath.tmp(filename: String(filename))
+        }
+        return nil
     }
     
 }

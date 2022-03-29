@@ -102,14 +102,9 @@ private extension NZDevServer {
         } else {
             return
         }
-        
-        
-        
-        
-        
-        
+
         do {
-            let (filePath, _) =  FilePath.createTempNZFilePath(ext: "zip")
+            let (_, filePath) =  FilePath.generateTmpNZFilePath(ext: "zip")
             try FilePath.createDirectory(at: filePath.deletingLastPathComponent())
             
             if FileManager.default.createFile(atPath: filePath.path, contents: body, attributes: nil) {

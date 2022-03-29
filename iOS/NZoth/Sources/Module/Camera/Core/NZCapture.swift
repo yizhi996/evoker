@@ -436,7 +436,7 @@ extension NZCapture {
         case .authorized:
             guard isSessionRunning, let connection = movieFileOutput.connection(with: .video) else { return }
             connection.videoScaleAndCropFactor = 1
-            let (filePath, _) = FilePath.createTempNZFilePath(ext: "mp4")
+            let (_, filePath) = FilePath.generateTmpNZFilePath(ext: "mp4")
             movieFileOutput.startRecording(to: filePath, recordingDelegate: self)
         case .notDetermined:
             PrivacyPermission.requestMicrophone {
@@ -608,17 +608,17 @@ extension NZCapture: AVCaptureFileOutputRecordingDelegate {
         }
         
         processingQueue.async {
-            let dest = FilePath.createTempNZFilePath(ext: "mp4")
+            let (videoNZFile, videoFilePath) = FilePath.generateTmpNZFilePath(ext: "mp4")
             VideoUtil.cropVideo(url: outputFileURL,
-                                destURL: dest.0,
+                                destURL: videoFilePath,
                                 compressed: self.videoOutputCompressed,
                                 size: self.previewLayer.frame.size) {
                 try? FileManager.default.removeItem(at: outputFileURL)
-                let thumbData = VideoUtil.videoPosterImage(url: dest.0)?.jpegData(compressionQuality: 1.0)
-                let thumbDest = FilePath.createTempNZFilePath(ext: "jpg")
-                FileManager.default.createFile(atPath: thumbDest.0.path, contents: thumbData, attributes: nil)
+                let posterData = VideoUtil.videoPosterImage(url: videoFilePath)?.jpegData(compressionQuality: 1.0)
+                let (posterNZFile, posterFilePath) = FilePath.generateTmpNZFilePath(ext: "jpg")
+                FileManager.default.createFile(atPath: posterFilePath.path, contents: posterData, attributes: nil)
                 DispatchQueue.main.async {
-                    self.delegate?.capture(self, didStopRecording: dest.1, posterFilePath: thumbDest.1)
+                    self.delegate?.capture(self, didStopRecording: videoNZFile, posterFilePath: posterNZFile)
                 }
             }
         }

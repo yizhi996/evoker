@@ -209,16 +209,15 @@ enum NZCameraAPI: String, NZBuiltInAPI {
                 if error != nil {
                     bridge.invokeCallbackFail(args: args, error: .custom("take photo fail"))
                 } else if let data = data {
-                    let dest = FilePath.createTempNZFilePath(ext: "jpg")
-                    let rootDirectory = FilePath.nzFileDirectory()
+                    let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: "jpg")
                     do {
-                        try FilePath.createDirectory(at: rootDirectory)
+                        try FilePath.createDirectory(at: filePath.deletingLastPathComponent())
                     } catch {
                         bridge.invokeCallbackFail(args: args, error: .custom("take photo save data fail"))
                         return
                     }
-                    if FileManager.default.createFile(atPath: dest.0.path, contents: data, attributes: nil) {
-                        bridge.invokeCallbackSuccess(args: args, result: ["tempImagePath": dest.1])
+                    if FileManager.default.createFile(atPath: filePath.path, contents: data, attributes: nil) {
+                        bridge.invokeCallbackSuccess(args: args, result: ["tempImagePath": nzfile])
                     } else {
                         bridge.invokeCallbackFail(args: args, error: .custom("take photo save data fail"))
                     }

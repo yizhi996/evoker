@@ -178,7 +178,9 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             }
         case .changeURL:
             guard let url = params.data["url"] as? String else { break }
-            videoPlayer.url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: url) ?? URL(string: url)
+            videoPlayer.url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
+                                                                userId: NZEngine.shared.userId,
+                                                                filePath: url) ?? URL(string: url)
         }
        
         bridge.invokeCallbackSuccess(args: args)
