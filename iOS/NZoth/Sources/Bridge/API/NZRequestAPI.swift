@@ -180,13 +180,15 @@ enum NZRequestAPI: String, NZBuiltInAPI {
             }
             return (dest, [.removePreviousFile, .createIntermediateDirectories])
         }
+        
         let request = AF.download(params.url, headers: HTTPHeaders(params.header), to: destination)
         appService.requests[params.taskId] = request
-        request.downloadProgress { progress in
+        request.downloadProgress { [weak bridge] progress in
+            guard let bridge = bridge else { return }
             let key = NZSubscribeKey("APP_DOWNLOAD_FILE_PROGRESS")
             bridge.subscribeHandler(method: key, data: [
                 "taskId": params.taskId,
-                "progress": progress.fractionCompleted,
+                "progress": progress.fractionCompleted * 100,
                 "totalBytesWritten": progress.totalUnitCount,
                 "totalBytesExpectedToWrite": progress.completedUnitCount
             ])
@@ -206,7 +208,8 @@ enum NZRequestAPI: String, NZBuiltInAPI {
                     "dataLength": data.count
                 ])
             case .failure(let error):
-                bridge.invokeCallbackFail(args: args, error: .custom(error.localizedDescription))
+                let error = NZError.bridgeFailed(reason: .networkError(error.localizedDescription))
+                bridge.invokeCallbackFail(args: args, error: error)
             }
         }
     }
@@ -214,26 +217,19 @@ enum NZRequestAPI: String, NZBuiltInAPI {
     private func uploadFile(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         
         struct Params: Decodable {
-            let task: Int?
+            let taskId: Int
             let url: String
             let filePath: String
             let name: String
             let formData: [String: String]
             let header: [String: String]
-            let timeout: Int
+            let timeout: TimeInterval
         }
         
         guard let appService = bridge.appService else { return }
         
-        let start = CACurrentMediaTime()
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
-            bridge.invokeCallbackFail(args: args, error: error)
-            return
-        }
-        
-        guard !params.url.isEmpty else {
-            let error = NZError.bridgeFailed(reason: .fieldRequired("url"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -247,43 +243,42 @@ enum NZRequestAPI: String, NZBuiltInAPI {
         do {
             let data = try Data(contentsOf: filePath)
             let request = AF.upload(multipartFormData: { multipartFormData in
-                multipartFormData.append(data, withName: params.name)
                 params.formData.forEach { (key, value) in
-                    let data = Data(value.utf8)
-                    multipartFormData.append(data, withName: key)
+                    multipartFormData.append(Data(value.utf8), withName: key)
                 }
+                multipartFormData.append(data, withName: params.name)
             }, to: params.url, headers: HTTPHeaders(params.header))
-            if let requestId = params.task {
-                appService.requests[requestId] = request
+            appService.requests[params.taskId] = request
+            request.uploadProgress { [weak bridge] progress in
+                guard let bridge = bridge else { return }
+                let key = NZSubscribeKey("APP_UPLOAD_FILE_PROGRESS")
+                bridge.subscribeHandler(method: key, data: [
+                    "taskId": params.taskId,
+                    "progress": progress.fractionCompleted * 100,
+                    "totalBytesWritten": progress.totalUnitCount,
+                    "totalBytesExpectedToWrite": progress.completedUnitCount
+                ])
             }
-            request.responseString { [weak bridge] response in
+            request.response { [weak bridge] response in
                 guard let bridge = bridge else { return }
                 
-                if let requestId = params.task {
-                    bridge.appService?.requests.removeValue(forKey: requestId)
-                }
-                let end = String(format: "%.3f", CACurrentMediaTime() - start)
-                NZLogger.debug("HTTP request use time \(end)s")
+                bridge.appService?.requests.removeValue(forKey: params.taskId)
                 
                 switch response.result {
-                case .success:
-                    let callback: [String : Any?] = [
-                        "success": true,
-                        "status": response.response?.statusCode,
-                        "headers": response.response?.headers.dictionary,
-                        "data": response.value,
-                        "error": "",
+                case .success(let data):
+                    var res = ""
+                    if let data = data {
+                        res = String(data: data, encoding: .utf8) ?? ""
+                    }
+                    let callback: [String : Any] = [
+                        "statusCode": response.response!.statusCode,
+                        "header": response.response!.headers.dictionary,
+                        "data": res,
                     ]
                     bridge.invokeCallbackSuccess(args: args, result: callback)
                 case let .failure(error):
-                    let callback: [String : Any?] = [
-                        "success": false,
-                        "status": response.response?.statusCode,
-                        "headers": response.response?.headers.dictionary,
-                        "data": response.value,
-                        "error": error.localizedDescription,
-                    ]
-                    bridge.invokeCallbackSuccess(args: args, result: callback)
+                    let error = NZError.bridgeFailed(reason: .networkError(error.localizedDescription))
+                    bridge.invokeCallbackFail(args: args, error: error)
                 }
             }
         } catch {

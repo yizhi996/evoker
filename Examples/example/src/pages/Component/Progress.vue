@@ -14,7 +14,7 @@ const percent = ref(0)
 
 const { onLoad, onUnload } = usePage()
 
-let timer: ReturnType<typeof setTimeout>
+let timer: ReturnType<typeof setInterval>
 
 onLoad(() => {
   timer = setInterval(() => {

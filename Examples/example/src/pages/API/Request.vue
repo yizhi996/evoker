@@ -19,7 +19,7 @@ const onRequest = () => {
   nz.request({
     url: url.value,
     method: "POST",
-    data: { a: 1, b: "c" },
+    data: { a: "1", b: "2" },
     success: res => {
       result.value = res.data
       header.value = res.header

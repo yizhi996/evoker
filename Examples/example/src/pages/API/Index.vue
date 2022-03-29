@@ -131,7 +131,7 @@ const list = reactive([
         url: 'web-socket/web-socket'
       }, {
         name: '上传文件',
-        url: 'upload-file/upload-file'
+        url: 'upload-file'
       }, {
         name: '下载文件',
         url: 'download-file'

@@ -6,7 +6,8 @@ export const MAX_TIMEOUT = 60 * 1000
 
 export const enum Events {
   REQUEST = "request",
-  DOWNLOAD_FILE = "downloadFile"
+  DOWNLOAD_FILE = "downloadFile",
+  UPLOAD_FILE = "uploadFile"
 }
 
 export function objectToQueryString(obj: Record<string, any>) {

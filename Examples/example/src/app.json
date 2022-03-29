@@ -235,6 +235,11 @@
       "component": "pages/API/DownloadFile.vue",
       "path": "download-file",
       "style": { "navigationBarTitleText": "DownloadFile" }
+    },
+    {
+      "component": "pages/API/UploadFile.vue",
+      "path": "upload-file",
+      "style": { "navigationBarTitleText": "UploadFile" }
     }
   ]
 }
