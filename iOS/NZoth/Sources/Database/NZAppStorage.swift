@@ -20,13 +20,10 @@ public class NZAppStorage {
     private let length = Expression<Int>("length")
     private let updatedAt = Expression<Int>("updatedAt")
     
-    public init(appId: String, envVersion: NZAppEnvVersion) {
-        let dest = FilePath.appStorage(appId: appId, envVersion: envVersion)
+    public init(appId: String) {
+        let dest = FilePath.storageDatabase(appId: appId, userId: NZEngine.shared.userId)
         do {
-            let dir = dest.deletingLastPathComponent()
-            if !FileManager.default.fileExists(atPath: dir.path) {
-                try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true, attributes: nil)
-            }
+            try FilePath.createDirectory(at: dest.deletingLastPathComponent())
             database = try Connection(dest.path)
             createTable()
         } catch {

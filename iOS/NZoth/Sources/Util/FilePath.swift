@@ -84,6 +84,14 @@ public extension FilePath {
         return tmpDirectory().appendingPathComponent(filename)
     }
     
+    /// Document/com.nzothdev/sandbox/{userId}/{appId}/db/storage.db
+    static func storageDatabase(appId: String, userId: String) -> URL {
+        return sandbox(userId: userId)
+            .appendingPathComponent(appId)
+            .appendingPathComponent("db")
+            .appendingPathComponent("storage.db")
+    }
+    
     static func generateStoreNZFilePath(appId: String, userId: String, ext: String) -> (NZFile, URL) {
         let id = UUID().uuidString.md5()
         let filename = "store_\(id).\(ext)"
@@ -134,10 +142,7 @@ extension FilePath {
     public static func app(appId: String) -> URL {
         return appRootDirectory().appendingPathComponent("\(appId)")
     }
-    /// Document/com.nzothdev/app/{appId}/database/{envVersion}/storage.db
-    public static func appStorage(appId: String, envVersion: NZAppEnvVersion) -> URL {
-        return app(appId: appId).appendingPathComponent("database/\(envVersion)/storage.db")
-    }
+    
     /// Document/com.nzothdev/app/{appId}/packages/{envVersion}/{version}.nzpkg
     public static func appPackage(appId: String, envVersion: NZAppEnvVersion, version: String) -> URL {
         return app(appId: appId).appendingPathComponent("packages/\(envVersion)/\(version).nzpkg")

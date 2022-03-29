@@ -49,7 +49,7 @@ final public class NZAppService {
     public let uiControl = NZAppUIControl()
     
     public lazy var storage: NZAppStorage = {
-        return NZAppStorage(appId: appId, envVersion: launchOptions.envVersion)
+        return NZAppStorage(appId: appId)
     }()
     
     public internal(set) var rootViewController: NZNavigationController? {
