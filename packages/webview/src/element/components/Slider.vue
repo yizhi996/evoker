@@ -93,7 +93,7 @@ onMounted(() => {
 
         const x = touch.deltaX.value + touch.startX.value - barRect.left
         const percent = x / barRect.width
-        let value = Math.round((props.max - props.min) * percent)
+        let value = (props.max - props.min) * percent
         value = Math.round(value / props.step) * props.step + props.min
         value = safeRangeValue(value, props.min, props.max)
         instance.props.value = value
