@@ -1,10 +1,12 @@
+import { isString, isNumber } from "@nzoth/shared"
 import {
   invoke,
   invokeCallback,
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
-  wrapperAsyncAPI
+  wrapperAsyncAPI,
+  invokeFailure
 } from "../../bridge"
 
 const enum Events {
@@ -59,11 +61,14 @@ export function setScreenBrightness<
 >(options: T): AsyncReturn<T, SetScreenBrightnessOptions> {
   return wrapperAsyncAPI<T>(options => {
     let value = options.value
-    if (value < 0) {
-      value = 0
-    } else if (value > 1) {
-      value = 1
+    if (isString(value)) {
+      value = parseFloat(value)
     }
+    if (isNaN(value) || !isNumber(value)) {
+      invokeFailure(Events.SET_SCREEN_BRIGHTNESS, options, "value invalid")
+      return
+    }
+    value = Math.min(Math.max(0, value), 1)
     invoke<SuccessResult<T>>(
       Events.SET_SCREEN_BRIGHTNESS,
       { value },
