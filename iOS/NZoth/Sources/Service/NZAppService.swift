@@ -214,6 +214,7 @@ final public class NZAppService {
         let appServiceURL = dist.appendingPathComponent("app-service.js")
         if let js = try? String(contentsOfFile: appServiceURL.path) {
             context.evaluateScript(js, name: "app-service.js")
+            context.evaluateScript("globalThis.__NZConfig.appName = '\(appInfo.appName)';")
         } else {
             NZLogger.error("load app code failed: \(appServiceURL.path) file not exist")
         }

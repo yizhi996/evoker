@@ -81,9 +81,15 @@ interface NativeSystem {
   getAppBaseInfo(): AppBaseInfo
 }
 
+interface NZConfig {
+  appId: string
+  appName: string
+}
+
 declare global {
   var webkit: WebKit
   var __NZAppServiceNativeSDK: NZAppServiceNativeSDK
+  var __NZConfig: NZConfig
 }
 
 export {}
