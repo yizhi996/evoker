@@ -25,6 +25,13 @@ class NZActionSheet: UIView {
     var confirmHandler: NZIntBlock?
     var cancelHandler: NZEmptyBlock?
     
+    var hasAlertText: Bool {
+        if let alertText = params.alertText, !alertText.isEmpty {
+           return true
+        }
+        return false
+    }
+    
     init(params: Params) {
         self.params = params
         super.init(frame: .zero)
@@ -44,7 +51,7 @@ class NZActionSheet: UIView {
         tableView.autoPinEdge(toSuperviewEdge: .top)
         tableView.autoPinEdge(toSuperviewEdge: .left)
         tableView.autoPinEdge(toSuperviewEdge: .right)
-        tableView.autoSetDimension(.height, toSize: 56 * CGFloat(params.itemList.count))
+        tableView.autoSetDimension(.height, toSize: 56 * CGFloat(params.itemList.count) + (hasAlertText ? 56 : 0))
         
         let spaceView = UIView()
         spaceView.backgroundColor = UIColor.color("#f7f7f7".hexColor(), dark: "#1c1c1e".hexColor())
@@ -121,12 +128,39 @@ extension NZActionSheet: UITableViewDataSource {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if hasAlertText {
+            let headerView = UIView()
+            headerView.backgroundColor = .nzWhite
+            let textLabel = UILabel()
+            textLabel.numberOfLines = 0
+            textLabel.text = params.alertText
+            textLabel.font = UIFont.systemFont(ofSize: 14.0)
+            textLabel.textColor = .systemGray
+            headerView.addSubview(textLabel)
+            textLabel.autoCenterInSuperview()
+            
+            let spaceView = UIView()
+            spaceView.backgroundColor = UIColor.color("#f7f7f7".hexColor(), dark: "#1c1c1e".hexColor())
+            headerView.addSubview(spaceView)
+            spaceView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+            spaceView.autoSetDimension(.height, toSize: 1)
+
+            return headerView
+        }
+        return nil
+    }
+    
 }
 
 extension NZActionSheet: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 56
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return hasAlertText ? 56 : 0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
