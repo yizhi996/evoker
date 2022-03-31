@@ -1,6 +1,7 @@
 import { isString, isNumber } from "@nzoth/shared"
 import { invoke } from "../../bridge"
 import {
+  invokeFailure,
   invokeCallback,
   GeneralCallbackResult,
   AsyncReturn,
