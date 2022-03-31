@@ -1,4 +1,5 @@
 export * from "./bridge"
+export * from "./async"
 
 export * from "./api/device/screen"
 export * from "./api/device/battery"

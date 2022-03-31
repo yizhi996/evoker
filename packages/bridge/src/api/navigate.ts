@@ -1,12 +1,12 @@
+import { invoke } from "../bridge"
 import {
-  invoke,
   invokeCallback,
+  invokeFailure,
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
-  invokeFailure,
   wrapperAsyncAPI
-} from "../bridge"
+} from "../async"
 
 const enum Events {
   NAVIGATE_TO_MINI_PROGRAM = "navigateToMiniProgram"

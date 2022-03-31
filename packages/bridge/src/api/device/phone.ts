@@ -1,13 +1,13 @@
 import { isNumber, isString } from "@nzoth/shared"
+import { invoke } from "../../bridge"
 import {
-  invoke,
   invokeCallback,
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
   wrapperAsyncAPI,
   invokeFailure
-} from "../../bridge"
+} from "../../async"
 import { showActionSheet } from "../ui/interaction"
 
 const enum Events {

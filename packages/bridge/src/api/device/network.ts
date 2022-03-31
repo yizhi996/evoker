@@ -1,11 +1,12 @@
+import { invoke } from "../../bridge"
 import {
-  invoke,
   invokeCallback,
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
   wrapperAsyncAPI
-} from "../../bridge"
+} from "../../async"
+import { on, off } from "../../event"
 
 const enum Events {
   GET_NETWORK_TYOE = "getNetworkType",
@@ -66,4 +67,21 @@ export function getLocalIPAddress<
       invokeCallback(Events.GET_LOCAL_IP_ADDRESS, options, result)
     })
   }, options)
+}
+
+interface OnNetworkStatusChangeCallbackResult {
+  isConnected: boolean
+  networkType: "wifi" | "2g" | "3g" | "4g" | "5g" | "unknown" | "none"
+}
+
+type OnNetworkStatusChangeCallback = (
+  result: OnNetworkStatusChangeCallbackResult
+) => void
+
+export function onNetworkStatusChange(callback: OnNetworkStatusChangeCallback) {
+  on("networkStatusChange", callback)
+}
+
+export function offNetworkStatusChange(callback: () => void) {
+  off("networkStatusChange", callback)
 }

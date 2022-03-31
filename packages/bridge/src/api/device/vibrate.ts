@@ -1,11 +1,11 @@
+import { invoke } from "../../bridge"
 import {
-  invoke,
   invokeCallback,
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
   wrapperAsyncAPI
-} from "../../bridge"
+} from "../../async"
 
 const enum Events {
   SHORT = "vibrateShort",

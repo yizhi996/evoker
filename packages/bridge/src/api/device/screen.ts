@@ -1,13 +1,12 @@
 import { isString, isNumber } from "@nzoth/shared"
+import { invoke } from "../../bridge"
 import {
-  invoke,
   invokeCallback,
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
-  wrapperAsyncAPI,
-  invokeFailure
-} from "../../bridge"
+  wrapperAsyncAPI
+} from "../../async"
 
 const enum Events {
   GET_SCREEN_BRIGHTNESS = "getScreenBrightness",

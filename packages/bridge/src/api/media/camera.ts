@@ -1,11 +1,11 @@
+import { invoke } from "../../bridge"
 import {
-  invoke,
   invokeCallback,
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
   wrapperAsyncAPI
-} from "../../bridge"
+} from "../../async"
 
 interface CameraContextTakePhotoOptions {
   quality?: "low" | "normal" | "high"

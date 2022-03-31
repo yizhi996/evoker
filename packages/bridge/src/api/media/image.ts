@@ -1,16 +1,14 @@
 import { openNativelyCameraTakePhoto, TempFile } from "./camera"
 import { openNativelyAlbumTakePhoto } from "./album"
 import { showActionSheet } from "../ui/interaction"
+import { invoke } from "../../bridge"
 import {
-  invoke,
   invokeCallback,
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
-  invokeSuccess,
-  invokeFailure,
   wrapperAsyncAPI
-} from "../../bridge"
+} from "../../async"
 
 const enum Events {
   PREVIEW_IMAGE = "previewImage"
