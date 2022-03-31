@@ -43,6 +43,7 @@ import { getNetworkType, getLocalIPAddress } from "@nzoth/bridge"
 import { scanCode } from "@nzoth/bridge"
 import { getScreenBrightness, setScreenBrightness } from "@nzoth/bridge"
 import { getClipboardData, setClipboardData } from "@nzoth/bridge"
+import { makePhoneCall } from "@nzoth/bridge"
 import { rsa } from "@nzoth/bridge"
 import { createSelectorQuery } from "./api/html/selector"
 import { getBatteryInfo } from "@nzoth/bridge"
@@ -102,7 +103,8 @@ export {
   showTabBar,
   hideTabBar,
   getClipboardData,
-  setClipboardData
+  setClipboardData,
+  makePhoneCall
 }
 
 export default {
@@ -155,5 +157,6 @@ export default {
   showTabBar,
   hideTabBar,
   getClipboardData,
-  setClipboardData
+  setClipboardData,
+  makePhoneCall
 }

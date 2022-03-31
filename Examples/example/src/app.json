@@ -240,6 +240,21 @@
       "component": "pages/API/UploadFile.vue",
       "path": "upload-file",
       "style": { "navigationBarTitleText": "UploadFile" }
+    },
+    {
+      "component": "pages/API/ScreenBrightness.vue",
+      "path": "screen-brightness",
+      "style": { "navigationBarTitleText": "ScreenBrightness" }
+    },
+    {
+      "component": "pages/API/Clipboard.vue",
+      "path": "clipboard",
+      "style": { "navigationBarTitleText": "Clipboard" }
+    },
+    {
+      "component": "pages/API/MakePhoneCall.vue",
+      "path": "make-phone-call",
+      "style": { "navigationBarTitleText": "MakePhoneCall" }
     }
   ]
 }

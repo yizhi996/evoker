@@ -78,13 +78,13 @@ const list = reactive([
         url: 'on-compass-change/on-compass-change'
       }, {
         name: '打电话',
-        url: 'make-phone-call/make-phone-call'
+        url: 'make-phone-call'
       }, {
         name: '扫码',
         url: 'scan-code'
       }, {
         name: '剪切板',
-        url: 'clipboard-data/clipboard-data'
+        url: 'clipboard'
       }, {
         name: '蓝牙',
         url: 'bluetooth/bluetooth'
@@ -93,7 +93,7 @@ const list = reactive([
         url: 'ibeacon/ibeacon'
       }, {
         name: '屏幕亮度',
-        url: 'screen-brightness/screen-brightness'
+        url: 'screen-brightness'
       }, {
         name: '用户截屏事件',
         url: 'capture-screen/capture-screen'
