@@ -2,7 +2,10 @@ import {
   getWindowInfo,
   getAppBaseInfo,
   getDeviceInfo,
-  getSystemSetting
+  getSystemSetting,
+  getSystemInfo,
+  getSystemInfoAsync,
+  getSystemInfoSync
 } from "./api/base/system"
 import {
   navigateTo,
@@ -39,9 +42,19 @@ import { previewImage, chooseImage } from "@nzoth/bridge"
 import { createCameraContext } from "@nzoth/bridge"
 import { createInnerAudioContext } from "@nzoth/bridge"
 import { vibrateShort, vibrateLong } from "@nzoth/bridge"
-import { getNetworkType, getLocalIPAddress } from "@nzoth/bridge"
+import {
+  getNetworkType,
+  getLocalIPAddress,
+  onNetworkStatusChange,
+  offNetworkStatusChange
+} from "@nzoth/bridge"
 import { scanCode } from "@nzoth/bridge"
-import { getScreenBrightness, setScreenBrightness } from "@nzoth/bridge"
+import {
+  getScreenBrightness,
+  setScreenBrightness,
+  onUserCaptureScreen,
+  offUserCaptureScreen
+} from "@nzoth/bridge"
 import { getClipboardData, setClipboardData } from "@nzoth/bridge"
 import { makePhoneCall } from "@nzoth/bridge"
 import { rsa } from "@nzoth/bridge"
@@ -93,6 +106,9 @@ export {
   getAppBaseInfo,
   getDeviceInfo,
   getSystemSetting,
+  getSystemInfo,
+  getSystemInfoAsync,
+  getSystemInfoSync,
   createSelectorQuery,
   getBatteryInfo,
   getNetworkType,
@@ -104,7 +120,11 @@ export {
   hideTabBar,
   getClipboardData,
   setClipboardData,
-  makePhoneCall
+  makePhoneCall,
+  onNetworkStatusChange,
+  offNetworkStatusChange,
+  onUserCaptureScreen,
+  offUserCaptureScreen
 }
 
 export default {
@@ -147,6 +167,9 @@ export default {
   getAppBaseInfo,
   getDeviceInfo,
   getSystemSetting,
+  getSystemInfo,
+  getSystemInfoAsync,
+  getSystemInfoSync,
   createSelectorQuery,
   getBatteryInfo,
   getNetworkType,
@@ -158,5 +181,9 @@ export default {
   hideTabBar,
   getClipboardData,
   setClipboardData,
-  makePhoneCall
+  makePhoneCall,
+  onNetworkStatusChange,
+  offNetworkStatusChange,
+  onUserCaptureScreen,
+  offUserCaptureScreen
 }

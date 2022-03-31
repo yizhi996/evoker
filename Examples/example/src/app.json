@@ -255,6 +255,31 @@
       "component": "pages/API/MakePhoneCall.vue",
       "path": "make-phone-call",
       "style": { "navigationBarTitleText": "MakePhoneCall" }
+    },
+    {
+      "component": "pages/API/CaptureScreen.vue",
+      "path": "capture-screen",
+      "style": { "navigationBarTitleText": "CaptureScreen" }
+    },
+    {
+      "component": "pages/API/GetNetworkType.vue",
+      "path": "get-network-type",
+      "style": { "navigationBarTitleText": "GetNetworkType" }
+    },
+    {
+      "component": "pages/API/OnNetworkStatusChange.vue",
+      "path": "on-network-status-change",
+      "style": { "navigationBarTitleText": "OnNetworkStatusChange" }
+    },
+    {
+      "component": "pages/API/GetSystemInfo.vue",
+      "path": "get-system-info",
+      "style": { "navigationBarTitleText": "GetSystemInfo" }
+    },
+    {
+      "component": "pages/API/Vibrate.vue",
+      "path": "vibrate",
+      "style": { "navigationBarTitleText": "Vibrate" }
     }
   ]
 }

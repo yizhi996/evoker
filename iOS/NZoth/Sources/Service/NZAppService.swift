@@ -167,6 +167,16 @@ final public class NZAppService {
                                                selector: #selector(didEnterBackground),
                                                name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(networkStatusDidChange(_:)),
+                                               name: NZEngine.networkStatusDidChange,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(userDidTakeScreenshot),
+                                               name: UIApplication.userDidTakeScreenshotNotification,
+                                               object: nil)
     }
     
     deinit {
@@ -304,6 +314,20 @@ final public class NZAppService {
     func cleanKillTimer() {
         killTimer?.invalidate()
         killTimer = nil
+    }
+    
+    @objc
+    func networkStatusDidChange(_ notification: Notification) {
+        guard let netType = notification.object as? NetworkType else { return }
+        bridge.subscribeHandler(method: NZSubscribeKey("APP_NETWORK_STATUS_CHANGE"), data: [
+            "isConnected": netType != .none,
+            "networkType": netType.rawValue
+        ])
+    }
+    
+    @objc
+    func userDidTakeScreenshot() {
+        bridge.subscribeHandler(method: NZSubscribeKey("APP_USER_CAPTURE_SCREEN"), data: [:])
     }
 }
 

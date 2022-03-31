@@ -1,4 +1,4 @@
-import { invoke } from "../../bridge"
+import { invoke, subscribe } from "../../bridge"
 import {
   invokeCallback,
   GeneralCallbackResult,
@@ -6,11 +6,12 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
-import { on, off } from "../../event"
+import { onEvent, offEvent, emitEvent } from "../../event"
 
 const enum Events {
-  GET_NETWORK_TYOE = "getNetworkType",
-  GET_LOCAL_IP_ADDRESS = "getLocalIPAddress"
+  GET_NETWORK_TYPE = "getNetworkType",
+  GET_LOCAL_IP_ADDRESS = "getLocalIPAddress",
+  ON_NETWORK_STATUS_CHANGE = "APP_NETWORK_STATUS_CHANGE"
 }
 
 interface GetNetworkTypeOptions {
@@ -35,8 +36,8 @@ export function getNetworkType<
   T extends GetNetworkTypeOptions = GetNetworkTypeOptions
 >(options: T): AsyncReturn<T, GetNetworkTypeOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.GET_NETWORK_TYOE, {}, result => {
-      invokeCallback(Events.GET_NETWORK_TYOE, options, result)
+    invoke<SuccessResult<T>>(Events.GET_NETWORK_TYPE, {}, result => {
+      invokeCallback(Events.GET_NETWORK_TYPE, options, result)
     })
   }, options)
 }
@@ -78,10 +79,17 @@ type OnNetworkStatusChangeCallback = (
   result: OnNetworkStatusChangeCallbackResult
 ) => void
 
+subscribe<OnNetworkStatusChangeCallbackResult>(
+  Events.ON_NETWORK_STATUS_CHANGE,
+  result => {
+    emitEvent(Events.ON_NETWORK_STATUS_CHANGE, result)
+  }
+)
+
 export function onNetworkStatusChange(callback: OnNetworkStatusChangeCallback) {
-  on("networkStatusChange", callback)
+  onEvent(Events.ON_NETWORK_STATUS_CHANGE, callback)
 }
 
 export function offNetworkStatusChange(callback: () => void) {
-  off("networkStatusChange", callback)
+  offEvent(Events.ON_NETWORK_STATUS_CHANGE, callback)
 }

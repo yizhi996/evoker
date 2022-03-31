@@ -13,6 +13,48 @@ export interface InvokeCallbackResult<T = Record<string, any>> {
 
 const callbacks = new Map<number, InvokeCallback<any>>()
 
+export function invoke<T = unknown>(
+  event: string,
+  params: Record<string, any> = {},
+  callback?: InvokeCallback<T>
+) {
+  const cbId = callbackId++
+  if (callback) {
+    callbacks.set(cbId, callback)
+  }
+
+  if (globalThis.__NZAppServiceNativeSDK) {
+    const msg = {
+      event,
+      params: JSON.stringify(params),
+      callbackId: cbId
+    }
+    globalThis.__NZAppServiceNativeSDK.messageChannel.invokeHandler.postMessage(
+      msg
+    )
+  } else if (globalThis.webkit) {
+    const msg = {
+      event,
+      params: JSON.stringify(params),
+      callbackId: cbId
+    }
+    globalThis.webkit.messageHandlers.invokeHandler.postMessage(msg)
+  }
+}
+
+export function invokeCallbackHandler(result: InvokeCallbackResult<unknown>) {
+  const callback = callbacks.get(result.id)
+  if (callback) {
+    if (isString(result.data)) {
+      try {
+        result.data = JSON.parse(result.data)
+      } catch (e) {}
+    }
+    callback(result)
+    callbacks.delete(result.id)
+  }
+}
+
 export type SubscribeCallback<T> = (result: T, webViewId: number) => void
 
 const subscribes = new Map<string, SubscribeCallback<any>>()
@@ -56,47 +98,3 @@ export function subscribeHandler(
     callback(message, webViewId)
   }
 }
-
-export function invoke<T = unknown>(
-  event: string,
-  params: Record<string, any> = {},
-  callback?: InvokeCallback<T>
-) {
-  const cbId = callbackId++
-  if (callback) {
-    callbacks.set(cbId, callback)
-  }
-
-  if (globalThis.__NZAppServiceNativeSDK) {
-    const msg = {
-      event,
-      params: JSON.stringify(params),
-      callbackId: cbId
-    }
-    globalThis.__NZAppServiceNativeSDK.messageChannel.invokeHandler.postMessage(
-      msg
-    )
-  } else if (globalThis.webkit) {
-    const msg = {
-      event,
-      params: JSON.stringify(params),
-      callbackId: cbId
-    }
-    globalThis.webkit.messageHandlers.invokeHandler.postMessage(msg)
-  }
-}
-
-export function invokeCallbackHandler(result: InvokeCallbackResult<unknown>) {
-  const callback = callbacks.get(result.id)
-  if (callback) {
-    if (isString(result.data)) {
-      try {
-        result.data = JSON.parse(result.data)
-      } catch (e) {}
-    }
-    callback(result)
-    callbacks.delete(result.id)
-  }
-}
-
-export function on(event: string) {}

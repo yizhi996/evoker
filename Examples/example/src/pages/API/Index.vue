@@ -60,22 +60,16 @@ const list = reactive([
     pages: [
       {
         name: '获取手机网络状态',
-        url: 'get-network-type/get-network-type'
+        url: 'get-network-type'
       }, {
         name: '监听手机网络变化',
-        url: 'on-network-status-change/on-network-status-change'
+        url: 'on-network-status-change'
       }, {
         name: '获取手机系统信息',
-        url: 'get-system-info/get-system-info'
+        url: 'get-system-info'
       }, {
         name: '获取手机设备电量',
         url: 'get-battery-info/get-battery-info'
-      }, {
-        name: '监听重力感应数据',
-        url: 'on-accelerometer-change/on-accelerometer-change'
-      }, {
-        name: '监听罗盘数据',
-        url: 'on-compass-change/on-compass-change'
       }, {
         name: '打电话',
         url: 'make-phone-call'
@@ -86,26 +80,14 @@ const list = reactive([
         name: '剪切板',
         url: 'clipboard'
       }, {
-        name: '蓝牙',
-        url: 'bluetooth/bluetooth'
-      }, {
-        name: 'iBeacon',
-        url: 'ibeacon/ibeacon'
-      }, {
         name: '屏幕亮度',
         url: 'screen-brightness'
       }, {
         name: '用户截屏事件',
-        url: 'capture-screen/capture-screen'
+        url: 'capture-screen'
       }, {
         name: '振动',
-        url: 'vibrate/vibrate'
-      }, {
-        name: '手机联系人',
-        url: 'add-contact/add-contact'
-      }, {
-        name: 'Wi-Fi',
-        url: 'wifi/wifi'
+        url: 'vibrate'
       }
     ]
   }, {
@@ -135,12 +117,6 @@ const list = reactive([
       }, {
         name: '下载文件',
         url: 'download-file'
-      }, {
-        name: 'UDPSocket',
-        url: 'udp-socket/udp-socket'
-      }, {
-        name: 'mDNS',
-        url: 'mdns/mdns'
       }
     ]
   }, {
@@ -212,9 +188,6 @@ const list = reactive([
     pages: [{
       name: '双向绑定 v-model',
       url: 'v-model',
-    }, {
-      name: 'WXS',
-      url: 'wxs/wxs'
     }, {
       name: '屏幕旋转',
       url: 'resizable/resizable'

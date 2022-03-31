@@ -1,5 +1,5 @@
 import { isString, isNumber } from "@nzoth/shared"
-import { invoke } from "../../bridge"
+import { invoke, subscribe } from "../../bridge"
 import {
   invokeFailure,
   invokeCallback,
@@ -8,11 +8,13 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
+import { onEvent, offEvent, emitEvent } from "../../event"
 
 const enum Events {
   GET_SCREEN_BRIGHTNESS = "getScreenBrightness",
   SET_SCREEN_BRIGHTNESS = "setScreenBrightness",
-  SET_KEEP_SCREEN_ON = "setKeepScreenOn"
+  SET_KEEP_SCREEN_ON = "setKeepScreenOn",
+  ON_USER_CAPTURE_SCREEN = "APP_USER_CAPTURE_SCREEN"
 }
 
 interface GetScreenBrightnessOptions {
@@ -104,4 +106,18 @@ export function setKeepScreenOn<
       }
     )
   }, options)
+}
+
+type OnUserCaptureScreenCallback = (result: GeneralCallbackResult) => void
+
+subscribe(Events.ON_USER_CAPTURE_SCREEN, result => {
+  emitEvent(Events.ON_USER_CAPTURE_SCREEN, result)
+})
+
+export function onUserCaptureScreen(callback: OnUserCaptureScreenCallback) {
+  onEvent(Events.ON_USER_CAPTURE_SCREEN, callback)
+}
+
+export function offUserCaptureScreen(callback: () => void) {
+  offEvent(Events.ON_USER_CAPTURE_SCREEN, callback)
 }
