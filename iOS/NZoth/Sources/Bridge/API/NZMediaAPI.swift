@@ -113,31 +113,51 @@ enum NZMediaAPI: String, NZBuiltInAPI {
     }
     
     private func previewImage(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let params: NZImagePreview.Params = args.paramsString.toModel() else {
+        struct Params: Decodable {
+            let current: Int
+            let urls: [String]
+        }
+        
+        guard let appSerivce = bridge.appService else { return }
+        
+        guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard !params.urls.isEmpty else {
-            let error = NZError.bridgeFailed(reason: .fieldRequired("items"))
+            let error = NZError.bridgeFailed(reason: .fieldRequired("urls"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
-       
-        NZImagePreview.show(params: params)
+        
+        let urls = params.urls.compactMap { url in
+            return FilePath.nzFilePathToRealFilePath(appId: appSerivce.appId,
+                                                     userId: NZEngine.shared.userId,
+                                                     filePath: url) ?? URL(string: url)
+        }
+        
+        NZImagePreview.show(urls: urls, current: params.current)
+        
         bridge.invokeCallbackSuccess(args: args)
     }
     
     private func openNativelyAlbum(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         struct Params: Decodable {
             let types: [SourceType]
+            let sizeType: [SizeType]
             let count: Int
         }
         
         enum SourceType: String, Decodable {
             case photo
             case video
+        }
+        
+        enum SizeType: String, Decodable {
+            case original
+            case compressed
         }
         
         guard let appService = bridge.appService else { return }
@@ -158,49 +178,49 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         let config = ZLPhotoConfiguration.default()
         config.allowTakePhotoInLibrary = false
         config.allowSelectVideo = false
+        config.allowSelectOriginal = params.sizeType.count == 2
         config.maxSelectCount = params.count
         ps.selectImageBlock = { [unowned bridge] (images, assets, isOriginal) in
             var filePaths: [String] = []
             var files: [[String: Any]] = []
             
+            func getOriginalImage(asset: PHAsset, image: UIImage) -> (Data, String) {
+                let ext = imageAssetGetExt(asset: asset)
+                let fmt = extToForamt(ext: ext)
+                let data = image.sd_imageData(as: fmt)!
+                return (data, ext)
+            }
+            
             for (i, image) in images.enumerated() {
                 var ext = "jpg"
-                var fmt = SDImageFormat.JPEG
+                let asset = assets[i]
                 var imageData: Data
-                if isOriginal {
-                    let asset = assets[i]
-                    if let uType = PHAssetResource.assetResources(for: asset).first?.uniformTypeIdentifier {
-                        if let fileExtension = UTTypeCopyPreferredTagWithClass(uType as CFString,
-                                                 kUTTagClassFilenameExtension) {
-                            ext = String(fileExtension.takeRetainedValue())
-                        }
-                    }
-                    let allowExts = ["jpg", "jpeg", "png", "gif", "webp"]
-                    if !allowExts.contains(ext) {
+                if params.sizeType.count == 2 {
+                    if isOriginal {
+                        (imageData, ext) = getOriginalImage(asset: asset, image: image)
+                    } else {
                         ext = "jpg"
+                        imageData = image.jpegData(compressionQuality: 0.7)!
                     }
-                    
-                    if ext == "jpg" || ext == "jpeg" {
-                        fmt = SDImageFormat.JPEG
-                    } else if ext == "png" {
-                        fmt = SDImageFormat.PNG
-                    } else if ext == "gif" {
-                        fmt = SDImageFormat.GIF
-                    } else if ext == "webp" {
-                        fmt = SDImageFormat.webP
-                    }
-                    imageData = image.sd_imageData(as: fmt)!
+                } else if params.sizeType.contains(.original) {
+                    (imageData, ext) = getOriginalImage(asset: asset, image: image)
                 } else {
-                    ext = "jpg"
-                    imageData = image.jpegData(compressionQuality: 0.7)!
+                    if imageAssetGetExt(asset: asset) == "gif" {
+                        ext = "gif"
+                        imageData = image.sd_imageData(as: .GIF)!
+                    } else {
+                        ext = "jpg"
+                        let size = ZLPhotoModel(asset: asset).previewSize
+                        let newImage = image.sd_resizedImage(with: size, scaleMode: SDImageScaleMode.fill)!
+                        imageData = newImage.jpegData(compressionQuality: 0.7)!
+                    }
                 }
                 
                 let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
                 filePaths.append(nzfile)
                 
                 FileManager.default.createFile(atPath: filePath.path, contents: imageData, attributes: nil)
-                let file: [String: Any] = ["path": nzfile, "size": imageData.count]
-                files.append(file)
+                files.append(["path": nzfile, "size": imageData.count])
             }
             let result: [String: Any] = ["tempFilePaths": filePaths, "tempFiles": files]
             bridge.invokeCallbackSuccess(args: args, result: result)
@@ -208,4 +228,33 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         ps.showPhotoLibrary(sender: viewController)
     }
     
+    private func imageAssetGetExt(asset: PHAsset) -> String {
+        var ext = "jpg"
+        if let uType = PHAssetResource.assetResources(for: asset).first?.uniformTypeIdentifier {
+            if let fileExtension = UTTypeCopyPreferredTagWithClass(uType as CFString,
+                                     kUTTagClassFilenameExtension) {
+                ext = String(fileExtension.takeRetainedValue())
+            }
+        }
+        let allowExts = ["jpg", "jpeg", "png", "gif", "webp"]
+        if !allowExts.contains(ext) {
+            ext = "jpg"
+        }
+        return ext
+    }
+    
+    private func extToForamt(ext: String) -> SDImageFormat {
+        var fmt = SDImageFormat.JPEG
+        if ext == "jpg" || ext == "jpeg" {
+            fmt = SDImageFormat.JPEG
+        } else if ext == "png" {
+            fmt = SDImageFormat.PNG
+        } else if ext == "gif" {
+            fmt = SDImageFormat.GIF
+        } else if ext == "webp" {
+            fmt = SDImageFormat.webP
+        }
+        return fmt
+    }
+
 }

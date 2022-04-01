@@ -290,6 +290,11 @@
       "component": "pages/API/PageScroll.vue",
       "path": "page-scroll",
       "style": { "navigationBarTitleText": "页面滚动" }
+    },
+    {
+      "component": "pages/API/Image.vue",
+      "path": "choose-image",
+      "style": { "navigationBarTitleText": "图片" }
     }
   ]
 }

@@ -13,16 +13,11 @@ import SDWebImage
 import Photos
 
 class NZImagePreview {
-    
-    struct Params: Decodable {
-        let current: Int
-        let urls: [String]
-    }
-    
-    static func show(params: Params) {
+
+    static func show(urls: [URL], current: Int) {
         let browser = JXPhotoBrowser()
         browser.numberOfItems = {
-            return params.urls.count
+            return urls.count
         }
         
         browser.cellClassAtIndex = { _ in
@@ -30,13 +25,13 @@ class NZImagePreview {
         }
         
         browser.reloadCellAtIndex = { context in
-            let url = params.urls[context.index]
+            let url = urls[context.index]
             let browserCell = context.cell as? LoadingImageCell
             browserCell?.index = context.index
             browserCell?.setImage(url: url)
         }
         
-        browser.pageIndex = params.current
+        browser.pageIndex = current
         browser.pageIndicator = JXPhotoBrowserNumberPageIndicator()
         
         browser.show()
@@ -122,13 +117,18 @@ private class LoadingImageCell: JXPhotoBrowserImageCell {
         progressView.autoCenterInSuperview()
     }
     
-    func setImage(url: String, placeholder: UIImage? = nil) {
+    func setImage(url: URL, placeholder: UIImage? = nil) {
         progressView.progress = 0
-        imageView.sd_setImage(with: URL(string: url), placeholderImage: placeholder, options: [], progress: { [weak self] (received, total, _) in
-            self?.progressView.progress = CGFloat(received) / CGFloat(total)
+        imageView.sd_setImage(with: url,
+                              placeholderImage: placeholder,
+                              options: [.retryFailed],
+                              progress: { [weak self] (received, total, _) in
+            guard let self = self else { return }
+            self.progressView.progress = CGFloat(received) / CGFloat(total)
         }) { [weak self] (_, error, _, _) in
-            self?.progressView.progress = error == nil ? 1.0 : 0
-            self?.setNeedsLayout()
+            guard let self = self else { return }
+            self.progressView.progress = error == nil ? 1.0 : 0
+            self.setNeedsLayout()
         }
     }
 
