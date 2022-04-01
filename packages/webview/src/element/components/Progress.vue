@@ -22,7 +22,7 @@ import { ref, watch } from "vue"
 import { safeRangeValue } from "../utils"
 import { unitToPx } from "../utils/format"
 import { Easing } from "@tweenjs/tween.js"
-import useAnimation from "../use/useAnimation"
+import useJSAnimation from "../use/useJSAnimation"
 
 const emit = defineEmits(["activeend"])
 
@@ -53,7 +53,7 @@ const props = withDefaults(defineProps<{
 const currentPercent = ref<number>(0)
 
 
-const { startAnimation } = useAnimation<{ percent: number }>()
+const { startAnimation } = useJSAnimation<{ percent: number }>()
 
 const execAnimation = (percent: number) => {
   const begin = { percent: currentPercent.value }

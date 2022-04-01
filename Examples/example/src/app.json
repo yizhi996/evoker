@@ -280,6 +280,11 @@
       "component": "pages/API/Vibrate.vue",
       "path": "vibrate",
       "style": { "navigationBarTitleText": "Vibrate" }
+    },
+    {
+      "component": "pages/API/Animation.vue",
+      "path": "animation",
+      "style": { "navigationBarTitleText": "Animation" }
     }
   ]
 }

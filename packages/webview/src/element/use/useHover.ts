@@ -1,6 +1,6 @@
-import { ref, watch, computed, onMounted, onUnmounted } from "vue"
+import { ref, Ref, watch, computed, onMounted, onUnmounted } from "vue"
 
-interface HoverProps {
+interface Props {
   hoverClass: string
   hoverStopPropagation: boolean
   hoverStartTime: number
@@ -9,8 +9,10 @@ interface HoverProps {
   loading?: boolean
 }
 
-export default function useHover(props: HoverProps) {
-  const viewRef = ref<HTMLElement>()
+export default function useHover(
+  viewRef: Ref<HTMLElement | undefined>,
+  props: Props
+) {
   const hovering = ref(false)
 
   let hoverStartTimer: ReturnType<typeof setTimeout>
@@ -99,7 +101,6 @@ export default function useHover(props: HoverProps) {
   }
 
   return {
-    viewRef,
     finalHoverClass,
     bindHover,
     unbindHover

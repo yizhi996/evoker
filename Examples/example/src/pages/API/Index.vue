@@ -29,7 +29,7 @@ const list = reactive([
         url: 'pull-down-refresh'
       }, {
         name: '创建动画',
-        url: 'animation/animation'
+        url: 'animation'
       }, {
         name: '创建绘画',
         url: 'canvas/canvas'

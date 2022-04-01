@@ -28,7 +28,7 @@ import { PICKER_VIEW_KEY, PickerViewProvide } from "./define"
 import { Easing } from "@tweenjs/tween.js"
 import { vibrateShort, NZJSBridge } from "../../../bridge"
 import { safeRangeValue } from "../../utils"
-import useAnimation from "../../use/useAnimation"
+import useJSAnimation from "../../use/useJSAnimation"
 
 const instance = getCurrentInstance()!
 
@@ -126,7 +126,7 @@ const addTouchEvent = () => {
   })
 }
 
-const { startAnimation, stopAnimation } = useAnimation<{ y: number }>()
+const { startAnimation, stopAnimation } = useJSAnimation<{ y: number }>()
 
 const animationTranslate = (y: number, duration: number, animation: boolean) => {
 

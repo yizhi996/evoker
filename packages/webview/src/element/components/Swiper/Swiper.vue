@@ -29,7 +29,7 @@ import { useChildren } from "../../use/useRelation"
 import { SWIPE_KEY } from "./constant"
 import useTouch from "../../use/useTouch"
 import { Easing } from "@tweenjs/tween.js"
-import useAnimation from "../../use/useAnimation"
+import useJSAnimation from "../../use/useJSAnimation"
 import useResize from "../../use/useResize"
 
 const containerRef = ref<HTMLElement>()
@@ -280,7 +280,7 @@ const addTouchEvent = () => {
   }
 }
 
-const { startAnimation, stopAnimation } = useAnimation<{ position: number }>()
+const { startAnimation, stopAnimation } = useJSAnimation<{ position: number }>()
 
 const enum Sources {
   AUTOPLAY = "autoplay",

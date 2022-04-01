@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, watch, getCurrentInstance, nextTick, watchEffect } from "vue"
 import { unitToPx } from "../utils/format"
-import useAnimation from "../use/useAnimation";
+import useJSAnimation from "../use/useJSAnimation";
 import { Easing } from "@tweenjs/tween.js"
 import useNative from "../use/useNative"
 import { NZJSBridge } from "../../bridge";
@@ -259,7 +259,7 @@ const scrollToElement = (el: Element) => {
   }
 }
 
-const { startAnimation, stopAnimation } = useAnimation<{ target: number }>()
+const { startAnimation, stopAnimation } = useJSAnimation<{ target: number }>()
 
 const enum Axis {
   HORIZONTAL,

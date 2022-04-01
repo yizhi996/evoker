@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, nextTick } from "vue"
+import { ref, computed, watch, nextTick } from "vue"
 import { NZothElement } from "../../dom/element"
 import { addTap } from "../../dom/event";
 import { isTrue } from "../../utils"
@@ -43,7 +43,9 @@ const props = withDefaults(defineProps<{
   hoverStayTime: 70
 })
 
-const { viewRef: buttonRef, finalHoverClass } = useHover(props)
+const buttonRef = ref<HTMLElement>()
+
+const { finalHoverClass } = useHover(buttonRef, props)
 
 const classes = computed(() => {
   let cls = "nz-button "

@@ -13,7 +13,7 @@ import { useParent } from "../../use/useRelation"
 import { MOVABLE_KEY } from "./constant"
 import { unitToPx } from "../../utils/format"
 import { Easing } from "@tweenjs/tween.js"
-import useAnimation from "../../use/useAnimation"
+import useJSAnimation from "../../use/useJSAnimation"
 
 const emit = defineEmits(["update:x", "update:y", "change", "scale"])
 
@@ -151,7 +151,7 @@ const onMoveWithPropsChange = (x: number, y: number, animation: boolean) => {
   onMove(sfaeX, safeY, animation)
 }
 
-const { startAnimation, stopAnimation } = useAnimation<{ x: number, y: number, scale: number }>()
+const { startAnimation, stopAnimation } = useJSAnimation<{ x: number, y: number, scale: number }>()
 
 const onMove = (x: number, y: number, animation: boolean) => {
   const scale = 1

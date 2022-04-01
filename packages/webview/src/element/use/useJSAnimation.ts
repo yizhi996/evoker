@@ -9,7 +9,7 @@ interface AnimationOptions<T> {
   onComplete?: () => void
 }
 
-export default function useAnimation<T>() {
+export default function useJSAnimation<T>() {
   let currentAnimation = 0
   let currentTween: Tween<T> | undefined
 
