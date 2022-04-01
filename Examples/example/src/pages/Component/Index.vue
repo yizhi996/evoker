@@ -1,11 +1,11 @@
 <template>
-  <page-index desc="以下将展示小程序内置组件，部分组件还未完善功能" :list="list"></page-index>
+  <n-page-index desc="以下将展示小程序内置组件，部分组件还未完善功能" :list="list"></n-page-index>
 </template>
 
 <script setup lang="ts">
 import { reactive } from "vue"
 import { usePage } from "nzoth"
-import PageIndex from "../../components/PageIndex.vue"
+import NPageIndex from "../../components/NPageIndex.vue"
 
 const list = reactive([
   {

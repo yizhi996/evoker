@@ -1,6 +1,6 @@
 <template>
   <div class="mx-2.5 mt-2.5">
-    <topic>isFocus: {{ focus }}</topic>
+    <n-topic>isFocus: {{ focus }}</n-topic>
     <textarea
       class="w-full h-14 bg-white"
       value="NZoth"
@@ -10,7 +10,7 @@
       @blur="onBlur"
     />
 
-    <topic>Auto Height</topic>
+    <n-topic>Auto Height</n-topic>
     <textarea
       class="w-full bg-white"
       value=""
@@ -19,7 +19,7 @@
       placeholder="请输入..."
     />
 
-    <topic>Custom Style</topic>
+    <n-topic>Custom Style</n-topic>
     <textarea
       class="w-full h-20 bg-white text-red-400 text-xl font-light"
       placeholder="请输入"

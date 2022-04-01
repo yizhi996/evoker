@@ -1,10 +1,10 @@
 <template>
-  <page-index desc="以下将展示小程序接口能力" :list="list"></page-index>
+  <n-page-index desc="以下将展示小程序接口能力" :list="list"></n-page-index>
 </template>
 
 <script setup lang="ts">
 import { reactive } from "vue"
-import PageIndex from "../../components/PageIndex.vue"
+import NPageIndex from "../../components/NPageIndex.vue"
 
 const list = reactive([
   {
@@ -126,7 +126,7 @@ const list = reactive([
     pages: [
       {
         name: '图片',
-        url: 'image/image'
+        url: 'choose-image'
       }, {
         name: '音频',
         url: 'audio'

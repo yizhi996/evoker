@@ -1,6 +1,6 @@
 <template>
   <div class="mx-2.5 mt-2.5">
-    <topic>isFocus: {{ focus }}</topic>
+    <n-topic>isFocus: {{ focus }}</n-topic>
     <input
       class="w-full h-12 bg-white px-2.5"
       value="NZoth"
@@ -9,17 +9,17 @@
       @focus="onFocus"
       @blur="onBlur"
     />
-    <topic>Maxlength 10</topic>
+    <n-topic>Maxlength 10</n-topic>
     <input class="w-full h-12 bg-white px-2.5" placeholder="请输入" :maxlength="10" />
-    <topic>Account: {{ account }}</topic>
+    <n-topic>Account: {{ account }}</n-topic>
     <input class="w-full h-12 bg-white px-2.5" v-model:value="account" placeholder="请输入" />
-    <topic>Password: {{ password }}</topic>
+    <n-topic>Password: {{ password }}</n-topic>
     <input class="w-full h-12 bg-white px-2.5" v-model:value="password" password placeholder="请输入" />
-    <topic>Number Type</topic>
+    <n-topic>Number Type</n-topic>
     <input class="w-full h-12 bg-white px-2.5" type="number" placeholder="请输入" />
-    <topic>Decimal Type</topic>
+    <n-topic>Decimal Type</n-topic>
     <input class="w-full h-12 bg-white px-2.5" type="digit" placeholder="请输入" />
-    <topic>Custom Style</topic>
+    <n-topic>Custom Style</n-topic>
     <input
       class="w-full h-12 bg-white px-2.5 text-red-400 text-xl text-center font-light"
       placeholder="请输入"

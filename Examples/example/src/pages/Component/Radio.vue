@@ -1,24 +1,23 @@
 <template>
   <div class="mx-2.5 mt-2.5">
-    <topic>{{ checked }}</topic>
+    <n-topic>{{ checked }}</n-topic>
     <radio-group class="mt-2.5" @change="onChange">
-      <cell-group>
-        <cell v-for="fruit of fruits" :key="fruit.value">
+      <n-cell-group>
+        <n-cell v-for="fruit of fruits" :key="fruit.value">
           <radio
             class="w-full h-full"
             :value="fruit.value"
             :checked="fruit.checked"
           >{{ fruit.name }}</radio>
-        </cell>
-      </cell-group>
+        </n-cell>
+      </n-cell-group>
     </radio-group>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from "vue"
-import CellGroup from "../../components/CellGroup.vue"
-import Cell from "../../components/Cell.vue"
+
 
 const fruits = reactive([
   { name: "苹果", value: "apple" },

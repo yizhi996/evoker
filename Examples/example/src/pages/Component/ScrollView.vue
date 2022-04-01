@@ -1,12 +1,11 @@
 <template>
   <div class="mx-5">
-    <topic>Vertical Scroll</topic>
+    <n-topic>Vertical</n-topic>
     <scroll-view
       scroll-y
       class="w-full h-36"
       :scroll-top="scrollTop"
       :scroll-into-view="scrollIntoView"
-      enhanced
       scroll-with-animation
       @scroll="onScroll"
     >
@@ -18,7 +17,7 @@
     <button type="primary" @click="toNext">Next</button>
     <button type="success" @click="addScrollTop">Move</button>
 
-    <topic>Horizontal Scroll</topic>
+    <n-topic>Horizontal</n-topic>
     <div class="flex justify-center">
       <scroll-view scroll-x class="w-full h-36 whitespace-nowrap">
         <div class="inline-block w-full h-36 bg-green-500"></div>
@@ -26,6 +25,21 @@
         <div class="inline-block w-full h-36 bg-gray-300"></div>
       </scroll-view>
     </div>
+
+    <n-topic>Enhanced</n-topic>
+    <scroll-view
+      scroll-y
+      class="w-full h-36"
+      enhanced
+      :bounces="false"
+      :show-scrollbar="false"
+      paging-enabled
+      scroll-with-animation
+    >
+      <div id="green" class="w-full h-36 bg-green-500"></div>
+      <div id="blue" class="w-full h-36 bg-blue-500"></div>
+      <div id="gray" class="w-full h-36 bg-gray-300"></div>
+    </scroll-view>
   </div>
 </template>
 

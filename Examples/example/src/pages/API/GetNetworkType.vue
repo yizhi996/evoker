@@ -1,5 +1,5 @@
 <template>
-  <topic>网络状态</topic>
+  <n-topic>网络状态</n-topic>
   <div class="flex items-center justify-center bg-white py-10 text-2xl">{{ networkType }}</div>
   <button type="primary" @click="onClick">获取手机网络状态</button>
 </template>

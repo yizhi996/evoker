@@ -1,8 +1,8 @@
 <template>
   <div>
-    <topic>当前屏幕亮度</topic>
+    <n-topic>当前屏幕亮度</n-topic>
     <div class="flex items-center justify-center py-10 bg-white text-4xl">{{ brightness }}</div>
-    <topic>设置屏幕亮度</topic>
+    <n-topic>设置屏幕亮度</n-topic>
     <slider class="mt-10" :value="brightness" :min="0" :max="1" :step="0.1" @change="onChange"></slider>
   </div>
 </template>

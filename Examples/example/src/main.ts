@@ -1,7 +1,9 @@
 import { createApp } from "nzoth"
 import App from "./App.vue"
 import { CellGroup, Cell } from "vant"
-import Topic from "./components/Topic.vue"
+import NTopic from "./components/NTopic.vue"
+import NCellGroup from "./components/NCellGroup.vue"
+import NCell from "./components/NCell.vue"
 
 import "./tailwind.css"
 
@@ -18,6 +20,8 @@ app.config.warnHandler = (msg, vm, trace) => {
 /** @ts-ignore */
 app.use(CellGroup).use(Cell)
 
-app.component("topic", Topic)
+app.component("n-topic", NTopic)
+app.component("n-cell", NCell)
+app.component("n-cell-group", NCellGroup)
 
 app.mount("#app")

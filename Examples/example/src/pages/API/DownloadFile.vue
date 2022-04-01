@@ -1,7 +1,7 @@
 <template>
   <div class="mx-2.5 mt-2.5">
     <img v-if="src" class="w-full" mode="widthFix" :src="src" />
-    <topic v-else>下载远程图片</topic>
+    <n-topic v-else>下载远程图片</n-topic>
     <button class="mt-2.5" type="primary" @click="onDownload">download</button>
     <span>Progress: {{ progress }}</span>
   </div>

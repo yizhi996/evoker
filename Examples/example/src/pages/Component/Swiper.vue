@@ -1,6 +1,6 @@
 <template>
   <div class="mt-2.5 mx-2.5">
-    <topic>Horizontal</topic>
+    <n-topic>Horizontal</n-topic>
     <swiper
       class="w-full h-40 text-white text-xl"
       :autoplay="autoplay"
@@ -19,7 +19,7 @@
         :class="color"
       >{{ i }}</swiper-item>
     </swiper>
-    <topic>Vertical</topic>
+    <n-topic>Vertical</n-topic>
     <swiper
       class="w-full h-40 text-white text-xl"
       :autoplay="autoplay"

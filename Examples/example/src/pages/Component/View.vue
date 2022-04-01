@@ -28,10 +28,17 @@
 
 <style scoped>
 .normal {
+  width: 100%;
+  height: 44px;
   margin-top: 10px;
-  color: red;
+  border-radius: 6px;
+  background-color: orange;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .hover {
-  color: blue;
+  background-color: palevioletred;
+  color: white;
 }
 </style>

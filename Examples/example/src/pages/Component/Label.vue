@@ -1,40 +1,40 @@
 <template>
   <div class="mx-2.5 mt-2.5">
-    <topic>Checkbox {{ checked1 }}</topic>
+    <n-topic>Checkbox {{ checked1 }}</n-topic>
     <checkbox-group class="mt-2.5" @change="onChangeCheckbox">
-      <cell-group>
-        <cell v-for="fruit of fruits" :key="fruit.value">
+      <n-cell-group>
+        <n-cell v-for="fruit of fruits" :key="fruit.value">
           <label class="w-full h-full flex items-center">
             <checkbox :value="fruit.value" :checked="fruit.checked"></checkbox>
             <span>{{ fruit.name }}</span>
           </label>
-        </cell>
-      </cell-group>
+        </n-cell>
+      </n-cell-group>
     </checkbox-group>
-    <topic>Radio for {{ checked2 }}</topic>
+    <n-topic>Radio for {{ checked2 }}</n-topic>
     <radio-group class="mt-2.5" @change="onChangeRadio">
-      <cell-group>
-        <cell v-for="fruit of fruits" :key="fruit.value">
+      <n-cell-group>
+        <n-cell v-for="fruit of fruits" :key="fruit.value">
           <radio :id="fruit.value" :value="fruit.value" :checked="fruit.checked"></radio>
           <label class="w-full h-full" :for="fruit.value">{{ fruit.name }}</label>
-        </cell>
-      </cell-group>
+        </n-cell>
+      </n-cell-group>
     </radio-group>
-    <topic>Switch</topic>
-    <cell-group>
-      <cell v-for="fruit of fruits" :key="fruit.value">
+    <n-topic>Switch</n-topic>
+    <n-cell-group>
+      <n-cell v-for="fruit of fruits" :key="fruit.value">
         <label class="w-full h-full flex items-center">
           <switch :checked="fruit.checked"></switch>
           <span>{{ fruit.name }}</span>
         </label>
-      </cell>
-    </cell-group>
-    <topic>Button</topic>
+      </n-cell>
+    </n-cell-group>
+    <n-topic>Button</n-topic>
     <div class="flex flex-col items-center">
       <button id="button" class="m-0" @click="onClick">Button</button>
       <label for="button" class="mt-1.5">Label Area</label>
     </div>
-    <topic>Input</topic>
+    <n-topic>Input</n-topic>
     <div class="flex flex-col items-center pb-40">
       <input id="input" class="bg-white w-full h-11" placeholder="input..." />
       <label for="input" class="mt-1.5">Label Area</label>
@@ -44,8 +44,6 @@
 
 <script setup lang="ts">
 import { ref, reactive } from "vue"
-import CellGroup from "../../components/CellGroup.vue"
-import Cell from "../../components/Cell.vue"
 
 const fruits = reactive([
   { name: "苹果", value: "apple" },

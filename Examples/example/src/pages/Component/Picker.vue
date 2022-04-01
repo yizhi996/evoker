@@ -1,6 +1,6 @@
 <template>
-  <cell-group class="mt-5 mx-2.5">
-    <cell title="单列">
+  <n-cell-group class="mt-5 mx-2.5">
+    <n-cell title="单列">
       <picker
         class="w-full h-10 bg-white flex items-center"
         header-text="水果"
@@ -10,8 +10,8 @@
       >
         <div class="px-2.5">当前选择： {{ fruits.range[fruits.value] }}</div>
       </picker>
-    </cell>
-    <cell title="多列">
+    </n-cell>
+    <n-cell title="多列">
       <picker
         class="w-full h-10 bg-white flex items-center"
         mode="multiSelector"
@@ -23,8 +23,8 @@
           class="px-2.5"
         >当前选择： {{ weeks.range[0][weeks.value[0]] }} {{ weeks.range[1][weeks.value[1]] }}</div>
       </picker>
-    </cell>
-    <cell title="联动">
+    </n-cell>
+    <n-cell title="联动">
       <picker
         class="w-full h-10 bg-white flex items-center"
         mode="multiSelector"
@@ -37,8 +37,8 @@
           class="px-2.5"
         >当前选择： {{ cities.range[0][cities.value[0]] }} {{ cities.range[1][cities.value[1]] }} {{ cities.range[2][cities.value[2]] }}</div>
       </picker>
-    </cell>
-    <cell title="时间">
+    </n-cell>
+    <n-cell title="时间">
       <picker
         class="w-full h-10 bg-white flex items-center"
         :value="timeValue"
@@ -49,8 +49,8 @@
       >
         <div class="px-2.5">当前选择： {{ timeValue }}</div>
       </picker>
-    </cell>
-    <cell title="日期">
+    </n-cell>
+    <n-cell title="日期">
       <picker
         class="w-full h-10 bg-white flex items-center"
         :value="dateValue"
@@ -61,14 +61,12 @@
       >
         <div class="px-2.5">当前选择： {{ dateValue }}</div>
       </picker>
-    </cell>
-  </cell-group>
+    </n-cell>
+  </n-cell-group>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from "vue"
-import CellGroup from "../../components/CellGroup.vue"
-import Cell from "../../components/Cell.vue"
 
 const fruits = reactive({
   range: ["苹果", "香蕉", "草莓", "菠萝", "西瓜", "桃子", "橙子"],

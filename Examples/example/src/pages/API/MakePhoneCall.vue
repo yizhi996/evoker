@@ -1,6 +1,6 @@
 <template>
   <div class="m-2.5 p-2.5 bg-white">
-    <topic>请在下方输入电话号码</topic>
+    <n-topic>请在下方输入电话号码</n-topic>
     <input
       class="m-2.5 w-full h-14 text-2xl"
       v-model:value="phoneNumber"

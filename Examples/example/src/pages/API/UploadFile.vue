@@ -1,7 +1,7 @@
 <template>
   <div class="mx-2.5 mt-2.5">
     <img v-if="src" class="w-full" mode="widthFix" :src="src" />
-    <topic v-else>上传图片到服务器</topic>
+    <n-topic v-else>上传图片到服务器</n-topic>
     <button class="mt-2.5" type="primary" @click="onChooseImage">upload</button>
     <span>Progress: {{ progress }}</span>
   </div>
