@@ -63,7 +63,8 @@ import { getBatteryInfo } from "@nzoth/bridge"
 import { showTabBar, hideTabBar } from "@nzoth/bridge"
 import { request, downloadFile, uploadFile } from "./api/request"
 import { createAnimation } from "./api/ui/animation"
-import "./webview"
+import { pageScrollTo } from "./api/ui/scroll"
+import "./fromWebView"
 
 const env = { USER_DATA_PATH: "nzfile://usr" }
 
@@ -126,7 +127,8 @@ export {
   offNetworkStatusChange,
   onUserCaptureScreen,
   offUserCaptureScreen,
-  createAnimation
+  createAnimation,
+  pageScrollTo
 }
 
 export default {
@@ -188,5 +190,6 @@ export default {
   offNetworkStatusChange,
   onUserCaptureScreen,
   offUserCaptureScreen,
-  createAnimation
+  createAnimation,
+  pageScrollTo
 }

@@ -9,7 +9,8 @@ import {
   reLaunch,
   exit
 } from "./api/navigator"
-import "./service"
+import { pageScrollTo } from "./api/scroll"
+import "./fromService"
 
 export {
   vibrateShort,
@@ -20,7 +21,8 @@ export {
   switchTab,
   redirectTo,
   reLaunch,
-  exit
+  exit,
+  pageScrollTo
 }
 
 export { NZJSBridge }

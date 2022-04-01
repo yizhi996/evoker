@@ -7,15 +7,19 @@ import {
 } from "@nzoth/bridge"
 
 export const InnerJSBridge = {
-  invoke: invoke,
-  publish: publish,
-  subscribe: subscribe,
-  invokeCallbackHandler: invokeCallbackHandler,
-  subscribeHandler: subscribeHandler
+  invoke,
+  publish,
+  subscribe,
+  invokeCallbackHandler,
+  subscribeHandler
 }
 
 const NZJSBridge = {
-  invokeCallbackHandler: invokeCallbackHandler,
-  subscribeHandler: subscribeHandler
+  get invokeCallbackHandler() {
+    return invokeCallbackHandler
+  },
+  get subscribeHandler() {
+    return subscribeHandler
+  }
 }
 ;(globalThis as any).NZJSBridge = NZJSBridge

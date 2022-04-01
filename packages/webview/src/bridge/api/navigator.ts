@@ -1,4 +1,4 @@
-import { invokeAppServiceMethod } from "../service"
+import { invokeAppServiceMethod } from "../fromService"
 
 export function navigateTo(url?: string) {
   url && invokeAppServiceMethod("navigateTo", { url })

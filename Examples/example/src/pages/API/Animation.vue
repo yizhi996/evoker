@@ -18,4 +18,5 @@ const onStart = () => {
   anim.backgroundColor("#FF0000").opacity(0.0).scale(1).setp()
   animData.value = anim.export()
 }
+
 </script>

@@ -285,6 +285,11 @@
       "component": "pages/API/Animation.vue",
       "path": "animation",
       "style": { "navigationBarTitleText": "Animation" }
+    },
+    {
+      "component": "pages/API/PageScroll.vue",
+      "path": "page-scroll",
+      "style": { "navigationBarTitleText": "页面滚动" }
     }
   ]
 }

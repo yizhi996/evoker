@@ -19,6 +19,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
     case showDatePickerView
     case updateMultiPickerView
     case operateScrollView
+    case pageScrollTo
     
     func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         DispatchQueue.main.async {
@@ -37,6 +38,8 @@ enum NZUIAPI: String, NZBuiltInAPI {
                 updateMultiPickerView(args: args, bridge: bridge)
             case .operateScrollView:
                 operateScrollView(args: args, bridge: bridge)
+            case .pageScrollTo:
+                pageScrollTo(args: args, bridge: bridge)
             }
         }
     }
@@ -335,6 +338,33 @@ enum NZUIAPI: String, NZBuiltInAPI {
         scrollView.showsHorizontalScrollIndicator = params.showScrollbar
         scrollView.isPagingEnabled = params.pagingEnabled
         scrollView.decelerationRate = params.fastDeceleration ? .fast : .normal
+        
+        bridge.invokeCallbackSuccess(args: args)
+    }
+    
+    private func pageScrollTo(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+        struct Params: Decodable {
+            let top: CGFloat
+            let duration: TimeInterval
+        }
+        
+        guard let params: Params = args.paramsString.toModel() else {
+            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let webView = bridge.container as? NZWebView else {
+            let error = NZError.bridgeFailed(reason: .webViewNotFound)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        UIView.animate(withDuration: params.duration / 1000, delay: 0, options: .curveEaseInOut) {
+            let top = min(max(0, params.top - webView.scrollView.frame.height),
+                          max(0, webView.scrollView.contentSize.height - webView.scrollView.frame.height))
+            webView.scrollView.contentOffset = CGPoint(x: 0, y: top)
+        }
         
         bridge.invokeCallbackSuccess(args: args)
     }

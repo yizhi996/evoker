@@ -41,7 +41,7 @@ const list = reactive([
         url: 'modal'
       }, {
         name: '页面滚动',
-        url: 'page-scroll/page-scroll'
+        url: 'page-scroll'
       }, {
         name: '显示消息提示框',
         url: 'toast'

@@ -53,6 +53,12 @@ export function getCurrentPages() {
   })
 }
 
+export function getCurrentWebViewId() {
+  const pages = getCurrentPages()
+  const page = pages[pages.length - 1]
+  return page.pageId
+}
+
 export function getApp() {
   return { globalData: innerAppData.globalData }
 }
@@ -93,11 +99,14 @@ export function unmountPage(pageId: number) {
   }
 }
 
-InnerJSBridge.subscribe("WEBVIEW_ON_LOAD", message => {
-  const { webViewId, path } = message
-  const { path: route, query } = decodeURL(path)
-  mountPage(webViewId, route, query)
-})
+InnerJSBridge.subscribe<{ webViewId: number; path: string }>(
+  "WEBVIEW_ON_LOAD",
+  message => {
+    const { webViewId, path } = message
+    const { path: route, query } = decodeURL(path)
+    mountPage(webViewId, route, query)
+  }
+)
 
 pipeline.onSync(message => {
   message.forEach(action => {
