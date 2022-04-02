@@ -14,12 +14,20 @@ import KTVHTTPCache
 import PureLayout
 
 public struct NZVideoPlayerParams: Codable  {
+    
     let parentId: String
+    
     let videoPlayerId: Int
+    
     let url: String
+    
     let objectFit: ObjectFit
+    
     let muted: Bool
+    
     let loop: Bool
+    
+    var _url: URL?
     
     enum ObjectFit: String, Codable {
         case contain
@@ -151,7 +159,7 @@ open class NZVideoPlayerView: UIView {
         playerId = params.videoPlayerId
         super.init(frame: .zero)
         
-        url = URL(string: params.url)
+        url = params._url
     }
     
     required public init?(coder: NSCoder) {

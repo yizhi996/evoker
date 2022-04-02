@@ -24,7 +24,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, getCurrentInstance } from "vue"
 import { unitToPx } from "../utils/format"
 import useTouch from "../use/useTouch"
-import { safeRangeValue } from "../utils"
+import { clamp } from "@nzoth/shared"
 
 const emit = defineEmits(["change", "changing"])
 
@@ -59,7 +59,7 @@ const barRef = ref<HTMLElement>()
 const handleRef = ref<HTMLElement>()
 
 const width = computed(() => {
-  const value = safeRangeValue(props.value, props.min, props.max)
+  const value = clamp(props.value, props.min, props.max)
   return `${((value - props.min) / (props.max - props.min)) * 100}%`
 })
 
@@ -95,7 +95,7 @@ onMounted(() => {
         const percent = x / barRect.width
         let value = (props.max - props.min) * percent
         value = Math.round(value / props.step) * props.step + props.min
-        value = safeRangeValue(value, props.min, props.max)
+        value = clamp(value, props.min, props.max)
         instance.props.value = value
         emit("changing", { value })
       })

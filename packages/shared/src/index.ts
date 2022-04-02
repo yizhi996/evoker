@@ -25,3 +25,7 @@ export function isObject(val: unknown): val is Record<any, any> {
 export function isArrayBuffer(val: unknown) {
   return Object.prototype.toString.call(val) === "[object ArrayBuffer]"
 }
+
+export function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(min, value), max)
+}

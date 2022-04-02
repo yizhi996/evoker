@@ -255,12 +255,33 @@ enum NZCameraAPI: String, NZBuiltInAPI {
     private func openNativelyCamera(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         
         struct Params: Decodable {
-            let type: UICameraEngine.CaptureType
+            let type: MediaType
             let sizeType: [SizeType]
+            var maxDuration: TimeInterval?
+            var cameraDevice: CameraDevice?
+            
+            enum MediaType: String, Decodable {
+                case photo
+                case video
+            }
             
             enum SizeType: String, Decodable {
                 case original
                 case compressed
+            }
+            
+            enum CameraDevice: String, Decodable {
+                case back
+                case front
+                
+                func toNatively() -> UIImagePickerController.CameraDevice {
+                    switch self {
+                    case .back:
+                        return .rear
+                    case .front:
+                        return .front
+                    }
+                }
             }
         }
         
@@ -284,15 +305,25 @@ enum NZCameraAPI: String, NZBuiltInAPI {
             return
         }
         
+        let camera = cameraModule.uiCamera
+        camera.cancelHandler = {
+            let error = NZError.bridgeFailed(reason: .cancel)
+            bridge.invokeCallbackFail(args: args, error: error)
+        }
+        camera.errorHandler = { [unowned bridge] errmsg in
+            let error = NZError.bridgeFailed(reason: .custom(errmsg))
+            bridge.invokeCallbackFail(args: args, error: error)
+        }
         let compressed = params.sizeType.contains(.compressed)
         if params.type == .photo {
-            let camera = cameraModule.uiCamera
             camera.showTakePhoto(compressed: compressed, to: viewController) { photo in
                 bridge.invokeCallbackSuccess(args: args, result: photo)
             }
         } else if params.type == .video {
-            let camera = cameraModule.uiCamera
-            camera.showRecordVideo(compressed: compressed, to: viewController) { video in
+            camera.showRecordVideo(device: params.cameraDevice?.toNatively() ?? .rear,
+                                   maxDuration: params.maxDuration ?? 60,
+                                   compressed: compressed,
+                                   to: viewController) { video in
                 bridge.invokeCallbackSuccess(args: args, result: video)
             }
         }

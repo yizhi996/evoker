@@ -1,5 +1,5 @@
 import { openNativelyCameraTakePhoto, TempFile } from "./camera"
-import { openNativelyAlbumTakePhoto } from "./album"
+import { openNativelyAlbumChoosePhoto } from "./album"
 import { showActionSheet } from "../ui/interaction"
 import { invoke } from "../../bridge"
 import {
@@ -100,7 +100,7 @@ export function chooseImage<T extends ChooseImageOptions = ChooseImageOptions>(
     }
 
     const openAlbum = () => {
-      openNativelyAlbumTakePhoto({
+      openNativelyAlbumChoosePhoto({
         count: finalOptions.count!,
         sizeType: finalOptions.sizeType!
       })

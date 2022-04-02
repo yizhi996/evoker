@@ -9,13 +9,9 @@
 import Foundation
 import UIKit
 import MobileCoreServices
+import AVFoundation
 
 class UICameraEngine: NSObject, UINavigationControllerDelegate {
-    
-    enum CaptureType: String, Codable {
-        case photo
-        case video
-    }
     
     struct PhotoData: Codable {
         let tempFilePath: String
@@ -29,15 +25,13 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
     
     struct VideoData: Codable {
         let tempFilePath: String
-        let duration: Float
+        let duration: TimeInterval
         let size: Int
-        let width: Int
-        let height: Int
+        let width: CGFloat
+        let height: CGFloat
     }
     
     private var currentViewController: UIViewController?
-    
-    private var type: CaptureType = .photo
     
     private var compressed = false
     
@@ -67,17 +61,21 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
         viewController.present(imagePickerViewController, animated: true, completion: nil)
     }
     
-    func showRecordVideo(compressed: Bool,
+    func showRecordVideo(device: UIImagePickerController.CameraDevice,
+                         maxDuration: TimeInterval,
+                         compressed: Bool,
                          to viewController: UIViewController,
                          completionHandler: @escaping (VideoData) -> Void) {
         let imagePickerViewController = UIImagePickerController()
         imagePickerViewController.sourceType = .camera
-        imagePickerViewController.mediaTypes = [kUTTypeVideo as String]
+        imagePickerViewController.mediaTypes = [kUTTypeMovie as String, kUTTypeVideo as String]
         imagePickerViewController.allowsEditing = false
         imagePickerViewController.cameraCaptureMode = .video
-        imagePickerViewController.cameraDevice = .rear
+        imagePickerViewController.cameraDevice = device
         imagePickerViewController.cameraFlashMode = .auto
         imagePickerViewController.delegate = self
+        imagePickerViewController.videoMaximumDuration = maxDuration
+        imagePickerViewController.videoQuality = compressed ? .typeMedium : .typeHigh
         
         self.compressed = compressed
         recordVideoHandler = completionHandler
@@ -97,31 +95,62 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
 extension UICameraEngine: UIImagePickerControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if type == .photo {
-            guard let image = info[.originalImage] as? UIImage,
-                  let imageData = image.jpegData(compressionQuality: compressed ? 0.7 : 1.0) else {
-                return
+        guard let mediaType = info[.mediaType] as? String else { return }
+        if mediaType == String(kUTTypeImage) {
+            if let image = info[.originalImage] as? UIImage,
+               let imageData = image.jpegData(compressionQuality: compressed ? 0.7 : 1.0) {
+                let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: "jpg")
+                let success = FileManager.default.createFile(atPath: filePath.path,
+                                                             contents: imageData,
+                                                             attributes: nil)
+                if success {
+                    let data = PhotoData(tempFilePath: nzfile,
+                                         tempFile: PhotoData.File(path: nzfile, size: imageData.count))
+                    takePhotoHandler?(data)
+                } else {
+                    errorHandler?("save image to disk fail")
+                }
             }
-            
-            let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: "jpg")
-            let success = FileManager.default.createFile(atPath: filePath.path,
-                                                         contents: imageData,
-                                                         attributes: nil)
-            if success {
-                let data = PhotoData(tempFilePath: nzfile,
-                                     tempFile: PhotoData.File(path: nzfile, size: imageData.count))
-                takePhotoHandler?(data)
-            } else {
-                errorHandler?("save image to disk fail")
+        } else {
+            if let videoURL = info[.mediaURL] as? URL {
+                let asset = AVAsset(url: videoURL)
+                guard let track = asset.tracks(withMediaType: .video).first else {
+                    return
+                }
+                
+                let duration = CMTimeGetSeconds(asset.duration)
+                let size = track.naturalSize.applying(track.preferredTransform)
+               
+                let ext = videoURL.pathExtension.lowercased()
+                let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
+                do {
+                    let resourceValues = try videoURL.resourceValues(forKeys: [.fileSizeKey])
+                    let fileSize = resourceValues.fileSize ?? 0
+                    try FileManager.default.moveItem(at: videoURL, to: filePath)
+                    let videoData = VideoData(tempFilePath: nzfile,
+                                              duration: duration,
+                                              size: fileSize,
+                                              width: abs(size.width),
+                                              height: abs(size.height))
+                    recordVideoHandler?(videoData)
+                } catch {
+                    errorHandler?("save image to disk fail")
+                }
             }
-        } else if type == .video {
-            print(info[.mediaURL], info[.mediaMetadata])
         }
+        errorHandler = nil
+        cancelHandler = nil
+        takePhotoHandler = nil
+        recordVideoHandler = nil
         dismiss()
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         cancelHandler?()
+        errorHandler = nil
+        cancelHandler = nil
+        takePhotoHandler = nil
+        recordVideoHandler = nil
         dismiss()
     }
 }

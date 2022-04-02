@@ -1,4 +1,4 @@
-import { isString, isNumber } from "@nzoth/shared"
+import { isString, isNumber, clamp } from "@nzoth/shared"
 import { invoke, subscribe } from "../../bridge"
 import {
   invokeFailure,
@@ -70,7 +70,7 @@ export function setScreenBrightness<
       invokeFailure(Events.SET_SCREEN_BRIGHTNESS, options, "value invalid")
       return
     }
-    value = Math.min(Math.max(0, value), 1)
+    value = clamp(value, 0, 1)
     invoke<SuccessResult<T>>(
       Events.SET_SCREEN_BRIGHTNESS,
       { value },

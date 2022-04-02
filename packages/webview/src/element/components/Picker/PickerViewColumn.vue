@@ -27,7 +27,7 @@ import { useParent, ParentProvide } from "../../use/useRelation"
 import { PICKER_VIEW_KEY, PickerViewProvide } from "./define"
 import { Easing } from "@tweenjs/tween.js"
 import { vibrateShort, NZJSBridge } from "../../../bridge"
-import { safeRangeValue } from "../../utils"
+import { clamp } from "@nzoth/shared"
 import useJSAnimation from "../../use/useJSAnimation"
 
 const instance = getCurrentInstance()!
@@ -59,7 +59,7 @@ onMounted(() => {
 })
 
 const getIndex = (y: number) => {
-  return safeRangeValue(Math.round(-y / itemHeight), 0, totalCount - 1)
+  return clamp(Math.round(-y / itemHeight), 0, totalCount - 1)
 }
 
 const momentumTimeThreshold = 300
@@ -193,7 +193,7 @@ const maskClass = ref<string>()
 
 const setValue = (value: number) => {
   nextTick(() => {
-    const index = value ? safeRangeValue(value, 0, totalCount - 1) : 0
+    const index = value ? clamp(value, 0, totalCount - 1) : 0
     prevIndex = index
     currentIndex = index
     animationTranslate(-index * itemHeight, 0, false)

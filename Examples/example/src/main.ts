@@ -9,12 +9,8 @@ import "./tailwind.css"
 
 const app = createApp(App)
 
-app.config.errorHandler = (err, vm, info) => {
-  console.log(err, vm, info)
-}
-
-app.config.warnHandler = (msg, vm, trace) => {
-  console.log(msg, vm, trace)
+app.config.errorHandler = err => {
+  console.log(err)
 }
 
 /** @ts-ignore */

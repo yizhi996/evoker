@@ -177,13 +177,17 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         let ps = ZLPhotoPreviewSheet()
         let config = ZLPhotoConfiguration.default()
         config.allowTakePhotoInLibrary = false
-        config.allowSelectVideo = false
+        config.allowSelectVideo = params.types.contains(.video)
+        config.allowSelectImage = params.types.contains(.photo)
         config.allowSelectOriginal = params.sizeType.count == 2
         config.maxSelectCount = params.count
+        
+        ps.cancelBlock = { [unowned bridge] in
+            let error = NZError.bridgeFailed(reason: .cancel)
+            bridge.invokeCallbackFail(args: args, error: error)
+        }
         ps.selectImageBlock = { [unowned bridge] (images, assets, isOriginal) in
-            var filePaths: [String] = []
-            var files: [[String: Any]] = []
-            
+           
             func getOriginalImage(asset: PHAsset, image: UIImage) -> (Data, String) {
                 let ext = imageAssetGetExt(asset: asset)
                 let fmt = extToForamt(ext: ext)
@@ -191,39 +195,54 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 return (data, ext)
             }
             
-            for (i, image) in images.enumerated() {
-                var ext = "jpg"
-                let asset = assets[i]
-                var imageData: Data
-                if params.sizeType.count == 2 {
-                    if isOriginal {
+            guard !assets.isEmpty else { return }
+            
+            let asset = assets[0]
+            if asset.mediaType == .image {
+                var filePaths: [String] = []
+                var files: [[String: Any]] = []
+                for (i, image) in images.enumerated() {
+                    var ext = "jpg"
+                    let asset = assets[i]
+                    var imageData: Data
+                    if params.sizeType.count == 2 {
+                        if isOriginal {
+                            (imageData, ext) = getOriginalImage(asset: asset, image: image)
+                        } else {
+                            ext = "jpg"
+                            imageData = image.jpegData(compressionQuality: 0.7)!
+                        }
+                    } else if params.sizeType.contains(.original) {
                         (imageData, ext) = getOriginalImage(asset: asset, image: image)
                     } else {
-                        ext = "jpg"
-                        imageData = image.jpegData(compressionQuality: 0.7)!
+                        if imageAssetGetExt(asset: asset) == "gif" {
+                            ext = "gif"
+                            imageData = image.sd_imageData(as: .GIF)!
+                        } else {
+                            ext = "jpg"
+                            let size = ZLPhotoModel(asset: asset).previewSize
+                            let newImage = image.sd_resizedImage(with: size, scaleMode: SDImageScaleMode.fill)!
+                            imageData = newImage.jpegData(compressionQuality: 0.7)!
+                        }
                     }
-                } else if params.sizeType.contains(.original) {
-                    (imageData, ext) = getOriginalImage(asset: asset, image: image)
-                } else {
-                    if imageAssetGetExt(asset: asset) == "gif" {
-                        ext = "gif"
-                        imageData = image.sd_imageData(as: .GIF)!
-                    } else {
-                        ext = "jpg"
-                        let size = ZLPhotoModel(asset: asset).previewSize
-                        let newImage = image.sd_resizedImage(with: size, scaleMode: SDImageScaleMode.fill)!
-                        imageData = newImage.jpegData(compressionQuality: 0.7)!
+                    
+                    let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
+                    filePaths.append(nzfile)
+                    
+                    FileManager.default.createFile(atPath: filePath.path, contents: imageData, attributes: nil)
+                    files.append(["path": nzfile, "size": imageData.count])
+                }
+                bridge.invokeCallbackSuccess(args: args, result: ["tempFilePaths": filePaths, "tempFiles": files])
+            } else if asset.mediaType == .video {
+                getVideoAssetData(asset: asset) { videoData, error in
+                    if let error = error {
+                        let error = NZError.bridgeFailed(reason: .custom(error.localizedDescription))
+                        bridge.invokeCallbackFail(args: args, error: error)
+                    } else if let videoData = videoData {
+                        bridge.invokeCallbackSuccess(args: args, result: videoData)
                     }
                 }
-                
-                let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
-                filePaths.append(nzfile)
-                
-                FileManager.default.createFile(atPath: filePath.path, contents: imageData, attributes: nil)
-                files.append(["path": nzfile, "size": imageData.count])
             }
-            let result: [String: Any] = ["tempFilePaths": filePaths, "tempFiles": files]
-            bridge.invokeCallbackSuccess(args: args, result: result)
         }
         ps.showPhotoLibrary(sender: viewController)
     }
@@ -241,6 +260,37 @@ enum NZMediaAPI: String, NZBuiltInAPI {
             ext = "jpg"
         }
         return ext
+    }
+    
+    private func getVideoAssetData(asset: PHAsset, completionHandler: @escaping ((UICameraEngine.VideoData?, Error?) -> Void))  {
+        var ext = "mov"
+        let resource = PHAssetResource.assetResources(for: asset).first!
+        let uType = resource.uniformTypeIdentifier
+        if let fileExtension = UTTypeCopyPreferredTagWithClass(uType as CFString, kUTTagClassFilenameExtension) {
+            ext = String(fileExtension.takeRetainedValue())
+        }
+        let allowExts = ["mov", "mp4"]
+        if !allowExts.contains(ext) {
+            ext = "mov"
+        }
+        
+        let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
+        let options = PHAssetResourceRequestOptions()
+        options.isNetworkAccessAllowed = false
+        PHAssetResourceManager.default().writeData(for: resource, toFile: filePath, options: options) { error in
+            if let error = error {
+                completionHandler(nil, error)
+            } else {
+                let resourceValues = try? filePath.resourceValues(forKeys: [.fileSizeKey])
+                let fileSize = resourceValues?.fileSize ?? 0
+                let videoData = UICameraEngine.VideoData(tempFilePath: nzfile,
+                                                         duration: asset.duration,
+                                                         size: fileSize,
+                                                         width: CGFloat(asset.pixelWidth),
+                                                         height: CGFloat(asset.pixelHeight))
+                completionHandler(videoData, nil)
+            }
+        }
     }
     
     private func extToForamt(ext: String) -> SDImageFormat {

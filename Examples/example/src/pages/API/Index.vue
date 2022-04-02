@@ -141,7 +141,7 @@ const list = reactive([
         url: 'file/file'
       }, {
         name: '视频',
-        url: 'video/video'
+        url: 'choose-video'
       }, {
         name: '音视频合成',
         url: 'media-container/media-container'

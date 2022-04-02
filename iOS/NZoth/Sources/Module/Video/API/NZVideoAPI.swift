@@ -39,7 +39,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let params: NZVideoPlayerParams = args.paramsString.toModel() else {
+        guard var params: NZVideoPlayerParams = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -56,6 +56,10 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
+        
+        params._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
+                                                        userId: NZEngine.shared.userId,
+                                                        filePath: params.url) ?? URL(string: params.url)
         
         let playerView = NZVideoPlayerView(params: params)
         playerView.forceRotateScreen = { value in

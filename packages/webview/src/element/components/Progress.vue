@@ -6,7 +6,7 @@
     >
       <div
         class="nz-progress__active"
-        :style="{ width: `${safeRangeValue(currentPercent, 0, 100)}%`, 'background-color': activeColor, 'border-radius': `${unitToPx(borderRadius)}px` }"
+        :style="{ width: `${clamp(currentPercent, 0, 100)}%`, 'background-color': activeColor, 'border-radius': `${unitToPx(borderRadius)}px` }"
       ></div>
     </div>
     <span
@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue"
-import { safeRangeValue } from "../utils"
+import { clamp } from "@nzoth/shared"
 import { unitToPx } from "../utils/format"
 import { Easing } from "@tweenjs/tween.js"
 import useJSAnimation from "../use/useJSAnimation"

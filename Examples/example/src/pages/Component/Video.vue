@@ -1,7 +1,7 @@
 <template>
   <div class="relative mt-5 mx-5 h-40">
     <video
-      class="w-full h-full x"
+      class="w-full h-full"
       :autoplay="false"
       :muted="false"
       :src="data.videoURL"

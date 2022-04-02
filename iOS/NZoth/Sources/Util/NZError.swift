@@ -48,6 +48,9 @@ public enum NZError: Error {
     }
  
     public enum BridgeFailureReason {
+        
+        case cancel
+        
         case eventNotDefined
         
         case appServiceNotFound
@@ -112,6 +115,8 @@ extension NZError.BridgeFailureReason {
     
     var localizedDescription: String {
         switch self {
+        case .cancel:
+            return "cancel"
         case .eventNotDefined:
             return "this event not defined"
         case .appServiceNotFound:

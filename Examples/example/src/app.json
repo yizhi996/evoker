@@ -295,6 +295,11 @@
       "component": "pages/API/Image.vue",
       "path": "choose-image",
       "style": { "navigationBarTitleText": "图片" }
+    },
+    {
+      "component": "pages/API/Video.vue",
+      "path": "choose-video",
+      "style": { "navigationBarTitleText": "视频" }
     }
   ]
 }
