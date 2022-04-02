@@ -300,6 +300,11 @@
       "component": "pages/API/Video.vue",
       "path": "choose-video",
       "style": { "navigationBarTitleText": "视频" }
+    },
+    {
+      "component": "pages/API/LoadFontFace.vue",
+      "path": "load-font-face",
+      "style": { "navigationBarTitleText": "动态加载字体" }
     }
   ]
 }

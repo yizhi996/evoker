@@ -147,7 +147,7 @@ const list = reactive([
         url: 'media-container/media-container'
       }, {
         name: '动态加载字体',
-        url: 'load-font-face/load-font-face'
+        url: 'load-font-face'
       }
     ]
   }, {
