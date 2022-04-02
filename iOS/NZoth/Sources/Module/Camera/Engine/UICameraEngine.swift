@@ -17,17 +17,17 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
         case video
     }
     
-    struct Photo: Codable {
+    struct PhotoData: Codable {
         let tempFilePath: String
         let tempFile: File
+        
+        struct File: Codable {
+            let path: String
+            let size: Int
+        }
     }
     
-    struct File: Codable {
-        let path: String
-        let size: Int
-    }
-    
-    struct Video: Codable {
+    struct VideoData: Codable {
         let tempFilePath: String
         let duration: Float
         let size: Int
@@ -41,24 +41,17 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
     
     private var compressed = false
     
-    var takePhotoHandler: ((Photo) -> Void)?
+    private var takePhotoHandler: ((PhotoData) -> Void)?
     
-    var recordVideoHandler: ((Video) -> Void)?
+    private var recordVideoHandler: ((VideoData) -> Void)?
     
     var errorHandler: NZStringBlock?
     
     var cancelHandler: NZEmptyBlock?
     
-    func show(type: CaptureType, to viewController: UIViewController) {
-        self.type = type
-        if type == .photo {
-            showTakePhoto(compressed: false, to: viewController)
-        } else if type == .video {
-            showRecordVideo(compressed: false, to: viewController)
-        }
-    }
-    
-    func showTakePhoto(compressed: Bool, to viewController: UIViewController) {
+    func showTakePhoto(compressed: Bool,
+                       to viewController: UIViewController,
+                       completionHandler: @escaping (PhotoData) -> Void) {
         let imagePickerViewController = UIImagePickerController()
         imagePickerViewController.sourceType = .camera
         imagePickerViewController.mediaTypes = [kUTTypeImage as String]
@@ -69,11 +62,14 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
         imagePickerViewController.delegate = self
         
         self.compressed = compressed
+        takePhotoHandler = completionHandler
         currentViewController = viewController
         viewController.present(imagePickerViewController, animated: true, completion: nil)
     }
     
-    func showRecordVideo(compressed: Bool, to viewController: UIViewController) {
+    func showRecordVideo(compressed: Bool,
+                         to viewController: UIViewController,
+                         completionHandler: @escaping (VideoData) -> Void) {
         let imagePickerViewController = UIImagePickerController()
         imagePickerViewController.sourceType = .camera
         imagePickerViewController.mediaTypes = [kUTTypeVideo as String]
@@ -84,6 +80,7 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
         imagePickerViewController.delegate = self
         
         self.compressed = compressed
+        recordVideoHandler = completionHandler
         currentViewController = viewController
         viewController.present(imagePickerViewController, animated: true, completion: nil)
     }
@@ -111,8 +108,9 @@ extension UICameraEngine: UIImagePickerControllerDelegate {
                                                          contents: imageData,
                                                          attributes: nil)
             if success {
-                let photo = Photo(tempFilePath: nzfile, tempFile: File(path: nzfile, size: imageData.count))
-                takePhotoHandler?(photo)
+                let data = PhotoData(tempFilePath: nzfile,
+                                     tempFile: PhotoData.File(path: nzfile, size: imageData.count))
+                takePhotoHandler?(data)
             } else {
                 errorHandler?("save image to disk fail")
             }

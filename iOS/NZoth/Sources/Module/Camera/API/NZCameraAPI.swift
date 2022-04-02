@@ -284,18 +284,17 @@ enum NZCameraAPI: String, NZBuiltInAPI {
             return
         }
         
+        let compressed = params.sizeType.contains(.compressed)
         if params.type == .photo {
             let camera = cameraModule.uiCamera
-            camera.takePhotoHandler = { photo in
+            camera.showTakePhoto(compressed: compressed, to: viewController) { photo in
                 bridge.invokeCallbackSuccess(args: args, result: photo)
             }
-            camera.showTakePhoto(compressed: params.sizeType.contains(.compressed), to: viewController)
         } else if params.type == .video {
             let camera = cameraModule.uiCamera
-            camera.recordVideoHandler = { video in
+            camera.showRecordVideo(compressed: compressed, to: viewController) { video in
                 bridge.invokeCallbackSuccess(args: args, result: video)
             }
-            camera.showRecordVideo(compressed: false, to: viewController)
         }
     }
     
