@@ -1,6 +1,7 @@
 import NZJSBridge from "./bridge"
 import type { InvokeCallback } from "@nzoth/bridge"
 import { pageScrollTo } from "./api/scroll"
+import { loadFontFace } from "./api/font"
 
 let callbackId = 0
 
@@ -33,20 +34,21 @@ export function invokeAppServiceMethod<T = unknown>(
   }
 }
 
-NZJSBridge.subscribe<{ callbackId: number }>(
+NZJSBridge.subscribe<{ callbackId: number; result: any }>(
   Events.CALLBACK_APP_SERVICE,
   message => {
-    const { callbackId } = message
+    const { callbackId, result } = message
     const callback = callbacks.get(callbackId)
     if (callback) {
-      callback(message.message)
+      callback(result)
       callbacks.delete(callbackId)
     }
   }
 )
 
 const methods: Record<string, Function> = {
-  pageScrollTo
+  pageScrollTo,
+  loadFontFace
 }
 
 NZJSBridge.subscribe<{ callbackId: number; event: string; params: any[] }>(
@@ -55,16 +57,28 @@ NZJSBridge.subscribe<{ callbackId: number; event: string; params: any[] }>(
     const { callbackId, event, params } = message
     const method = methods[event]
     if (method) {
-      method.call(null, params || []).then((message: any) => {
-        NZJSBridge.publish(
-          Events.CALLBACL_WEB_VIEW,
-          {
-            message,
-            callbackId
-          },
-          window.webViewId
-        )
-      })
+      method
+        .call(null, params || [])
+        .then((result: any) => {
+          NZJSBridge.publish(
+            Events.CALLBACL_WEB_VIEW,
+            {
+              result: { errMsg: "", data: result },
+              callbackId
+            },
+            window.webViewId
+          )
+        })
+        .catch((error: string) => {
+          NZJSBridge.publish(
+            Events.CALLBACL_WEB_VIEW,
+            {
+              result: { errMsg: error, data: {} },
+              callbackId
+            },
+            window.webViewId
+          )
+        })
     }
   }
 )

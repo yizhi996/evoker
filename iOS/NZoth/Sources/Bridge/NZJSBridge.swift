@@ -57,11 +57,11 @@ public extension NZJSBridge {
         NZLogger.debug("\(appService.appId) - publish: \(args.eventName)")
         
         switch args.eventName {
-        case "vSync", "invokeAppServiceMethod", "selectorQuery":
+        case "vSync", "invokeAppServiceMethod", "callbackWebViewMethod", "selectorQuery":
             appService.bridge.subscribeHandler(method: NZSubscribeKey(args.eventName),
                                                data: args.paramsString,
                                                webViewId: args.webViewId)
-        case "callbackAppServiceMethod":
+        case "callbackAppServiceMethod", "invokeWebViewMethod":
             guard let webPage = appService.findWebPage(from: args.webViewId) else { return }
             webPage.webView.bridge.subscribeHandler(method: NZSubscribeKey(args.eventName),
                                                     data: args.paramsString,

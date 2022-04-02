@@ -1,14 +1,9 @@
-import { InnerJSBridge } from "../../bridge"
 import {
   AsyncReturn,
-  SuccessResult,
   GeneralCallbackResult,
-  invokeCallback,
-  invokeFailure,
   invokeSuccess,
   wrapperAsyncAPI
 } from "@nzoth/bridge"
-import { getCurrentPages, getCurrentWebViewId } from "../../../app"
 import { invokeWebViewMethod } from "../../fromWebView"
 
 interface PageScrollToOptions {

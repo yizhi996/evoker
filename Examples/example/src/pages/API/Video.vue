@@ -78,7 +78,6 @@ const onChoose = async () => {
     sourceType: [["camera"], ["album"], ["camera", "album"]][sourceType.value],
     compressed: false,
   })
-  console.log(res)
   videoSrc.value = res.tempFilePath
 }
 

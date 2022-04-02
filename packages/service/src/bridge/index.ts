@@ -64,6 +64,7 @@ import { showTabBar, hideTabBar } from "@nzoth/bridge"
 import { request, downloadFile, uploadFile } from "./api/request"
 import { createAnimation } from "./api/ui/animation"
 import { pageScrollTo } from "./api/ui/scroll"
+import { loadFontFace } from "./api/ui/font"
 import "./fromWebView"
 
 const env = { USER_DATA_PATH: "nzfile://usr" }
@@ -129,7 +130,8 @@ export {
   onUserCaptureScreen,
   offUserCaptureScreen,
   createAnimation,
-  pageScrollTo
+  pageScrollTo,
+  loadFontFace
 }
 
 export default {
@@ -193,5 +195,6 @@ export default {
   onUserCaptureScreen,
   offUserCaptureScreen,
   createAnimation,
-  pageScrollTo
+  pageScrollTo,
+  loadFontFace
 }

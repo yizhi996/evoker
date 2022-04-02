@@ -21,5 +21,5 @@ export function pageScrollTo(options: PageScrollToOptions) {
   if (top > -1) {
     NZJSBridge.invoke("pageScrollTo", { top, duration })
   }
-  return Promise.resolve()
+  return Promise.resolve({})
 }

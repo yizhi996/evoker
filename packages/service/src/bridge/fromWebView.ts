@@ -40,13 +40,13 @@ export function invokeWebViewMethod<T = unknown>(
   }
 }
 
-InnerJSBridge.subscribe<{ callbackId: number }>(
+InnerJSBridge.subscribe<{ callbackId: number; result: any }>(
   Events.CALLBACL_WEB_VIEW,
   message => {
-    const { callbackId } = message
+    const { callbackId, result } = message
     const callback = callbacks.get(callbackId)
     if (callback) {
-      callback(message.message)
+      callback(result)
       callbacks.delete(callbackId)
     }
   }
@@ -66,16 +66,28 @@ InnerJSBridge.subscribe<{ callbackId: number; event: string; params: any[] }>(
     const { callbackId, event, params } = message
     const method = methods[event]
     if (method) {
-      method.call(null, params || []).then((message: any) => {
-        InnerJSBridge.publish(
-          Events.CALLBACK_APP_SERVICE,
-          {
-            message,
-            callbackId
-          },
-          webViewId
-        )
-      })
+      method
+        .call(null, params || [])
+        .then((result: any) => {
+          InnerJSBridge.publish(
+            Events.CALLBACK_APP_SERVICE,
+            {
+              result: { errMsg: "", data: result },
+              callbackId
+            },
+            webViewId
+          )
+        })
+        .catch((error: string) => {
+          InnerJSBridge.publish(
+            Events.CALLBACK_APP_SERVICE,
+            {
+              result: { errMsg: error, data: {} },
+              callbackId
+            },
+            webViewId
+          )
+        })
     }
   }
 )
