@@ -87,7 +87,7 @@ export function chooseImage<T extends ChooseImageOptions = ChooseImageOptions>(
     const haveAlbum = finalOptions.sourceType!.includes("album")
 
     const openCamera = () => {
-      openNativelyCameraTakePhoto()
+      openNativelyCameraTakePhoto(finalOptions.sizeType!)
         .then(result => {
           invokeSuccess("chooseImage", finalOptions, {
             tempFilePaths: [result.tempFilePath],

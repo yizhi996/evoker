@@ -256,6 +256,12 @@ enum NZCameraAPI: String, NZBuiltInAPI {
         
         struct Params: Decodable {
             let type: UICameraEngine.CaptureType
+            let sizeType: [SizeType]
+            
+            enum SizeType: String, Decodable {
+                case original
+                case compressed
+            }
         }
         
         guard let appService = bridge.appService else { return }
@@ -283,7 +289,7 @@ enum NZCameraAPI: String, NZBuiltInAPI {
             camera.takePhotoHandler = { photo in
                 bridge.invokeCallbackSuccess(args: args, result: photo)
             }
-            camera.showTakePhoto(compressed: false, to: viewController)
+            camera.showTakePhoto(compressed: params.sizeType.contains(.compressed), to: viewController)
         } else if params.type == .video {
             let camera = cameraModule.uiCamera
             camera.recordVideoHandler = { video in

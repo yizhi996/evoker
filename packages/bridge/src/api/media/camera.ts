@@ -163,11 +163,13 @@ interface OpenNativeCameraTakePhotoResult {
  * 弹出原生相机拍摄照片
  * @returns
  */
-export function openNativelyCameraTakePhoto(): Promise<OpenNativeCameraTakePhotoResult> {
+export function openNativelyCameraTakePhoto(
+  sizeType: Array<"original" | "compressed">
+): Promise<OpenNativeCameraTakePhotoResult> {
   return new Promise((resolve, reject) => {
     invoke<OpenNativeCameraTakePhotoResult>(
       "openNativelyCamera",
-      { type: "photo" },
+      { type: "photo", sizeType },
       result => {
         result.errMsg ? reject(result.errMsg) : resolve(result.data!)
       }

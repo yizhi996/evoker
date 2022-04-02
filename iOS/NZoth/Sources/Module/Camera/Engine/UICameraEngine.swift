@@ -36,11 +36,17 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
     }
     
     private var currentViewController: UIViewController?
+    
     private var type: CaptureType = .photo
     
+    private var compressed = false
+    
     var takePhotoHandler: ((Photo) -> Void)?
+    
     var recordVideoHandler: ((Video) -> Void)?
+    
     var errorHandler: NZStringBlock?
+    
     var cancelHandler: NZEmptyBlock?
     
     func show(type: CaptureType, to viewController: UIViewController) {
@@ -62,6 +68,7 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
         imagePickerViewController.cameraFlashMode = .auto
         imagePickerViewController.delegate = self
         
+        self.compressed = compressed
         currentViewController = viewController
         viewController.present(imagePickerViewController, animated: true, completion: nil)
     }
@@ -76,6 +83,7 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
         imagePickerViewController.cameraFlashMode = .auto
         imagePickerViewController.delegate = self
         
+        self.compressed = compressed
         currentViewController = viewController
         viewController.present(imagePickerViewController, animated: true, completion: nil)
     }
@@ -94,7 +102,7 @@ extension UICameraEngine: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if type == .photo {
             guard let image = info[.originalImage] as? UIImage,
-                  let imageData = image.jpegData(compressionQuality: 1.0) else {
+                  let imageData = image.jpegData(compressionQuality: compressed ? 0.7 : 1.0) else {
                 return
             }
             
