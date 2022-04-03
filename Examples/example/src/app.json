@@ -310,6 +310,12 @@
       "component": "pages/API/GetLocation.vue",
       "path": "get-location",
       "style": { "navigationBarTitleText": "获取当前位置" }
+    },
+    {
+      "component": "pages/API/Storage.vue",
+      "path": "storage",
+      "style": { "navigationBarTitleText": "本地存储" }
     }
+    
   ]
 }

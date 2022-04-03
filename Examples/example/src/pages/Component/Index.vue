@@ -73,7 +73,7 @@ const list = reactive([
   }
 ])
 
-const { onLoad, onShow, onReady, onHide, onPageScroll } = usePage()
+const { onLoad, onShow, onReady, onHide } = usePage()
 
 onLoad(options => {
   console.log("Page onLoad: ", options)
@@ -89,10 +89,6 @@ onReady(() => {
 
 onHide(() => {
   console.log("Page onHide")
-})
-
-onPageScroll(({ scrollTop }) => {
-  console.log(scrollTop)
 })
 
 </script>

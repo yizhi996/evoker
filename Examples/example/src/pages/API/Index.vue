@@ -158,12 +158,6 @@ const list = reactive([
       {
         name: '获取当前位置',
         url: 'get-location'
-      }, {
-        name: '使用原生地图查看位置',
-        url: 'open-location/open-location'
-      }, {
-        name: '使用原生地图选择位置',
-        url: 'choose-location/choose-location'
       }
     ]
   }, {
@@ -172,7 +166,7 @@ const list = reactive([
     open: false,
     pages: [{
       name: '本地存储',
-      url: 'storage/storage'
+      url: 'storage'
     }, {
       name: '周期性更新',
       url: 'get-background-fetch-data/get-background-fetch-data'
