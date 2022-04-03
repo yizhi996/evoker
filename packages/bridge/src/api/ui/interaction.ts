@@ -6,6 +6,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
+import { isString } from "@nzoth/shared"
 
 const enum Events {
   SHOW_TOAST = "showToast",
@@ -116,6 +117,12 @@ export function showModal<T extends ShowModalOptions = ShowModalOptions>(
       },
       options
     )
+    if (finalOptions.title && !isString(finalOptions.title)) {
+      finalOptions.title = finalOptions.title + ""
+    }
+    if (finalOptions.content && !isString(finalOptions.content)) {
+      finalOptions.content = finalOptions.content + ""
+    }
     invoke<SuccessResult<T>>(Events.SHOW_MODAL, finalOptions, result => {
       invokeCallback(Events.SHOW_MODAL, finalOptions, result)
     })
