@@ -46,12 +46,19 @@ class NZInputModule: NZModule {
         NotificationCenter.default.removeObserver(self)
     }
     
-    func didSetupPage(_ page: NZPage) {
-        
+    func onShow(_ page: NZPage) {
+        guard let needFocusInput = last(pageId: page.pageId, where: { $0.needFocus }) else { return }
+        needFocusInput.startEdit()
+        allInputs(pageId: page.pageId).forEach { $0.needFocus = false }
     }
     
-    func willExitPage(_ page: NZPage) {
+    func onUnload(_ page: NZPage) {
         inputs.remove(page.pageId)
+    }
+    
+    func onPageScroll(_ page: NZPage) {
+        guard let needResignFirstInput = first(pageId: page.pageId, where: { $0.isFirstResponder }) else { return }
+        needResignFirstInput.endEdit()
     }
     
     func first(pageId: PageId, where predicate: (NZTextInput) throws -> Bool) rethrows -> NZTextInput? {

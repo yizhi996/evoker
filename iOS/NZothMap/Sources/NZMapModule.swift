@@ -26,8 +26,8 @@ public class NZMapModule: NZModule {
 
     }
     
-    public func willExitPage(_ page: NZPage) {
+    public func onUnload(_ page: NZPage) {
         mapViews[page.pageId] = nil
     }
-    
+
 }

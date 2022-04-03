@@ -44,6 +44,8 @@ open class NZWebPage: NZPage {
     
     var isFullscreenVideoPlayer = false
     
+    var isSubscribeOnPageScroll = false
+    
     public lazy var webView: NZWebView = {
         assert(appService != nil, "AppService 不能为空")
         let appService = appService!
@@ -139,19 +141,28 @@ open class NZWebPage: NZPage {
         webView.evaluateJavaScript(js)
     }
     
-    public func mount() {
+    func mount() {
         guard let appService = appService else { return }
-        
-        let message: [String: Any] = ["webViewId": pageId, "path": url]
-        appService.bridge.subscribeHandler(method:NZWebView.onLoadSubscribeKey, data: message)
+        appService.bridge.subscribeHandler(method:NZWebPage.beginMountSubscribeKey, data: ["pageId": pageId,
+                                                                                           "path": url])
+        appService.modules.values.forEach { $0.onLoad(self) }
     }
     
-    public func publishOnShow() {
+    func show(publish: Bool) {
         guard let appService = appService else { return }
-        appService.bridge.subscribeHandler(method:NZWebPage.onShowSubscribeKey, data: ["pageId": pageId])
+        if publish {
+            appService.bridge.subscribeHandler(method:NZWebPage.onShowSubscribeKey, data: ["pageId": pageId])
+        }
+        appService.modules.values.forEach { $0.onShow(self) }
     }
     
-    func onUnload() {
+    func hide() {
+        guard let appService = appService else { return }
+        appService.bridge.subscribeHandler(method:NZWebPage.onHideSubscribeKey, data: ["pageId": pageId])
+        appService.modules.values.forEach { $0.onHide(self) }
+    }
+    
+    func unload() {
         guard let appService = appService else { return }
         
         if state == .loaded {
@@ -160,6 +171,7 @@ open class NZWebPage: NZPage {
             state = .unloaded
             appService.bridge.subscribeHandler(method: NZWebPage.onUnloadSubscribeKey, data: ["pageId": pageId])
             appService.recycle(webView: webView)
+            appService.modules.values.forEach { $0.onUnload(self) }
         }
         
         if let index = appService.pages.firstIndex(where: { $0.pageId == pageId }) {
@@ -211,13 +223,17 @@ extension NZWebPage {
 //MARK: NZSubscribeKey
 extension NZWebPage {
     
+    public static let beginMountSubscribeKey = NZSubscribeKey("PAGE_BEGIN_MOUNT")
+    
     public static let onLoadSubscribeKey = NZSubscribeKey("PAGE_ON_LOAD")
 
     public static let onShowSubscribeKey = NZSubscribeKey("PAGE_ON_SHOW")
     
-    public static let onReadySubscribeKey = NZSubscribeKey("PAGE_ON_READY")
+    public static let onHideSubscribeKey = NZSubscribeKey("PAGE_ON_HIDE")
     
     public static let onUnloadSubscribeKey = NZSubscribeKey("PAGE_ON_UNLOAD")
+    
+    public static let onPageScrollSubscribeKey = NZSubscribeKey("PAGE_ON_SCROLL")
     
     public static let onPullDownRefreshSubscribeKey = NZSubscribeKey("PAGE_ON_PULL_DOWN_REFRESH")
 

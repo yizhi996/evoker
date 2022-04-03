@@ -1,5 +1,5 @@
 import { InnerJSBridge } from "../bridge/bridge"
-import { isFunction } from "@vue/shared"
+import { isFunction } from "@nzoth/shared"
 import { unmountPage } from "../app"
 
 export const enum LifecycleHooks {
@@ -14,7 +14,7 @@ export const enum LifecycleHooks {
   PAGE_ON_HIDE = "PAGE_ON_HIDE",
   PAGE_ON_PULL_DOWN_REFRESH = "PAGE_ON_PULL_DOWN_REFRESH",
   PAGE_ON_REACH_BOTTOM = "PAGE_ON_REACH_BOTTOM",
-  PAGE_ON_PAGE_SCROLL = "PAGE_ON_PAGE_SCROLL",
+  PAGE_ON_SCROLL = "PAGE_ON_SCROLL",
   PAGE_ON_RESIZE = "PAGE_ON_RESIZE",
   PAGE_ON_TAB_ITEM_TAP = "PAGE_ON_TAB_ITEM_TAP",
   PAGE_ON_SAVE_EXIT_STATE = "PAGE_ON_SAVE_EXIT_STATE"
@@ -28,16 +28,20 @@ function injectHook(
   hook: Function,
   pageId?: number
 ) {
-  {
-    if (pageId === undefined) {
-      const hooks = appEvents[lifecycle] || (appEvents[lifecycle] = [])
-      hooks.push(hook)
-      return hook
-    }
-    const hooks = pageEvents[lifecycle] || (pageEvents[lifecycle] = new Map())
-    hooks.set(pageId, hook)
+  if (pageId === undefined) {
+    const hooks = appEvents[lifecycle] || (appEvents[lifecycle] = [])
+    hooks.push(hook)
     return hook
   }
+  const hooks = pageEvents[lifecycle] || (pageEvents[lifecycle] = new Map())
+  hooks.set(pageId, hook)
+  if (lifecycle === LifecycleHooks.PAGE_ON_SCROLL) {
+    InnerJSBridge.invoke("pageLifeRequired", {
+      pageId,
+      onPageScroll: true
+    })
+  }
+  return hook
 }
 
 export function createHook<T extends Function = () => void>(
@@ -107,8 +111,8 @@ InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message => {
   invokePageHook(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message.pageId)
 })
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_PAGE_SCROLL, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_PAGE_SCROLL, message.pageId, {
+InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_SCROLL, message => {
+  invokePageHook(LifecycleHooks.PAGE_ON_SCROLL, message.pageId, {
     scrollTop: message.scrollTop
   })
 })

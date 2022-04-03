@@ -30,10 +30,6 @@ public class NZCanvasModule: NZModule {
         appService.context.binding(module, name: "Canvas2D")
     }
     
-    public func willExitPage(_ page: NZPage) {
-        
-    }
-    
 }
 
 @objc public protocol NZCanvas2DExport: JSExport {

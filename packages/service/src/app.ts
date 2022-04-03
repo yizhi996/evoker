@@ -99,12 +99,12 @@ export function unmountPage(pageId: number) {
   }
 }
 
-InnerJSBridge.subscribe<{ webViewId: number; path: string }>(
-  "WEBVIEW_ON_LOAD",
+InnerJSBridge.subscribe<{ pageId: number; path: string }>(
+  "PAGE_BEGIN_MOUNT",
   message => {
-    const { webViewId, path } = message
+    const { pageId, path } = message
     const { path: route, query } = decodeURL(path)
-    mountPage(webViewId, route, query)
+    mountPage(pageId, route, query)
   }
 )
 

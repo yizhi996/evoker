@@ -40,7 +40,7 @@ export default function usePage() {
       return createHook(LifecycleHooks.PAGE_ON_REACH_BOTTOM, hook, pageId)
     },
     onPageScroll: (hook: (object: PageScrollObject) => void) => {
-      return createHook(LifecycleHooks.PAGE_ON_PAGE_SCROLL, hook, pageId)
+      return createHook(LifecycleHooks.PAGE_ON_SCROLL, hook, pageId)
     },
     onResize: (hook: () => void) => {
       return createHook(LifecycleHooks.PAGE_ON_RESIZE, hook, pageId)

@@ -65,22 +65,18 @@ open class NZWebPageViewController: NZPageViewController {
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if !isFirstLoad && webPage.state == .loaded {
-            webPage.appService?.bridge.subscribeHandler(method: NZWebPage.onShowSubscribeKey, data: ["pageId": page.pageId])
+        if webPage.state == .loaded {
+            webPage.show(publish: !isFirstLoad)
         }
         
         isFirstLoad = false
-        
-        guard let inputModule: NZInputModule = webPage.appService?.getModule(),
-              let needFocusInput = inputModule.last(pageId: page.pageId, where: { $0.needFocus }) else { return }
-        needFocusInput.startEdit()
-        inputModule.allInputs(pageId: page.pageId).forEach { $0.needFocus = false }
     }
     
     open override func viewDidDisappear(_ animated: Bool) {
+        webPage.hide()
         if isMovingFromParent {
             if !page.isTabBarPage {
-                webPage.onUnload()
+                webPage.unload()
             }
         }
         super.viewDidDisappear(animated)
@@ -89,14 +85,14 @@ open class NZWebPageViewController: NZPageViewController {
     open override func didMove(toParent parent: UIViewController?) {
         if parent == nil {
             if !page.isTabBarPage {
-                webPage.onUnload()
+                webPage.unload()
             }
         }
         super.didMove(toParent: parent)
     }
     
     deinit {
-        webPage.onUnload()
+        webPage.unload()
     }
     
     @objc open func scrollToTop() {
@@ -110,9 +106,12 @@ extension NZWebPageViewController: UIScrollViewDelegate {
     
     open func scrollViewDidScroll(_ scrollView: UIScrollView) {
         onScroll.invoke { [unowned self] in
-            guard let inputModule: NZInputModule = self.webPage.appService?.getModule(),
-                  let needResignFirstInput = inputModule.first(pageId: self.webPage.pageId, where: { $0.isFirstResponder }) else { return }
-            needResignFirstInput.endEdit()
+            if self.webPage.isSubscribeOnPageScroll {
+                self.page.appService?.bridge.subscribeHandler(method: NZWebPage.onPageScrollSubscribeKey,
+                                                              data: ["pageId": self.page.pageId,
+                                                                     "scrollTop": scrollView.contentOffset.y])
+            }
+            self.page.appService?.modules.values.forEach { $0.onPageScroll(self.page) }
         }
     }
 }

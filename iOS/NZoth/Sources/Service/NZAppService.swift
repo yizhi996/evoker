@@ -236,8 +236,7 @@ final public class NZAppService {
     }
     
     public func findWebPage(from pageId: Int) -> NZWebPage? {
-        guard let page = pages.first(where: { $0.pageId == pageId }) as? NZWebPage else { return nil }
-        return page
+        return pages.first(where: { $0.pageId == pageId }) as? NZWebPage
     }
     
     public func getModule<T: NZModule>() -> T? {
@@ -264,14 +263,14 @@ final public class NZAppService {
     @objc public func killApp() {
         cleanKillTimer()
         context.clearAllTimer()
-        cleanAllPages()
+        unloadAllPages()
         rootViewController = nil
         if haveTabBar {
             tabBarPages = []
             uiControl.tabBarViewControllers = [:]
         }
         currentPage = nil
-        modules.values.forEach { $0.willExitApp(self) }
+        modules.values.forEach { $0.onExit(self) }
         modules = [:]
         
         if let index = NZEngine.shared.runningApp.firstIndex(of: self) {
@@ -282,33 +281,19 @@ final public class NZAppService {
         }
     }
     
-    func cleanPage(_ page: NZPage) {
-        modules.values.forEach { $0.willExitPage(page) }
+    func unloadPage(_ page: NZPage) {
+        modules.values.forEach { $0.onUnload(page) }
         if let webPage = page as? NZWebPage {
-            webPage.onUnload()
+            webPage.unload()
         }
         if let index = pages.firstIndex(where: { $0.pageId == page.pageId }) {
             pages.remove(at: index)
         }
     }
     
-    func cleanAllPages() {
-        pages.forEach { page in
-            modules.values.forEach { $0.willExitPage(page) }
-            if let webPage = page as? NZWebPage {
-                webPage.onUnload()
-            }
-        }
+    func unloadAllPages() {
+        pages.forEach { unloadPage($0) }
         pages = []
-    }
-    
-    func cleanCurrentPage() {
-        guard let currentPage = currentPage else { return }
-
-        modules.values.forEach { $0.willExitPage(currentPage) }
-        if let currentPage = currentPage as? NZWebPage {
-            currentPage.onUnload()
-        }
     }
     
     func cleanKillTimer() {
@@ -438,7 +423,7 @@ extension NZAppService {
     
     func gotoHomePage() {
         if let firstTabBar = config.tabBar?.list.first, let info = generateFirstViewController(with: firstTabBar.path) {
-            cleanAllPages()
+            unloadAllPages()
             uiControl.setupTabBar(config: config, envVersion: envVersion)
             uiControl.tabBarView.setTabItemSelect(info.tabBarSelectedIndex)
             uiControl.tabBarViewControllers = [:]
@@ -450,7 +435,7 @@ extension NZAppService {
             uiControl.removeGotoHomeButton()
         } else if let firstPage = config.pages.first,
                   let page = createWebPage(url: firstPage.path) {
-            cleanAllPages()
+            unloadAllPages()
             pages.append(page)
             let viewController = page.generateViewController()
             rootViewController?.viewControllers = [viewController]
@@ -542,12 +527,20 @@ extension NZAppService {
     func publishAppOnLaunch(path: String) {
         let message: [String: Any] = ["path": path]
         bridge.subscribeHandler(method: NZAppService.onLaunchSubscribeKey, data: message)
+        modules.values.forEach { $0.onLaunch(self) }
     }
     
     func publishAppOnShow(path: String) {
         cleanKillTimer()
         let message: [String: Any] = ["path": path]
         bridge.subscribeHandler(method: NZAppService.onShowSubscribeKey, data: message)
+        modules.values.forEach { $0.onShow(self) }
+    }
+    
+    @objc func publishAppOnHide() {
+        let message: [String: Any] = [:]
+        bridge.subscribeHandler(method: NZAppService.onHideSubscribeKey, data: message)
+        modules.values.forEach { $0.onHide(self) }
     }
     
     @objc private func willEnterForeground() {
@@ -556,11 +549,6 @@ extension NZAppService {
     
     @objc private func didEnterBackground() {
         publishAppOnHide()
-    }
-    
-    @objc func publishAppOnHide() {
-        let message: [String: Any] = [:]
-        bridge.subscribeHandler(method: NZAppService.onHideSubscribeKey, data: message)
     }
 }
 
@@ -601,13 +589,13 @@ public extension NZAppService {
         }
         if let currentPage = currentPage {
             if currentPage.isTabBarPage {
-                cleanAllPages()
+                unloadAllPages()
                 uiControl.tabBarViewControllers = [:]
                 pages.append(info.page)
                 rootViewController.viewControllers = [info.viewController]
                 uiControl.addGotoHomeButton(to: rootViewController.view)
             } else {
-                cleanPage(currentPage)
+                unloadPage(currentPage)
                 pages.append(info.page)
                 rootViewController.viewControllers.removeLast()
                 rootViewController.viewControllers.append(info.viewController)
@@ -638,7 +626,7 @@ public extension NZAppService {
         guard let info = generateFirstViewController(with: url) else { return .appLaunchPathNotFound(url) }
         
         currentPage = nil
-        cleanAllPages()
+        unloadAllPages()
         
         if haveTabBar {
             uiControl.setupTabBar(config: config, envVersion: envVersion)

@@ -30,8 +30,9 @@ class NZCameraModule: NZModule {
         
     }
     
-    func willExitPage(_ page: NZPage) {
+    func onUnload(_ page: NZPage) {
         cameras[page.pageId]?.stopRunning()
         cameras[page.pageId] = nil
     }
+    
 }

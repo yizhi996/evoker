@@ -30,8 +30,9 @@ class NZVideoModule: NZModule {
         
     }
     
-    func willExitPage(_ page: NZPage) {
+    func onUnload(_ page: NZPage) {
         players.get(page.pageId)?.values.forEach { $0.stop() }
         players.remove(page.pageId)
     }
+    
 }

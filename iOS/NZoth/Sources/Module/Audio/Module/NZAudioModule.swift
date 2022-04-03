@@ -32,9 +32,9 @@ class NZAudioModule: NZModule {
         self.appService = appService
     }
     
-    func willExitPage(_ page: NZPage) {
+    func onUnload(_ page: NZPage) {
         players.get(page.pageId)?.values.forEach { $0.stop() }
         players.remove(page.pageId)
     }
-    
+
 }

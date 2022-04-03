@@ -123,6 +123,12 @@ public extension NZJSBridge {
         container?.evaluateScript(script)
     }
     
+    func subscribeHandler(method: NZSubscribeKey, data: Encodable, webViewId: Int = 0) {
+        guard let message = data.toJSONString() else { return }
+        let script = "NZJSBridge.subscribeHandler('\(method.rawValue)',\(message),\(webViewId))"
+        container?.evaluateScript(script)
+    }
+    
     /// 只能传 JSON String !!!
     func subscribeHandler(method: NZSubscribeKey, data: String, webViewId: Int = 0) {
         let script = "NZJSBridge.subscribeHandler('\(method.rawValue)',\(data),\(webViewId))"

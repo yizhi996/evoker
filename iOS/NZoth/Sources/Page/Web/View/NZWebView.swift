@@ -88,7 +88,7 @@ final public class NZWebView: WKWebView {
     
     private func reset() {
         guard let page = page else { return }
-        page.appService?.modules.values.forEach { $0.willExitPage(page) }
+        page.appService?.modules.values.forEach { $0.onUnload(page) }
     }
 
     public func recycle() {
@@ -248,10 +248,4 @@ extension NZWebView: NZJSContainer {
             self.evaluateJavaScript(script, completionHandler: nil)
         }
     }
-}
-
-//MARK: NZSubscribeKey
-extension NZWebView {
-    
-    public static let onLoadSubscribeKey = NZSubscribeKey("WEBVIEW_ON_LOAD")
 }

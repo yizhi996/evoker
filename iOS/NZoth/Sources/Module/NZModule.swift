@@ -16,18 +16,42 @@ public protocol NZModule {
     
     init(appService: NZAppService)
     
-    func willExitPage(_ page: NZPage)
+    func onLaunch(_ service: NZAppService)
     
-    func willExitApp(_ app: NZAppService)
+    func onShow(_ service: NZAppService)
+    
+    func onHide(_ service: NZAppService)
+    
+    func onExit(_ service: NZAppService)
+    
+    func onLoad(_ page: NZPage)
+    
+    func onShow(_ page: NZPage)
+    
+    func onHide(_ page: NZPage)
+    
+    func onUnload(_ page: NZPage)
+    
+    func onPageScroll(_ page: NZPage)
 }
 
 public extension NZModule {
     
-    func willExitPage(_ page: NZPage) {
-        
-    }
+    func onLaunch(_ service: NZAppService) { }
     
-    func willExitApp(_ app: NZAppService) {
-        
-    }
+    func onShow(_ service: NZAppService) { }
+    
+    func onHide(_ service: NZAppService) { }
+    
+    func onExit(_ service: NZAppService) { }
+    
+    func onLoad(_ page: NZPage) { }
+    
+    func onShow(_ page: NZPage) { }
+    
+    func onHide(_ page: NZPage) { }
+    
+    func onUnload(_ page: NZPage) { }
+    
+    func onPageScroll(_ page: NZPage) { }
 }
