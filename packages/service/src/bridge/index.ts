@@ -65,6 +65,13 @@ import { request, downloadFile, uploadFile } from "./api/request"
 import { createAnimation } from "./api/ui/animation"
 import { pageScrollTo } from "./api/ui/scroll"
 import { loadFontFace } from "./api/ui/font"
+import {
+  getLocation,
+  startLocationUpdate,
+  stopLocationUpdate,
+  onLocationChange,
+  offLocationChange
+} from "@nzoth/bridge"
 import "./fromWebView"
 
 const env = { USER_DATA_PATH: "nzfile://usr" }
@@ -131,7 +138,12 @@ export {
   offUserCaptureScreen,
   createAnimation,
   pageScrollTo,
-  loadFontFace
+  loadFontFace,
+  getLocation,
+  startLocationUpdate,
+  stopLocationUpdate,
+  onLocationChange,
+  offLocationChange
 }
 
 export default {
@@ -196,5 +208,10 @@ export default {
   offUserCaptureScreen,
   createAnimation,
   pageScrollTo,
-  loadFontFace
+  loadFontFace,
+  getLocation,
+  startLocationUpdate,
+  stopLocationUpdate,
+  onLocationChange,
+  offLocationChange
 }

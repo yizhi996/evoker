@@ -157,7 +157,7 @@ const list = reactive([
     pages: [
       {
         name: '获取当前位置',
-        url: 'get-location/get-location'
+        url: 'get-location'
       }, {
         name: '使用原生地图查看位置',
         url: 'open-location/open-location'

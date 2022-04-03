@@ -305,6 +305,11 @@
       "component": "pages/API/LoadFontFace.vue",
       "path": "load-font-face",
       "style": { "navigationBarTitleText": "动态加载字体" }
+    },
+    {
+      "component": "pages/API/GetLocation.vue",
+      "path": "get-location",
+      "style": { "navigationBarTitleText": "获取当前位置" }
     }
   ]
 }
