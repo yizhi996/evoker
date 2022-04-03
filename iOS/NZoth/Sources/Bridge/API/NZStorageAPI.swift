@@ -75,7 +75,7 @@ enum NZStorageAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let data = params["data"] as? String, !data.isEmpty else {
+        guard let data = params["data"] as? String else {
             let error = NZError.bridgeFailed(reason: .fieldRequired("data"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
