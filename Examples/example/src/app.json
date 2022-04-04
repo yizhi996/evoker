@@ -315,7 +315,11 @@
       "component": "pages/API/Storage.vue",
       "path": "storage",
       "style": { "navigationBarTitleText": "本地存储" }
+    },
+    {
+      "component": "pages/API/Voice.vue",
+      "path": "voice",
+      "style": { "navigationBarTitleText": "录音" }
     }
-    
   ]
 }

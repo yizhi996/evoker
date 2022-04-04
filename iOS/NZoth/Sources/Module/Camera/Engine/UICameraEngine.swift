@@ -118,18 +118,15 @@ extension UICameraEngine: UIImagePickerControllerDelegate {
                     return
                 }
                 
-                let duration = CMTimeGetSeconds(asset.duration)
                 let size = track.naturalSize.applying(track.preferredTransform)
                
                 let ext = videoURL.pathExtension.lowercased()
                 let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
                 do {
-                    let resourceValues = try videoURL.resourceValues(forKeys: [.fileSizeKey])
-                    let fileSize = resourceValues.fileSize ?? 0
                     try FileManager.default.moveItem(at: videoURL, to: filePath)
                     let videoData = VideoData(tempFilePath: nzfile,
-                                              duration: duration,
-                                              size: fileSize,
+                                              duration: asset.duration.seconds,
+                                              size: videoURL.fileSize,
                                               width: abs(size.width),
                                               height: abs(size.height))
                     recordVideoHandler?(videoData)

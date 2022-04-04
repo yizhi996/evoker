@@ -281,11 +281,9 @@ enum NZMediaAPI: String, NZBuiltInAPI {
             if let error = error {
                 completionHandler(nil, error)
             } else {
-                let resourceValues = try? filePath.resourceValues(forKeys: [.fileSizeKey])
-                let fileSize = resourceValues?.fileSize ?? 0
                 let videoData = UICameraEngine.VideoData(tempFilePath: nzfile,
                                                          duration: asset.duration,
-                                                         size: fileSize,
+                                                         size: filePath.fileSize,
                                                          width: CGFloat(asset.pixelWidth),
                                                          height: CGFloat(asset.pixelHeight))
                 completionHandler(videoData, nil)

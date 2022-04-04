@@ -17,13 +17,10 @@ class NZAudioPlayer {
     struct Params: Decodable {
         let src: String?
         let volume: Float?
+        var _url: URL?
     }
     
-    var params: Params {
-        didSet {
-            setup()
-        }
-    }
+    var params: Params
     
     var player: AVPlayer?
     
@@ -33,7 +30,7 @@ class NZAudioPlayer {
     }
     
     func setup() {
-        guard let src = params.src, let url = URL(string: src) else { return }
+        guard let url = params._url else { return }
         
         if !KTVHTTPCache.proxyIsRunning() {
             do {

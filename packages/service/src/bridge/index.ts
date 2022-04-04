@@ -72,6 +72,7 @@ import {
   onLocationChange,
   offLocationChange
 } from "@nzoth/bridge"
+import { getRecorderManager } from "@nzoth/bridge"
 import "./fromWebView"
 
 const env = { USER_DATA_PATH: "nzfile://usr" }
@@ -143,7 +144,8 @@ export {
   startLocationUpdate,
   stopLocationUpdate,
   onLocationChange,
-  offLocationChange
+  offLocationChange,
+  getRecorderManager
 }
 
 export default {
@@ -213,5 +215,6 @@ export default {
   startLocationUpdate,
   stopLocationUpdate,
   onLocationChange,
-  offLocationChange
+  offLocationChange,
+  getRecorderManager
 }

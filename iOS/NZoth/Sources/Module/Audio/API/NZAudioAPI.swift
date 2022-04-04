@@ -71,7 +71,12 @@ enum NZAudioAPI: String, NZBuiltInAPI {
         case .play:
             if let player = audioModule.players.get(page.pageId, page.pageId) {
                 player.play()
-            } else if let params: NZAudioPlayer.Params = params.data.toModel() {
+            } else if var params: NZAudioPlayer.Params = params.data.toModel() {
+                if let src = params.src {
+                    params._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
+                                                                    userId: NZEngine.shared.userId,
+                                                                    filePath: src) ?? URL(string: src)
+                }
                 let player = NZAudioPlayer(params: params)
                 audioModule.players.set(page.pageId, page.pageId, value: player)
                 player.play()

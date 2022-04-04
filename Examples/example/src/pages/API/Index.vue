@@ -132,7 +132,7 @@ const list = reactive([
         url: 'audio'
       }, {
         name: '录音',
-        url: 'voice/voice'
+        url: 'voice'
       }, {
         name: '背景音频',
         url: 'background-audio/background-audio'
@@ -167,13 +167,6 @@ const list = reactive([
     pages: [{
       name: '本地存储',
       url: 'storage'
-    }, {
-      name: '周期性更新',
-      url: 'get-background-fetch-data/get-background-fetch-data'
-
-    }, {
-      name: '数据预拉取',
-      url: 'get-background-prefetch-data/get-background-prefetch-data'
     }],
   }, {
     id: 'framework',
