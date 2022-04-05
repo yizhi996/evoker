@@ -1,36 +1,42 @@
-type EventListener = (data: any) => void
+import { isFunction, isNumber } from "./index"
 
-interface Event {
+type Callback<T> = (res: T) => void
+
+interface Event<T> {
   id: number
-  listener: EventListener
+  callback: Callback<T>
 }
 
 let index = 0
-const events: Record<string, Event[]> = {}
 
-export function on(type: string, listener: EventListener) {
+const events: Record<string, Event<any>[]> = {}
+
+export function addEvent<T = unknown>(type: string, callback: Callback<T>) {
+  const id = index++
   events[type] === undefined && (events[type] = [])
-  const id = index
-  events[type].push({ id, listener })
-  index += 1
+  events[type].push({ id, callback })
   return id
 }
 
-export function off(type: string, id: number) {
+export function removeEvent<T = unknown>(
+  type: string,
+  callback: number | Callback<T>
+) {
   if (events[type]) {
-    const idx = events[type].findIndex(item => {
-      return item.id === id
-    })
-    if (idx > -1) {
-      events[type].splice(idx, 1)
+    let idx = -1
+    if (isNumber(callback)) {
+      idx = events[type].findIndex(ev => ev.id === callback)
+    } else if (isFunction(callback)) {
+      idx = events[type].findIndex(ev => ev.callback === callback)
     }
+    idx > -1 && events[type].splice(idx, 1)
   }
 }
 
-export function dispatch(type: string, data: any) {
+export function dispatchEvent(type: string, data: any) {
   if (events[type]) {
-    events[type].forEach(evt => {
-      evt.listener(data)
+    events[type].forEach(ev => {
+      ev.callback(data)
     })
   }
 }

@@ -58,7 +58,11 @@ export class NZothPage {
     this.messageQueue = []
   }
 
-  onInsertBefore(parent: NZothNode, child: NZothNode, anchor?: NZothNode | null) {
+  onInsertBefore(
+    parent: NZothNode,
+    child: NZothNode,
+    anchor?: NZothNode | null
+  ) {
     let message = [SyncFlags.INSERT, minifyNode(child), minifyNode(parent)]
     if (anchor) {
       message.push(minifyNode(anchor))

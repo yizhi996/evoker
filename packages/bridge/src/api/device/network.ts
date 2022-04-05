@@ -6,7 +6,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
-import { onEvent, offEvent, emitEvent } from "../../event"
+import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
 
 const enum Events {
   GET_NETWORK_TYPE = "getNetworkType",
@@ -82,14 +82,14 @@ type OnNetworkStatusChangeCallback = (
 subscribe<OnNetworkStatusChangeCallbackResult>(
   Events.ON_NETWORK_STATUS_CHANGE,
   result => {
-    emitEvent(Events.ON_NETWORK_STATUS_CHANGE, result)
+    dispatchEvent(Events.ON_NETWORK_STATUS_CHANGE, result)
   }
 )
 
 export function onNetworkStatusChange(callback: OnNetworkStatusChangeCallback) {
-  onEvent(Events.ON_NETWORK_STATUS_CHANGE, callback)
+  addEvent(Events.ON_NETWORK_STATUS_CHANGE, callback)
 }
 
 export function offNetworkStatusChange(callback: () => void) {
-  offEvent(Events.ON_NETWORK_STATUS_CHANGE, callback)
+  removeEvent(Events.ON_NETWORK_STATUS_CHANGE, callback)
 }

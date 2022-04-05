@@ -4,11 +4,9 @@ import {
   SuccessResult,
   GeneralCallbackResult,
   invokeCallback,
-  invokeFailure,
-  invokeSuccess,
   wrapperAsyncAPI
 } from "../async"
-import { onEvent, offEvent, emitEvent } from "../event"
+import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
 
 const enum Events {
   GET_LOCATION = "getLocation",
@@ -112,15 +110,15 @@ export function stopLocationUpdate<
 }
 
 subscribe(Events.ON_LOCATION_CHANGE, result => {
-  emitEvent(Events.ON_LOCATION_CHANGE, result)
+  dispatchEvent(Events.ON_LOCATION_CHANGE, result)
 })
 
 type OnLocationChangeCallback = (res: GetLocationSuccessCallbackResult) => void
 
 export function onLocationChange(callback: OnLocationChangeCallback) {
-  onEvent(Events.ON_LOCATION_CHANGE, callback)
+  addEvent(Events.ON_LOCATION_CHANGE, callback)
 }
 
 export function offLocationChange(callback: () => void) {
-  offEvent(Events.ON_LOCATION_CHANGE, callback)
+  removeEvent(Events.ON_LOCATION_CHANGE, callback)
 }

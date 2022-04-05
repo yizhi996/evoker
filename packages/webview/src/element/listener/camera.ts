@@ -1,15 +1,15 @@
 import { onUnmounted } from "vue"
 import { NZJSBridge } from "../../bridge"
-import { dispatch, on, off } from "@nzoth/shared"
+import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
 
 enum SubscribeKeys {
-  INIT_DONE = "WEBVIEW_CAMERA_INIT_DONE",
-  SCAN_CODE = "WEBVIEW_CAMERA_SCAN_CODE"
+  INIT_DONE = "MODULE_CAMERA_INIT_DONE",
+  SCAN_CODE = "MODULE_CAMERA_SCAN_CODE"
 }
 
 Object.values(SubscribeKeys).forEach(key => {
-  NZJSBridge.subscribe(key, message => {
-    dispatch(key, message)
+  NZJSBridge.subscribe(key, data => {
+    dispatchEvent(key, data)
   })
 })
 
@@ -17,7 +17,7 @@ export default function useCamera(cameraId: number) {
   const ids = new Map<string, number>()
 
   function createListener(key: SubscribeKeys, callback: (data: any) => void) {
-    const id = on(key, data => {
+    const id = addEvent<{ cameraId: number }>(key, data => {
       if (data.cameraId === cameraId) {
         callback(data)
       }
@@ -35,9 +35,7 @@ export default function useCamera(cameraId: number) {
   }
 
   function removaAllListener() {
-    ids.forEach((value, key) => {
-      off(key, value)
-    })
+    ids.forEach((id, event) => removeEvent(event, id))
   }
 
   onUnmounted(() => {

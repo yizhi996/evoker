@@ -1,5 +1,5 @@
 import { NZJSBridge } from "../../bridge"
-import { dispatch, on, off } from "@nzoth/shared"
+import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
 
 enum SubscribeKeys {
   ON_PLAY = "WEBVIEW_VIDEO_PLAYER_ON_PLAY",
@@ -10,8 +10,8 @@ enum SubscribeKeys {
 }
 
 Object.values(SubscribeKeys).forEach(key => {
-  NZJSBridge.subscribe(key, message => {
-    dispatch(key, message)
+  NZJSBridge.subscribe(key, data => {
+    dispatchEvent(key, data)
   })
 })
 
@@ -19,7 +19,7 @@ export default function useVideoPlayer(videoPlayerId: number) {
   const ids = new Map<string, number>()
 
   function createListener(key: SubscribeKeys, callback: (data: any) => void) {
-    const id = on(key, data => {
+    const id = addEvent<{ videoPlayerId: number }>(key, data => {
       if (data.videoPlayerId === videoPlayerId) {
         callback(data)
       }
@@ -49,9 +49,7 @@ export default function useVideoPlayer(videoPlayerId: number) {
   }
 
   function removaAllListener() {
-    ids.forEach((value, key) => {
-      off(key, value)
-    })
+    ids.forEach((id, event) => removeEvent(event, id))
   }
 
   return {

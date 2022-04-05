@@ -7,11 +7,11 @@ import {
 } from "@nzoth/bridge"
 
 const NZJSBridge = {
-  invoke: invoke,
-  publish: publish,
-  subscribe: subscribe,
-  invokeCallbackHandler: invokeCallbackHandler,
-  subscribeHandler: subscribeHandler
+  invoke,
+  publish,
+  subscribe,
+  invokeCallbackHandler,
+  subscribeHandler
 }
 ;(globalThis as any).NZJSBridge = NZJSBridge
 
