@@ -1,20 +1,59 @@
 <template>
-    <button type="primary" @click="onPlay">Play</button>
-    <button @click="onPause">Pause</button>
+  <n-topic>{{ formatSecond(currentTime) }} / {{ formatSecond(duration) }}</n-topic>
+  <button type="primary" @click="onPlay">Play</button>
+  <button @click="onPause">Pause</button>
+  <slider class="mt-10" :value="slide" @changing="onSliding" @change="onSeek"></slider>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue"
+import { formatSecond } from "../../utils"
+
+const currentTime = ref(0)
+
+const duration = ref(0)
+
+const slide = ref(0)
+
+let isSliding = false
 
 const ctx = nz.createInnerAudioContext()
+
+ctx.onTimeUpdate(() => {
+  currentTime.value = ctx.currentTime
+  if (!isSliding) {
+    slide.value = (ctx.currentTime / ctx.duration) * 100
+  }
+})
+
+ctx.onCanplay(() => {
+  duration.value = ctx.duration
+})
+
+ctx.onSeeked(() => {
+  isSliding = false
+})
+
 ctx.src = "https://file.lilithvue.com/lilith-test-assets/3EM27_Beethoven9_Orch%2BCho.mp3"
 ctx.volume = 0.3
 ctx.loop = true
 
 const onPlay = () => {
-    ctx.play()
+  ctx.play()
 }
 
 const onPause = () => {
-    ctx.pause()
+  ctx.pause()
 }
+
+const onSliding = () => {
+  isSliding = true
+}
+
+const onSeek = ({ value }) => {
+  slide.value = value
+  const seekTo = ctx.duration * (value / 100)
+  ctx.seek(seekTo)
+}
+
 </script>

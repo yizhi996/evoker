@@ -82,6 +82,7 @@ open class NZVideoPlayerView: UIView {
                 player.currentPlayerManager.replay()
             }
         }
+        
         // 播放进度
         player.playerPlayTimeChanged = { [unowned self] _, currentTime, duration in
             guard let timeUpdateHandler =  self.timeUpdateHandler else { return }

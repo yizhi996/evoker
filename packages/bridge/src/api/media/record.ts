@@ -46,19 +46,19 @@ const enum Methods {
 }
 
 class RecorderManager {
-  onStartCallback?: () => void
+  private onStartCallback?: () => void
 
-  onStopCallback?: (res: RecorderManagerStopCallbackResult) => void
+  private onStopCallback?: (res: RecorderManagerStopCallbackResult) => void
 
-  onPauseCallback?: () => void
+  private onPauseCallback?: () => void
 
-  onResumeCallback?: () => void
+  private onResumeCallback?: () => void
 
-  onInterruptionBeginCallback?: () => void
+  private onInterruptionBeginCallback?: () => void
 
-  onInterruptionEndCallback?: () => void
+  private onInterruptionEndCallback?: () => void
 
-  onErrorCallback?: (res: GeneralCallbackResult) => void
+  private onErrorCallback?: (res: GeneralCallbackResult) => void
 
   constructor() {
     subscribe(eventName(Events.ON_START), _ => {
@@ -145,7 +145,7 @@ class RecorderManager {
     this.onErrorCallback = callback
   }
 
-  operate(method: Methods, startData?: RecorderManagerStartOptions) {
+  private operate(method: Methods, startData?: RecorderManagerStartOptions) {
     invoke("operateAudioRecorder", { method, startData })
   }
 }

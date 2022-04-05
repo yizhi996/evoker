@@ -206,9 +206,9 @@ extension NZCameraEngine: NZCaptureDelegate {
 //MARK: NZSubscribeKey
 extension NZCameraEngine {
     
-    public static let initDoneSubscribeKey = NZSubscribeKey("WEBVIEW_CAMERA_INIT_DONE")
+    public static let initDoneSubscribeKey = NZSubscribeKey("MODULE_CAMERA_INIT_DONE")
     
-    public static let initErrorSubscribeKey = NZSubscribeKey("WEBVIEW_CAMERA_INIT_ERROR")
+    public static let initErrorSubscribeKey = NZSubscribeKey("MODULE_CAMERA_INIT_ERROR")
     
-    public static let scanCodeSubscribeKey = NZSubscribeKey("WEBVIEW_CAMERA_SCAN_CODE")
+    public static let scanCodeSubscribeKey = NZSubscribeKey("MODULE_CAMERA_SCAN_CODE")
 }

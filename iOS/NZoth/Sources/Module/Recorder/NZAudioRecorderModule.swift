@@ -60,9 +60,14 @@ class NZAudioRecorderModule: NZModule {
         }
     }
     
+    func onHide(_ service: NZAppService) {
+        recorder.stop()
+    }
+    
     func onExit(_ service: NZAppService) {
         recorder.stop()
     }
+    
 }
 
 extension NZAudioRecorderModule {

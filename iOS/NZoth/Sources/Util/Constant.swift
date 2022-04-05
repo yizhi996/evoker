@@ -19,6 +19,10 @@ public typealias NZStringBlock = (String) -> Void
 
 public typealias NZCGFloatBlock = (CGFloat) -> Void
 
+public typealias NZDoubleBlock = (Double) -> Void
+
+public typealias NZFloatBlock = (Float) -> Void
+
 public typealias NZURLBlock = (URL) -> Void
 
 public typealias NZErrorBlock = (NZError?) -> Void

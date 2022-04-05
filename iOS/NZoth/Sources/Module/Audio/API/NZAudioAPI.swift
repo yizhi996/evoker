@@ -61,7 +61,7 @@ enum NZAudioAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let audioModule: NZAudioModule = appService.getModule() else {
+        guard let module: NZAudioModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZAudioModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -69,31 +69,36 @@ enum NZAudioAPI: String, NZBuiltInAPI {
         
         switch params.method {
         case .play:
-            if let player = audioModule.players.get(page.pageId, page.pageId) {
-                player.play()
-            } else if var params: NZAudioPlayer.Params = params.data.toModel() {
-                if let src = params.src {
-                    params._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
+            if var playParams: NZAudioPlayer.Params = params.data.toModel() {
+                let src = playParams.src
+                playParams._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
                                                                     userId: NZEngine.shared.userId,
                                                                     filePath: src) ?? URL(string: src)
+                if let player = module.players.get(page.pageId, params.audioId) {
+                    player.play(params: playParams)
+                } else {
+                    let player = NZAudioPlayer(audioId: params.audioId)
+                    player.delegate = module
+                    player.setup(params: playParams)
+                    player.play(params: playParams)
+                    module.players.set(page.pageId, params.audioId, value: player)
                 }
-                let player = NZAudioPlayer(params: params)
-                audioModule.players.set(page.pageId, page.pageId, value: player)
-                player.play()
             } else {
-                bridge.invokeCallbackFail(args: args, error: .custom("create audio player failed"))
+                bridge.invokeCallbackFail(args: args, error: .custom("create audio player options invalid"))
             }
         case .pause:
-            guard let player = audioModule.players.get(page.pageId, page.pageId) else { break }
+            guard let player = module.players.get(page.pageId, params.audioId) else { break }
             player.pause()
         case .stop:
-            guard let player = audioModule.players.get(page.pageId, page.pageId) else { break }
+            guard let player = module.players.get(page.pageId, params.audioId) else { break }
             player.stop()
         case .seek:
-            guard let player = audioModule.players.get(page.pageId, page.pageId) else { break }
-            player.stop()
+            guard let player = module.players.get(page.pageId, params.audioId) else { break }
+            if let position = params.data["position"] as? Double {
+                player.seek(position: position)
+            }
         case .setVolume:
-            guard let player = audioModule.players.get(page.pageId, page.pageId) else { break }
+            guard let player = module.players.get(page.pageId, params.audioId) else { break }
             if let volume = params.data["volume"] as? Float {
                 player.setVolume(volume)
             }
