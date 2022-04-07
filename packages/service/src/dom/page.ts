@@ -76,21 +76,14 @@ export class NZothPage {
     this.enqueue(message)
   }
 
-  onPatchClass(el: NZothElement) {
-    if (!el.isMounted) {
-      return
-    }
-    const message = [SyncFlags.SET_CLASS, el.nodeId, el.className]
-    this.enqueue(message)
-  }
-
   onPatchStyle(el: NZothElement) {
     if (!el.isMounted) {
       return
     }
     const message = [
-      SyncFlags.SET_STYLE,
+      SyncFlags.UPDATE_PROP,
       el.nodeId,
+      "style",
       (el as NZothHTMLElement).style.styleObject
     ]
     this.enqueue(message)

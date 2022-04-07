@@ -44,9 +44,7 @@ export class NZothCSSStyleDeclaration {
 
   set display(newValue: string) {
     this._style.display = newValue
-    if (this.element.page) {
-      this.element.page.onShow(this.element)
-    }
+    this.element.page && this.element.page.onShow(this.element)
   }
 
   cleanAll() {

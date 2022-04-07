@@ -2,8 +2,6 @@ export const enum SyncFlags {
   CREATE = 0,
   INSERT,
   SET_TEXT,
-  SET_CLASS,
-  SET_STYLE,
   REMOVE,
   DISPLAY,
   ADD_EVENT,

@@ -20,11 +20,10 @@ export function patchClass(
     ).join(" ")
   }
   if (value == null) {
+    el.className = ""
     el.removeAttribute("class")
-  } else if (isSVG) {
-    el.setAttribute("class", value)
   } else {
     el.className = value
-    el.page.onPatchClass(el)
+    el.setAttribute("class", value)
   }
 }

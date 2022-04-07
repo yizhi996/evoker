@@ -3,6 +3,7 @@ import { nodes, createElement, ElementWithTransition } from "./element"
 import { restoreNode } from "./vnode"
 import { isNZothElement, EL } from "./element"
 import { toHandlerKey } from "@vue/shared"
+import { SyncFlags } from "@nzoth/shared"
 
 export function insertBefore(data: any[]) {
   const [_, childData, parentData, anchorData] = data
@@ -28,7 +29,7 @@ export function insertBefore(data: any[]) {
 }
 
 export function removeChild(data: any[]) {
-  const [_, parentNodeId, childNodeId] = data
+  const [_, parentNodeId, childNodeId] = data as [SyncFlags, number, number]
   const parent = nodes.get(parentNodeId)
   if (parent && parent.el) {
     const child = nodes.get(childNodeId)
@@ -66,64 +67,25 @@ export function setText(data: any[]) {
   }
 }
 
-export function setClass(data: any[]) {
-  const [_, nodeId, className] = data
-  const node = nodes.get(nodeId)
-  if (node && node.el) {
-    let value = className
-    const transitionClasses = (node.el as ElementWithTransition)._vtc
-    if (transitionClasses) {
-      value = (
-        value ? [value, ...transitionClasses] : [...transitionClasses]
-      ).join(" ")
-    }
-    node.el.className = value
-  }
-}
-
-export function setStyle(data: any[]) {
-  const [_, nodeId, style] = data
-  const node = nodes.get(nodeId)
-  if (node && node.el) {
-    if (style) {
-      if (isNZothElement(node.el)) {
-        const props = node.props!
-        if (props.style || (props.style = {})) {
-          for (const [name, value] of Object.entries<string>(style)) {
-            props.style[name] = value
-          }
-        }
-      } else {
-        for (const [name, value] of Object.entries<string>(style)) {
-          node.el.style[name] = value
-        }
-      }
-    } else {
-      node.el.style = null
-    }
-  }
-}
-
 export function setDisplay(data: any[]) {
-  const [_, nodeId, show] = data
+  const [_, nodeId, value] = data as [SyncFlags, number, string]
   const node = nodes.get(nodeId)
   if (node && node.el) {
-    if (isNZothElement(node.el)) {
-      const props = node.props!
-      if (props.style || (props.style = {})) {
-        props.style.display = show
-      }
-    } else if (show) {
-      node.el.style.display = show
+    const { el, props } = node
+    if (isNZothElement(el)) {
+      const style = props!.style || (props!.style = {})
+      style.display = value
+    } else if (value) {
+      el.style.display = value
     } else {
-      node.el.style.display = null
+      el.style.display = null
     }
   }
 }
 
 export function addEventListener(data: any[]) {
   const [_, nodeId, event] = data as [
-    number,
+    SyncFlags,
     number,
     { type: string; options: EventListenerOptions; modifiers: string[] }
   ]
@@ -162,20 +124,52 @@ export function updateProp(data: any[]) {
   const [_, nodeId, name, value] = data
   const node = nodes.get(nodeId)
   if (node && node.el) {
-    if (isNZothElement(node.el)) {
-      const props = node.props!
-      props[name] = value
-    } else if (value === undefined || value === null) {
-      if (node.el instanceof SVGAElement) {
-        node.el.removeAttributeNS(null, name)
+    const { el, props } = node
+    if (isNZothElement(el)) {
+      props![name] = value
+    } else if (name === "id") {
+      el.id = value
+    } else if (name === "class") {
+      if (el instanceof SVGAElement) {
+        value == null
+          ? el.removeAttribute("class")
+          : el.setAttribute("class", value)
       } else {
-        node.el.removeAttribute(name)
+        let className = value
+        const transitionClasses = (el as ElementWithTransition)._vtc
+        if (transitionClasses) {
+          className = (
+            value ? [value, ...transitionClasses] : [...transitionClasses]
+          ).join(" ")
+        }
+        el.className = className
+      }
+    } else if (name === "style") {
+      const style = value as Record<string, string>
+      if (value) {
+        if (isNZothElement(el)) {
+          if (props!.style || (props!.style = {})) {
+            for (const [property, value] of Object.entries<string>(style)) {
+              props!.style[property] = value
+            }
+          }
+        } else {
+          for (const [property, value] of Object.entries<string>(style)) {
+            el.style[property] = value
+          }
+        }
+      } else {
+        isNZothElement(el) ? (props!.style = null) : (el.style = null)
       }
     } else {
-      if (node.el instanceof SVGAElement) {
-        node.el.setAttributeNS(null, name, value)
+      if (value == null) {
+        el.removeAttribute(name)
       } else {
-        node.el.setAttribute(name, value)
+        if (node.el instanceof SVGAElement) {
+          el.setAttributeNS(null, name, value)
+        } else {
+          el.setAttribute(name, value)
+        }
       }
     }
   }

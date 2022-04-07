@@ -3,8 +3,6 @@ import { pipeline } from "@nzoth/bridge"
 import {
   insertBefore,
   setText,
-  setClass,
-  setStyle,
   removeChild,
   setDisplay,
   addEventListener,
@@ -21,8 +19,6 @@ pipeline.onSync(message => {
 const invokeFunction: { [x: number]: Function } = {
   [SyncFlags.INSERT]: insertBefore,
   [SyncFlags.SET_TEXT]: setText,
-  [SyncFlags.SET_CLASS]: setClass,
-  [SyncFlags.SET_STYLE]: setStyle,
   [SyncFlags.REMOVE]: removeChild,
   [SyncFlags.DISPLAY]: setDisplay,
   [SyncFlags.ADD_EVENT]: addEventListener,
