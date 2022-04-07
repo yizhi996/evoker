@@ -73,7 +73,8 @@ const fruits = reactive({
   value: 0
 })
 
-const onChangeFruits = ({ value }) => {
+const onChangeFruits = (e) => {
+  const value = e.detail.value
   fruits.value = value
 }
 
@@ -86,7 +87,8 @@ const weeks = reactive({
   column: 0
 })
 
-const onChangeWeeks = ({ value }) => {
+const onChangeWeeks = (e) => {
+  const value = e.detail.value
   weeks.value = value
 }
 
@@ -95,11 +97,13 @@ const cities = reactive({
   value: [0, 0, 0]
 })
 
-const onChangeCities = ({ value }) => {
+const onChangeCities = (e) => {
+  const value = e.detail.value
   cities.value = value
 }
 
-const onColumnChange = ({ column, value }) => {
+const onColumnChange = (e) => {
+  const { column, value } = e.detail
   cities.value[column] = value
   if (column === 0) {
     if (cities.value[0] === 0) {
@@ -131,13 +135,15 @@ const onColumnChange = ({ column, value }) => {
 
 const timeValue = ref("11:00")
 
-const onChangeTime = ({ value }) => {
+const onChangeTime = (e) => {
+  const value = e.detail.value
   timeValue.value = value
 }
 
 const dateValue = ref("2018-08-08")
 
-const onChangeDate = ({ value }) => {
+const onChangeDate = (e) => {
+  const value = e.detail.value
   dateValue.value = value
 }
 

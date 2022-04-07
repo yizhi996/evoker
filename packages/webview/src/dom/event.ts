@@ -13,7 +13,7 @@ function sync() {
 
 interface Event {
   type: string
-  args: any[]
+  args: any
 }
 
 export function dispatchEvent(nodeId: number, event: string | Event) {
@@ -195,11 +195,11 @@ export function addClickEvent(
 }
 
 function createCustomTouchEvent(
-  target: HTMLElement,
+  currentTarget: HTMLElement,
   ev: TouchEvent,
   type: string
 ) {
-  const currentTarget = ev.target as HTMLElement
+  const target = ev.target as HTMLElement
 
   const changedTouches: NZTouch[] = []
   for (let i = 0; i < ev.changedTouches.length; i++) {
@@ -235,6 +235,26 @@ function createCustomTouchEvent(
       x: touch.pageX,
       y: touch.pageY
     }
+  }
+  return event
+}
+
+export function createCustomEvent(
+  currentTarget: HTMLElement,
+  type: string,
+  detail: Record<string, any>
+) {
+  const target = {
+    id: currentTarget.id,
+    offsetLeft: currentTarget.offsetLeft,
+    offsetTop: currentTarget.offsetTop
+  }
+  const event: NZCustomEvent = {
+    type: type,
+    timestamp: Date.now(),
+    target,
+    currentTarget: target,
+    detail
   }
   return event
 }

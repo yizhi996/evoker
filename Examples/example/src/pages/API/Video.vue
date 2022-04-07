@@ -41,7 +41,8 @@ const sourceType = reactive({
   value: 2
 })
 
-const onChangeSourceType = ({ value }) => {
+const onChangeSourceType = (e) => {
+  const value = e.detail.value
   sourceType.value = value
 }
 
@@ -50,7 +51,8 @@ const camera = reactive({
   value: 2
 })
 
-const onChangeCamera = ({ value }) => {
+const onChangeCamera = (e) => {
+  const value = e.detail.value
   camera.value = value
 }
 
@@ -67,7 +69,8 @@ const duration = reactive({
   value: 59
 })
 
-const onChangeDuration = ({ value }) => {
+const onChangeDuration = (e) => {
+  const value = e.detail.value
   duration.value = value
 }
 

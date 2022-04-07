@@ -60,15 +60,15 @@ const onSliding = () => {
   isSliding = true
 }
 
-const onSeek = ({ value }) => {
+const onSeek = (e) => {
+  const value = e.detail.value
   slide.value = value
   const seekTo = ctx.duration * (value / 100)
   ctx.seek(seekTo)
 }
 
-
-const changePlaybackRate = ({ value }) => {
-  console.log(value)
+const changePlaybackRate = (e) => {
+  const value = e.detail.value
   ctx.playbackRate = value ? 2.0 : 1.0
 }
 

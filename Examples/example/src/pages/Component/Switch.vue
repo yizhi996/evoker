@@ -22,8 +22,9 @@ const value2 = ref(false)
 const value3 = ref(true)
 const value4 = ref(true)
 
-const onChange = (newValue: boolean) => {
-  value1.value = newValue
+const onChange = (e) => {
+  const value = e.detail.value
+  value1.value = value
 }
 
 const onSwitch = () => {

@@ -19,7 +19,8 @@ const getScreenBrightness = async () => {
 
 getScreenBrightness()
 
-const onChange = ({ value }) => {
+const onChange = (e) => {
+  const value = e.detail.value
   brightness.value = value.toFixed(1)
   nz.setScreenBrightness({ value: brightness.value })
 }

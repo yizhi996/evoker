@@ -28,7 +28,8 @@ const fruits = reactive([
 
 const checked = ref("菠萝")
 
-const onChange = ({ value }) => {
+const onChange = (e) => {
+  const value = e.detail.value
   let res: string[] = []
   value.forEach(x => {
     const fruit = fruits.find(y => y.value === x)

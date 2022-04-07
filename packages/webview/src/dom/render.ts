@@ -1,4 +1,9 @@
-import { touchEvents, addClickEvent, dispatchEvent } from "./event"
+import {
+  touchEvents,
+  addClickEvent,
+  dispatchEvent,
+  createCustomEvent
+} from "./event"
 import { nodes, createElement, ElementWithTransition } from "./element"
 import { restoreNode } from "./vnode"
 import { isNZothElement, EL } from "./element"
@@ -92,23 +97,26 @@ export function addEventListener(data: any[]) {
   const { type, options, modifiers } = event
   const node = nodes.get(nodeId)
   if (node && node.el) {
+    const { el, props } = node
     if (touchEvents.includes(type)) {
-      addClickEvent(nodeId, node.el, type, {
+      addClickEvent(nodeId, el, type, {
         options,
         modifiers
       })
     } else {
-      if (isNZothElement(node.el)) {
+      if (isNZothElement(el)) {
         const eventName = toHandlerKey(type)
-        node.props![eventName] = (...args: any[]) => {
+        props![eventName] = (...args: any[]) => {
           const ev = {
             type: type,
-            args: args
+            args: type.startsWith("update:")
+              ? args
+              : [createCustomEvent(el, type, args[0])]
           }
           dispatchEvent(nodeId, ev)
         }
       } else {
-        node.el.addEventListener(
+        el.addEventListener(
           type,
           () => {
             dispatchEvent(nodeId, type)

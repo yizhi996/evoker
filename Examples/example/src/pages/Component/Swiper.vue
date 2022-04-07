@@ -97,25 +97,29 @@ const circular = ref(true)
 
 const interval = ref(2000)
 
-const onChangeInterval = ({ value }) => {
+const onChangeInterval = (e) => {
+  const value = e.detail.value
   interval.value = value
 }
 
 const duration = ref(500)
 
-const onChangeDuration = ({ value }) => {
+const onChangeDuration = (e) => {
+  const value = e.detail.value
   duration.value = value
 }
 
 const previousMargin = ref(0)
 
-const onChangePreviousMargin = ({ value }) => {
+const onChangePreviousMargin = (e) => {
+  const value = e.detail.value
   previousMargin.value = value
 }
 
 const nextMargin = ref(0)
 
-const onChangeNextMargin = ({ value }) => {
+const onChangeNextMargin = (e) => {
+  const value = e.detail.value
   nextMargin.value = value
 }
 </script>

@@ -48,7 +48,8 @@ const sourceType = reactive({
   value: 2
 })
 
-const onChangeSourceType = ({ value }) => {
+const onChangeSourceType = (e) => {
+  const value = e.detail.value
   sourceType.value = value
 }
 
@@ -57,7 +58,8 @@ const sizeType = reactive({
   value: 2
 })
 
-const onChangeSizeType = ({ value }) => {
+const onChangeSizeType = (e) => {
+  const value = e.detail.value
   sizeType.value = value
 }
 
@@ -66,7 +68,8 @@ const limit = reactive({
   value: 8
 })
 
-const onChangeLimit = ({ value }) => {
+const onChangeLimit = (e) => {
+  const value = e.detail.value
   limit.value = value
 }
 

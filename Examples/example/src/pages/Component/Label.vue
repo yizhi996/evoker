@@ -53,7 +53,8 @@ const fruits = reactive([
 
 const checked1 = ref("菠萝")
 
-const onChangeCheckbox = ({ value }) => {
+const onChangeCheckbox = (e) => {
+  const value = e.detail.value
   let res: string[] = []
   value.forEach(x => {
     const fruit = fruits.find(y => y.value === x)
@@ -66,8 +67,9 @@ const onChangeCheckbox = ({ value }) => {
 
 const checked2 = ref("菠萝")
 
-const onChangeRadio = ({ value: selected }) => {
-  checked2.value = fruits.find(item => item.value === selected)!.name
+const onChangeRadio = (e) => {
+  const value = e.detail.value
+  checked2.value = fruits.find(item => item.value === value)!.name
 }
 
 const onClick = () => {

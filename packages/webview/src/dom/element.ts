@@ -8,7 +8,12 @@ import {
 import { toHandlerKey } from "@vue/shared"
 import { BuiltInComponent, requireBuiltInComponent } from "../element"
 import { restoreNode, NZVNode } from "./vnode"
-import { touchEvents, addClickEvent, dispatchEvent } from "./event"
+import {
+  touchEvents,
+  addClickEvent,
+  dispatchEvent,
+  createCustomEvent
+} from "./event"
 
 export type EL =
   | Node
@@ -121,22 +126,6 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
     }
   }
 
-  const events = Object.keys(listeners)
-  if (listeners) {
-    for (const name of events) {
-      if (!touchEvents.includes(name)) {
-        const eventName = toHandlerKey(name)
-        props[eventName] = (...args: any[]) => {
-          const ev = {
-            type: name,
-            args: args
-          }
-          dispatchEvent(nodeId, ev)
-        }
-      }
-    }
-  }
-
   if (style) {
     props.style = {}
     for (const [name, value] of Object.entries<string>(style)) {
@@ -170,6 +159,24 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
 
   if (textContent) {
     ;(el.__slot || el).textContent = textContent
+  }
+
+  const events = Object.keys(listeners)
+  if (listeners) {
+    for (const name of events) {
+      if (!touchEvents.includes(name)) {
+        const eventName = toHandlerKey(name)
+        props[eventName] = (...args: any[]) => {
+          const ev = {
+            type: name,
+            args: name.startsWith("update:")
+              ? args
+              : [createCustomEvent(el, name, args[0])]
+          }
+          dispatchEvent(nodeId, ev)
+        }
+      }
+    }
   }
 
   touchEvents.forEach(ev => {
