@@ -60,7 +60,7 @@ const resetFormData = () => {
 const setChecked = (checked: boolean) => {
   instance.props.checked = checked
   emit("update:checked", checked)
-  emit("change", checked)
+  emit("change", { value: checked })
 }
 
 defineExpose({
