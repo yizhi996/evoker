@@ -62,16 +62,13 @@ export function patchDOMProp(
     }
   }
 
-  // some properties perform value validation and throw
-  try {
-    el[key] = value
-  } catch (e: any) {
-    if (false) {
-      warn(
-        `Failed setting prop "${key}" on <${el.tagName.toLowerCase()}>: ` +
-          `value ${value} is invalid.`,
-        e
-      )
-    }
+  if (key === "id") {
+    el.id = value
+    el.page.onPatchProp(el, key, value)
+  } else {
+    warn(
+      `Failed setting prop "${key}" on <${el.tagName.toLowerCase()}>: ` +
+        `value ${value} is invalid.`
+    )
   }
 }
