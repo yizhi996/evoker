@@ -1,6 +1,6 @@
 PODS:
   - Alamofire (5.5.0)
-  - AMap3DMap (9.0.0):
+  - AMap3DMap (9.1.0):
     - AMapFoundation (~> 1.6.9)
   - AMapFoundation (1.6.9)
   - AMapLocation (2.8.0):
@@ -9,7 +9,7 @@ PODS:
     - AMapFoundation (~> 1.6.9)
   - Bugly (2.5.91)
   - CocoaAsyncSocket (7.6.5)
-  - CryptoSwift (1.4.2)
+  - CryptoSwift (1.4.3)
   - HTTPParserC (2.9.4)
   - JXPhotoBrowser (3.1.3)
   - KTVCocoaHTTPServer (1.0.0):
@@ -50,15 +50,15 @@ PODS:
     - AMapSearch
   - NZoth/Resources (0.1.0)
   - PureLayout (3.1.9)
-  - SDWebImage (5.12.3):
-    - SDWebImage/Core (= 5.12.3)
-  - SDWebImage/Core (5.12.3)
+  - SDWebImage (5.12.5):
+    - SDWebImage/Core (= 5.12.5)
+  - SDWebImage/Core (5.12.5)
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
-  - SQLite.swift (0.13.2):
-    - SQLite.swift/standard (= 0.13.2)
-  - SQLite.swift/standard (0.13.2)
+  - SQLite.swift (0.13.3):
+    - SQLite.swift/standard (= 0.13.3)
+  - SQLite.swift/standard (0.13.3)
   - Telegraph (0.29):
     - CocoaAsyncSocket (~> 7.6)
     - HTTPParserC (~> 2.9)
@@ -67,10 +67,10 @@ PODS:
   - ZFPlayer/AVPlayer (4.0.3):
     - ZFPlayer/Core
   - ZFPlayer/Core (4.0.3)
-  - Zip (2.1.1)
-  - ZLPhotoBrowser (4.2.2):
-    - ZLPhotoBrowser/Core (= 4.2.2)
-  - ZLPhotoBrowser/Core (4.2.2)
+  - Zip (2.1.2)
+  - ZLPhotoBrowser (4.2.5):
+    - ZLPhotoBrowser/Core (= 4.2.5)
+  - ZLPhotoBrowser/Core (4.2.5)
 
 DEPENDENCIES:
   - Bugly
@@ -108,13 +108,13 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
-  AMap3DMap: 189a20478751f9b91b830fbb565344b88d3ffebb
+  AMap3DMap: a1ba024c96017912499330afdc3a7885acd083f8
   AMapFoundation: 8d8ecbb0b2e9ce5487995360d26c885d94642bfd
   AMapLocation: 5ef44a1117be7dc541cb7a7d43d03c5ee91e4387
   AMapSearch: 5c1cc07429f04b9cc76438fcb2411c66fdbbb178
   Bugly: afe841bba2ea6de6d432a3c125240a5e75949c55
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
+  CryptoSwift: a0799ee936271bd2253a006f1e4523df21845000
   HTTPParserC: aea14c3d2d4ac5beb3988781daa36dfa62e0d9ef
   JXPhotoBrowser: d32e94e1226d43bf5ed83164e3f5b651fed625e0
   KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
@@ -123,13 +123,13 @@ SPEC CHECKSUMS:
   MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961
   NZoth: 68274ae4141f5e1ce7d7dde09f7d13ef5b439ba0
   PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
-  SDWebImage: 53179a2dba77246efa8a9b85f5c5b21f8f43e38f
+  SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
-  SQLite.swift: 4fc2be46c36392e3b87afe6fe7f1801c1daa07ef
+  SQLite.swift: 903bfa3bc9ab06345fdfbb578e34f47cfcf417da
   Telegraph: 0cae12d0c9efa5a33de08286c8a71d4c4d16a70c
   ZFPlayer: 624c92de06eb34df322c3b53b4c9ce760f528f7a
-  Zip: 414f59909701fda9a84ab774ebe0f5449b1082cc
-  ZLPhotoBrowser: a7aa41a674e67a86c1728a3d9d73a471d5650a82
+  Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
+  ZLPhotoBrowser: 4bfab86b851042e18d7f413284472aa68759626a
 
 PODFILE CHECKSUM: 2dcae5619955db8c56b10d0c488988b684043015
 
