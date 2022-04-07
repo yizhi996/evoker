@@ -1,4 +1,4 @@
-import { addClickEvent, dispatchEvent } from "./event"
+import { touchEvents, addClickEvent, dispatchEvent } from "./event"
 import { nodes, createElement, ElementWithTransition } from "./element"
 import { restoreNode } from "./vnode"
 import { isNZothElement, EL } from "./element"
@@ -122,16 +122,19 @@ export function setDisplay(data: any[]) {
 }
 
 export function addEventListener(data: any[]) {
-  const [_, nodeId, event] = data
-  const { type, listener, options, modifiers } = event
+  const [_, nodeId, event] = data as [
+    number,
+    number,
+    { type: string; options: EventListenerOptions; modifiers: string[] }
+  ]
+  const { type, options, modifiers } = event
   const node = nodes.get(nodeId)
   if (node && node.el) {
-    if (type === "click") {
-      const elOptions = {
+    if (touchEvents.includes(type)) {
+      addClickEvent(nodeId, node.el, type, {
         options,
         modifiers
-      }
-      addClickEvent(nodeId, node.el, elOptions)
+      })
     } else {
       if (isNZothElement(node.el)) {
         const eventName = toHandlerKey(type)

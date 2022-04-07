@@ -2,7 +2,12 @@
   <n-topic>{{ formatSecond(currentTime) }} / {{ formatSecond(duration) }}</n-topic>
   <button type="primary" @click="onPlay">Play</button>
   <button @click="onPause">Pause</button>
+  <button @click="onStop">Stop</button>
   <slider class="mt-10" :value="slide" @changing="onSliding" @change="onSeek"></slider>
+  <div class="flex items-center justify-center">
+    <switch @change="changePlaybackRate"></switch>
+    <span>倍速 2x</span>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -38,12 +43,17 @@ ctx.src = "https://file.lilithvue.com/lilith-test-assets/3EM27_Beethoven9_Orch%2
 ctx.volume = 0.3
 ctx.loop = true
 
-const onPlay = () => {
+const onPlay = (e) => {
+  console.log(e)
   ctx.play()
 }
 
 const onPause = () => {
   ctx.pause()
+}
+
+const onStop = () => {
+  ctx.stop()
 }
 
 const onSliding = () => {
@@ -54,6 +64,12 @@ const onSeek = ({ value }) => {
   slide.value = value
   const seekTo = ctx.duration * (value / 100)
   ctx.seek(seekTo)
+}
+
+
+const changePlaybackRate = ({ value }) => {
+  console.log(value)
+  ctx.playbackRate = value ? 2.0 : 1.0
 }
 
 </script>

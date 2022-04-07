@@ -1,3 +1,5 @@
+import { isNZothNode } from "./node"
+
 export class NZothEvent {
   type: string
   target?: any
@@ -31,15 +33,19 @@ export class NZothEventTarget {
     options?: EventListenerOptions,
     modifiers?: string[]
   ) {
-    if (this.listeners === undefined) {
-      this.listeners = Object.create(null)
-    }
-    if (!(type in this.listeners!)) {
-      this.listeners![type] = []
-    }
-    this.listeners![type].push({ listener, options, modifiers })
-    const that = this as any
-    that.page.onAddEventListener(that, type, listener, options, modifiers)
+    const listeners =
+      this.listeners ||
+      ((this.listeners = Object.create(null)) as Record<
+        string,
+        NZothEventListenerParams[]
+      >)
+
+    !(type in listeners) && (listeners[type] = [])
+
+    listeners[type].push({ listener, options, modifiers })
+
+    isNZothNode(this) &&
+      this.page.onAddEventListener(this, type, options, modifiers)
   }
 
   removeEventListener(type: string, listener: NZothEventListener): void {

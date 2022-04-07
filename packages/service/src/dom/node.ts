@@ -122,3 +122,7 @@ export class NZothNode extends NZothEventTarget {
     this.page.onSetElementText(this, newValue || "")
   }
 }
+
+export function isNZothNode(value: any): value is NZothNode {
+  return "page" in value
+}

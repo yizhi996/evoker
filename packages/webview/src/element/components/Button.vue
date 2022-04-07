@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from "vue"
 import { NZothElement } from "../../dom/element"
-import { addTap } from "../../dom/event";
+import { addTouchEvent } from "../../dom/event"
 import { isTrue } from "../../utils"
 import useHover from "../use/useHover"
 import Loading from "./Loading.vue"
@@ -100,7 +100,7 @@ watch(() => props.formType, (formType) => {
   if (formType === "submit" || formType === "reset") {
     nextTick(() => {
       if (buttonRef.value) {
-        clickEventRemove = addTap(buttonRef.value, {}, args => {
+        clickEventRemove = addTouchEvent(buttonRef.value, undefined, _ => {
           onTapForm()
         })
       }

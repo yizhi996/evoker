@@ -1,6 +1,6 @@
 import { VNode } from "vue"
 
-export interface NZothEventListener {
+export interface NZothEventListenerOptions {
   options?: EventListenerOptions
   modifiers?: string[]
 }
@@ -11,7 +11,7 @@ export interface NZVNode {
   className: string
   id: string
   attributes: Record<string, any>
-  listeners: Record<string, NZothEventListener>
+  listeners: Record<string, NZothEventListenerOptions>
   textContent: string
   style: string
   data: string

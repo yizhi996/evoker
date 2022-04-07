@@ -3,6 +3,7 @@
   "compilerOptions": {
     "lib": [
       "esnext",
+      "dom"
     ],
   },
   "include": [

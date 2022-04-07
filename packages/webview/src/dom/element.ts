@@ -7,8 +7,8 @@ import {
 } from "vue"
 import { toHandlerKey } from "@vue/shared"
 import { BuiltInComponent, requireBuiltInComponent } from "../element"
-import { restoreNode, NZVNode, NZothEventListener } from "./vnode"
-import { addClickEvent, dispatchEvent } from "./event"
+import { restoreNode, NZVNode } from "./vnode"
+import { touchEvents, addClickEvent, dispatchEvent } from "./event"
 
 export type EL =
   | Node
@@ -121,11 +121,10 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
     }
   }
 
-  let haveClickEvent = false
-  let clickEventListener: NZothEventListener | undefined
+  const events = Object.keys(listeners)
   if (listeners) {
-    for (const [name, listener] of Object.entries(listeners)) {
-      if (name !== "click") {
+    for (const name of events) {
+      if (!touchEvents.includes(name)) {
         const eventName = toHandlerKey(name)
         props[eventName] = (...args: any[]) => {
           const ev = {
@@ -134,9 +133,6 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
           }
           dispatchEvent(nodeId, ev)
         }
-      } else {
-        clickEventListener = listener
-        haveClickEvent = true
       }
     }
   }
@@ -176,9 +172,11 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
     ;(el.__slot || el).textContent = textContent
   }
 
-  if (haveClickEvent) {
-    addClickEvent(nodeId, el, clickEventListener)
-  }
+  touchEvents.forEach(ev => {
+    if (events.includes(ev)) {
+      addClickEvent(nodeId, el, ev, listeners[ev])
+    }
+  })
 
   node.vnode = wrapper
 
@@ -223,16 +221,16 @@ function createNativeElement(node: NZVNode) {
   }
 
   if (listeners) {
-    for (const [name, listener] of Object.entries(listeners)) {
-      if (name === "click") {
-        addClickEvent(nodeId, el, listener)
+    for (const [name, options] of Object.entries(listeners)) {
+      if (touchEvents.includes(name)) {
+        addClickEvent(nodeId, el, name, listeners[name])
       } else {
         el.addEventListener(
           name,
           () => {
             dispatchEvent(nodeId, name)
           },
-          listener.options
+          options.options
         )
       }
     }

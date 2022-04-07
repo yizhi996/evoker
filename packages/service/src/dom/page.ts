@@ -1,7 +1,6 @@
 import { queuePostFlushCb, VNode } from "vue"
 import { unmountComponent } from "../runtime-jscore/patchUnmount"
 import { NZothElement } from "./element"
-import { NZothEventListener } from "./eventTarget"
 import { NZothHTMLElement } from "./html"
 import { SyncFlags } from "@nzoth/shared"
 import { pipeline } from "@nzoth/bridge"
@@ -131,9 +130,8 @@ export class NZothPage {
   }
 
   onAddEventListener(
-    el: NZothElement,
+    el: NZothNode,
     type: string,
-    listener: NZothEventListener,
     options?: EventListenerOptions,
     modifiers?: string[]
   ) {
@@ -143,7 +141,7 @@ export class NZothPage {
     const message = [
       SyncFlags.ADD_EVENT,
       el.nodeId,
-      { type, listener, options, modifiers }
+      { type, options, modifiers }
     ]
     this.enqueue(message)
   }

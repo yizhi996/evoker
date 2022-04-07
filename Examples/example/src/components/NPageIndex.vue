@@ -66,6 +66,6 @@ const getSrc = (name: string) => {
   const path = `/src/assets/kind/${name}.png`
   const modules = import.meta.globEager("/src/assets/kind/*.png")
   return modules[path].default
-};
+}
 
 </script>
