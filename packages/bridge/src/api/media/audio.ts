@@ -12,6 +12,7 @@ const enum Methods {
   PLAY = "play",
   PAUSE = "pause",
   STOP = "stop",
+  REPLAY = "replay",
   SEEK = "seek",
   DESTORY = "destroy",
   SET_VOLUME = "setVolume",
@@ -100,8 +101,7 @@ class InnerAudioContext {
     onEnded(() => {
       this._paused = true
       if (this.loop) {
-        this.seek(0)
-        this.play()
+        this.operate(Methods.REPLAY)
       }
       dispatchEvent(this.innerEventName(Events.ON_ENDED), undefined)
     })

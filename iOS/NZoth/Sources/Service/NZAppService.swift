@@ -159,16 +159,6 @@ final public class NZAppService {
         }
         
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(willEnterForeground),
-                                               name: UIApplication.willEnterForegroundNotification,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didEnterBackground),
-                                               name: UIApplication.didEnterBackgroundNotification,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
                                                selector: #selector(networkStatusDidChange(_:)),
                                                name: NZEngine.networkStatusDidChange,
                                                object: nil)
@@ -541,14 +531,6 @@ extension NZAppService {
         let message: [String: Any] = [:]
         bridge.subscribeHandler(method: NZAppService.onHideSubscribeKey, data: message)
         modules.values.forEach { $0.onHide(self) }
-    }
-    
-    @objc private func willEnterForeground() {
-        publishAppOnShow(path: "")
-    }
-    
-    @objc private func didEnterBackground() {
-        publishAppOnHide()
     }
 }
 

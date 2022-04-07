@@ -42,8 +42,14 @@ class NZAudioPlayer: NSObject {
         var _url: URL?
     }
     
+    var currentPlayURL: URL?
     
-    var params: Params?
+    var params: Params? {
+        didSet {
+            guard let params = params, let url = params._url else { return }
+            setURL(url)
+        }
+    }
     
     var player: AVPlayer?
     
@@ -62,20 +68,37 @@ class NZAudioPlayer: NSObject {
     
     deinit {
         timeObserver = nil
-        player?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
+        player?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.status))
         NotificationCenter.default.removeObserver(self)
     }
     
-    func setup(params: Params) {
-        self.params = params
-        guard let url = params._url else { return }
-        
+    func setURL(_ url: URL) {
+        if currentPlayURL == url {
+            return
+        }
+        currentPlayURL = url
         if !KTVHTTPCache.proxyIsRunning() {
             do {
                 try KTVHTTPCache.proxyStart()
             } catch {
                 NZLogger.error("KTVHTTPCache Start failed: \(error)")
             }
+        }
+        
+        timeObserver = nil
+        
+        if let player = player {
+            player.removeObserver(self, forKeyPath: #keyPath(AVPlayer.status))
+            player.pause()
+            player.replaceCurrentItem(with: nil)
+            self.player = nil
+        }
+        
+        if let playerItem = playerItem {
+            NotificationCenter.default.removeObserver(self,
+                                                      name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+                                                      object: playerItem)
+            self.playerItem = nil
         }
         
         if let proxyURL = KTVHTTPCache.proxyURL(withOriginalURL: url) {
@@ -94,17 +117,14 @@ class NZAudioPlayer: NSObject {
                                                    selector: #selector(onPlayEnded(_:)),
                                                    name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
                                                    object: playerItem)
-            player.volume = params.volume
-            player.rate = params.playbackRate
         }
     }
     
-    func play(params: Params) {
-        self.params = params
+    func play() {
         guard let player = player else { return }
-        player.volume = params.volume
-        player.rate = params.playbackRate
         player.play()
+        player.volume = params?.volume ?? 1.0
+        player.rate = params?.playbackRate ?? 1.0
         delegate?.didStartPlay(audioPlayer: self)
     }
     
@@ -123,11 +143,20 @@ class NZAudioPlayer: NSObject {
         delegate?.didStopPlay(audioPlayer: self)
     }
     
+    func replay() {
+        guard let player = player, let playerItem = playerItem else { return }
+        playerItem.cancelPendingSeeks()
+        player.pause()
+        player.seek(to: .zero) { [unowned self] _ in
+            self.play()
+        }
+    }
+    
     func setVolume(_ volume: Float) {
         player?.volume = volume
     }
     
-    func setPlaybackRate(rate: Float) {
+    func setPlaybackRate(_ rate: Float) {
         guard let player = player else { return }
         player.rate = rate
     }

@@ -25,26 +25,68 @@ enum NZAudioAPI: String, NZBuiltInAPI {
         struct Params: Decodable {
             let audioId: Int
             let method: Method
-            let data: [String: Any]
+            let data: Data
             
-            enum CodingKeys: String, CodingKey {
-                case audioId, method, data
+            enum Method: String, Decodable {
+                case play
+                case pause
+                case stop
+                case replay
+                case seek
+                case setVolume
+                case setSrc
+                case setPlaybackRate
             }
             
-            public init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                audioId = try container.decode(Int.self, forKey: .audioId)
-                method = try container.decode(Method.self, forKey: .method)
-                data = try container.decode([String: Any].self, forKey: .data)
+            enum Data: Decodable {
+                case play(NZAudioPlayer.Params)
+                case seek(SeekData)
+                case setVolume(SetVolumeData)
+                case setSrc(SetSrcData)
+                case setPlaybackRate(SetPlaybackRateData)
+                case unknown
+                
+                struct SeekData: Decodable {
+                    let position: Double
+                }
+                
+                struct SetVolumeData: Decodable {
+                    let volume: Float
+                }
+                
+                struct SetSrcData: Decodable {
+                    let src: String
+                }
+                
+                struct SetPlaybackRateData: Decodable {
+                    let rate: Float
+                }
+                
+                init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    if let data = try? container.decode(NZAudioPlayer.Params.self) {
+                        self = .play(data)
+                        return
+                    }
+                    if let data = try? container.decode(SeekData.self) {
+                        self = .seek(data)
+                        return
+                    }
+                    if let data = try? container.decode(SetVolumeData.self) {
+                        self = .setVolume(data)
+                        return
+                    }
+                    if let data = try? container.decode(SetSrcData.self) {
+                        self = .setSrc(data)
+                        return
+                    }
+                    if let data = try? container.decode(SetPlaybackRateData.self) {
+                        self = .setPlaybackRate(data)
+                        return
+                    }
+                    self = .unknown
+                }
             }
-        }
-        
-        enum Method: String, Decodable {
-            case play
-            case pause
-            case stop
-            case seek
-            case setVolume
         }
         
         guard let appService = bridge.appService else { return }
@@ -69,38 +111,55 @@ enum NZAudioAPI: String, NZBuiltInAPI {
         
         switch params.method {
         case .play:
-            if var playParams: NZAudioPlayer.Params = params.data.toModel() {
-                let src = playParams.src
-                playParams._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
-                                                                    userId: NZEngine.shared.userId,
-                                                                    filePath: src) ?? URL(string: src)
+            if case .play(var data) = params.data {
+                let src = data.src
+                data._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
+                                                              userId: NZEngine.shared.userId,
+                                                              filePath: src) ?? URL(string: src)
                 if let player = module.players.get(page.pageId, params.audioId) {
-                    player.play(params: playParams)
+                    player.params = data
+                    player.play()
                 } else {
                     let player = NZAudioPlayer(audioId: params.audioId)
                     player.delegate = module
-                    player.setup(params: playParams)
-                    player.play(params: playParams)
+                    player.params = data
+                    player.play()
                     module.players.set(page.pageId, params.audioId, value: player)
                 }
-            } else {
-                bridge.invokeCallbackFail(args: args, error: .custom("create audio player options invalid"))
             }
+            
         case .pause:
             guard let player = module.players.get(page.pageId, params.audioId) else { break }
             player.pause()
         case .stop:
             guard let player = module.players.get(page.pageId, params.audioId) else { break }
             player.stop()
+        case .replay:
+            guard let player = module.players.get(page.pageId, params.audioId) else { break }
+            player.replay()
         case .seek:
             guard let player = module.players.get(page.pageId, params.audioId) else { break }
-            if let position = params.data["position"] as? Double {
-                player.seek(position: position)
+            if case .seek(let data) = params.data {
+                player.seek(position: data.position)
             }
         case .setVolume:
             guard let player = module.players.get(page.pageId, params.audioId) else { break }
-            if let volume = params.data["volume"] as? Float {
-                player.setVolume(volume)
+            if case .setVolume(let data) = params.data {
+                player.setVolume(data.volume)
+            }
+        case .setSrc:
+            guard let player = module.players.get(page.pageId, params.audioId) else { break }
+            if case .setSrc(let data) = params.data {
+                let src = data.src
+                let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
+                                                            userId: NZEngine.shared.userId,
+                                                            filePath: src) ?? URL(string: src)
+                player.params?._url = url
+            }
+        case .setPlaybackRate:
+            guard let player = module.players.get(page.pageId, params.audioId) else { break }
+            if case .setPlaybackRate(let data) = params.data {
+                player.setPlaybackRate(data.rate)
             }
         }
         
