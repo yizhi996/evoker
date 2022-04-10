@@ -7,22 +7,25 @@
 //
 
 import Foundation
+import MJRefresh
 
 enum NZLifeCycleAPI: String, NZBuiltInAPI {
     
-    case pageLifeRequired
+    case pageEffect
 
     func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        switch self {
-        case .pageLifeRequired:
-            pageLifeRequired(args: args, bridge: bridge)
+        DispatchQueue.main.async {
+            switch self {
+            case .pageEffect:
+                self.pageEffect(args: args, bridge: bridge)
+            }
         }
     }
 
-    private func pageLifeRequired(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func pageEffect(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         struct Params: Decodable {
             let pageId: Int
-            let onPageScroll: Bool?
+            let hooks: [String: Bool]
         }
         
         guard let appService = bridge.appService else { return }
@@ -39,7 +42,17 @@ enum NZLifeCycleAPI: String, NZBuiltInAPI {
             return
         }
         
-        webPage.isSubscribeOnPageScroll = params.onPageScroll == true
+        webPage.isSubscribeOnPageScroll = params.hooks["onPageScroll"] ?? false
+       
+        if let x = params.hooks["onPullDownRefresh"], x == true {
+            let normalHeader = MJRefreshNormalHeader(refreshingBlock: {
+                bridge.subscribeHandler(method: NZWebPage.onPullDownRefreshSubscribeKey,
+                                        data: ["pageId": params.pageId])
+            })
+            normalHeader.lastUpdatedTimeLabel?.isHidden = true
+            normalHeader.stateLabel?.isHidden = true
+            webPage.webView.scrollView.mj_header = normalHeader
+        }
         
         bridge.invokeCallbackSuccess(args: args)
     }

@@ -21,7 +21,10 @@ export const enum LifecycleHooks {
 }
 
 const appEvents: Record<string, Function[]> = {}
-const pageEvents: Record<string, Map<number, Function>> = {}
+
+const pageEvents: Record<number, Map<LifecycleHooks, Function>> = {}
+
+const pageEffectHooks: Record<number, Record<string, boolean>> = {}
 
 function injectHook(
   lifecycle: LifecycleHooks,
@@ -33,14 +36,24 @@ function injectHook(
     hooks.push(hook)
     return hook
   }
-  const hooks = pageEvents[lifecycle] || (pageEvents[lifecycle] = new Map())
-  hooks.set(pageId, hook)
+
+  const hooks = pageEvents[pageId] || (pageEvents[pageId] = new Map())
+  hooks.set(lifecycle, hook)
+
+  const effects = pageEffectHooks[pageId] || (pageEffectHooks[pageId] = {})
   if (lifecycle === LifecycleHooks.PAGE_ON_SCROLL) {
-    InnerJSBridge.invoke("pageLifeRequired", {
+    effects["onPageScroll"] = true
+  } else if (lifecycle === LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH) {
+    effects["onPullDownRefresh"] = true
+  }
+
+  if (Object.keys(effects).length) {
+    InnerJSBridge.invoke("pageEffect", {
       pageId,
-      onPageScroll: true
+      hooks: effects
     })
   }
+
   return hook
 }
 
@@ -60,12 +73,10 @@ function invokeAppHook(lifecycle: LifecycleHooks, data?: any) {
 }
 
 function invokePageHook(lifecycle: LifecycleHooks, pageId: number, data?: any) {
-  const events = pageEvents[lifecycle]
+  const events = pageEvents[pageId]
   if (events) {
-    const hook = events.get(pageId)
-    if (hook && isFunction(hook)) {
-      hook(data)
-    }
+    const hook = events.get(lifecycle)
+    hook && isFunction(hook) && hook(data)
   }
 }
 
@@ -81,54 +92,89 @@ InnerJSBridge.subscribe(LifecycleHooks.APP_ON_HIDE, () => {
   invokeAppHook(LifecycleHooks.APP_ON_HIDE)
 })
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_LOAD, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_LOAD, message.pageId, message.query)
-})
+InnerJSBridge.subscribe<{ pageId: number; query: Record<string, any> }>(
+  LifecycleHooks.PAGE_ON_LOAD,
+  message => {
+    invokePageHook(LifecycleHooks.PAGE_ON_LOAD, message.pageId, message.query)
+  }
+)
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_SHOW, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_SHOW, message.pageId)
-})
+InnerJSBridge.subscribe<{ pageId: number }>(
+  LifecycleHooks.PAGE_ON_SHOW,
+  message => {
+    invokePageHook(LifecycleHooks.PAGE_ON_SHOW, message.pageId)
+  }
+)
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_READY, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_READY, message.pageId)
-})
+InnerJSBridge.subscribe<{ pageId: number }>(
+  LifecycleHooks.PAGE_ON_READY,
+  message => {
+    invokePageHook(LifecycleHooks.PAGE_ON_READY, message.pageId)
+  }
+)
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_HIDE, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_HIDE, message.pageId)
-})
+InnerJSBridge.subscribe<{ pageId: number }>(
+  LifecycleHooks.PAGE_ON_HIDE,
+  message => {
+    invokePageHook(LifecycleHooks.PAGE_ON_HIDE, message.pageId)
+  }
+)
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_UNLOAD, message => {
-  const { pageId } = message
-  unmountPage(pageId)
-  invokePageHook(LifecycleHooks.PAGE_ON_UNLOAD, pageId)
-})
+InnerJSBridge.subscribe<{ pageId: number }>(
+  LifecycleHooks.PAGE_ON_UNLOAD,
+  message => {
+    const { pageId } = message
+    unmountPage(pageId)
+    invokePageHook(LifecycleHooks.PAGE_ON_UNLOAD, pageId)
+    delete pageEvents[pageId]
+    delete pageEffectHooks[pageId]
+  }
+)
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH, message.pageId)
-})
+InnerJSBridge.subscribe<{ pageId: number }>(
+  LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH,
+  message => {
+    invokePageHook(LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH, message.pageId)
+  }
+)
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message.pageId)
-})
+InnerJSBridge.subscribe<{ pageId: number }>(
+  LifecycleHooks.PAGE_ON_REACH_BOTTOM,
+  message => {
+    invokePageHook(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message.pageId)
+  }
+)
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_SCROLL, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_SCROLL, message.pageId, {
-    scrollTop: message.scrollTop
-  })
-})
+InnerJSBridge.subscribe<{ pageId: number; scrollTop: number }>(
+  LifecycleHooks.PAGE_ON_SCROLL,
+  message => {
+    invokePageHook(LifecycleHooks.PAGE_ON_SCROLL, message.pageId, {
+      scrollTop: message.scrollTop
+    })
+  }
+)
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_RESIZE, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId)
-})
+InnerJSBridge.subscribe<{ pageId: number }>(
+  LifecycleHooks.PAGE_ON_RESIZE,
+  message => {
+    invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId)
+  }
+)
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_TAB_ITEM_TAP, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId, message)
-})
+InnerJSBridge.subscribe<{ pageId: number }>(
+  LifecycleHooks.PAGE_ON_TAB_ITEM_TAP,
+  message => {
+    invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId, message)
+  }
+)
 
-InnerJSBridge.subscribe(LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE, message => {
-  invokePageHook(
-    LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE,
-    message.pageId,
-    message
-  )
-})
+InnerJSBridge.subscribe<{ pageId: number }>(
+  LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE,
+  message => {
+    invokePageHook(
+      LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE,
+      message.pageId,
+      message
+    )
+  }
+)

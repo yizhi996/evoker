@@ -1,5 +1,4 @@
 import { getCurrentInstance } from "vue"
-import { InnerJSBridge } from "../bridge/bridge"
 import { LifecycleHooks, createHook } from "./hooks"
 
 interface PageScrollObject {
@@ -33,7 +32,6 @@ export default function usePage() {
       return createHook(LifecycleHooks.PAGE_ON_UNLOAD, hook, pageId)
     },
     onPullDownRefresh: (hook: () => void) => {
-      InnerJSBridge.invoke("addPullDownRefresh", { pageId })
       return createHook(LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH, hook, pageId)
     },
     onReachBottom: (hook: () => void) => {
