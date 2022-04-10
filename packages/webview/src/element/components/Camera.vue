@@ -12,9 +12,10 @@
 
 <script setup lang="ts">
 import { onMounted, watch } from "vue"
-import { NZJSBridge } from "../../bridge"
+import { NZJSBridge, showModal } from "../../bridge"
 import useNative from "../use/useNative"
 import useCamera from "../listener/camera"
+import { AuthorizationStatus } from "@nzoth/bridge"
 
 const emit = defineEmits(["initdone", "scancode", "error", "stop"])
 
@@ -32,14 +33,23 @@ const props = withDefaults(defineProps<{
 
 const { tongcengKey, nativeId: cameraId, containerRef, height, insertContainer } = useNative()
 
-const { onInit, onScanCode } = useCamera(cameraId)
+const { onInit, onScanCode, onError, authorize } = useCamera(cameraId)
 
 onInit(data => {
-  emit("initdone", data.maxZoom)
+  emit("initdone", { maxZoom: data.maxZoom })
 })
 
 onScanCode(data => {
-  emit("scancode", data.value)
+  emit("scancode", { value: data.value })
+})
+
+onError(data => {
+  showModal({
+    title: "隐私权限",
+    content: "请在 iPhone 的“设置-隐私”选项中，允许访问你的摄像头。",
+    showCancel: false
+  })
+  emit("error", { errMsg: data.error })
 })
 
 watch(() => props.devicePosition, (newValue) => {
@@ -55,8 +65,13 @@ watch(() => props.resolution, (newValue) => {
 })
 
 onMounted(() => {
-  setTimeout(() => {
-    insert()
+  setTimeout(async () => {
+    const status = await authorize()
+    if (status === AuthorizationStatus.denied) {
+      emit("error", { errMsg: "insertCamera: fail auth deny" })
+    } else if (status === AuthorizationStatus.authorized) {
+      insert()
+    }
   })
 })
 
@@ -67,6 +82,7 @@ const insert = () => {
         parentId: tongcengKey,
         cameraId,
         mode: props.mode,
+        flash: props.flash,
         resolution: props.resolution,
         devicePosition: props.devicePosition
       })

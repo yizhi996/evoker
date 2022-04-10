@@ -10,7 +10,7 @@ import UIKit
 import AVFoundation
 import Photos
 
-enum NZCaptureError {
+enum NZCaptureError: String, Error {
     
     case permissionDenied
     

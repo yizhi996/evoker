@@ -39,7 +39,7 @@ enum NZInteractionAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let viewController = appService.currentPage?.viewController else {
+        guard let viewController = appService.pages.last?.viewController else {
             let error = NZError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return

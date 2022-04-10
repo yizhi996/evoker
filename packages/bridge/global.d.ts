@@ -84,6 +84,7 @@ interface NativeSystem {
 interface NZConfig {
   appId: string
   appName: string
+  appIcon: string
 }
 
 declare global {

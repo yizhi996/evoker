@@ -30,12 +30,20 @@ enum NZCameraAPI: String, NZBuiltInAPI {
     
     private func insertCamera(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         
-        struct Params: Codable  {
+        struct Params: Decodable  {
             let parentId: String
             let cameraId: Int
             let mode: NZCapture.Mode
             let devicePosition: DevicePosition
             let resolution: Resolution
+            let flash: Flash
+        }
+        
+        enum Flash: String, Decodable {
+            case auto
+            case on
+            case off
+            case torch
         }
         
         enum DevicePosition: String, Codable {
@@ -103,15 +111,15 @@ enum NZCameraAPI: String, NZBuiltInAPI {
             let cameraEngine = NZCameraEngine(options: options)
             cameraEngine.initDoneHandler = { maxZoom in
                 let data: [String: Any] = ["cameraId": params.cameraId, "maxZoom": maxZoom]
-                bridge.subscribeHandler(method: NZCameraEngine.initDoneSubscribeKey, data: data)
+                bridge.subscribeHandler(method: NZCameraEngine.onInitDoneSubscribeKey, data: data)
             }
             cameraEngine.errorHandler = { error in
                 let data: [String: Any] = ["cameraId": params.cameraId, "error": error]
-                bridge.subscribeHandler(method: NZCameraEngine.initErrorSubscribeKey, data: data)
+                bridge.subscribeHandler(method: NZCameraEngine.onErrorSubscribeKey, data: data)
             }
             cameraEngine.scanCodeHandler = { value, _ in
                 let data: [String: Any] = ["cameraId": params.cameraId, "value": value]
-                bridge.subscribeHandler(method: NZCameraEngine.scanCodeSubscribeKey, data: data)
+                bridge.subscribeHandler(method: NZCameraEngine.onScanCodeSubscribeKey, data: data)
             }
             cameraEngine.startRunning()
             cameraEngine.addPreviewTo(container)
@@ -120,8 +128,9 @@ enum NZCameraAPI: String, NZBuiltInAPI {
         }
         
         let denied = {
-            let data: [String: Any] = ["cameraId": params.cameraId, "error": NZCaptureError.permissionDenied]
-            bridge.subscribeHandler(method: NZCameraEngine.initErrorSubscribeKey, data: data)
+            let error = NZError.bridgeFailed(reason: .custom("insertCamera: fail auth deny"))
+            bridge.subscribeHandler(method: NZCameraEngine.onErrorSubscribeKey,
+                                    data: ["cameraId": params.cameraId, "error": error.localizedDescription])
         }
         
         switch PrivacyPermission.camera {
