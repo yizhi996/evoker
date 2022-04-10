@@ -57,7 +57,6 @@ const form = ref({})
 const columns = ["Apple", "OPPO", "vivo", "Xiaomi", "Others"]
 
 const onSubmit = (e) => {
-  console.log(e)
   const value = e.detail.value
   form.value = value
 }
