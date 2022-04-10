@@ -9,13 +9,16 @@
 import Foundation
 import UIKit
 
-class NZCoverView: UIButton {
+class NZCoverView: UIButton, NZTransitionView {
     
     var clickHandler: NZEmptyBlock?
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
+    let contentView: NZTransitionView
+    
+    init(contentView: NZTransitionView) {
+        self.contentView = contentView
+        super.init(frame: .zero)
+
         alpha = 0
         
         backgroundColor = "#000000".hexColor(alpha: 0.5)
@@ -36,9 +39,11 @@ class NZCoverView: UIButton {
         frame = view.frame
         alpha = 0.0
         fadeIn()
+        contentView.show(to: self)
     }
     
     func hide() {
+        contentView.hide()
         fadeOut() {
             self.removeFromSuperview()
         }

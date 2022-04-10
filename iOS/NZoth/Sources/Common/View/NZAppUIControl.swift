@@ -92,10 +92,9 @@ public class NZAppUIControl {
                                                      appIcon: appInfo.appIconURL,
                                                      firstActions: firstActions,
                                                      secondActions: secondActions)
-        let cover = NZCoverView()
         let actionSheet = NZMiniProgramActionSheet(params: params)
+        let cover = NZCoverView(contentView: actionSheet)
         let onHide: NZStringBlock = { key in
-            actionSheet.hide()
             cover.hide()
             didSelectHandler(key)
         }
@@ -110,7 +109,6 @@ public class NZAppUIControl {
         }
         view.endEditing(true)
         cover.show(to: view)
-        actionSheet.show(to: cover)
     }
     
     @objc private func close() {

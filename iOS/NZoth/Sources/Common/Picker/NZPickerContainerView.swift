@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class NZPickerContainerView: UIView {
+class NZPickerContainerView: UIView, NZTransitionView {
     
     let toolView = UIView()
     let cancelButton = UIButton()
@@ -74,5 +74,19 @@ class NZPickerContainerView: UIView {
     
     @objc func _onConfirm() {
         onConfirmHandler?()
+    }
+    
+    func show(to view: UIView) {
+        let width = view.frame.width
+        let height = width
+        frame = CGRect(x: 0, y: view.frame.height - height, width: width, height: height)
+        view.addSubview(self)
+        popup()
+    }
+    
+    func hide() {
+        popdown {
+            self.removeFromSuperview()
+        }
     }
 }

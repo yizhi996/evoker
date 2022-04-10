@@ -16,7 +16,7 @@ public struct NZMiniProgramAction {
     let title: String
 }
 
-class NZMiniProgramActionSheet: UIView {
+class NZMiniProgramActionSheet: UIView, NZTransitionView {
     
     struct Params {
         let appId: String

@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class NZActionSheet: UIView {
+class NZActionSheet: UIView, NZTransitionView {
     
     struct Params: Decodable {
         let alertText: String?

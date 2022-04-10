@@ -52,16 +52,16 @@ class NZScanCodeViewController: UIViewController {
     
     func showCameraNotAuthAlert() {
         let appName = Constant.hostName
-        let params = NZAlert.Params(title: "相机权限未开启",
-                                    content: "请在 iPhone 的“设置 > \(appName)”选项中，允许\(appName)访问你的摄像头",
-                                    showCancel: true,
-                                    cancelText: "我知道了",
-                                    cancelColor: "#000000",
-                                    confirmText: "前往设置",
-                                    confirmColor: "#576B95",
-                                    editable: false,
-                                    placeholderText: nil)
-        let alert = NZAlert(params: params)
+        let params = NZAlertView.Params(title: "相机权限未开启",
+                                        content: "请在 iPhone 的“设置 > \(appName)”选项中，允许\(appName)访问你的摄像头",
+                                        showCancel: true,
+                                        cancelText: "我知道了",
+                                        cancelColor: "#000000",
+                                        confirmText: "前往设置",
+                                        confirmColor: "#576B95",
+                                        editable: false,
+                                        placeholderText: nil)
+        let alert = NZAlertView(params: params)
         alert.cancelHandler = {
             alert.hide()
         }

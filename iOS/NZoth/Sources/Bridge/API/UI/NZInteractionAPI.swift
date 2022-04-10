@@ -33,7 +33,7 @@ enum NZInteractionAPI: String, NZBuiltInAPI {
     private func showModal(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         guard let appService = bridge.appService else { return }
         
-        guard let params: NZAlert.Params = args.paramsString.toModel() else {
+        guard let params: NZAlertView.Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -45,24 +45,18 @@ enum NZInteractionAPI: String, NZBuiltInAPI {
             return
         }
         
-        let cover = NZCoverView()
-        let alert = NZAlert(params: params)
-        let onHide = {
-            alert.hide()
+        let alertView = NZAlertView(params: params)
+        let cover = NZCoverView(contentView: alertView)
+        alertView.confirmHandler = { input in
             cover.hide()
-        }
-        alert.confirmHandler = { input in
-            onHide()
             let content = params.editable ? input : ""
             bridge.invokeCallbackSuccess(args: args, result: ["content": content, "confirm": true, "cancel": false])
         }
-        alert.cancelHandler = {
-            onHide()
+        alertView.cancelHandler = {
+            cover.hide()
             bridge.invokeCallbackSuccess(args: args, result: ["content": "", "confirm": false, "cancel": true])
         }
-        
         cover.show(to: viewController.view)
-        alert.show(to: cover)
     }
     
     private func showToast(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
@@ -105,26 +99,20 @@ enum NZInteractionAPI: String, NZBuiltInAPI {
             return
         }
         
-        let cover = NZCoverView()
         let actionSheet = NZActionSheet(params: params)
-        let onHide = {
-            actionSheet.hide()
-            cover.hide()
-        }
+        let cover = NZCoverView.init(contentView: actionSheet)
         cover.clickHandler = {
-            onHide()
+            cover.hide()
             bridge.invokeCallbackSuccess(args: args, result: ["tapIndex": -1])
         }
         actionSheet.confirmHandler = { selected in
-            onHide()
+            cover.hide()
             bridge.invokeCallbackSuccess(args: args, result: ["tapIndex": selected])
         }
         actionSheet.cancelHandler = {
-            onHide()
+            cover.hide()
             bridge.invokeCallbackSuccess(args: args, result: ["tapIndex": -1])
         }
-        
         cover.show(to: viewController.view)
-        actionSheet.show(to: cover)
     }
 }

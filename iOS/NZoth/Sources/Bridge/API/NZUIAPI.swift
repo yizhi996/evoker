@@ -136,36 +136,27 @@ enum NZUIAPI: String, NZBuiltInAPI {
             return
         }
         
-        let cover = NZCoverView()
         let picker = NZPickerView(data: params)
         let container = NZPickerContainerView(picker: picker)
         container.titleLabel.text = params.title
         
-        let onHide = {
-            cover.hide()
-            container.popdown {
-                picker.removeFromSuperview()
-            }
-        }
+        let cover = NZCoverView(contentView: container)
         
         let onCancel = {
-            onHide()
+            cover.hide()
             bridge.invokeCallbackSuccess(args: args, result: ["value": -1])
         }
         
         cover.clickHandler = onCancel
         
-        let width = viewController.view.frame.width
-        let height = width
-        container.frame = CGRect(x: 0, y: viewController.view.frame.height - height, width: width, height: height)
         container.onConfirmHandler = {
-            onHide()
+            cover.hide()
             bridge.invokeCallbackSuccess(args: args, result: ["value": picker.currentIndex])
         }
+        
         container.onCancelHandler = onCancel
+        
         cover.show(to: viewController.view)
-        cover.addSubview(container)
-        container.popup()
     }
     
     private func showMultiPickerView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
@@ -187,40 +178,31 @@ enum NZUIAPI: String, NZBuiltInAPI {
             return
         }
         
-        let cover = NZCoverView()
         let picker = NZMultiPickerView(data: params)
         let container = NZPickerContainerView(picker: picker)
         container.titleLabel.text = params.title
         
-        let onHide = {
-            cover.hide()
-            container.popdown {
-                picker.removeFromSuperview()
-            }
-        }
+        let cover = NZCoverView(contentView: container)
         
         let onCancel = {
-            onHide()
+            cover.hide()
             bridge.invokeCallbackSuccess(args: args, result: ["value": "cancel"])
         }
         
         cover.clickHandler = onCancel
         
-        let width = viewController.view.frame.width
-        let height = width
-        container.frame = CGRect(x: 0, y: viewController.view.frame.height - height, width: width, height: height)
         container.onConfirmHandler = {
-            onHide()
+            cover.hide()
             bridge.invokeCallbackSuccess(args: args, result: ["value": picker.currentIndex])
         }
+        
         container.onCancelHandler = onCancel
+        
         picker.columnChangeHandler = { column, value in
             bridge.subscribeHandler(method: NZMultiPickerView.onChangeColumnSubscribeKey,
                                     data: ["column": column, "value": value])
         }
         cover.show(to: viewController.view)
-        cover.addSubview(container)
-        container.popup()
     }
     
     private func showDatePickerView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
@@ -242,37 +224,27 @@ enum NZUIAPI: String, NZBuiltInAPI {
             return
         }
         
-        let cover = NZCoverView()
         let picker = NZDatePickerView(data: params)
         let container = NZPickerContainerView(picker: picker)
         container.titleLabel.text = params.title
         
-        let onHide = {
-            cover.hide()
-            container.popdown {
-                picker.removeFromSuperview()
-            }
-        }
+        let cover = NZCoverView.init(contentView: container)
         
         let onCancel = {
-            onHide()
+            cover.hide()
             bridge.invokeCallbackSuccess(args: args, result: ["value": "cancel"])
         }
         
         cover.clickHandler = onCancel
         
-        let width = viewController.view.frame.width
-        let height = width
-        container.frame = CGRect(x: 0, y: viewController.view.frame.height - height, width: width, height: height)
         container.onConfirmHandler = {
-            onHide()
+            cover.hide()
             let value = picker.fmt.string(from: picker.picker.date)
             bridge.invokeCallbackSuccess(args: args, result:  ["value": value])
         }
         container.onCancelHandler = onCancel
+        
         cover.show(to: viewController.view)
-        cover.addSubview(container)
-        container.popup()
     }
     
     private func updateMultiPickerView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {

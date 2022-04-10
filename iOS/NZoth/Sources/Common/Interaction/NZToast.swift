@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class NZToast: UIView {
+class NZToast: UIView, NZTransitionView {
     
     struct Params: Decodable {
         let title: String

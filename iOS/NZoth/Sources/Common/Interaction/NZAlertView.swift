@@ -1,5 +1,5 @@
 //
-//  NZAlert.swift
+//  NZAlertView.swift
 //
 //  Copyright (c) NZoth. All rights reserved. (https://nzothdev.com)
 //
@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class NZAlert: UIView {
+class NZAlertView: UIView, NZTransitionView {
     
     struct Params: Decodable {
         let title: String?
