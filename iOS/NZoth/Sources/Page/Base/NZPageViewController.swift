@@ -144,4 +144,7 @@ open class NZPageViewController: UIViewController {
 // InteractivePopGestureRecognizer required
 extension NZPageViewController: UIGestureRecognizerDelegate {
     
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return NZEngine.shared.shouldInteractivePopGesture
+    }
 }

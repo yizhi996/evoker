@@ -115,6 +115,7 @@ class NZCameraCapture: NSObject {
                 self.setTorchMode(true)
             default:
                 break
+            }
         }
     }
         
@@ -443,7 +444,10 @@ extension NZCameraCapture {
     @objc
     func subjectAreaDidChange(notification: Notification) {
         let devicePoint = CGPoint(x: 0.5, y: 0.5)
-        focus(with: .continuousAutoFocus, exposureMode: .continuousAutoExposure, at: devicePoint, monitorSubjectAreaChange: false)
+        focus(with: .continuousAutoFocus,
+              exposureMode: .continuousAutoExposure,
+              at: devicePoint,
+              monitorSubjectAreaChange: false)
     }
     
     func turnCamera() {
