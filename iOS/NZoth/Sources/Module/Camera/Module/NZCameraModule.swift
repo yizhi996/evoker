@@ -35,4 +35,13 @@ class NZCameraModule: NZModule {
         cameras[page.pageId] = nil
     }
     
+    func onShow(_ page: NZPage) {
+        guard let camera = cameras[page.pageId] else { return }
+        camera.startRunning()
+    }
+    
+    func onHide(_ page: NZPage) {
+        guard let camera = cameras[page.pageId] else { return }
+        camera.stopRunning()
+    }
 }

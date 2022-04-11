@@ -33,8 +33,11 @@ enum NZScanAPI: String, NZBuiltInAPI {
         
         let viewModel = NZScanCodeViewModel(params: params)
         viewModel.scanCompletionHandler = { value, type in
-            let result: [String: Any] = ["result": value, "scanType": type]
-            bridge.invokeCallbackSuccess(args: args, result: result)
+            bridge.invokeCallbackSuccess(args: args, result: ["result": value, "scanType": type])
+        }
+        viewModel.cancelHandler = {
+            let error = NZError.bridgeFailed(reason: .cancel)
+            bridge.invokeCallbackFail(args: args, error: error)
         }
         let viewController = viewModel.generateViewController()
         appService.rootViewController?.pushViewController(viewController, animated: true)

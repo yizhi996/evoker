@@ -15,10 +15,12 @@ class NZScanCodeViewModel {
     
     struct Params: Decodable {
         let onlyFromCamera: Bool
-        let scanType: [NZCapture.ScanType]
+        let scanType: [NZCameraEngine.ScanType]
     }
     
     var scanCompletionHandler: ((String, String) -> Void)?
+    
+    var cancelHandler: NZEmptyBlock?
     
     var isScanned = false
     
@@ -26,19 +28,25 @@ class NZScanCodeViewModel {
     let params: Params
     init(params: Params) {
         self.params = params
-        let options = NZCapture.Options(mode: .scanCode,
-                                                resolution: .high,
-                                                position: .back,
-                                                scanType: params.scanType)
+        let options = NZCameraEngine.Options(mode: .scanCode,
+                                             resolution: .high,
+                                             devicePosition: .back,
+                                             flashMode: .off,
+                                             scanType: params.scanType)
         cameraEngine = NZCameraEngine(options: options)
         cameraEngine.scanCodeHandler = { [unowned self] value, type in
             if isScanned {
                 return
             }
             isScanned = true
-            self.playSound()
+            
             self.scanCompletionHandler?(value, converScanType(type))
-            UIViewController.visibleViewController()?.navigationController?.popViewController(animated: true)
+            self.cancelHandler = nil
+            
+            DispatchQueue.main.async {
+                self.playSound()
+                NZEngine.shared.currentApp?.rootViewController?.popViewController(animated: true)
+            }
         }
     }
     

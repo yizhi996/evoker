@@ -44,16 +44,23 @@ class NZScanCodeViewController: UIViewController {
                 self.showCameraNotAuthAlert()
             }
         }
+        
+        NZEngine.shared.currentApp?.uiControl.hideCapsule()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         viewModel.cameraEngine.stopRunning()
+        
+        viewModel.cancelHandler?()
+        
+        NZEngine.shared.currentApp?.uiControl.showCapsule()
     }
     
     func showCameraNotAuthAlert() {
         let appName = Constant.hostName
         let params = NZAlertView.Params(title: "相机权限未开启",
-                                        content: "请在 iPhone 的“设置 > \(appName)”选项中，允许\(appName)访问你的摄像头",
+                                        content: "请在 iPhone 的“设置-隐私-\(appName)”选项中，允许\(appName)访问你的摄像头。",
                                         showCancel: true,
                                         cancelText: "我知道了",
                                         cancelColor: "#000000",
