@@ -92,7 +92,13 @@ final public class NZWebView: WKWebView {
     }
 
     public func recycle() {
-        setTitle("NZoth - preload - webview")
+        let prefix: String
+        if let page = page, let appService = page.appService {
+            prefix = appService.appInfo.appName
+        } else {
+            prefix = "NZoth"
+        }
+        setTitle("\(prefix) - preload - webview")
         removeFromSuperview()
         reload()
     }

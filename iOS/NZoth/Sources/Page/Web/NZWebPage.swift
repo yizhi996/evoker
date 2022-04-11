@@ -137,7 +137,19 @@ open class NZWebPage: NZPage {
     func setPageInfo() {
         guard let appService = appService else { return }
         
-        let js = "window.webViewId=\(pageId);document.title='\(appService.appId) - \(route)';"
+        var js = """
+        window.webViewId = \(pageId);
+        document.title = '\(appService.appInfo.appName) - \(route)';
+        window.__NZConfig = {
+            appName: '\(appService.appInfo.appName)',
+            appIcon: '\(appService.appInfo.appIconURL)'
+        };
+        """
+        if let userInfo = appService.appInfo.userInfo.toJSONString() {
+            js += "window.__NZConfig.userInfo = \(userInfo);"
+        } else {
+            js += "window.__NZConfig.userInfo = {};"
+        }
         webView.evaluateJavaScript(js)
     }
     
@@ -171,7 +183,6 @@ open class NZWebPage: NZPage {
             state = .unloaded
             appService.bridge.subscribeHandler(method: NZWebPage.onUnloadSubscribeKey, data: ["pageId": pageId])
             appService.recycle(webView: webView)
-            appService.modules.values.forEach { $0.onUnload(self) }
         }
         
         if let index = appService.pages.firstIndex(where: { $0.pageId == pageId }) {

@@ -22,7 +22,7 @@ final public class NZAppService {
     
     public let config: NZAppConfig
     
-    public let appInfo: NZAppInfo
+    public private(set) var appInfo: NZAppInfo
                
     public let launchOptions: NZAppLaunchOptions
     
@@ -55,7 +55,7 @@ final public class NZAppService {
     public internal(set) var rootViewController: NZNavigationController? {
         didSet {
             if let rootViewController = rootViewController {
-                uiControl.addMiniProgramNavigationBarButton(to: rootViewController.view)
+                uiControl.addCapsuleView(to: rootViewController.view)
             }
         }
     }
@@ -85,10 +85,13 @@ final public class NZAppService {
               let config = NZAppConfig.load(appId: appId, envVersion: launchOptions.envVersion),
               !config.pages.isEmpty else { return nil }
         self.appInfo = appInfo
+        if appInfo.appName.isEmpty {
+            self.appInfo.appName = appId
+        }
         self.launchOptions = launchOptions
         self.config = config
         
-        context.name = "\(appId) - app-service"
+        context.name = "\(self.appInfo.appName) - app-service"
         
         bridge = NZJSBridge(appService: self, container: context)
 
@@ -214,7 +217,16 @@ final public class NZAppService {
         let appServiceURL = dist.appendingPathComponent("app-service.js")
         if let js = try? String(contentsOfFile: appServiceURL.path) {
             context.evaluateScript(js, name: "app-service.js")
-            context.evaluateScript("globalThis.__NZConfig.appName = '\(appInfo.appName)';")
+            var cfgjs = """
+            globalThis.__NZConfig.appName = '\(appInfo.appName)';
+            globalThis.__NZConfig.appIcon = '\(appInfo.appIconURL)';
+            """
+            if let userInfo = appInfo.userInfo.toJSONString() {
+                cfgjs += "globalThis.__NZConfig.userInfo = \(userInfo);"
+            } else {
+                cfgjs += "globalThis.__NZConfig.userInfo = {};"
+            }
+            context.evaluateScript(cfgjs)
         } else {
             NZLogger.error("load app code failed: \(appServiceURL.path) file not exist")
         }
