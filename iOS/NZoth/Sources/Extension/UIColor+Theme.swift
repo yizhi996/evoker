@@ -23,13 +23,13 @@ extension UIColor {
         return UIColor.color("#1d1d1f".hexColor(), dark: "#f5f5f7".hexColor())
     }
     
-    class func color(_ default: UIColor, dark: UIColor) -> UIColor {
+    class func color(_ light: UIColor, dark: UIColor) -> UIColor {
         if #available(iOS 13.0, *) {
             return UIColor { (traits) -> UIColor in
-                return traits.userInterfaceStyle == .dark ? dark : `default`
+                return traits.userInterfaceStyle == .dark ? dark : light
             }
         } else {
-            return `default`
+            return light
         }
     }
 }

@@ -44,7 +44,8 @@ class NZMiniProgramActionSheet: UIView, NZTransitionView {
         layer.masksToBounds = true
         
         let effect = UIBlurEffect(style: .extraLight)
-        let effectView = UIVisualEffectView.init(effect: effect)
+        let effectView = UIVisualEffectView(effect: effect)
+        effectView.contentView.backgroundColor = UIColor.color("#f7f7f7".hexColor(alpha: 0.5), dark: "#191919".hexColor())
         addSubview(effectView)
         effectView.autoPinEdgesToSuperviewEdges()
         
@@ -59,7 +60,7 @@ class NZMiniProgramActionSheet: UIView, NZTransitionView {
         appIconImageView.autoSetDimensions(to: CGSize(width: 24, height: 24))
         
         appNameLabel.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-        appNameLabel.textColor = "#000000".hexColor(alpha: 0.9)
+        appNameLabel.textColor = UIColor.color("#000".hexColor(alpha: 0.9), dark: "#fff".hexColor(alpha: 0.9))
         appNameLabel.text = params.appName
         addSubview(appNameLabel)
         appNameLabel.autoPinEdge(.left, to: .right, of: appIconImageView, withOffset: 10.0)
@@ -74,7 +75,7 @@ class NZMiniProgramActionSheet: UIView, NZTransitionView {
         appInfoButton.autoPinEdge(.bottom, to: .bottom, of: appIconImageView)
         
         let line = UIView()
-        line.backgroundColor = "#000000".hexColor(alpha: 0.1)
+        line.backgroundColor = UIColor.color("#000".hexColor(alpha: 0.1), dark: "#fff".hexColor(alpha: 0.05))
         addSubview(line)
         line.autoPinEdge(toSuperviewEdge: .left, withInset: 12.0)
         line.autoPinEdge(toSuperviewEdge: .right, withInset: 12.0)
@@ -93,7 +94,7 @@ class NZMiniProgramActionSheet: UIView, NZTransitionView {
         firstActionSheetView.autoSetDimension(.height, toSize: 108)
         
         let line2 = UIView()
-        line2.backgroundColor = "#000000".hexColor(alpha: 0.1)
+        line2.backgroundColor = UIColor.color("#000".hexColor(alpha: 0.1), dark: "#fff".hexColor(alpha: 0.05))
         addSubview(line2)
         line2.autoPinEdge(toSuperviewEdge: .left, withInset: 12.0)
         line2.autoPinEdge(toSuperviewEdge: .right, withInset: 12.0)
@@ -112,16 +113,19 @@ class NZMiniProgramActionSheet: UIView, NZTransitionView {
         secondActionSheetView.autoSetDimension(.height, toSize: 108)
         
         cancelButton.titleLabel?.font = UIFont.systemFont(ofSize: 17.0)
-        cancelButton.setTitleColor("#000000".hexColor(alpha: 0.9), for: .normal)
+        cancelButton.setTitleColor(UIColor.color("#000".hexColor(alpha: 0.9),
+                                                 dark: "#fff".hexColor(alpha: 0.9)), for: .normal)
         cancelButton.setTitle("取消", for: .normal)
         cancelButton.titleEdgeInsets = UIEdgeInsets(top: 0,
                                                     left: 0,
                                                     bottom: Constant.safeAreaInsets.bottom,
                                                     right: 0)
-        let whiteImage = UIImage.color(.white)
-        cancelButton.setBackgroundImage(whiteImage, for: .normal)
-        let hlImage = UIImage.color("#000000".hexColor(alpha: 0.1))
-        cancelButton.setBackgroundImage(hlImage, for: .highlighted)
+        let cancelBackgroundImage = UIImage.image(light: UIImage.color(.white)!,
+                                                  dark: UIImage.color("#2c2c2c".hexColor())!)
+        cancelButton.setBackgroundImage(cancelBackgroundImage, for: .normal)
+        let cancelBackgroundHighlightImage = UIImage.image(light: UIImage.color("#000".hexColor(alpha: 0.1))!,
+                                                           dark: UIImage.color("#fff".hexColor(alpha: 0.1))!)
+        cancelButton.setBackgroundImage(cancelBackgroundHighlightImage, for: .highlighted)
         cancelButton.addTarget(self, action: #selector(onClickCancel), for: .touchUpInside)
         addSubview(cancelButton)
         cancelButton.autoSetDimension(.height, toSize: 56.0 + Constant.safeAreaInsets.bottom)
@@ -157,8 +161,13 @@ class NZMiniProgramActionSheet: UIView, NZTransitionView {
             } else if let iconSrc = item.icon {
                 actionButton.sd_setImage(with: URL(string: iconSrc), for: .normal, completed: nil)
             }
-            actionButton.setBackgroundImage(UIImage(builtIn: "mp-action-sheet-button-bg"), for: .normal)
-            actionButton.setBackgroundImage(UIImage(builtIn: "mp-action-sheet-button-bg-hl"), for: .highlighted)
+            
+            let backgroundImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-button-bg")!,
+                                                dark: UIImage(builtIn: "mp-action-sheet-button-bg-dark")!)
+            actionButton.setBackgroundImage(backgroundImage, for: .normal)
+            let backgroundHighlightImage = UIImage.image(light:UIImage(builtIn: "mp-action-sheet-button-bg-hl")!,
+                                                         dark: UIImage(builtIn: "mp-action-sheet-button-bg-hl-dark")!)
+            actionButton.setBackgroundImage(backgroundHighlightImage, for: .highlighted)
             actionButton.addTarget(self, action: #selector(onClickAction(button:)), for: .touchUpInside)
             actionView.addSubview(actionButton)
             actionButton.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
@@ -167,7 +176,8 @@ class NZMiniProgramActionSheet: UIView, NZTransitionView {
             let actionTitleLabel = UILabel()
             actionTitleLabel.text = item.title
             actionTitleLabel.numberOfLines = 0
-            actionTitleLabel.textColor = "#000000".hexColor(alpha: 0.5)
+            actionTitleLabel.textColor = UIColor.color("#000".hexColor(alpha: 0.5),
+                                                       dark: "#fff".hexColor(alpha: 0.5))
             actionTitleLabel.font = UIFont.systemFont(ofSize: 10.0)
             actionTitleLabel.textAlignment = .center
             actionView.addSubview(actionTitleLabel)

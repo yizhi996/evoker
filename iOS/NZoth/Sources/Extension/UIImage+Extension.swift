@@ -15,6 +15,22 @@ extension UIImage {
         self.init(named: name, in: Constant.assetsBundle, compatibleWith: nil)
     }
     
+    class func image(light: UIImage, dark: UIImage) -> UIImage {
+        if #available(iOS 13.0, *) {
+            let imageAsset = UIImageAsset()
+            
+            let lightMode = UITraitCollection(traitsFrom: [.current, .init(userInterfaceStyle: .light)])
+            imageAsset.register(light, with: lightMode)
+            
+            let darkMode = UITraitCollection(traitsFrom: [.current, .init(userInterfaceStyle: .dark)])
+            imageAsset.register(dark, with: darkMode)
+
+            return imageAsset.image(with: .current)
+        } else {
+            return light
+        }
+    }
+    
     class func color(_ color: UIColor) -> UIImage? {
         let size = CGSize(width: 1, height: 1)
         UIGraphicsBeginImageContext(size)
