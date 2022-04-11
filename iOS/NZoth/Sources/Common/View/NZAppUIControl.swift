@@ -20,6 +20,8 @@ public class NZAppUIControl {
     
     public var didSelectTabBarIndexHandler: NZIntBlock?
     
+    private let capsuleView = NZCapsuleView()
+    
     public lazy var tabBarView = NZTabBarView()
     
     public lazy var tabBarViewControllers: [String: NZPageViewController] = [:]
@@ -65,26 +67,28 @@ public class NZAppUIControl {
         gotoHomeButton = nil
     }
     
-    public func addMiniProgramNavigationBarButton(to view: UIView) {
-        let actionView = MiniProgramNavigationBar()
-        actionView.closeButton.addTarget(self, action: #selector(close), for: .touchUpInside)
-        actionView.moreButton.addTarget(self, action: #selector(clickShowAppMoreActionBoard), for: .touchUpInside)
-        view.addSubview(actionView)
-        let safeAreaTop = Constant.safeAreaInsets.top
-        let top = safeAreaTop + (Constant.navigationBarHeight - actionView.buttonHeight) / 2
-        actionView.autoPinEdge(toSuperviewEdge: .top, withInset: top)
-        actionView.autoPinEdge(toSuperviewEdge: .right, withInset: 7)
+    public func addCapsuleView(to view: UIView) {
+        capsuleView.closeButton.addTarget(self, action: #selector(close), for: .touchUpInside)
+        capsuleView.moreButton.addTarget(self, action: #selector(clickShowAppMoreActionBoard), for: .touchUpInside)
+        view.addSubview(capsuleView)
+        capsuleView.autoPinEdge(toSuperviewSafeArea: .top,
+                                withInset:  (Constant.navigationBarHeight - capsuleView.buttonHeight) / 2)
+        capsuleView.autoPinEdge(toSuperviewEdge: .right, withInset: 7)
     }
     
     public func showAppMoreActionBoard(appId: String, appInfo: NZAppInfo, to view: UIView, didSelectHandler: @escaping NZStringBlock) {
         let firstActions: [NZMiniProgramAction] = []
+        let settingIconImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-setting-icon")!,
+                                             dark: UIImage(builtIn: "mp-action-sheet-setting-icon-dark")!)
         let settingsAction = NZMiniProgramAction(key: "settings",
                                                  icon: nil,
-                                                 iconImage: UIImage(builtIn: "mp-action-sheet-setting-icon"),
+                                                 iconImage: settingIconImage,
                                                  title: "设置")
+        let relaunchIconImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-reload-icon")!,
+                                              dark: UIImage(builtIn: "mp-action-sheet-reload-icon-dark")!)
         let relaunchAction = NZMiniProgramAction(key: "relaunch",
                                                  icon: nil,
-                                                 iconImage: UIImage(builtIn: "mp-action-sheet-reload-icon"),
+                                                 iconImage: relaunchIconImage,
                                                  title: "重新进入小程序")
         let secondActions = [settingsAction, relaunchAction]
         let params = NZMiniProgramActionSheet.Params(appId: appId,
@@ -109,6 +113,14 @@ public class NZAppUIControl {
         }
         view.endEditing(true)
         cover.show(to: view)
+    }
+    
+    public func showCapsule() {
+        capsuleView.isHidden = false
+    }
+    
+    public func hideCapsule() {
+        capsuleView.isHidden = true
     }
     
     @objc private func close() {

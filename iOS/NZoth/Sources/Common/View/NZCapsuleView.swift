@@ -1,5 +1,5 @@
 //
-//  MiniProgramNavigationBar.swift
+//  NZCapsuleView.swift
 //
 //  Copyright (c) NZoth. All rights reserved. (https://nzothdev.com)
 //
@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class MiniProgramNavigationBar: UIView {
+class NZCapsuleView: UIView {
     
     let moreButton = UIButton(type: .custom)
     let closeButton = UIButton(type: .custom)
