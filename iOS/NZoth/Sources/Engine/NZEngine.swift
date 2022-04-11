@@ -298,6 +298,46 @@ extension NZEngine {
         runningApp.forEach { $0.killApp() }
     }
     
+    public struct ClearOptions: OptionSet {
+        public static let data = ClearOptions(rawValue: 1 << 0)
+        
+        public static let file = ClearOptions(rawValue: 1 << 1)
+        
+        public static let authorization = ClearOptions(rawValue: 1 << 2)
+        
+        public static let all: ClearOptions = [.data, .file, .authorization]
+
+        public let rawValue: Int
+
+        public init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+    }
+    
+    public func clearAppData(appId: String, userId: String, options: ClearOptions) {
+        lazy var storage = NZAppStorage(appId: appId)
+        if options.contains(.data) {
+            if let error = storage.clear() {
+                NZLogger.error("clear app data of data \(error.localizedDescription)")
+            }
+        }
+        if options.contains(.file) {
+            let storeDir = FilePath.store(appId: appId, userId: userId)
+            let usrDir = FilePath.usr(appId: appId, userId: userId)
+            do {
+                try FileManager.default.removeItem(at: storeDir)
+                try FileManager.default.removeItem(at: usrDir)
+            } catch {
+                NZLogger.error("clear app data of file \(error.localizedDescription)")
+            }
+        }
+        if options.contains(.authorization) {
+            if let error = storage.clearAuthorization() {
+                NZLogger.error("clear app data of authorization \(error.localizedDescription)")
+            }
+        }
+    }
+    
     func launchApp(appId: String,
                    launchOptions: NZAppLaunchOptions,
                    presentTo viewController: UIViewController? = nil,

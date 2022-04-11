@@ -63,20 +63,28 @@ public extension FilePath {
         return documentDirectory().appendingPathComponent("sandbox").appendingPathComponent(userId)
     }
     
-    /// Document/com.nzothdev/sandbox/{userId}/{appId}/usr/{path}
-    static func usr(appId: String, userId: String, path: String) -> URL {
+    /// Document/com.nzothdev/sandbox/{userId}/{appId}/usr
+    static func usr(appId: String, userId: String) -> URL {
         return sandbox(userId: userId)
             .appendingPathComponent(appId)
             .appendingPathComponent("usr")
-            .appendingPathComponent(path)
+    }
+    
+    /// Document/com.nzothdev/sandbox/{userId}/{appId}/usr/{path}
+    static func usr(appId: String, userId: String, path: String) -> URL {
+        return usr(appId: appId, userId: userId).appendingPathComponent(path)
+    }
+    
+    /// Document/com.nzothdev/sandbox/{userId}/{appId}/store
+    static func store(appId: String, userId: String) -> URL {
+        return sandbox(userId: userId)
+            .appendingPathComponent(appId)
+            .appendingPathComponent("store")
     }
     
     /// Document/com.nzothdev/sandbox/{userId}/{appId}/store/{filename}
     static func store(appId: String, userId: String, filename: String) -> URL {
-        return sandbox(userId: userId)
-            .appendingPathComponent(appId)
-            .appendingPathComponent("store")
-            .appendingPathComponent(filename)
+        return store(appId: appId, userId: userId).appendingPathComponent(filename)
     }
     
     /// tmp/com.nzothdev/{filename}
