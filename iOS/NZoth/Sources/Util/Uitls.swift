@@ -8,8 +8,10 @@
 
 import Foundation
 
-func minMax<T: Comparable>(_ x: T, minimum: T, maximum: T) -> T {
-    return min(max(minimum, x), maximum)
+extension Comparable {
+    func clampe(to limits: ClosedRange<Self>) -> Self {
+        return min(max(self, limits.lowerBound), limits.upperBound)
+    }
 }
 
 class DoubleLevelDictionary<F: Hashable, S: Hashable, T> {

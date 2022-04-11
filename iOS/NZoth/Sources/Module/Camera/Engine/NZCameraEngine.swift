@@ -13,37 +13,46 @@ import Photos
 
 public class NZCameraEngine: NSObject {
     
-    private var capture: NZCapture!
+    private var capture: NZCameraCapture!
     
-    var capturePhotoCompleted: ((UIImage?, Data?, NZCaptureError?) -> Void)?
+    public var options: Options {
+        return capture.options
+    }
     
-    var recordCompleted: ((String?, String?, NZCaptureError?) -> Void)?
+    public var flashMode: FlashMode {
+        get {
+            return capture.options.flashMode
+        } set {
+            capture.options.flashMode = newValue
+        }
+    }
     
-    var initDoneHandler: NZCGFloatBlock?
+    public var initDoneHandler: NZCGFloatBlock?
     
-    var errorHandler: NZStringBlock?
+    public var errorHandler: NZStringBlock?
     
-    var scanCodeHandler: ((String, AVMetadataObject.ObjectType) -> Void)?
+    public var scanCodeHandler: ((String, AVMetadataObject.ObjectType) -> Void)?
+    
+    private var takePhotoCompletionHandler: ((String?, NZCameraCaptureError?) -> Void)?
+    
+    private var recordCompletionHandler: ((String?, String?, NZCameraCaptureError?) -> Void)?
+    
+    private var startRecordCompletionHandler: ((NZCameraCaptureError?) -> Void)?
+    
+    private var setZoomCompletionHandler: ((NZCameraCaptureError?) -> Void)?
     
     private let previewView = UIView()
     
     private var initDone = false
-    private var actionLock = false
+    
     private var zoomFactor: CGFloat = 1.0
     
-    var zoom: CGFloat {
-        get {
-            return capture.cameraZoom
-        } set {
-            capture.cameraZoom = newValue
-        }
-    }
+    private lazy var scanCodeThrottle = Throttler(seconds: 0.25)
     
-    lazy var scanCodeThrottle = Throttler(seconds: 0.25)
-    
-    init(options: NZCapture.Options) {
+    public init(options: Options) {
         super.init()
-        capture = NZCapture(options: options, delegate: self)
+        
+        capture = NZCameraCapture(options: options, delegate: self)
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(focusAndExposeTap(_:)))
         previewView.addGestureRecognizer(tapGesture)
@@ -52,7 +61,7 @@ public class NZCameraEngine: NSObject {
         previewView.addGestureRecognizer(pinchGesture)
     }
     
-    func addPreviewTo(_ view: UIView) {
+    public func addPreviewTo(_ view: UIView) {
         if previewView.superview != nil {
             previewView.removeFromSuperview()
         }
@@ -63,64 +72,53 @@ public class NZCameraEngine: NSObject {
         previewView.autoPinEdgesToSuperviewEdges()
     }
     
-    func startRunning() {
+    public func startRunning() {
         capture.startRunning()
     }
     
-    func stopRunning() {
+    public func stopRunning() {
         capture.stopRunning()
     }
     
-    func changeCamera(_ position: AVCaptureDevice.Position) {
-        capture.changeCamera(position)
+    public func changeCameraDevicePosition(to position: DevicePosition) {
+        capture.changeCameraDevicePosition(to: position)
     }
     
-    func turnCamera() {
+    public func turnCamera() {
         capture.turnCamera()
     }
     
-    func capturePhoto(quality: CGFloat, flashMode: AVCaptureDevice.FlashMode, _ completed: @escaping ((UIImage?, Data?, NZCaptureError?) -> Void)) {
+    public func takePhoto(quality: CGFloat,
+                          completionHandler handler: @escaping (String?, NZCameraCaptureError?) -> Void) {
+        takePhotoCompletionHandler = nil
         guard capture.isSessionRunning else {
-            actionLock = false
-            completed(nil, nil, .sessionNotRunning)
+            handler(nil, .sessionNotRunning)
             return
         }
-        
-        guard !actionLock else {
-            completed(nil, nil, .eventLocking)
-            return
-        }
-        
-        actionLock = true
-        capturePhotoCompleted = completed
-        capture.capturePhoto(quality: quality, flashMode: flashMode)
-        flashScreen()
+        takePhotoCompletionHandler = handler
+        capture.capturePhoto(quality: quality)
     }
     
-    func startRecording() {
+    public func startRecording(completionHandler handler: @escaping (NZCameraCaptureError?) -> Void) {
+        startRecordCompletionHandler = handler
         capture.startRecording()
     }
     
-    func stopRecording(compressed: Bool, _ completed: @escaping ((String?, String?, NZCaptureError?) -> Void)) {
-        recordCompleted = completed
+    public func stopRecord(compressed: Bool,
+                           completionHandler handler: @escaping (String?, String?, NZCameraCaptureError?) -> Void) {
+        recordCompletionHandler = nil
+        guard capture.isSessionRunning else {
+            handler(nil, nil, .sessionNotRunning)
+            return
+        }
+        recordCompletionHandler = handler
         capture.videoOutputCompressed = compressed
         capture.stopRecording()
     }
     
-    func cancelRecording() {
-        capture.cancelRecording()
-    }
-    
-    func flashScreen() {
-        let flashView = UIView(frame: previewView.frame)
-        previewView.addSubview(flashView)
-        flashView.backgroundColor = .black
-        flashView.layer.opacity = 1
-        UIView.animate(withDuration: 0.25, animations: {
-            flashView.layer.opacity = 0
-        }, completion: { _ in
-            flashView.removeFromSuperview()
-        })
+    public func setZoom(_ zoom: CGFloat, completionHandler handler: @escaping (NZCameraCaptureError?) -> Void) {
+        setZoomCompletionHandler = handler
+        capture.cameraZoom = zoom
     }
 
 }
@@ -139,14 +137,14 @@ extension NZCameraEngine {
     }
     
     @objc func zoomPinch(_ gesture: UIPinchGestureRecognizer) {
-        let newScaleFactor = minMax(gesture.scale * zoomFactor, minimum: 1.0, maximum: capture.cameraMaxZoom)
+        let zoom = (gesture.scale * zoomFactor).clampe(to: 1...capture.cameraMaxZoom)
         switch gesture.state {
         case .began:
             fallthrough
         case .changed:
-            capture.cameraZoom = newScaleFactor
+            capture.cameraZoom = zoom
         case .ended:
-            zoomFactor = newScaleFactor
+            zoomFactor = zoom
             capture.cameraZoom = zoomFactor
         default:
             break
@@ -155,52 +153,105 @@ extension NZCameraEngine {
 }
 
 //MARK: NZCaptureDelegate
-extension NZCameraEngine: NZCaptureDelegate {
-   
-    func capture(didStartRunning capture: NZCapture) {
+extension NZCameraEngine: NZCameraCaptureDelegate {
+    
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didCompleteInit maxZoom: CGFloat) {
         if !initDone {
             initDone = true
-            initDoneHandler?(capture.cameraMaxZoom)
+            initDoneHandler?(maxZoom)
         }
     }
     
-    func capture(_ capture: NZCapture, didStopRunning error: NZCaptureError?) {
-        
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didFinishTakePhoto nzfile: String) {
+        takePhotoCompletionHandler?(nzfile, nil)
     }
     
-    func capture(didStartRecord capture: NZCapture) {
-        
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didFinishTakePhoto error: NZCameraCaptureError) {
+        takePhotoCompletionHandler?(nil, error)
     }
     
-    func capture(_ capture: NZCapture, redordDidFinish error: NZCaptureError) {
-        
+    func cameraCapture(didStartRecord cameraCapture: NZCameraCapture, error: NZCameraCaptureError?) {
+        startRecordCompletionHandler?(error)
     }
     
-    func capture(_ capture: NZCapture, didStopRecording videoFilePath: String?, posterFilePath: String?) {
-        DispatchQueue.main.async {
-            self.recordCompleted?(videoFilePath, posterFilePath, nil)
-        }
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didFinishRecord videoFilePath: String, posterFilePath: String) {
+        recordCompletionHandler?(videoFilePath, posterFilePath, nil)
     }
     
-    func capture(_ capture: NZCapture, changedDevide position: AVCaptureDevice.Position) {
-       
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didFinishRecord error: NZCameraCaptureError) {
+        recordCompletionHandler?(nil, nil, error)
     }
     
-    func capture(_ capture: NZCapture, didCapture photo: (UIImage?, Data?), error: NZCaptureError?) {
-        DispatchQueue.main.async {
-            self.capturePhotoCompleted?(photo.0, photo.1, error)
-            self.actionLock = false
-        }
-    }
-    
-    func capture(_ capture: NZCapture, didScanCode code: String, type: AVMetadataObject.ObjectType) {
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didScanCode code: String, type: AVMetadataObject.ObjectType) {
         scanCodeThrottle.invoke { [unowned self] in
-            DispatchQueue.main.async {
-                self.scanCodeHandler?(code, type)
+            self.scanCodeHandler?(code, type)
+        }
+    }
+    
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didSetZoom error: NZCameraCaptureError?) {
+        setZoomCompletionHandler?(error)
+    }
+}
+
+extension NZCameraEngine {
+    
+    public struct Options {
+        let mode: Mode
+        let resolution: Resolution
+        let devicePosition: DevicePosition
+        var flashMode: FlashMode
+        let scanType: [ScanType]
+        
+        enum Mode: String, Decodable {
+            case normal
+            case scanCode
+        }
+    }
+    
+    public enum DevicePosition: String, Codable {
+        case back
+        case front
+        
+        func toNatively() -> AVCaptureDevice.Position {
+            switch self {
+            case .back:
+                return .back
+            case .front:
+                return .front
             }
         }
     }
     
+    public enum FlashMode: String, Decodable {
+        case auto
+        case on
+        case off
+        case torch
+    }
+    
+    public enum ScanType: String, Decodable {
+        case barCode
+        case qrCode
+        case datamatrix
+        case pdf417
+    }
+    
+    public enum Resolution: String, Codable {
+        case low
+        case medium
+        case high
+        
+        func toNatively() -> AVCaptureSession.Preset {
+            switch self {
+            case .low:
+                return .low
+            case .medium:
+                return .medium
+            case .high:
+                return .high
+            }
+        }
+    }
 }
 
 //MARK: NZSubscribeKey
@@ -212,3 +263,4 @@ extension NZCameraEngine {
     
     public static let onScanCodeSubscribeKey = NZSubscribeKey("MODULE_CAMERA_ON_SCAN_CODE")
 }
+

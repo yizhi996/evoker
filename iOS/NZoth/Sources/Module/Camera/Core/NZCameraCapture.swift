@@ -1,5 +1,5 @@
 //
-//  NZCapture.swift
+//  NZCameraCapture.swift
 //
 //  Copyright (c) NZoth. All rights reserved. (https://nzothdev.com)
 //
@@ -9,41 +9,9 @@
 import UIKit
 import AVFoundation
 import Photos
+import MobileCoreServices
 
-enum NZCaptureError: String, Error {
-    
-    case permissionDenied
-    
-    case eventLocking
-    
-    case sessionNotRunning
-    
-    case fail
-}
-
-protocol NZCaptureDelegate: NSObjectProtocol {
-    
-    func capture(didStartRunning capture: NZCapture)
-    
-    func capture(_ capture: NZCapture, didStopRunning error: NZCaptureError?)
-    
-    func capture(_ capture: NZCapture, changedDevide position: AVCaptureDevice.Position)
-        
-    // take photo
-    func capture(_ capture: NZCapture, didCapture photo: (UIImage?, Data?), error: NZCaptureError?)
-    
-    // record video
-    func capture(didStartRecord capture: NZCapture)
-    
-    func capture(_ capture: NZCapture, redordDidFinish error: NZCaptureError)
-    
-    func capture(_ capture: NZCapture, didStopRecording videoFilePath: String?, posterFilePath: String?)
-    
-    // scan code
-    func capture(_ capture: NZCapture, didScanCode code: String, type: AVMetadataObject.ObjectType)
-}
-
-class NZCapture: NSObject {
+class NZCameraCapture: NSObject {
     
     enum RecordingStatus: Int {
         case idle = 0
@@ -72,8 +40,9 @@ class NZCapture: NSObject {
                     try videoDevice.lockForConfiguration()
                     videoDevice.videoZoomFactor = newValue
                     videoDevice.unlockForConfiguration()
+                    self.delegate?.cameraCapture(self, didSetZoom: nil)
                 } catch {
-                    print("Could not lock device for configuration: \(error)")
+                    self.delegate?.cameraCapture(self, didSetZoom: .cannotLockConfiguration)
                 }
             }
         }
@@ -102,35 +71,19 @@ class NZCapture: NSObject {
                                                 autoreleaseFrequency: .workItem)
     
     private let movieFileOutput = AVCaptureMovieFileOutput()
+    
     private let photoOutput = AVCapturePhotoOutput()
+    
     private lazy var metadataOutput = AVCaptureMetadataOutput()
     
     private var sessionRunningContext = 0
     var videoOutputCompressed: Bool = false
     
-    weak var delegate: NZCaptureDelegate?
+    weak var delegate: NZCameraCaptureDelegate?
     
-    struct Options {
-        let mode: Mode
-        let resolution: AVCaptureSession.Preset
-        let position: AVCaptureDevice.Position
-        let scanType: [ScanType]
-    }
+    var options: NZCameraEngine.Options
     
-    enum Mode: String, Codable {
-        case normal
-        case scanCode
-    }
-    
-    enum ScanType: String, Decodable {
-        case barCode
-        case qrCode
-        case datamatrix
-        case pdf417
-    }
-    
-    private let options: Options
-    init(options: Options, delegate: NZCaptureDelegate) {
+    init(options: NZCameraEngine.Options, delegate: NZCameraCaptureDelegate) {
         self.options = options
         
         var deviceTypes: [AVCaptureDevice.DeviceType] = []
@@ -142,7 +95,7 @@ class NZCapture: NSObject {
         
         videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: deviceTypes,
                                                                        mediaType: .video,
-                                                                       position: options.position)
+                                                                       position: .unspecified)
         super.init()
         
         self.delegate = delegate
@@ -159,18 +112,9 @@ class NZCapture: NSObject {
                 self.addObservers()
                 self.session.startRunning()
                 self.isSessionRunning = self.session.isRunning
-                DispatchQueue.main.async {
-                    self.delegate?.capture(didStartRunning: self)
-                }
-            case .notAuthorized:
-                DispatchQueue.main.async {
-                    print("notAuthorized")
-                }
-            case .configurationFailed:
-                DispatchQueue.main.async {
-                    print("configurationFailed")
-                }
-            }
+                self.setTorchMode(true)
+            default:
+                break
         }
     }
         
@@ -180,13 +124,13 @@ class NZCapture: NSObject {
                 self.session.stopRunning()
                 self.isSessionRunning = self.session.isRunning
                 self.removeObservers()
-                self.delegate?.capture(self, didStopRunning: nil)
+                self.setTorchMode(false)
             }
         }
     }
 }
 
-extension NZCapture {
+extension NZCameraCapture {
     
     func configureSession() {
         if setupResult != .success {
@@ -200,7 +144,7 @@ extension NZCapture {
         
         let canAddAudioDevice = PrivacyPermission.microphone == .authorized
         
-        guard let videoDevice = videoDeviceDiscoverySession.devices.first else {
+        guard let videoDevice = videoDeviceDiscoverySession.devices.first(where: { $0.position == options.devicePosition.toNatively() }) else {
             setupResult = .configurationFailed
             return
         }
@@ -228,7 +172,7 @@ extension NZCapture {
         
         session.beginConfiguration()
         
-        session.sessionPreset = options.resolution
+        session.sessionPreset = options.resolution.toNatively()
         
         // Add a video input.
         guard session.canAddInput(videoInput!) else {
@@ -239,6 +183,7 @@ extension NZCapture {
         }
         
         cameraMaxZoom = videoInput!.device.activeFormat.videoMaxZoomFactor
+        
         session.addInput(videoInput!)
         
         if canAddAudioDevice {
@@ -303,9 +248,11 @@ extension NZCapture {
             }
         }
         
-        capFrameRate(videoDevice: videoDevice)
+        captureFrameRate(videoDevice: videoDevice)
         
         session.commitConfiguration()
+        
+        delegate?.cameraCapture(self, didCompleteInit: cameraMaxZoom)
     }
     
     func configureVideoCapture() {
@@ -348,7 +295,7 @@ extension NZCapture {
         session.commitConfiguration()
     }
     
-    private func capFrameRate(videoDevice: AVCaptureDevice) {
+    private func captureFrameRate(videoDevice: AVCaptureDevice) {
         if let frameDuration = videoDevice.activeFormat.videoSupportedFrameRateRanges.first {
             do {
                 try videoDevice.lockForConfiguration()
@@ -361,25 +308,28 @@ extension NZCapture {
         }
     }
     
+    private func setTorchMode(_ on: Bool) {
+        if videoInput!.device.hasTorch {
+            do {
+                try videoInput!.device.lockForConfiguration()
+                videoInput!.device.torchMode = on && self.options.flashMode == .torch ? .on : .off
+                videoInput!.device.unlockForConfiguration()
+            } catch {
+                NZLogger.debug("cannot lock AVCaptureDevice for configuration")
+            }
+        }
+    }
+    
     private func addObservers() {
+        removeObservers()
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didEnterBackground),
-                                               name: UIApplication.didEnterBackgroundNotification,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(willEnterForground),
-                                               name: UIApplication.willEnterForegroundNotification,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(sessionRuntimeError),
+                                               selector: #selector(sessionRuntimeError(notification:)),
                                                name: .AVCaptureSessionRuntimeError,
                                                object: session)
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(subjectAreaDidChange),
-                                               name: NSNotification.Name.AVCaptureDeviceSubjectAreaDidChange,
+                                               name: .AVCaptureDeviceSubjectAreaDidChange,
                                                object: videoInput?.device)
     }
     
@@ -388,48 +338,26 @@ extension NZCapture {
     }
 }
 
-extension NZCapture {
+extension NZCameraCapture {
     
-    @objc func didEnterBackground(notification: NSNotification) {
-
-    }
-    
-    @objc func willEnterForground(notification: NSNotification) {
-
-    }
-        
     @objc func sessionRuntimeError(notification: NSNotification) {
         guard let errorValue = notification.userInfo?[AVCaptureSessionErrorKey] as? NSError else {
             return
         }
         
         let error = AVError(_nsError: errorValue)
-        print("Capture session runtime error: \(error)")
-        
-        /*
-         Automatically try to restart the session running if media services were
-         reset and the last start running succeeded. Otherwise, enable the user
-         to try to resume the session running.
-         */
         if error.code == .mediaServicesWereReset {
             sessionQueue.async {
                 if self.isSessionRunning {
                     self.session.startRunning()
                     self.isSessionRunning = self.session.isRunning
-                } else {
-                    DispatchQueue.main.async {
-                        self.delegate?.capture(self, didStopRunning: .fail)
-                    }
                 }
             }
-        } else {
-            self.delegate?.capture(self, didStopRunning: .fail)
         }
     }
-    
 }
 
-extension NZCapture {
+extension NZCameraCapture {
     
     func startRecording() {
         switch PrivacyPermission.microphone {
@@ -458,11 +386,20 @@ extension NZCapture {
         movieFileOutput.stopRecording()
     }
     
-    func capturePhoto(quality: CGFloat = 1.0, flashMode: AVCaptureDevice.FlashMode = .off) {
+    func capturePhoto(quality: CGFloat = 1.0) {
         sessionQueue.async {
             self.photoQuality = quality
             let photoSettings = AVCapturePhotoSettings(format: [kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)])
-            photoSettings.flashMode = flashMode
+            if self.videoInput!.device.isFlashAvailable {
+                switch self.options.flashMode {
+                case .auto:
+                    photoSettings.flashMode = .auto
+                case .on:
+                    photoSettings.flashMode = .on
+                case .off,.torch:
+                    photoSettings.flashMode = .off
+                }
+            }
             photoSettings.isAutoStillImageStabilizationEnabled = true
             self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
         }
@@ -470,7 +407,7 @@ extension NZCapture {
 }
 
 //MARK: Focus
-extension NZCapture {
+extension NZCameraCapture {
     
     func focus(_ point: CGPoint) {
         let rect = CGRect.init(origin: point, size: .zero)
@@ -513,30 +450,27 @@ extension NZCapture {
         guard let currentPosition = videoInput?.device.position else { return }
         switch currentPosition {
         case .front, .unspecified:
-            changeCamera(.back)
+            changeCameraDevicePosition(to: .back)
         case .back:
-            changeCamera(.front)
+            changeCameraDevicePosition(to:.front)
         @unknown default:
             break
         }
     }
     
-    func changeCamera(_ position: AVCaptureDevice.Position) {
+    func changeCameraDevicePosition(to position: NZCameraEngine.DevicePosition) {
         sessionQueue.async {
             guard let currentVideoDevice = self.videoInput?.device else { return }
-            if currentVideoDevice.position == position {
+            if currentVideoDevice.position == position.toNatively() {
                 return
             }
-            
-            let preferredPosition = position
-           
+                       
             let devices = self.videoDeviceDiscoverySession.devices
-            if let videoDevice = devices.first(where: { $0.position == preferredPosition }) {
+            if let videoDevice = devices.first(where: { $0.position == position.toNatively() }) {
                 var videoInput: AVCaptureDeviceInput
                 do {
                     videoInput = try AVCaptureDeviceInput(device: videoDevice)
                 } catch {
-                    print("Could not create video device input: \(error)")
                     return
                 }
                 self.session.beginConfiguration()
@@ -555,28 +489,20 @@ extension NZCapture {
                     self.session.addInput(videoInput)
                     self.videoInput = videoInput
                 } else {
-                    print("Could not add video device input to the session")
                     self.session.addInput(self.videoInput!)
                 }
                 
-                if let unwrappedPhotoOutputConnection = self.photoOutput.connection(with: .video) {
-                    let connection = self.photoOutput.connection(with: .video)!
-                    connection.videoOrientation = unwrappedPhotoOutputConnection.videoOrientation
-                    connection.isVideoMirrored = self.videoInput!.device.position == .front
-                }
-                
                 self.session.commitConfiguration()
+                
+                self.setTorchMode(true)
             }
-            
-            let videoPosition = self.videoInput!.device.position
-            self.delegate?.capture(self, changedDevide: videoPosition)
         }
     }
     
 }
 
 //MARK: AVCaptureMetadataOutputObjectsDelegate
-extension NZCapture: AVCaptureMetadataOutputObjectsDelegate {
+extension NZCameraCapture: AVCaptureMetadataOutputObjectsDelegate {
     
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         guard !metadataObjects.isEmpty else {
@@ -585,25 +511,23 @@ extension NZCapture: AVCaptureMetadataOutputObjectsDelegate {
         
         if let object = metadataObjects[0] as? AVMetadataMachineReadableCodeObject,
            let value = object.stringValue {
-            DispatchQueue.main.async {
-                self.delegate?.capture(self, didScanCode: value, type: object.type)
-            }
+            self.delegate?.cameraCapture(self, didScanCode: value, type: object.type)
         }
     }
 }
 
 // MARK: AVCaptureFileOutputRecordingDelegate
-extension NZCapture: AVCaptureFileOutputRecordingDelegate {
+extension NZCameraCapture: AVCaptureFileOutputRecordingDelegate {
     
     func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
         DispatchQueue.main.async {
-            self.delegate?.capture(didStartRecord: self)
+            self.delegate?.cameraCapture(didStartRecord: self, error: nil)
         }
     }
     
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        guard error == nil else {
-            print(error!)
+        if let error = error {
+            self.delegate?.cameraCapture(self, didFinishRecord: .recordFail(error.localizedDescription))
             return
         }
         
@@ -614,36 +538,21 @@ extension NZCapture: AVCaptureFileOutputRecordingDelegate {
                                 compressed: self.videoOutputCompressed,
                                 size: self.previewLayer.frame.size) {
                 try? FileManager.default.removeItem(at: outputFileURL)
-                let posterData = VideoUtil.videoPosterImage(url: videoFilePath)?.jpegData(compressionQuality: 1.0)
+                let posterData = VideoUtil.videoPosterImage(url: videoFilePath)?.jpegData(compressionQuality: 0.8)
                 let (posterNZFile, posterFilePath) = FilePath.generateTmpNZFilePath(ext: "jpg")
                 FileManager.default.createFile(atPath: posterFilePath.path, contents: posterData, attributes: nil)
-                DispatchQueue.main.async {
-                    self.delegate?.capture(self, didStopRecording: videoNZFile, posterFilePath: posterNZFile)
-                }
+                self.delegate?.cameraCapture(self, didFinishRecord: videoNZFile, posterFilePath: posterNZFile)
             }
         }
     }
 }
 
 // MARK: AVCapturePhotoCaptureDelegate
-extension NZCapture: AVCapturePhotoCaptureDelegate {
-    
-    func photoOutput(_ output: AVCapturePhotoOutput, willCapturePhotoFor resolvedSettings: AVCaptureResolvedPhotoSettings) {
-
-    }
-    
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishCaptureFor resolvedSettings: AVCaptureResolvedPhotoSettings, error: Error?) {
-        if let error = error {
-            print("Error capturing photo: \(error)")
-        }
-    }
+extension NZCameraCapture: AVCapturePhotoCaptureDelegate {
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard let photoPixelBuffer = photo.pixelBuffer else {
-            print("Error occurred while capturing photo: Missing pixel buffer (\(String(describing: error)))")
-            DispatchQueue.main.async {
-                self.delegate?.capture(self, didCapture: (nil, nil), error: .fail)
-            }
+            delegate?.cameraCapture(self, didFinishTakePhoto: .missingPixelBuffer(error?.localizedDescription ?? ""))
             return
         }
         
@@ -654,19 +563,11 @@ extension NZCapture: AVCapturePhotoCaptureDelegate {
         
         processingQueue.async {
             let metadataAttachments: CFDictionary = photo.metadata as CFDictionary
-            guard var jpegData = VideoUtil.jpegData(with: photoPixelBuffer, attachments: metadataAttachments) else {
-                print("Unable to create JPEG photo")
-                DispatchQueue.main.async {
-                    self.delegate?.capture(self, didCapture: (nil, nil), error: .fail)
-                }
-                return
-            }
-            
-            guard var image = UIImage(data: jpegData) else {
-                print("Unable to create JPEG photo")
-                DispatchQueue.main.async {
-                    self.delegate?.capture(self, didCapture: (nil, nil), error: .fail)
-                }
+            guard var data = VideoUtil.data(with: photoPixelBuffer,
+                                            attachments: metadataAttachments,
+                                            imageType: kUTTypeJPEG),
+                  var image = UIImage(data: data) else {
+                self.delegate?.cameraCapture(self, didFinishTakePhoto: .pixelBufferToDataFail)
                 return
             }
             
@@ -675,10 +576,59 @@ extension NZCapture: AVCapturePhotoCaptureDelegate {
             let height = width * rate
             let targetRect = CGSize(width: width, height: height)
             image = image.sd_resizedImage(with: targetRect, scaleMode: .aspectFill) ?? image
-            jpegData = image.jpegData(compressionQuality: self.photoQuality) ?? jpegData
+            data = image.jpegData(compressionQuality: self.photoQuality) ?? data
             
-            self.delegate?.capture(self, didCapture: (image, jpegData), error: nil)
+            let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: "jpg")
+            do {
+                try FilePath.createDirectory(at: filePath.deletingLastPathComponent())
+            } catch {
+                self.delegate?.cameraCapture(self, didFinishTakePhoto: .generateNZFileFail)
+                return
+            }
+            
+            if FileManager.default.createFile(atPath: filePath.path, contents: data, attributes: nil) {
+                self.delegate?.cameraCapture(self, didFinishTakePhoto: nzfile)
+            } else {
+                self.delegate?.cameraCapture(self, didFinishTakePhoto: .generateNZFileFail)
+            }
         }
     }
     
+}
+
+protocol NZCameraCaptureDelegate: NSObjectProtocol {
+    
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didCompleteInit maxZoom: CGFloat)
+    
+    // take photo
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didFinishTakePhoto nzfile: String)
+    
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didFinishTakePhoto error: NZCameraCaptureError)
+    
+    // record video
+    func cameraCapture(didStartRecord cameraCapture: NZCameraCapture, error: NZCameraCaptureError?)
+    
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didFinishRecord videoFilePath: String, posterFilePath: String)
+    
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didFinishRecord error: NZCameraCaptureError)
+    
+    // scan code
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didScanCode code: String, type: AVMetadataObject.ObjectType)
+    
+    func cameraCapture(_ cameraCapture: NZCameraCapture, didSetZoom error: NZCameraCaptureError?)
+}
+
+public enum NZCameraCaptureError: Error {
+    
+    case sessionNotRunning
+    
+    case missingPixelBuffer(String)
+    
+    case pixelBufferToDataFail
+    
+    case generateNZFileFail
+    
+    case recordFail(String)
+    
+    case cannotLockConfiguration
 }

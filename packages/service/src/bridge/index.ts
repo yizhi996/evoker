@@ -39,7 +39,7 @@ import {
 } from "@nzoth/bridge"
 import { startPullDownRefresh, stopPullDownRefresh } from "@nzoth/bridge"
 import { previewImage, chooseImage, chooseVideo } from "@nzoth/bridge"
-import { createCameraContext } from "@nzoth/bridge"
+import { createCameraContext } from "./api/media/camera"
 import { createInnerAudioContext } from "@nzoth/bridge"
 import { vibrateShort, vibrateLong } from "@nzoth/bridge"
 import {

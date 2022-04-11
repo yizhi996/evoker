@@ -52,16 +52,16 @@ onError(data => {
   emit("error", { errMsg: data.error })
 })
 
-watch(() => props.devicePosition, (newValue) => {
-  update({ devicePosition: newValue })
+watch(() => props.devicePosition, () => {
+  update()
 })
 
-watch(() => props.flash, (newValue) => {
-  update({ flash: newValue })
+watch(() => props.flash, () => {
+  update()
 })
 
-watch(() => props.resolution, (newValue) => {
-  update({ resolution: newValue })
+watch(() => props.resolution, () => {
+  update()
 })
 
 onMounted(() => {
@@ -90,8 +90,12 @@ const insert = () => {
   })
 }
 
-const update = (params: Record<string, any>) => {
-  NZJSBridge.invoke("updateCamera", params)
+const update = () => {
+  NZJSBridge.invoke("updateCamera", {
+    cameraId,
+    flash: props.flash,
+    devicePosition: props.devicePosition
+  })
 }
 
 </script>

@@ -12,6 +12,7 @@ import AVFoundation
 enum NZCameraAPI: String, NZBuiltInAPI {
     
     case insertCamera
+    case updateCamera
     case operateCamera
     case openNativelyCamera
     
@@ -20,6 +21,8 @@ enum NZCameraAPI: String, NZBuiltInAPI {
             switch self {
             case .insertCamera:
                 insertCamera(args: args, bridge: bridge)
+            case .updateCamera:
+                updateCamera(args: args, bridge: bridge)
             case .operateCamera:
                 operateCamera(args: args, bridge: bridge)
             case .openNativelyCamera:
@@ -33,48 +36,10 @@ enum NZCameraAPI: String, NZBuiltInAPI {
         struct Params: Decodable  {
             let parentId: String
             let cameraId: Int
-            let mode: NZCapture.Mode
-            let devicePosition: DevicePosition
-            let resolution: Resolution
-            let flash: Flash
-        }
-        
-        enum Flash: String, Decodable {
-            case auto
-            case on
-            case off
-            case torch
-        }
-        
-        enum DevicePosition: String, Codable {
-            case back
-            case front
-            
-            func toNatively() -> AVCaptureDevice.Position {
-                switch self {
-                case .back:
-                    return .back
-                case .front:
-                    return .front
-                }
-            }
-        }
-        
-        enum Resolution: String, Codable {
-            case low
-            case medium
-            case high
-            
-            func toNatively() -> AVCaptureSession.Preset {
-                switch self {
-                case .low:
-                    return .low
-                case .medium:
-                    return .medium
-                case .high:
-                    return .high
-                }
-            }
+            let mode: NZCameraEngine.Options.Mode
+            let devicePosition: NZCameraEngine.DevicePosition
+            let resolution: NZCameraEngine.Resolution
+            let flash: NZCameraEngine.FlashMode
         }
         
         guard let appService = bridge.appService else { return }
@@ -85,7 +50,7 @@ enum NZCameraAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let cameraModule: NZCameraModule = appService.getModule() else {
+        guard let module: NZCameraModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZCameraModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -104,10 +69,11 @@ enum NZCameraAPI: String, NZBuiltInAPI {
         }
         
         let setup = {
-            let options = NZCapture.Options(mode: params.mode,
-                                                    resolution: params.resolution.toNatively(),
-                                                    position: params.devicePosition.toNatively(),
-                                                    scanType: [.barCode, .qrCode])
+            let options = NZCameraEngine.Options(mode: params.mode,
+                                                 resolution: params.resolution,
+                                                 devicePosition: params.devicePosition,
+                                                 flashMode: params.flash,
+                                                 scanType: [.barCode, .qrCode])
             let cameraEngine = NZCameraEngine(options: options)
             cameraEngine.initDoneHandler = { maxZoom in
                 let data: [String: Any] = ["cameraId": params.cameraId, "maxZoom": maxZoom]
@@ -123,7 +89,7 @@ enum NZCameraAPI: String, NZBuiltInAPI {
             }
             cameraEngine.startRunning()
             cameraEngine.addPreviewTo(container)
-            cameraModule.cameras[page.pageId] = cameraEngine
+            module.cameras[page.pageId] = cameraEngine
             bridge.invokeCallbackSuccess(args: args)
         }
         
@@ -149,30 +115,112 @@ enum NZCameraAPI: String, NZBuiltInAPI {
         }
     }
     
+    private func updateCamera(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+        
+        struct Params: Decodable  {
+            let devicePosition: NZCameraEngine.DevicePosition
+            let flash: NZCameraEngine.FlashMode
+        }
+        
+        guard let appService = bridge.appService else { return }
+
+        guard let webView = bridge.container as? NZWebView, let page = webView.page else {
+            let error = NZError.bridgeFailed(reason: .webViewNotFound)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let params: Params = args.paramsString.toModel() else {
+            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let module: NZCameraModule = appService.getModule() else {
+            let error = NZError.bridgeFailed(reason: .moduleNotFound(NZCameraModule.name))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let camera = module.cameras[page.pageId] else {
+            let error = NZError.bridgeFailed(reason: .moduleNotFound(NZCameraModule.name))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        camera.flashMode = params.flash
+        camera.changeCameraDevicePosition(to: params.devicePosition)
+        
+        bridge.invokeCallbackSuccess(args: args)
+    }
+    
     private func operateCamera(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         
         struct Params: Decodable {
             let cameraId: Int
             let method: Method
-            let data: [String: Any]
+            let data: Data
             
-            enum CodingKeys: String, CodingKey {
-                case cameraId, method, data
+            enum Method: String, Decodable {
+                case takePhoto
+                case startRecord
+                case stopRecord
+                case setZoom
             }
             
-            public init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                cameraId = try container.decode(Int.self, forKey: .cameraId)
-                method = try container.decode(Method.self, forKey: .method)
-                data = try container.decode([String: Any].self, forKey: .data)
+            enum Data: Decodable {
+                case takePhoto(TakePhotoData)
+                case stopRecord(StopRecordData)
+                case setZoom(SetZoomData)
+                case unknown
+                
+                struct TakePhotoData: Decodable {
+                    let quality: Quality
+                    
+                    enum Quality: String, Decodable {
+                        case low
+                        case normal
+                        case high
+                        
+                        func toNumber() -> CGFloat {
+                            switch self {
+                            case .low:
+                                return 0.3
+                            case .normal:
+                                return 0.7
+                            case .high:
+                                return 1.0
+                                
+                            }
+                        }
+                    }
+                }
+                
+                struct StopRecordData: Decodable {
+                    let compressed: Bool
+                }
+                
+                struct SetZoomData: Decodable {
+                    let zoom: CGFloat
+                }
+                
+                init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    if let data = try? container.decode(TakePhotoData.self) {
+                        self = .takePhoto(data)
+                        return
+                    }
+                    if let data = try? container.decode(StopRecordData.self) {
+                        self = .stopRecord(data)
+                        return
+                    }
+                    if let data = try? container.decode(SetZoomData.self) {
+                        self = .setZoom(data)
+                        return
+                    }
+                    self = .unknown
+                }
             }
-        }
-        
-        enum Method: String, Decodable {
-            case takePhoto
-            case startRecord
-            case stopRecord
-            case setZoom
         }
         
         guard let appService = bridge.appService else { return }
@@ -189,13 +237,13 @@ enum NZCameraAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let cameraModule: NZCameraModule = appService.getModule() else {
+        guard let module: NZCameraModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZCameraModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        guard let cameraEngine = cameraModule.cameras[page.pageId] else {
+        guard let cameraEngine = module.cameras[page.pageId] else {
             let error = NZError.bridgeFailed(reason: .cameraNotFound(params.cameraId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -203,61 +251,50 @@ enum NZCameraAPI: String, NZBuiltInAPI {
         
         switch params.method {
         case .takePhoto:
-            let quality: CGFloat
-            switch params.data["quality"] as? String {
-            case "high":
-                quality = 1.0
-            case "normal":
-                quality = 0.7
-            case "low":
-                quality = 0.3
-            default:
-                quality = 0.7
-            }
-            cameraEngine.capturePhoto(quality: quality, flashMode: .off) { image, data, error in
-                if error != nil {
-                    bridge.invokeCallbackFail(args: args, error: .custom("take photo fail"))
-                } else if let data = data {
-                    let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: "jpg")
-                    do {
-                        try FilePath.createDirectory(at: filePath.deletingLastPathComponent())
-                    } catch {
-                        bridge.invokeCallbackFail(args: args, error: .custom("take photo save data fail"))
-                        return
-                    }
-                    if FileManager.default.createFile(atPath: filePath.path, contents: data, attributes: nil) {
+            if case .takePhoto(let data) = params.data {
+                cameraEngine.takePhoto(quality: data.quality.toNumber()) { nzfile, error in
+                    if let error = error {
+                        let error = NZError.bridgeFailed(reason: .custom(error.localizedDescription))
+                        bridge.invokeCallbackFail(args: args, error: error)
+                    } else if let nzfile = nzfile {
                         bridge.invokeCallbackSuccess(args: args, result: ["tempImagePath": nzfile])
                     } else {
-                        bridge.invokeCallbackFail(args: args, error: .custom("take photo save data fail"))
+                        bridge.invokeCallbackFail(args: args, error: .custom("take photo fail"))
                     }
-                } else {
-                    bridge.invokeCallbackFail(args: args, error: .custom("take photo fail"))
                 }
             }
         case .startRecord:
-            cameraEngine.startRecording()
-            bridge.invokeCallbackSuccess(args: args)
-        case .stopRecord:
-            let compressed = params.data["compressed"] as? Bool ?? false
-            cameraEngine.stopRecording(compressed: compressed) { videoPath, thumbPath, error in
-                if error != nil {
-                    bridge.invokeCallbackFail(args: args, error: .custom("video record fail"))
-                } else if let videoPath = videoPath, let thumbPath = thumbPath {
-                    bridge.invokeCallbackSuccess(args: args,
-                                                 result: ["tempThumbPath": thumbPath, "tempVideoPath": videoPath])
+            cameraEngine.startRecording { error in
+                if let error = error {
+                    let error = NZError.bridgeFailed(reason: .custom(error.localizedDescription))
+                    bridge.invokeCallbackFail(args: args, error: error)
                 } else {
-                    bridge.invokeCallbackFail(args: args, error: .custom("video record fail"))
+                    bridge.invokeCallbackSuccess(args: args)
+                }
+            }
+        case .stopRecord:
+            if case .stopRecord(let data) = params.data {
+                cameraEngine.stopRecord(compressed: data.compressed) { video, poster, error in
+                    if let error = error {
+                        let error = NZError.bridgeFailed(reason: .custom(error.localizedDescription))
+                        bridge.invokeCallbackFail(args: args, error: error)
+                    } else {
+                        bridge.invokeCallbackSuccess(args: args,
+                                                     result: ["tempThumbPath": poster, "tempVideoPath": video])
+                    }
                 }
             }
         case .setZoom:
-            if let zoom = params.data["zoom"] {
-                if let value = zoom as? Int {
-                    cameraEngine.zoom = CGFloat(value)
-                } else if let value = zoom as? CGFloat {
-                    cameraEngine.zoom = value
+            if case .setZoom(let data) = params.data {
+                cameraEngine.setZoom(data.zoom) { error in
+                    if let error = error {
+                        let error = NZError.bridgeFailed(reason: .custom(error.localizedDescription))
+                        bridge.invokeCallbackFail(args: args, error: error)
+                    } else {
+                        bridge.invokeCallbackSuccess(args: args)
+                    }
                 }
             }
-            bridge.invokeCallbackSuccess(args: args)
         }
     }
     

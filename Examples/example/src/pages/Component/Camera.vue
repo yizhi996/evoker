@@ -3,10 +3,8 @@
     class="w-full h-80"
     mode="scanCode"
     resolution="high"
-    device-position="back"
-    flash="auto"
-    @initdone="onInit"
-    @scancode="onScanCode"
+    :device-position="device"
+    flash="off"
   ></camera>
   <span v-if="recordTime > 0">record: {{ recordTimeDisplay }}</span>
   <button @click="takePohto">拍照</button>
@@ -14,6 +12,7 @@
   <button @click="stopRecord">停止录像</button>
   <button @click="setZoom(2.0)">放大到 2x</button>
   <button @click="setZoom(1.0)">缩小到 1x</button>
+  <button @click="turnDevice">切换镜头</button>
   <img class="w-full h-80" :src="photoPath" />
   <div class="relative h-80">
     <video
@@ -71,12 +70,14 @@ const setZoom = (zoom: number) => {
   ctx.setZoom({ zoom })
 }
 
-const onInit = (maxZoom: number) => {
-  nz.showToast({ title: maxZoom.toString(), icon: "none" })
-}
+const device = ref("back")
 
-const onScanCode = (value: string) => {
-  console.log(value)
+const turnDevice = () => {
+  if (device.value === "back") {
+    device.value = "front"
+  } else {
+    device.value = "back"
+  }
 }
 
 </script>

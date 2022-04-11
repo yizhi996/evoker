@@ -17,6 +17,7 @@ struct VideoUtil {
         let asset = AVAsset(url: url)
         
         let videoTrack = asset.tracks(withMediaType: .video).first!
+        
         let t = videoTrack.preferredTransform
         var degrees: CGFloat = 0
         if t.a == 0 && t.b == 1.0 && t.c == -1.0 && t.d == 0 {
@@ -36,9 +37,6 @@ struct VideoUtil {
         let videoComposition = AVMutableVideoComposition()
         videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
         
-        let instruction = AVMutableVideoCompositionInstruction()
-        instruction.timeRange = CMTimeRange(start: .zero, duration: asset.duration)
-        
         var transform: CGAffineTransform = .identity
         
         if degrees == 90 {
@@ -46,31 +44,34 @@ struct VideoUtil {
             let p = size.height / size.width
             let height = width * p
             let y = (videoTrack.naturalSize.width - height) * 0.5
-            let translateToCenter = CGAffineTransform(translationX: width, y: -y)
-            transform = translateToCenter.rotated(by: .pi / 2)
+            transform = transform.translatedBy(x: width, y: -y)
+            transform = transform.rotated(by: .pi / 2)
             videoComposition.renderSize = CGSize(width: width, height: height)
         } else if degrees == 180 {
             let width = videoTrack.naturalSize.width
             let p = size.height / size.width
             let height = width * p
             let y = (videoTrack.naturalSize.height - height) * 0.5
-            let translateToCenter = CGAffineTransform(translationX: width, y: -y)
-            transform = translateToCenter.rotated(by: .pi)
+            transform = transform.translatedBy(x: width, y: -y)
+            transform = transform.rotated(by: .pi)
             videoComposition.renderSize = CGSize(width: width, height: height)
         } else if degrees == 270 {
             let width = videoTrack.naturalSize.height
             let p = size.height / size.width
             let height = width * p
             let y = (videoTrack.naturalSize.width - height) * 0.5
-            let translateToCenter = CGAffineTransform(translationX: -y, y: width)
-            transform = translateToCenter.rotated(by: .pi / 2 * 3)
+            transform = transform.translatedBy(x: -y, y: width)
+            transform = transform.rotated(by: .pi / 2 * 3)
             videoComposition.renderSize = CGSize(width: width, height: height)
         }
         
         let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
         transformer.setTransform(transform, at: .zero)
         
+        let instruction = AVMutableVideoCompositionInstruction()
+        instruction.timeRange = CMTimeRange(start: .zero, duration: asset.duration)
         instruction.layerInstructions = [transformer]
+        
         videoComposition.instructions = [instruction]
         
         let presetName = compressed ? AVAssetExportPresetMediumQuality : AVAssetExportPresetHighestQuality
@@ -152,7 +153,7 @@ extension VideoUtil {
 
 extension VideoUtil {
     
-    static func jpegData(with pixelBuffer: CVPixelBuffer, attachments: CFDictionary?) -> Data? {
+    static func data(with pixelBuffer: CVPixelBuffer, attachments: CFDictionary?, imageType: CFString) -> Data? {
         let ciContext = CIContext()
         let renderedCIImage = CIImage(cvImageBuffer: pixelBuffer)
         guard let renderedCGImage = ciContext.createCGImage(renderedCIImage, from: renderedCIImage.extent) else {
@@ -165,7 +166,7 @@ extension VideoUtil {
             return nil
         }
         
-        guard let cgImageDestination = CGImageDestinationCreateWithData(data, kUTTypeJPEG , 1, nil) else {
+        guard let cgImageDestination = CGImageDestinationCreateWithData(data, imageType , 1, nil) else {
             NZLogger.error("Create CGImageDestination error")
             return nil
         }
