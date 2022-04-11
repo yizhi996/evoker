@@ -44,8 +44,6 @@ class LaunchpadViewController: UIViewController {
     
     @objc func openApp(_ button: UIButton) {
         let app = LaunchpadViewController.apps[button.tag]
-        var appInfo = NZAppInfo()
-        appInfo.appName = app.appName
         var options = NZAppLaunchOptions()
         options.envVersion = app.envVersion
         NZEngine.shared.openApp(appId: app.appId, launchOptions: options)

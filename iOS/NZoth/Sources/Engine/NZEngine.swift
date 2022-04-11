@@ -20,13 +20,13 @@ final public class NZEngine {
     
     public var config: NZEngineConfig = NZEngineConfig()
     
+    /// 数据存储在   userId → [appId_a]   [appId_b]  [...] 中，
+    /// 具有 user Id 和 app Id 两级隔离。
+    public var userId = "__global__"
+    
     public internal(set) var currentApp: NZAppService?
     
     public internal(set) var runningApp: [NZAppService] = []
-    
-    public var checkAppUpdateHandler: ((String, NZAppEnvVersion, String, String, NZBoolBlock) -> Void)?
-    
-    public var getAppInfoHandler: ((String, NZAppEnvVersion, (NZAppInfo) -> Void) -> Void)?
     
     public private(set) var networkType: NetworkType = .unknown {
         didSet {
@@ -40,11 +40,15 @@ final public class NZEngine {
     
     private let networkReachabilityManager = NetworkReachabilityManager()!
     
-    private let builtInModules: [NZModule.Type] = [NZVideoModule.self,
-                                                   NZAudioModule.self,
-                                                   NZInputModule.self,
-                                                   NZCameraModule.self,
-                                                   NZCanvasModule.self]
+    private let builtInModules: [NZModule.Type] = [
+        NZVideoModule.self,
+        NZAudioModule.self,
+        NZInputModule.self,
+        NZCameraModule.self,
+        NZCanvasModule.self,
+        NZLocationModule.self,
+        NZAudioRecorderModule.self
+    ]
     
     public private(set) var extraModules: [NZModule.Type] = []
     
@@ -59,6 +63,8 @@ final public class NZEngine {
     var webViewPool: NZPool<NZWebView>!
     
     var userAgent = ""
+    
+    var shouldInteractivePopGesture = true
     
     private var isLaunch = false
     
@@ -79,6 +85,16 @@ final public class NZEngine {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(appDevelopUpdateNotification(_:)),
                                                name: NZDevServer.didUpdateNotification,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(willEnterForeground),
+                                               name: UIApplication.willEnterForegroundNotification,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didEnterBackground),
+                                               name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
     }
     
@@ -118,6 +134,11 @@ final public class NZEngine {
         NZScreenAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         NZCryptoAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         NZSoundAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
+        NZClipboardAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
+        NZPhoneAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
+        NZNetworkAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
+        NZLifeCycleAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
+        NZAuthAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
     }
     
     func setupBuiltInModules() {
@@ -191,6 +212,26 @@ final public class NZEngine {
         localImageCache.removeAll()
     }
     
+    @objc private func willEnterForeground() {
+        guard let currentApp = currentApp else { return }
+        currentApp.publishAppOnShow(path: "")
+        if let webPage = currentApp.currentPage as? NZWebPage {
+            if webPage.webView.state == .terminate {
+                webPage.reload()
+            } else {
+                webPage.show(publish: true)
+            }
+        }
+    }
+    
+    @objc private func didEnterBackground() {
+        guard let currentApp = currentApp else { return }
+        currentApp.publishAppOnHide()
+        if let webPage = currentApp.currentPage as? NZWebPage {
+            webPage.hide()
+        }
+    }
+    
     public func onError(_ errorHandler: NZErrorBlock?) {
         self.errorHandler = errorHandler
     }
@@ -231,7 +272,8 @@ extension NZEngine {
                     completionHandler?(error)
                 }
             }
-            if let checkAppUpdateHandler = checkAppUpdateHandler {
+            
+            if let checkAppUpdateHandler = NZEngineHooks.shared.app.checkAppUpdate {
                 let localVersion = NZVersionManager.shared.localAppVersion(appId: appId,
                                                                            envVersion: launchOptions.envVersion)
                 checkAppUpdateHandler(appId,
@@ -274,7 +316,7 @@ extension NZEngine {
                 handler(nil)
             }
         }
-        if let getAppInfoHandler = getAppInfoHandler {
+        if let getAppInfoHandler = NZEngineHooks.shared.app.getAppInfo {
             getAppInfoHandler(appId, launchOptions.envVersion, getAppInfo)
         } else {
             getAppInfo(NZAppInfo(appName: appId, appIconURL: ""))
@@ -368,13 +410,12 @@ public struct NZAppInfo {
     
     public var appIconURL: String = ""
     
-    public init() {
+    public var userInfo: [String: Any] = [:]
         
-    }
-    
-    public init(appName: String, appIconURL: String) {
+    public init(appName: String, appIconURL: String, userInfo: [String: Any] = [:]) {
         self.appName = appName
         self.appIconURL = appIconURL
+        self.userInfo = userInfo
     }
 }
 
