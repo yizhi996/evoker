@@ -63,7 +63,7 @@ class NZNavigationBar: UIView {
     func addBackButton(_ handler: @escaping NZEmptyBlock) {
         onBackHandler = handler
         guard backButton == nil else { return }
-        let backIcon = UIImage(builtIn: "back-arrow-icon")?.withRenderingMode(.alwaysTemplate)
+        let backIcon = UIImage(builtIn: "back-arrow-icon")
         backButton = UIButton()
         backButton!.imageView?.tintColor = color
         backButton!.setImage(backIcon, for: .normal)

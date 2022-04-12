@@ -21,7 +21,7 @@ class NZScanCodeView: UIView {
         
         backgroundColor = .clear
         
-        backButton.setBackgroundImage(UIImage(builtIn: "back-arrow-icon-dark"), for: .normal)
+        backButton.setBackgroundImage(UIImage(builtIn: "back-arrow-icon-circle-dark"), for: .normal)
         addSubview(backButton)
         backButton.autoPinEdge(toSuperviewEdge: .left, withInset: 24)
         backButton.autoPinEdge(toSuperviewEdge: .top, withInset: Constant.statusBarHeight + 8)
