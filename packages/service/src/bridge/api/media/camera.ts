@@ -6,7 +6,7 @@ import {
   wrapperAsyncAPI,
   AsyncReturn
 } from "@nzoth/bridge"
-import { getCurrentWebViewId } from "packages/service/src/app"
+import { getCurrentWebViewId } from "../../../app"
 
 interface CameraContextTakePhotoOptions {
   quality?: "low" | "normal" | "high"

@@ -320,6 +320,16 @@
       "component": "pages/API/Voice.vue",
       "path": "voice",
       "style": { "navigationBarTitleText": "录音" }
+    },
+    {
+      "component": "pages/API/Setting.vue",
+      "path": "setting",
+      "style": { "navigationBarTitleText": "设置" }
+    },
+    {
+      "component": "pages/API/GetUserInfo.vue",
+      "path": "get-user-info",
+      "style": { "navigationBarTitleText": "获取用户信息" }
     }
   ]
 }

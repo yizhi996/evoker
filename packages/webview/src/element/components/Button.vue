@@ -17,6 +17,9 @@ import { isTrue } from "../../utils"
 import useHover from "../use/useHover"
 import Loading from "./Loading.vue"
 import { dispatchEvent } from "../../dom/event"
+import { getUserInfo } from "@nzoth/bridge"
+
+const emit = defineEmits(["getuserinfo"])
 
 const props = withDefaults(defineProps<{
   type?: "primary" | "default" | "warn" | "success" | "danger"
@@ -30,6 +33,7 @@ const props = withDefaults(defineProps<{
   hoverStartTime?: number
   hoverStayTime?: number,
   formType?: "submit" | "reset"
+  openType?: "getUserInfo" | "openSetting"
 }>(), {
   type: "default",
   size: "default",
@@ -80,8 +84,6 @@ const findForm = (el: HTMLElement): NZothElement | undefined => {
   }
 }
 
-let clickEventRemove: Function
-
 const onTapForm = () => {
   const button = buttonRef.value!
   const form = findForm(button)
@@ -95,14 +97,50 @@ const onTapForm = () => {
   }
 }
 
+const onTapOpenType = () => {
+  switch (props.openType) {
+    case "getUserInfo":
+      getUserInfo({
+        withCredentials: true,
+        success: res => {
+          emit("getuserinfo", res)
+        }, fail: res => {
+          emit("getuserinfo", res)
+        }
+      })
+      break
+  }
+}
+
+const builtInClick = () => {
+  if (props.openType) {
+    onTapOpenType()
+  } else if (props.formType) {
+    onTapForm
+  }
+}
+
+let builtInClickEvent: Function
+
 watch(() => props.formType, (formType) => {
-  clickEventRemove && clickEventRemove()
+  builtInClickEvent && builtInClickEvent()
   if (formType === "submit" || formType === "reset") {
     nextTick(() => {
       if (buttonRef.value) {
-        clickEventRemove = addTouchEvent(buttonRef.value, undefined, _ => {
-          onTapForm()
-        })
+        builtInClickEvent = addTouchEvent(buttonRef.value, undefined, builtInClick)
+      }
+    })
+  }
+}, {
+  immediate: true
+})
+
+watch(() => props.openType, (openType) => {
+  builtInClickEvent && builtInClickEvent()
+  if (openType && ["getUserInfo", "openSetting"].includes(openType)) {
+    nextTick(() => {
+      if (buttonRef.value) {
+        builtInClickEvent = addTouchEvent(buttonRef.value, undefined, builtInClick)
       }
     })
   }

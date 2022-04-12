@@ -20,6 +20,10 @@ public class NZEngineHooks {
         
         public var checkSession: Callback?
         
+        public var getUserInfo: Callback?
+        
+        public var getUserProfile: Callback?
+        
     }
     
     public class App {

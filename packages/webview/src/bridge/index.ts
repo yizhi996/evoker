@@ -1,5 +1,11 @@
 import NZJSBridge from "./bridge"
-import { vibrateShort, vibrateLong, authorize, showModal } from "@nzoth/bridge"
+import {
+  vibrateShort,
+  vibrateLong,
+  authorize,
+  showModal,
+  getUserInfo
+} from "@nzoth/bridge"
 import {
   navigateTo,
   navigateBack,
@@ -24,7 +30,8 @@ export {
   exit,
   pageScrollTo,
   authorize,
-  showModal
+  showModal,
+  getUserInfo
 }
 
 export { NZJSBridge }

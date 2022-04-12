@@ -119,7 +119,7 @@ export function authorize<T extends AuthorizeOptions = AuthorizeOptions>(
   }, options)
 }
 
-function openAuthorizationView(scope: string): Promise<boolean> {
+export function openAuthorizationView(scope: string): Promise<boolean> {
   let title = ""
   switch (scope) {
     case "scope.userInfo":
@@ -165,7 +165,7 @@ export const enum AuthorizationStatus {
   notDetermined
 }
 
-function getAuthorize(scope: string): Promise<AuthorizationStatus> {
+export function getAuthorize(scope: string): Promise<AuthorizationStatus> {
   return new Promise((resolve, reject) => {
     invoke<{ status: AuthorizationStatus }>(
       Events.GET_AUTHORIZE,
@@ -181,7 +181,10 @@ function getAuthorize(scope: string): Promise<AuthorizationStatus> {
   })
 }
 
-function setAuthorize(scope: string, authorized: boolean): Promise<void> {
+export function setAuthorize(
+  scope: string,
+  authorized: boolean
+): Promise<void> {
   return new Promise((resolve, reject) => {
     invoke(Events.SET_AUTHORIZE, { scope, authorized }, result => {
       if (result.errMsg) {

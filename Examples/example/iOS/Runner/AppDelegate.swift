@@ -43,6 +43,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             completionHandler(true)
         }
         
+        NZEngineHooks.shared.openAPI.getUserProfile = { args, bridge in
+            let userInfo: [String: Any] = ["nickName": "yizhi996",
+                                           "avatarUrl": "https://file.lilithvue.com/lilith-test-assets/avatar-new.png"]
+            bridge.invokeCallbackSuccess(args: args, result: ["userInfo": userInfo])
+        }
+        
+        NZEngineHooks.shared.openAPI.getUserInfo = { args, bridge in
+            let userInfo: [String: Any] = ["nickName": "yizhi007",
+                                           "avatarUrl": "https://file.lilithvue.com/lilith-test-assets/avatar-new.png"]
+            bridge.invokeCallbackSuccess(args: args, result: ["userInfo": userInfo])
+        }
+        
         var config = NZEngineConfig()
         config.devServer.useDevJSSDK = true
         config.devServer.useDevServer = true

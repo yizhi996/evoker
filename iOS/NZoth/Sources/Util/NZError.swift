@@ -83,6 +83,8 @@ public enum NZError: Error {
         
         case cannotToTabbarPage
         
+        case apiHookNotImplemented
+        
         case custom(String)
     }
 }
@@ -149,6 +151,8 @@ extension NZError.BridgeFailureReason {
             return "storage size limited"
         case .cannotToTabbarPage:
             return "cannot to tabbar page"
+        case .apiHookNotImplemented:
+            return "api hook not implemented, see NZEngineHooks"
         case .custom(let error):
             return "\(error)"
         }

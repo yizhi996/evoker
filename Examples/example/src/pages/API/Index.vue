@@ -8,6 +8,23 @@ import NPageIndex from "../../components/NPageIndex.vue"
 
 const list = reactive([
   {
+    id: 'api',
+    name: '开放接口',
+    open: false,
+    pages: [
+      {
+        name: '登录',
+        url: 'login/login'
+      }, {
+        name: '获取用户信息',
+        url: 'get-user-info'
+      }, {
+        name: '设置',
+        url: 'setting'
+      }
+    ]
+  },
+  {
     id: 'page',
     name: '界面',
     open: false,

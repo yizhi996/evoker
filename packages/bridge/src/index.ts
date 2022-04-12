@@ -23,6 +23,7 @@ export * from "./api/crypto"
 export * from "./api/navigate"
 export * from "./api/location"
 export * from "./api/auth"
+export * from "./api/open"
 
 export type {
   InvokeCallback,
