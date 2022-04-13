@@ -43,6 +43,7 @@ class NZScanCodeView: UIView {
         tipLabel.autoAlignAxis(toSuperviewAxis: .vertical)
         tipLabel.autoPinEdge(.bottom, to: .top, of: openAlbumButton, withOffset: -48)
         
+        scanEffectView.isHidden = true
         scanEffectView.image = UIImage(builtIn: "scan-effect-img")
         addSubview(scanEffectView)
         scanEffectView.autoPinEdge(toSuperviewEdge: .left)
@@ -52,6 +53,14 @@ class NZScanCodeView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let view = super.hitTest(point, with: event)
+        if view == self {
+            return nil
+        }
+        return view
     }
     
     override func layoutSubviews() {

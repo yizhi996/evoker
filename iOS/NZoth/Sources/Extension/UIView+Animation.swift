@@ -17,6 +17,7 @@ extension UIView {
         rotationAnimation.toValue = CGFloat.pi * 2.0
         rotationAnimation.duration = duration
         rotationAnimation.repeatCount = .infinity
+        rotationAnimation.isRemovedOnCompletion = false
         layer.add(rotationAnimation, forKey: "rotationAnimationKey")
     }
     
@@ -30,6 +31,7 @@ extension UIView {
         rotationAnimation.toValue = to
         rotationAnimation.duration = duration
         rotationAnimation.repeatCount = .infinity
+        rotationAnimation.isRemovedOnCompletion = false
         layer.add(rotationAnimation, forKey: "translationYAnimationKey")
     }
     

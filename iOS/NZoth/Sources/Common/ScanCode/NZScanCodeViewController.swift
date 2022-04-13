@@ -33,15 +33,23 @@ class NZScanCodeViewController: UIViewController {
         scanView.autoPinEdgesToSuperviewEdges()
     }
     
+    deinit {
+        viewModel.cancelHandler?()
+        viewModel.cancelHandler = nil
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
         viewModel.checkCameraAuth { [unowned self] auth in
             if !auth {
                 self.showCameraNotAuthAlert()
+            } else {
+                self.scanView.scanEffectView.isHidden = false
             }
         }
         
@@ -50,9 +58,10 @@ class NZScanCodeViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        viewModel.cameraEngine.stopRunning()
         
-        viewModel.cancelHandler?()
+        scanView.scanEffectView.isHidden = true
+        
+        viewModel.cameraEngine.stopRunning()
         
         NZEngine.shared.currentApp?.uiControl.showCapsule()
     }
@@ -90,6 +99,7 @@ class NZScanCodeViewController: UIViewController {
         config.allowSelectOriginal = false
         config.allowTakePhotoInLibrary = false
         config.allowSelectVideo = false
+        config.allowEditImage = false
         config.maxSelectCount = 1
         ps.selectImageBlock = { [unowned self] images, _, _ in
             guard let image = images.first,
@@ -101,7 +111,14 @@ class NZScanCodeViewController: UIViewController {
             if let result = features.first as? CIQRCodeFeature, let value = result.messageString {
                 self.viewModel.playSound()
                 self.viewModel.scanCompletionHandler?(value, "QR_CODE")
-                self.navigationController?.popViewController(animated: true)
+                let viewController = self.navigationController!.viewControllers[self.navigationController!.viewControllers.count - 2]
+                self.navigationController!.popToViewController(viewController, animated: true)
+            } else {
+                NZToast(params: NZToast.Params(title: "未发现 二维码 / 条码",
+                                               icon: .none,
+                                               image: nil,
+                                               duration: 1000,
+                                               mask: true)).show(to: self.view)
             }
         }
         ps.showPhotoLibrary(sender: self)
