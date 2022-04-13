@@ -49,6 +49,8 @@ public class NZCameraEngine: NSObject {
     
     private lazy var scanCodeThrottle = Throttler(seconds: 0.25)
     
+    private var linearSetZoomTimer: Timer?
+    
     public init(options: Options) {
         super.init()
         
@@ -59,6 +61,16 @@ public class NZCameraEngine: NSObject {
         
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(zoomPinch(_:)))
         previewView.addGestureRecognizer(pinchGesture)
+        
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(zoomDoubleTap(_:)))
+        doubleTapGesture.numberOfTapsRequired = 2
+        previewView.addGestureRecognizer(doubleTapGesture)
+        
+        tapGesture.require(toFail: doubleTapGesture)
+    }
+    
+    deinit {
+        invalidateTimer()
     }
     
     public func addPreviewTo(_ view: UIView) {
@@ -119,8 +131,13 @@ public class NZCameraEngine: NSObject {
     public func setZoom(_ zoom: CGFloat, completionHandler handler: @escaping (NZCameraCaptureError?) -> Void) {
         setZoomCompletionHandler = handler
         capture.cameraZoom = zoom
+        zoomFactor = zoom
     }
-
+    
+    private func invalidateTimer() {
+        linearSetZoomTimer?.invalidate()
+        linearSetZoomTimer = nil
+    }
 }
 
 //MARK: Gesture
@@ -133,7 +150,37 @@ extension NZCameraEngine {
     }
     
     @objc func zoomDoubleTap(_ gesture: UITapGestureRecognizer) {
-        capture.cameraZoom = 2
+        invalidateTimer()
+    
+        let frames: TimeInterval = 1 / 60
+        let duration: TimeInterval = 0.25
+        let count = duration / frames
+        if capture.cameraZoom >= 1.5 {
+            let diff = capture.cameraZoom - 1
+            let step = diff / count
+            linearSetZoomTimer = Timer(timeInterval: frames, repeats: true, block: { [unowned self] _ in
+                let zoom = (self.capture.cameraZoom - step).clampe(to: 1...self.capture.cameraMaxZoom)
+                self.capture.cameraZoom = zoom
+                if self.capture.cameraZoom <= 1 {
+                    self.invalidateTimer()
+                }
+                self.zoomFactor = zoom
+            })
+            RunLoop.main.add(linearSetZoomTimer!, forMode: .common)
+        } else if capture.cameraZoom < 1.5 {
+            let diff = 2 - capture.cameraZoom
+            let step = diff / count
+            linearSetZoomTimer = Timer(timeInterval: frames, repeats: true, block: { [unowned self] _ in
+                let zoom = (self.capture.cameraZoom + step).clampe(to: 1...self.capture.cameraMaxZoom)
+                self.capture.cameraZoom = zoom
+                if self.capture.cameraZoom >= 2 {
+                    self.invalidateTimer()
+                }
+                self.zoomFactor = zoom
+            })
+            RunLoop.main.add(linearSetZoomTimer!, forMode: .common)
+        }
+        
     }
     
     @objc func zoomPinch(_ gesture: UIPinchGestureRecognizer) {
