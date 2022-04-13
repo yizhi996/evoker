@@ -32,7 +32,7 @@ class NZToast: UIView, NZTransitionView {
     lazy var titleLabel = UILabel()
     lazy var iconImageView = UIImageView()
     
-    init(params: Params, appId: String, envVersion: NZAppEnvVersion) {
+    init(params: Params, appId: String? = nil, envVersion: NZAppEnvVersion? = nil) {
         self.params = params
         super.init(frame: .zero)
         
@@ -46,7 +46,7 @@ class NZToast: UIView, NZTransitionView {
         borderView.autoCenterInSuperview()
         
         var image: UIImage?
-        if let customImagePath = params.image {
+        if let customImagePath = params.image, let appId = appId, let envVersion = envVersion {
             let url = FilePath.appStaticFilePath(appId: appId, envVersion: envVersion, src: customImagePath)
             image = UIImage(contentsOfFile: url.path)
         } else if params.icon != .none {

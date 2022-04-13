@@ -117,39 +117,35 @@ class NZSettingViewModel {
         
         let viewController = appService.rootViewController!.viewControllers.last!
         
-        let toast = NZToast(params: NZToast.Params(title: "正在设置",
-                                                   icon: .loading,
-                                                   image: nil,
-                                                   duration: 0,
-                                                   mask: true), appId: appService.appId, envVersion: appService.envVersion)
-        toast.show(to: viewController.view)
+        NZToast(params: NZToast.Params(title: "正在设置",
+                                       icon: .loading,
+                                       image: nil,
+                                       duration: 0,
+                                       mask: true)).show(to: viewController.view)
         if appService.storage.setAuthorization(scope, authorized: sender.isOn) != nil {
-            let toast = NZToast(params: NZToast.Params(title: "设置失败",
-                                                       icon: .error,
-                                                       image: nil,
-                                                       duration: 1500,
-                                                       mask: true), appId: appService.appId, envVersion: appService.envVersion)
-            toast.show(to: viewController.view)
+            NZToast(params: NZToast.Params(title: "设置失败",
+                                           icon: .error,
+                                           image: nil,
+                                           duration: 1500,
+                                           mask: true)).show(to: viewController.view)
         }
     }
     
     func locationAuthorizationValueChange(key: String, cellInfo: NZStaticTableViewCellInfo) {
         let viewController = appService.rootViewController!.viewControllers.last!
         
-        let toast = NZToast(params: NZToast.Params(title: "正在设置",
-                                                   icon: .loading,
-                                                   image: nil,
-                                                   duration: 0,
-                                                   mask: true), appId: appService.appId, envVersion: appService.envVersion)
-        toast.show(to: viewController.view)
+        NZToast(params: NZToast.Params(title: "正在设置",
+                                       icon: .loading,
+                                       image: nil,
+                                       duration: 0,
+                                       mask: true)).show(to: viewController.view)
         
         func showFailToast() {
-            let toast = NZToast(params: NZToast.Params(title: "设置失败",
-                                                       icon: .error,
-                                                       image: nil,
-                                                       duration: 1500,
-                                                       mask: true), appId: appService.appId, envVersion: appService.envVersion)
-            toast.show(to: viewController.view)
+            NZToast(params: NZToast.Params(title: "设置失败",
+                                           icon: .error,
+                                           image: nil,
+                                           duration: 1500,
+                                           mask: true)).show(to: viewController.view)
         }
         
         if key == "deny" {
