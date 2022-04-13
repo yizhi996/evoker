@@ -43,6 +43,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             completionHandler(true)
         }
         
+        NZEngineHooks.shared.openAPI.login = { args, bridge in
+            bridge.invokeCallbackSuccess(args: args, result: ["code": "abcd..."])
+        }
+        
+        NZEngineHooks.shared.openAPI.checkSession = { args, bridge in
+            bridge.invokeCallbackSuccess(args: args)
+        }
+        
         NZEngineHooks.shared.openAPI.getUserProfile = { args, bridge in
             let userInfo: [String: Any] = ["nickName": "yizhi996",
                                            "avatarUrl": "https://file.lilithvue.com/lilith-test-assets/avatar-new.png"]

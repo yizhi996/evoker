@@ -76,6 +76,7 @@ import { getRecorderManager } from "@nzoth/bridge"
 import { getSetting, authorize } from "@nzoth/bridge"
 import { getUserProfile } from "./api/open"
 import { openSetting } from "./api/auth"
+import { login, checkSession } from "@nzoth/bridge"
 import "./fromWebView"
 
 const env = { USER_DATA_PATH: "nzfile://usr" }
@@ -152,7 +153,9 @@ export {
   getSetting,
   openSetting,
   authorize,
-  getUserProfile
+  getUserProfile,
+  login,
+  checkSession
 }
 
 export default {
@@ -227,5 +230,7 @@ export default {
   getSetting,
   openSetting,
   authorize,
-  getUserProfile
+  getUserProfile,
+  login,
+  checkSession
 }

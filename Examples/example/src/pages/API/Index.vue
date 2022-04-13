@@ -14,7 +14,7 @@ const list = reactive([
     pages: [
       {
         name: '登录',
-        url: 'login/login'
+        url: 'login'
       }, {
         name: '获取用户信息',
         url: 'get-user-info'

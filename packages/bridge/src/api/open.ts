@@ -15,7 +15,9 @@ import {
 } from "./auth"
 
 const enum Events {
-  GET_USER_INFO = "getUserInfo"
+  GET_USER_INFO = "getUserInfo",
+  LOGIN = "login",
+  CHECK_SESSION = "checkSession"
 }
 
 interface GetUserInfoOptions {
@@ -64,5 +66,53 @@ export function getUserInfo<T extends GetUserInfoOptions = GetUserInfoOptions>(
     } catch (error) {
       invokeFailure(Events.GET_USER_INFO, options, scope + error)
     }
+  }, options)
+}
+
+interface LoginOptions {
+  success?: LoginSuccessCallback
+  fail?: LoginFailCallback
+  complete?: LoginCompleteCallback
+}
+
+interface LoginSuccessCallbackResult {
+  code: string
+}
+
+type LoginSuccessCallback = (res: LoginSuccessCallbackResult) => void
+
+type LoginFailCallback = (res: GeneralCallbackResult) => void
+
+type LoginCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function login<T extends LoginOptions = LoginOptions>(
+  options: T
+): AsyncReturn<T, LoginOptions> {
+  return wrapperAsyncAPI<T>(options => {
+    invoke<SuccessResult<T>>(Events.LOGIN, options, result => {
+      invokeCallback(Events.LOGIN, options, result)
+    })
+  }, options)
+}
+
+interface CheckSessionOptions {
+  success?: CheckSessionSuccessCallback
+  fail?: CheckSessionFailCallback
+  complete?: CheckSessionCompleteCallback
+}
+
+type CheckSessionSuccessCallback = (res: GeneralCallbackResult) => void
+
+type CheckSessionFailCallback = (res: GeneralCallbackResult) => void
+
+type CheckSessionCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function checkSession<
+  T extends CheckSessionOptions = CheckSessionOptions
+>(options: T): AsyncReturn<T, CheckSessionOptions> {
+  return wrapperAsyncAPI<T>(options => {
+    invoke<SuccessResult<T>>(Events.CHECK_SESSION, options, result => {
+      invokeCallback(Events.CHECK_SESSION, options, result)
+    })
   }, options)
 }

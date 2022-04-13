@@ -330,6 +330,11 @@
       "component": "pages/API/GetUserInfo.vue",
       "path": "get-user-info",
       "style": { "navigationBarTitleText": "获取用户信息" }
+    },
+    {
+      "component": "pages/API/Login.vue",
+      "path": "login",
+      "style": { "navigationBarTitleText": "登录" }
     }
   ]
 }
