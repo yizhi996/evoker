@@ -13,6 +13,9 @@ export default defineConfig(({ mode }) => {
         name: pkg.buildOptions?.name,
         fileName: foramt => `bridge.${foramt}.js`,
         formats: ["cjs", "es"]
+      },
+      rollupOptions: {
+        external: ["vue"]
       }
     }
   }

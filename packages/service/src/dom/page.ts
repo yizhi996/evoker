@@ -1,9 +1,9 @@
-import { queuePostFlushCb, VNode } from "vue"
+import { VNode } from "vue"
 import { unmountComponent } from "../runtime-jscore/patchUnmount"
 import { NZothElement } from "./element"
 import { NZothHTMLElement } from "./html"
 import { SyncFlags } from "@nzoth/shared"
-import { pipeline } from "@nzoth/bridge"
+import { sync } from "@nzoth/bridge"
 import { NZothNode } from "./node"
 import { minifyNode } from "./utils"
 
@@ -22,15 +22,10 @@ export class NZothPage {
 
   private childId = 0
 
-  private messageQueue: any[] = []
-
-  private sync: () => void
-
   constructor(pageId: number, route: string, tabIndex: number) {
     this.pageId = pageId
     this.route = route
     this.tabIndex = tabIndex
-    this.sync = this._sync.bind(this)
   }
 
   appendChildNode(node: NZothNode) {
@@ -44,19 +39,6 @@ export class NZothPage {
     this.nodes.clear()
   }
 
-  private enqueue(message: any) {
-    this.messageQueue.push(message)
-    queuePostFlushCb(this.sync)
-  }
-
-  private _sync() {
-    if (this.messageQueue.length === 0) {
-      return
-    }
-    pipeline.sync(this.messageQueue, this.pageId)
-    this.messageQueue = []
-  }
-
   onInsertBefore(
     parent: NZothNode,
     child: NZothNode,
@@ -66,14 +48,14 @@ export class NZothPage {
     if (anchor) {
       message.push(minifyNode(anchor))
     }
-    this.enqueue(message)
+    sync(message, this.pageId)
   }
 
   onRemove(parent: NZothNode, child: NZothNode) {
     child.isMounted = false
     this.nodes.delete(child.nodeId)
     const message = [SyncFlags.REMOVE, parent.nodeId, child.nodeId]
-    this.enqueue(message)
+    sync(message, this.pageId)
   }
 
   onPatchStyle(el: NZothElement) {
@@ -86,7 +68,7 @@ export class NZothPage {
       "style",
       (el as NZothHTMLElement).style.styleObject
     ]
-    this.enqueue(message)
+    sync(message, this.pageId)
   }
 
   onShow(el: NZothElement) {
@@ -98,7 +80,7 @@ export class NZothPage {
       el.nodeId,
       (el as NZothHTMLElement).style.display
     ]
-    this.enqueue(message)
+    sync(message, this.pageId)
   }
 
   onPatchProp(el: NZothElement, name: string, value?: any) {
@@ -106,7 +88,7 @@ export class NZothPage {
       return
     }
     const message = [SyncFlags.UPDATE_PROP, el.nodeId, name, value]
-    this.enqueue(message)
+    sync(message, this.pageId)
   }
 
   onSetElementText(el: NZothNode, textContent: string) {
@@ -114,12 +96,12 @@ export class NZothPage {
       return
     }
     const message = [SyncFlags.SET_TEXT, el.nodeId, textContent]
-    this.enqueue(message)
+    sync(message, this.pageId)
   }
 
   onSetModelValue(nodeId: number, value: any) {
     const message = [SyncFlags.SET_MODEL_VALUE, nodeId, value]
-    this.enqueue(message)
+    sync(message, this.pageId)
   }
 
   onAddEventListener(
@@ -136,6 +118,6 @@ export class NZothPage {
       el.nodeId,
       { type, options, modifiers }
     ]
-    this.enqueue(message)
+    sync(message, this.pageId)
   }
 }

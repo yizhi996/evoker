@@ -1,6 +1,5 @@
 import "./dom/vdSync"
 import "./dom/selector"
-import "./touch"
 
 export { injectComponent } from "./element"
 

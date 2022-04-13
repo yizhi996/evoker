@@ -5,7 +5,7 @@ import { NZothPage } from "./dom/page"
 import { NZothHTMLElement } from "./dom/html"
 import { NZothEvent } from "./dom/eventTarget"
 import { getPageComponentFormRoute, decodeURL } from "./router"
-import { pipeline } from "@nzoth/bridge"
+import { onSync } from "@nzoth/bridge"
 import { SyncFlags } from "@nzoth/shared"
 
 export const enum AppState {
@@ -109,8 +109,8 @@ InnerJSBridge.subscribe<{ pageId: number; path: string }>(
   }
 )
 
-pipeline.onSync(message => {
-  message.forEach(action => {
+onSync(messages => {
+  messages.forEach(action => {
     const ACTION = action[0]
     if (ACTION === SyncFlags.DISPATCH_EVENT) {
       dispatchEvent(action)

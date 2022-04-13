@@ -1,5 +1,5 @@
 import { SyncFlags } from "@nzoth/shared"
-import { pipeline } from "@nzoth/bridge"
+import { onSync } from "@nzoth/bridge"
 import {
   insertBefore,
   setText,
@@ -10,13 +10,13 @@ import {
   setModelValue
 } from "./render"
 
-pipeline.onSync(message => {
+onSync(message => {
   message.forEach((action: any[]) => {
-    invoke(action)
+    render(action)
   })
 })
 
-const invokeFunction: { [x: number]: Function } = {
+const renderFunction: { [x: number]: Function } = {
   [SyncFlags.INSERT]: insertBefore,
   [SyncFlags.SET_TEXT]: setText,
   [SyncFlags.REMOVE]: removeChild,
@@ -26,8 +26,8 @@ const invokeFunction: { [x: number]: Function } = {
   [SyncFlags.SET_MODEL_VALUE]: setModelValue
 }
 
-function invoke(data: any[]) {
+function render(data: any[]) {
   const flag = data[0] as SyncFlags
-  const fn = invokeFunction[flag]
+  const fn = renderFunction[flag]
   fn && fn(data)
 }

@@ -31,4 +31,4 @@ export type {
   SubscribeCallback
 } from "./bridge"
 
-export { pipeline } from "./render"
+export * from "./pipeline"

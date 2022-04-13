@@ -1,15 +1,7 @@
 import { isNZothElement } from "./element"
 import { NZothEventListenerOptions } from "./vnode"
-import { pipeline } from "@nzoth/bridge"
+import { sync } from "@nzoth/bridge"
 import { SyncFlags } from "@nzoth/shared"
-import { queuePostFlushCb } from "vue"
-
-let queue: any[] = []
-
-function sync() {
-  pipeline.sync(queue, window.webViewId)
-  queue = []
-}
 
 interface Event {
   type: string
@@ -17,8 +9,8 @@ interface Event {
 }
 
 export function dispatchEvent(nodeId: number, event: string | Event) {
-  queue.push([SyncFlags.DISPATCH_EVENT, window.webViewId, nodeId, event])
-  queuePostFlushCb(sync)
+  const message = [SyncFlags.DISPATCH_EVENT, window.webViewId, nodeId, event]
+  sync(message, window.webViewId)
 }
 
 let singleTouch = -1
