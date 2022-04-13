@@ -461,6 +461,8 @@ extension NZAppService {
     func invokeAppMoreAction(_ action: String) {
         switch action {
         case "settings":
+            let viewModel = NZSettingViewModel(appService: self)
+            rootViewController?.pushViewController(viewModel.generateViewController(), animated: true)
             break
         case "relaunch":
             var options = NZAppLaunchOptions()

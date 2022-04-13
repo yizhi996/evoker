@@ -45,6 +45,8 @@ class NZStaticTableViewCellInfo {
     
     var editStyle: UITableViewCell.EditingStyle = .none
     
+    lazy var userInfo: [String: Any] = [:]
+    
     var didSelectHandler: ((NZStaticTableViewCellInfo) -> Void)?
     
 }

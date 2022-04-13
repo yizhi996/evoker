@@ -59,4 +59,8 @@ extension NZStaticTableViewSectionInfo: NZStaticTableViewListProtocol {
         guard index < cells.count else { return }
         cells.remove(at: index)
     }
+    
+    func removeAll() {
+        cells = []
+    }
 }

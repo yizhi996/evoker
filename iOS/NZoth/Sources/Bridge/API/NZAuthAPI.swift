@@ -14,6 +14,7 @@ enum NZAuthAPI: String, NZBuiltInAPI {
     case getSetting
     case getAuthorize
     case setAuthorize
+    case openSetting
     
     func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         DispatchQueue.main.async {
@@ -26,6 +27,8 @@ enum NZAuthAPI: String, NZBuiltInAPI {
                 self.getAuthorize(args: args, bridge: bridge)
             case .setAuthorize:
                 self.setAuthorize(args: args, bridge: bridge)
+            case .openSetting:
+                self.openSetting(args: args, bridge: bridge)
             }
         }
     }
@@ -107,5 +110,20 @@ enum NZAuthAPI: String, NZBuiltInAPI {
         } else {
             bridge.invokeCallbackSuccess(args: args)
         }
+    }
+    
+    private func openSetting(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+        guard let appService = bridge.appService else { return }
+        
+        let viewModel = NZSettingViewModel(appService: appService)
+        viewModel.popViewControllerHandler = {
+            let (authSetting, error) = appService.storage.getAllAuthorization()
+            if let error = error {
+                bridge.invokeCallbackFail(args: args, error: error)
+            } else {
+                bridge.invokeCallbackSuccess(args: args, result: ["authSetting": authSetting])
+            }
+        }
+        appService.rootViewController?.pushViewController(viewModel.generateViewController(), animated: true)
     }
 }

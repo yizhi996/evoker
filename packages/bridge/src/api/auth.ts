@@ -11,14 +11,13 @@ import {
 
 const enum Events {
   GET_SETTING = "getSetting",
-  OPEN_SETTING = "openSetting",
   AUTHORIZE = "authorize",
   GET_AUTHORIZE = "getAuthorize",
   SET_AUTHORIZE = "setAuthorize",
   OPEN_AUTHORIZATION_VIEW = "openAuthorizationView"
 }
 
-interface AuthSetting {
+export interface AuthSetting {
   [x: string]: boolean
   "scope.userInfo": boolean
   "scope.userLocation": boolean
@@ -49,34 +48,6 @@ export function getSetting<T extends GetSettingOptions = GetSettingOptions>(
   return wrapperAsyncAPI<T>(options => {
     invoke<SuccessResult<T>>(Events.GET_SETTING, {}, result => {
       invokeCallback(Events.GET_SETTING, options, result)
-    })
-  }, options)
-}
-
-interface OpenSettingOptions {
-  success?: OpenSettingSuccessCallback
-  fail?: OpenSettingFailCallback
-  complete?: OpenSettingCompleteCallback
-}
-
-interface OpenSettingSuccessCallbackResult {
-  authSetting: AuthSetting
-}
-
-type OpenSettingSuccessCallback = (
-  res: OpenSettingSuccessCallbackResult
-) => void
-
-type OpenSettingFailCallback = (res: GeneralCallbackResult) => void
-
-type OpenSettingCompleteCallback = (res: GeneralCallbackResult) => void
-
-export function openSetting<T extends OpenSettingOptions = OpenSettingOptions>(
-  options: T
-): AsyncReturn<T, OpenSettingOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.OPEN_SETTING, {}, result => {
-      invokeCallback(Events.OPEN_SETTING, options, result)
     })
   }, options)
 }

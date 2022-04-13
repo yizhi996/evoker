@@ -73,8 +73,9 @@ import {
   offLocationChange
 } from "@nzoth/bridge"
 import { getRecorderManager } from "@nzoth/bridge"
-import { getSetting, openSetting, authorize } from "@nzoth/bridge"
+import { getSetting, authorize } from "@nzoth/bridge"
 import { getUserProfile } from "./api/open"
+import { openSetting } from "./api/auth"
 import "./fromWebView"
 
 const env = { USER_DATA_PATH: "nzfile://usr" }

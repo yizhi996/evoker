@@ -116,7 +116,7 @@ const builtInClick = () => {
   if (props.openType) {
     onTapOpenType()
   } else if (props.formType) {
-    onTapForm
+    onTapForm()
   }
 }
 
