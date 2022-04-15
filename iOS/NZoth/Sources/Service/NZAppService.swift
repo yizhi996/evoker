@@ -105,10 +105,6 @@ final public class NZAppService {
             self.closeMiniProgram()
         }
         
-        uiControl.gotoHomeHandler = { [unowned self] in
-            self.gotoHomePage()
-        }
-        
         uiControl.didSelectTabBarIndexHandler = { [unowned self] index in
             let page = self.tabBarPages[index]
             if !pages.contains(where: { $0.pageId == page.pageId }) {
@@ -120,12 +116,16 @@ final public class NZAppService {
                 viewController.loadViewIfNeeded()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.rootViewController?.viewControllers = [viewController]
-                    self.uiControl.addTabBar(to: viewController.view)
+                    if page.isShowTabBar {
+                        self.uiControl.addTabBar(to: viewController.view)
+                        self.uiControl.tabBarView.setTabItemSelect(index)
+                    }
                 }
             } else {
                 self.rootViewController?.viewControllers = [viewController]
                 if page.isShowTabBar {
                     self.uiControl.addTabBar(to: viewController.view)
+                    self.uiControl.tabBarView.setTabItemSelect(index)
                 }
             }
         }
@@ -199,7 +199,7 @@ final public class NZAppService {
         let navigationController = NZNavigationController(rootViewController: info.viewController)
         navigationController.modalPresentationStyle = .fullScreen
         if info.needAddGotoHomeButton {
-            uiControl.addGotoHomeButton(to: navigationController.view)
+            info.viewController.navigationBar.showGotoHomeButton()
         }
         rootViewController = navigationController
         let presentViewController = viewController ?? UIViewController.visibleViewController()
@@ -434,14 +434,12 @@ extension NZAppService {
             pages.append(info.page)
             rootViewController?.viewControllers = [info.viewController]
             uiControl.addTabBar(to: info.viewController.view)
-            uiControl.removeGotoHomeButton()
         } else if let firstPage = config.pages.first,
                   let page = createWebPage(url: firstPage.path) {
             unloadAllPages()
             pages.append(page)
             let viewController = page.generateViewController()
             rootViewController?.viewControllers = [viewController]
-            uiControl.removeGotoHomeButton()
         }
     }
 
@@ -589,12 +587,17 @@ public extension NZAppService {
                 uiControl.tabBarViewControllers = [:]
                 pages.append(info.page)
                 rootViewController.viewControllers = [info.viewController]
-                uiControl.addGotoHomeButton(to: rootViewController.view)
+                if info.needAddGotoHomeButton {
+                    info.viewController.navigationBar.showGotoHomeButton()
+                }
             } else {
                 unloadPage(currentPage)
                 pages.append(info.page)
                 rootViewController.viewControllers.removeLast()
                 rootViewController.viewControllers.append(info.viewController)
+                if pages.count == 1 {
+                    info.viewController.navigationBar.showGotoHomeButton()
+                }
             }
         }
         return nil
@@ -641,7 +644,7 @@ public extension NZAppService {
             uiControl.addTabBar(to: info.viewController.view)
         }
         if info.needAddGotoHomeButton {
-            uiControl.addGotoHomeButton(to: rootViewController.view)
+            info.viewController.navigationBar.showGotoHomeButton()
         }
         return nil
     }

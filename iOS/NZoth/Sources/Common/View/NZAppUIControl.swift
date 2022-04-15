@@ -12,8 +12,6 @@ import PureLayout
 
 public class NZAppUIControl {
     
-    public var gotoHomeHandler: NZEmptyBlock?
-    
     public var closeHandler: NZEmptyBlock?
     
     public var showAppMoreActionBoardHandler: NZEmptyBlock?
@@ -25,8 +23,6 @@ public class NZAppUIControl {
     public lazy var tabBarView = NZTabBarView()
     
     public lazy var tabBarViewControllers: [String: NZPageViewController] = [:]
-    
-    public internal(set) var gotoHomeButton: UIButton?
     
     public func setupTabBar(config: NZAppConfig, envVersion: NZAppEnvVersion) {
         if let tabBarInfo = config.tabBar, !tabBarInfo.list.isEmpty {
@@ -44,27 +40,6 @@ public class NZAppUIControl {
         let height = Constant.tabBarHeight
         tabBarView.frame = CGRect(x: 0, y: view.frame.height - height, width: view.frame.width, height: height)
         view.addSubview(tabBarView)
-    }
-    
-    public func addGotoHomeButton(to view: UIView) {
-        let homeIcon = UIImage(builtIn: "mini-program-home-icon")?.withRenderingMode(.alwaysOriginal)
-        let button = UIButton()
-        button.setImage(homeIcon, for: .normal)
-        button.addTarget(self, action: #selector(gotoHomePage), for: .touchUpInside)
-        view.addSubview(button)
-        let safeAreaTop = Constant.safeAreaInsets.top
-        let buttonSize = 32.0
-        let top = safeAreaTop + (Constant.navigationBarHeight - buttonSize) / 2
-        button.autoPinEdge(toSuperviewEdge: .top, withInset: top)
-        button.autoPinEdge(toSuperviewEdge: .left, withInset: 7)
-        button.autoSetDimensions(to: CGSize(width: buttonSize, height: buttonSize))
-        
-        gotoHomeButton = button
-    }
-    
-    public func removeGotoHomeButton() {
-        gotoHomeButton?.removeFromSuperview()
-        gotoHomeButton = nil
     }
     
     public func addCapsuleView(to view: UIView) {
@@ -125,10 +100,6 @@ public class NZAppUIControl {
     
     @objc private func close() {
         closeHandler?()
-    }
-    
-    @objc private func gotoHomePage() {
-        gotoHomeHandler?()
     }
     
     @objc private func clickShowAppMoreActionBoard() {

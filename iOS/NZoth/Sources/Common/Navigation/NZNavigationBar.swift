@@ -29,6 +29,21 @@ class NZNavigationBar: UIView {
         return imageView
     }()
     
+    private lazy var gotoHomeButton: UIButton = {
+        let homeIcon = UIImage(builtIn: "mini-program-home-icon")?.withRenderingMode(.alwaysOriginal)
+        let button = UIButton()
+        button.setImage(homeIcon, for: .normal)
+        button.addTarget(self, action: #selector(gotoHomePage), for: .touchUpInside)
+        addSubview(button)
+        let safeAreaTop = Constant.safeAreaInsets.top
+        let buttonSize = 32.0
+        let top = safeAreaTop + (Constant.navigationBarHeight - buttonSize) / 2
+        button.autoPinEdge(toSuperviewEdge: .top, withInset: top)
+        button.autoPinEdge(toSuperviewEdge: .left, withInset: 7)
+        button.autoSetDimensions(to: CGSize(width: buttonSize, height: buttonSize))
+        return button
+    }()
+    
     var isLoading: Bool = false {
         didSet {
             loadingImage.isHidden = !isLoading
@@ -79,7 +94,22 @@ class NZNavigationBar: UIView {
         titleLabel.text = title
     }
     
-    @objc private func onBack() {
+    func showGotoHomeButton() {
+        gotoHomeButton.isHidden = false
+    }
+    
+    func hideGotoHomeButton() {
+        gotoHomeButton.isHidden = true
+    }
+    
+    @objc
+    private func onBack() {
         onBackHandler?()
     }
+    
+    @objc
+    func gotoHomePage() {
+        NZEngine.shared.currentApp?.gotoHomePage()
+    }
+    
 }

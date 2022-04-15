@@ -73,7 +73,7 @@ const list = reactive([
   }
 ])
 
-const { onLoad, onShow, onReady, onHide } = usePage()
+const { onLoad, onShow, onReady, onHide, onUnload } = usePage()
 
 onLoad(options => {
   console.log("Page onLoad: ", options)
@@ -89,6 +89,10 @@ onReady(() => {
 
 onHide(() => {
   console.log("Page onHide")
+})
+
+onUnload(() => {
+  console.log("Page onUnload")
 })
 
 </script>

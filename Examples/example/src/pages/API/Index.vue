@@ -40,7 +40,7 @@ const list = reactive([
         url: '@set-tab-bar'
       }, {
         name: '页面跳转',
-        url: 'navigator/navigator'
+        url: 'api/navigator'
       }, {
         name: '下拉刷新',
         url: 'pull-down-refresh'

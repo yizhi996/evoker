@@ -10,14 +10,16 @@ import {
 } from "@nzoth/bridge"
 import { innerAppData } from "../../app"
 
-export function urlGetQuery(path: string) {
-  const query: Record<string, any> = {}
-
-  const start = path.indexOf("?")
-  if (start < 0) {
-    return query
+function parseURL(url: string) {
+  const [path, query] = url.split("?")
+  return {
+    path,
+    query: queryToObject(query)
   }
-  const queryString = path.substring(start + 1)
+}
+
+function queryToObject(queryString: string) {
+  const query: Record<string, any> = {}
 
   const pl = /\+/g
   function decode(s: string) {
@@ -31,6 +33,25 @@ export function urlGetQuery(path: string) {
     query[decode(match[1])] = decode(match[2])
   }
   return query
+}
+
+function pathIsTabBar(path: string) {
+  if (globalThis.__NZConfig.tabBar) {
+    return (
+      globalThis.__NZConfig.tabBar.list.find(item => {
+        return item.path == path
+      }) !== undefined
+    )
+  }
+  return false
+}
+
+function pathIsExist(path: string) {
+  return (
+    globalThis.__NZConfig.pages.find(page => {
+      return page.path === path
+    }) !== undefined
+  )
 }
 
 const enum Events {
@@ -58,6 +79,7 @@ export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
   options: T
 ): AsyncReturn<T, NavigateToOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.NAVIGATE_TO
     if (innerAppData.routerLock) {
       invokeFailure(
         Events.NAVIGATE_TO,
@@ -68,19 +90,30 @@ export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
     }
 
     if (!options.url) {
-      invokeFailure(Events.NAVIGATE_TO, options, "options url can not be empty")
+      invokeFailure(event, options, "url cannot be empty")
+      return
+    }
+
+    const { path, query } = parseURL(options.url)
+
+    if (pathIsTabBar(path)) {
+      invokeFailure(event, options, "cannot navigate to tabbar page")
+      return
+    }
+
+    if (!pathIsExist(path)) {
+      invokeFailure(event, options, `${options.url} is not found`)
       return
     }
 
     innerAppData.routerLock = true
-    InnerJSBridge.invoke(Events.NAVIGATE_TO, { url: options.url }, result => {
+    InnerJSBridge.invoke(event, options, result => {
       innerAppData.routerLock = false
       if (result.errMsg) {
-        invokeFailure(Events.NAVIGATE_TO, options, result.errMsg)
+        invokeFailure(event, options, result.errMsg)
       } else {
-        const query = urlGetQuery(options.url)
         innerAppData.query = query
-        invokeSuccess(Events.NAVIGATE_TO, options, {})
+        invokeSuccess(event, options, {})
       }
     })
   }, options)
@@ -141,18 +174,32 @@ export function redirectTo<T extends RedirectToOptions = RedirectToOptions>(
   options: T
 ): AsyncReturn<T, RedirectToOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.REDIRECT_TO
     if (!options.url) {
-      invokeFailure(Events.REDIRECT_TO, options, "options url cannot be empty")
+      invokeFailure(event, options, "url cannot be empty")
       return
     }
 
-    InnerJSBridge.invoke<SuccessResult<T>>(
-      Events.REDIRECT_TO,
-      { url: options.url },
-      result => {
-        invokeCallback(Events.REDIRECT_TO, options, result)
+    const { path, query } = parseURL(options.url)
+
+    if (pathIsTabBar(path)) {
+      invokeFailure(event, options, "cannot redirectTo tabbar page")
+      return
+    }
+
+    if (!pathIsExist(path)) {
+      invokeFailure(event, options, `${options.url} is not found`)
+      return
+    }
+
+    InnerJSBridge.invoke<SuccessResult<T>>(event, options, result => {
+      if (result.errMsg) {
+        invokeFailure(event, options, result.errMsg)
+      } else {
+        innerAppData.query = query
+        invokeSuccess(event, options, {})
       }
-    )
+    })
   }, options)
 }
 
@@ -178,11 +225,27 @@ export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
       return
     }
 
+    const { path, query } = parseURL(options.url)
+
+    const exist = globalThis.__NZConfig.pages.find(page => {
+      return page.path === path
+    })
+
+    if (exist === undefined) {
+      invokeFailure(Events.RE_LAUNCH, options, `${options.url} is not found`)
+      return
+    }
+
     InnerJSBridge.invoke<SuccessResult<T>>(
       Events.RE_LAUNCH,
-      { url: options.url },
+      options,
       result => {
-        invokeCallback(Events.RE_LAUNCH, options, result)
+        if (result.errMsg) {
+          invokeFailure(Events.RE_LAUNCH, options, result.errMsg)
+        } else {
+          innerAppData.query = query
+          invokeSuccess(Events.RE_LAUNCH, options, {})
+        }
       }
     )
   }, options)
@@ -210,12 +273,25 @@ export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
       return
     }
 
-    InnerJSBridge.invoke<SuccessResult<T>>(
-      Events.SWITCH_TAB,
-      { url: options.url },
-      result => {
-        invokeCallback(Events.SWITCH_TAB, options, result)
+    if (globalThis.__NZConfig.tabBar) {
+      const { path } = parseURL(options.url)
+      const exist = globalThis.__NZConfig.tabBar.list.find(item => {
+        return item.path === path
+      })
+      if (exist === undefined) {
+        invokeFailure(Events.SWITCH_TAB, options, `${path} is not found`)
+        return
       }
-    )
+      InnerJSBridge.invoke<SuccessResult<T>>(
+        Events.SWITCH_TAB,
+        { url: path },
+        result => {
+          invokeCallback(Events.SWITCH_TAB, options, result)
+        }
+      )
+    } else {
+      invokeFailure(Events.SWITCH_TAB, options, `app.config tabBar undefined`)
+      return
+    }
   }, options)
 }

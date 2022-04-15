@@ -95,9 +95,9 @@ enum NZRouteAPI: String, NZBuiltInAPI {
             return
         }
         
-        let (route, _) = params.url.decodeURL()
+        let (path, _) = params.url.decodeURL()
         
-        let isTab = appService.config.tabBar?.list.contains(where: { $0.path == route })
+        let isTab = appService.config.tabBar?.list.contains(where: { $0.path == path })
         if isTab == true {
             bridge.invokeCallbackSuccess(args: args)
             return

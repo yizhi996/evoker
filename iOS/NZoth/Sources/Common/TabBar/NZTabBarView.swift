@@ -36,6 +36,9 @@ open class NZTabBarView: UIView {
     open func load(config: NZAppConfig, envVersion: NZAppEnvVersion) {
         guard let tabBarInfo = config.tabBar else { return }
         
+        tabBarItems.forEach { $0.removeFromSuperview() }
+        tabBarItems = []
+        
         var prev: NZTabBarItem?
         let y = 1 / Constant.scale
         let height = 48 - y

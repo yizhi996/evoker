@@ -335,6 +335,12 @@
       "component": "pages/API/Login.vue",
       "path": "login",
       "style": { "navigationBarTitleText": "登录" }
+    },
+    {
+      "component": "pages/API/Navigator.vue",
+      "path": "api/navigator",
+      "style": { "navigationBarTitleText": "页面跳转" }
     }
   ]
 }
+

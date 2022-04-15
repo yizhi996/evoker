@@ -81,10 +81,25 @@ interface NativeSystem {
   getAppBaseInfo(): AppBaseInfo
 }
 
+interface Page {
+  component: string
+  path: string
+}
+
+interface TabBar {
+  list: TabBarItem[]
+}
+
+interface TabBarItem {
+  path: string
+}
+
 interface NZConfig {
   appId: string
   appName: string
   appIcon: string
+  pages: Page[]
+  tabBar?: TabBar
 }
 
 declare global {

@@ -141,7 +141,7 @@ enum NZNavigationAPI: String, NZBuiltInAPI {
     
     private func hideHomeButton(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         guard let appService = bridge.appService else { return }
-        appService.uiControl.removeGotoHomeButton()
+        appService.pages.last?.viewController?.navigationBar.hideGotoHomeButton()
         bridge.invokeCallbackSuccess(args: args)
     }
 
