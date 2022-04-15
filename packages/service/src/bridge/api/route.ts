@@ -35,7 +35,7 @@ function queryToObject(queryString: string) {
   return query
 }
 
-function pathIsTabBar(path: string) {
+export function pathIsTabBar(path: string) {
   if (globalThis.__NZConfig.tabBar) {
     return (
       globalThis.__NZConfig.tabBar.list.find(item => {
@@ -46,7 +46,7 @@ function pathIsTabBar(path: string) {
   return false
 }
 
-function pathIsExist(path: string) {
+export function pathIsExist(path: string) {
   return (
     globalThis.__NZConfig.pages.find(page => {
       return page.path === path

@@ -140,6 +140,7 @@ final public class NZEngine {
         NZLifeCycleAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         NZAuthAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         NZOpenAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
+        NZTabBarAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
     }
     
     func setupBuiltInModules() {

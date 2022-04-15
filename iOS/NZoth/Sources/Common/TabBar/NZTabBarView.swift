@@ -15,18 +15,19 @@ open class NZTabBarView: UIView {
     
     public var didSelectIndex: NZIntBlock?
     
-    private var tabBarItems: [NZTabBarItem] =  []
+    var tabBarItems: [NZTabBarItem] =  []
+    
+    let borderTopView = UIView()
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
         
         backgroundColor = .white
         
-        let line = UIView()
-        line.backgroundColor = UIColor(white: 0, alpha: 0.3)
-        addSubview(line)
-        line.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        line.autoSetDimension(.height, toSize: 1 / Constant.scale)
+        borderTopView.backgroundColor = UIColor(white: 0, alpha: 0.3)
+        addSubview(borderTopView)
+        borderTopView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        borderTopView.autoSetDimension(.height, toSize: 1 / Constant.scale)
     }
     
     required public init?(coder: NSCoder) {
@@ -35,6 +36,14 @@ open class NZTabBarView: UIView {
     
     open func load(config: NZAppConfig, envVersion: NZAppEnvVersion) {
         guard let tabBarInfo = config.tabBar else { return }
+        
+        backgroundColor = tabBarInfo.backgroundColor.hexColor()
+        
+        if tabBarInfo.borderStyle == .white {
+            borderTopView.backgroundColor = UIColor(white: 1, alpha: 0.3)
+        } else if tabBarInfo.borderStyle == .black {
+            borderTopView.backgroundColor = UIColor(white: 0, alpha: 0.3)
+        }
         
         tabBarItems.forEach { $0.removeFromSuperview() }
         tabBarItems = []

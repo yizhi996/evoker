@@ -12,8 +12,6 @@ import MJRefresh
 
 enum NZUIAPI: String, NZBuiltInAPI {
    
-    case showTabBar
-    case hideTabBar
     case showPickerView
     case showMultiPickerView
     case showDatePickerView
@@ -24,10 +22,6 @@ enum NZUIAPI: String, NZBuiltInAPI {
     func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
         DispatchQueue.main.async {
             switch self {
-            case .showTabBar:
-                showTabBar(args: args, bridge: bridge)
-            case .hideTabBar:
-                hideTabBar(args: args, bridge: bridge)
             case .showPickerView:
                 showPickerView(args: args, bridge: bridge)
             case .showMultiPickerView:
@@ -42,79 +36,6 @@ enum NZUIAPI: String, NZBuiltInAPI {
                 pageScrollTo(args: args, bridge: bridge)
             }
         }
-    }
-            
-    private func showTabBar(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        
-        struct Params: Decodable {
-            let animation: Bool
-        }
-        
-        guard let appService = bridge.appService else { return }
-        
-        guard let viewController = appService.rootViewController?.viewControllers.last as? NZWebPageViewController else {
-            let error = NZError.bridgeFailed(reason: .visibleViewControllerNotFound)
-            bridge.invokeCallbackFail(args: args, error: error)
-            return
-        }
-        
-        guard let params: Params = args.paramsString.toModel() else {
-            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
-            bridge.invokeCallbackFail(args: args, error: error)
-            return
-        }
-        
-        let page = viewController.page
-        
-        if page.isTabBarPage && !page.isShowTabBar {
-            page.isShowTabBar = true
-            let y = viewController.view.bounds.maxY - appService.uiControl.tabBarView.frame.height
-            if params.animation {
-                UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut) {
-                    appService.uiControl.tabBarView.frame.origin = CGPoint(x: 0, y: y)
-                }
-            } else {
-                appService.uiControl.tabBarView.frame.origin = CGPoint(x: 0, y: y)
-            }
-            viewController.webView.frame.size.height -= appService.uiControl.tabBarView.frame.height
-        }
-        bridge.invokeCallbackSuccess(args: args)
-    }
-    
-    private func hideTabBar(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        struct Params: Decodable {
-            let animation: Bool
-        }
-        
-        guard let appService = bridge.appService else { return }
-        
-        guard let viewController = appService.rootViewController?.viewControllers.last as? NZWebPageViewController else {
-            let error = NZError.bridgeFailed(reason: .visibleViewControllerNotFound)
-            bridge.invokeCallbackFail(args: args, error: error)
-            return
-        }
-        
-        guard let params: Params = args.paramsString.toModel() else {
-            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
-            bridge.invokeCallbackFail(args: args, error: error)
-            return
-        }
-        
-        let page = viewController.page
-        
-        if page.isTabBarPage && page.isShowTabBar {
-            page.isShowTabBar = false
-            let y = viewController.view.bounds.maxY
-            if params.animation {
-                UIView.animate(withDuration: 0.25, delay: 0, options: .curveEaseInOut) {
-                    appService.uiControl.tabBarView.frame.origin = CGPoint(x: 0, y: y)
-                }
-            } else {
-                appService.uiControl.tabBarView.frame.origin = CGPoint(x: 0, y: y)
-            }
-            viewController.webView.frame.size.height += appService.uiControl.tabBarView.frame.height
-        }
-        bridge.invokeCallbackSuccess(args: args)
     }
     
     private func showPickerView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {

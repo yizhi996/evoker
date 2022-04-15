@@ -26,7 +26,6 @@ public class NZAppUIControl {
     
     public func setupTabBar(config: NZAppConfig, envVersion: NZAppEnvVersion) {
         if let tabBarInfo = config.tabBar, !tabBarInfo.list.isEmpty {
-            tabBarView.backgroundColor = tabBarInfo.backgroundColor.hexColor()
             tabBarView.load(config: config, envVersion: envVersion)
             tabBarView.didSelectIndex = { [unowned self] index in
                 self.didSelectTabBarIndexHandler?(index)

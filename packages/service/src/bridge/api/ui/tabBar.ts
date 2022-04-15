@@ -1,11 +1,14 @@
-import { invoke } from "../bridge"
+import { InnerJSBridge } from "../../bridge"
 import {
-  invokeCallback,
-  GeneralCallbackResult,
-  AsyncReturn,
   SuccessResult,
-  wrapperAsyncAPI
-} from "../async"
+  GeneralCallbackResult,
+  invokeCallback,
+  wrapperAsyncAPI,
+  AsyncReturn,
+  invokeFailure
+} from "@nzoth/bridge"
+import { innerAppData, getCurrentWebViewId } from "../../../app"
+import { pathIsTabBar } from "../route"
 
 const enum Events {
   SHOW_TAB_BAR = "showTabBar",
@@ -29,11 +32,19 @@ export function showTabBar<T extends ShowTabBarOptions = ShowTabBarOptions>(
   options: T
 ): AsyncReturn<T, ShowTabBarOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(
-      Events.SHOW_TAB_BAR,
+    const event = Events.SHOW_TAB_BAR
+    const pageId = getCurrentWebViewId()
+    const page = innerAppData.pages.get(pageId)!
+    if (!pathIsTabBar(page.route)) {
+      invokeFailure(event, options, "current page not TabBar page")
+      return
+    }
+
+    InnerJSBridge.invoke<SuccessResult<T>>(
+      event,
       { animation: options.animation ?? false },
       result => {
-        invokeCallback(Events.SHOW_TAB_BAR, options, result)
+        invokeCallback(event, options, result)
       }
     )
   }, options)
@@ -56,11 +67,18 @@ export function hideTabBar<T extends HideTabBarOptions = HideTabBarOptions>(
   options: T
 ): AsyncReturn<T, HideTabBarOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(
-      Events.HIDE_TAB_BAR,
+    const event = Events.HIDE_TAB_BAR
+    const pageId = getCurrentWebViewId()
+    const page = innerAppData.pages.get(pageId)!
+    if (!pathIsTabBar(page.route)) {
+      invokeFailure(event, options, "current page not TabBar page")
+      return
+    }
+    InnerJSBridge.invoke<SuccessResult<T>>(
+      event,
       { animation: options.animation ?? false },
       result => {
-        invokeCallback(Events.HIDE_TAB_BAR, options, result)
+        invokeCallback(event, options, result)
       }
     )
   }, options)

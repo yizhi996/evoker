@@ -55,9 +55,12 @@ export function getCurrentPages() {
 }
 
 export function getCurrentWebViewId() {
+  return getCurrentPage().pageId
+}
+
+export function getCurrentPage() {
   const pages = getCurrentPages()
-  const page = pages[pages.length - 1]
-  return page.pageId
+  return pages[pages.length - 1]
 }
 
 export function getApp() {

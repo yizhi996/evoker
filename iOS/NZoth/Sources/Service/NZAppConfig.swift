@@ -50,7 +50,13 @@ public struct NZAppTabBarInfo: Decodable {
     public let color: String
     public let selectedColor: String
     public let backgroundColor: String
+    public let borderStyle: BorderStyle?
     public let list: [NZAppTabBarItem]
+    
+    public enum BorderStyle: String, Decodable {
+        case white
+        case black
+    }
 }
 
 public struct NZAppTabBarItem: Decodable {

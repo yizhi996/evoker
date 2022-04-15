@@ -60,7 +60,14 @@ import { makePhoneCall } from "@nzoth/bridge"
 import { rsa } from "@nzoth/bridge"
 import { createSelectorQuery } from "./api/html/selector"
 import { getBatteryInfo } from "@nzoth/bridge"
-import { showTabBar, hideTabBar } from "@nzoth/bridge"
+import {
+  setTabBarBadge,
+  hideTabBarRedDot,
+  setTabBarItem,
+  setTabBarStyle,
+  showTabBarRedDot,
+  removeTabBarBadge
+} from "@nzoth/bridge"
 import { request, downloadFile, uploadFile } from "./api/request"
 import { createAnimation } from "./api/ui/animation"
 import { pageScrollTo } from "./api/ui/scroll"
@@ -77,6 +84,7 @@ import { getSetting, authorize } from "@nzoth/bridge"
 import { getUserProfile } from "./api/open"
 import { openSetting } from "./api/auth"
 import { login, checkSession } from "@nzoth/bridge"
+import { showTabBar, hideTabBar } from "../bridge/api/ui/tabBar"
 import "./fromWebView"
 
 const env = { USER_DATA_PATH: "nzfile://usr" }
@@ -134,6 +142,12 @@ export {
   setScreenBrightness,
   showTabBar,
   hideTabBar,
+  setTabBarBadge,
+  hideTabBarRedDot,
+  setTabBarItem,
+  setTabBarStyle,
+  showTabBarRedDot,
+  removeTabBarBadge,
   getClipboardData,
   setClipboardData,
   makePhoneCall,
@@ -211,6 +225,12 @@ export default {
   setScreenBrightness,
   showTabBar,
   hideTabBar,
+  setTabBarBadge,
+  hideTabBarRedDot,
+  setTabBarItem,
+  setTabBarStyle,
+  showTabBarRedDot,
+  removeTabBarBadge,
   getClipboardData,
   setClipboardData,
   makePhoneCall,
