@@ -4,7 +4,7 @@
     <v-model-test class="mt-5" v-model="text"></v-model-test>
     <div class="mt-5 bg-green-500 p-5">
       <div class="text-white">BuiltIn Component</div>
-      <slider v-model="sliderValue"></slider>
+      <slider v-model:value="sliderValue"></slider>
     </div>
     <button class="mt-5" @click="onChange">Outer Change</button>
   </div>

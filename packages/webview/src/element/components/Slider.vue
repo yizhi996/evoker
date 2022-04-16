@@ -2,17 +2,10 @@
   <nz-slider>
     <div class="nz-slider__wrapper">
       <div class="nz-slider__input">
-        <div
-          class="nz-slider__input__bar"
-          ref="barRef"
-          :style="{ 'background-color': backgroundColor }"
-        >
+        <div class="nz-slider__input__bar" ref="barRef" :style="{ 'background-color': backgroundColor }">
           <div class="nz-slider__input__handle" ref="handleRef" :style="handleStyle"></div>
           <div class="nz-slider__input__thumb" :style="handleStyle"></div>
-          <div
-            class="nz-slider__input__track"
-            :style="{ width: width, 'background-color': activeColor }"
-          ></div>
+          <div class="nz-slider__input__track" :style="{ width: width, 'background-color': activeColor }"></div>
         </div>
       </div>
       <span v-if="showValue" class="nz-slider__value" :style="{ width: valueWidth }">{{ value }}</span>
@@ -26,7 +19,7 @@ import { unitToPx } from "../utils/format"
 import useTouch from "../use/useTouch"
 import { clamp } from "@nzoth/shared"
 
-const emit = defineEmits(["change", "changing"])
+const emit = defineEmits(["update:value", "change", "changing"])
 
 const props = withDefaults(defineProps<{
   value?: number,
@@ -97,10 +90,12 @@ onMounted(() => {
         value = Math.round(value / props.step) * props.step + props.min
         value = clamp(value, props.min, props.max)
         instance.props.value = value
+        emit("update:value", value)
         emit("changing", { value })
       })
 
       onTouchEnd(() => {
+        emit("update:value", props.value)
         emit("change", { value: props.value })
       })
     }

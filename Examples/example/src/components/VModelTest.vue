@@ -10,7 +10,7 @@
 
 const emit = defineEmits(["update:modelValue"])
 
-const props = defineProps<{
+defineProps<{
   modelValue: string
 }>()
 
