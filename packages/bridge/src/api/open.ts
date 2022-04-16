@@ -13,6 +13,7 @@ import {
   setAuthorize,
   openAuthorizationView
 } from "./auth"
+import { extend } from "@nzoth/shared"
 
 const enum Events {
   GET_USER_INFO = "getUserInfo",
@@ -43,7 +44,7 @@ export function getUserInfo<T extends GetUserInfoOptions = GetUserInfoOptions>(
     const _getUserInfo = () => {
       invoke<SuccessResult<T>>(
         Events.GET_USER_INFO,
-        Object.assign({ withCredentials: false, lang: "en" }, options),
+        extend({ withCredentials: false, lang: "en" }, options),
         result => {
           invokeCallback(Events.GET_USER_INFO, options, result)
         }

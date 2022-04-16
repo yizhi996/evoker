@@ -6,6 +6,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
+import { extend } from "@nzoth/shared"
 
 const enum Events {
   SET_NAVIGATION_BAR_TITLE = "setNavigationBarTitle",
@@ -93,7 +94,7 @@ export function setNavigationBarColor<
   T extends SetNavigationBarColorOptions = SetNavigationBarColorOptions
 >(options: T): AsyncReturn<T, SetNavigationBarColorOptions> {
   return wrapperAsyncAPI<T>(options => {
-    const finalOptions = Object.assign(
+    const finalOptions = extend(
       {
         animation: {
           duration: 0,

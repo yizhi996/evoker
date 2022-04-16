@@ -1,17 +1,14 @@
 import { openNativelyCameraRecordVideo } from "./camera"
 import { openNativelyAlbumChooseVideo } from "./album"
 import { showActionSheet } from "../ui/interaction"
-import { invoke } from "../../bridge"
 import {
   invokeSuccess,
   invokeFailure,
-  invokeCallback,
   GeneralCallbackResult,
   AsyncReturn,
-  SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
-import { clamp } from "@nzoth/shared"
+import { clamp, extend } from "@nzoth/shared"
 
 const enum Events {
   CHOOSE_VIDEO = "chooseVideo"
@@ -47,7 +44,7 @@ export function chooseVideo<T extends ChooseVideoOptions = ChooseVideoOptions>(
   options: T
 ): AsyncReturn<T, ChooseVideoOptions> {
   return wrapperAsyncAPI<T>(options => {
-    const finalOptions = Object.assign(
+    const finalOptions = extend(
       {
         sourceType: ["album", "camera"],
         compressed: true,

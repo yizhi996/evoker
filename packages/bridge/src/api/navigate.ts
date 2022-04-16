@@ -7,6 +7,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../async"
+import { extend } from "@nzoth/shared"
 
 const enum Events {
   NAVIGATE_TO_MINI_PROGRAM = "navigateToMiniProgram"
@@ -34,7 +35,7 @@ export function navigateToMiniProgram<
   T extends NavigateToMiniProgramOptions = NavigateToMiniProgramOptions
 >(options: T): AsyncReturn<T, NavigateToMiniProgramOptions> {
   return wrapperAsyncAPI<T>(options => {
-    const finalOptions = Object.assign(
+    const finalOptions = extend(
       {
         appId: "",
         envVersion: "release"

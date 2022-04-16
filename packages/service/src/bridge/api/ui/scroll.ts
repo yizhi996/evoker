@@ -5,6 +5,7 @@ import {
   wrapperAsyncAPI
 } from "@nzoth/bridge"
 import { invokeWebViewMethod } from "../../fromWebView"
+import { extend } from "@nzoth/shared"
 
 interface PageScrollToOptions {
   scrollTop?: number
@@ -32,7 +33,7 @@ export function pageScrollTo<
   return wrapperAsyncAPI<T>(options => {
     invokeWebViewMethod(
       Events.PAGE_SCROLL_TO,
-      Object.assign({ duration: 300 }, options)
+      extend({ duration: 300 }, options)
     )
     invokeSuccess(Events.PAGE_SCROLL_TO, options, {})
   }, options)

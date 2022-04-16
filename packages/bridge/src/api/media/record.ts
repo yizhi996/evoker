@@ -1,3 +1,4 @@
+import { extend } from "@nzoth/shared"
 import { GeneralCallbackResult } from "../../async"
 import { invoke, subscribe } from "../../bridge"
 
@@ -102,7 +103,7 @@ class RecorderManager {
       format: "aac"
     }
 
-    this.operate(Methods.START, Object.assign(opt, options))
+    this.operate(Methods.START, extend(opt, options))
   }
 
   stop() {

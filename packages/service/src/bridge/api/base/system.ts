@@ -4,6 +4,7 @@ import {
   invokeSuccess,
   wrapperAsyncAPI
 } from "@nzoth/bridge"
+import { extend } from "@nzoth/shared"
 
 export function getSystemSetting() {
   return globalThis.__NZAppServiceNativeSDK.system.getSystemSetting()
@@ -22,7 +23,7 @@ export function getAppBaseInfo() {
 }
 
 export function getSystemInfoSync() {
-  return Object.assign(
+  return extend(
     getSystemSetting(),
     getDeviceInfo(),
     getWindowInfo(),

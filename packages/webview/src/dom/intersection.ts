@@ -1,4 +1,3 @@
-import { NZJSBridge } from "../bridge"
 import "intersection-observer"
 import { SyncFlags } from "@nzoth/shared"
 import { sync } from "@nzoth/bridge"

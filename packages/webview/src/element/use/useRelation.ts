@@ -1,5 +1,6 @@
 import { reactive, provide, InjectionKey, ComponentInternalInstance } from "vue"
 import { isNZothElement } from "../../dom/element"
+import { extend } from "@nzoth/shared"
 
 export type ParentProvide<T> = T & {
   link(child: ComponentInternalInstance): void
@@ -76,7 +77,7 @@ export function useChildren<T>(key: InjectionKey<ParentProvide<T>>) {
 
     provide(
       key,
-      Object.assign(
+      extend(
         {
           link,
           unlink,

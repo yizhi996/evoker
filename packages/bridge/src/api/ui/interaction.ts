@@ -6,7 +6,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
-import { isString } from "@nzoth/shared"
+import { extend, isString } from "@nzoth/shared"
 
 const enum Events {
   SHOW_TOAST = "showToast",
@@ -38,7 +38,7 @@ export function showToast<T extends ShowToastOptions = ShowToastOptions>(
   options: T
 ): AsyncReturn<T, ShowToastOptions> {
   return wrapperAsyncAPI<T>(options => {
-    const finalOptions = Object.assign(
+    const finalOptions = extend(
       {
         title: "",
         icon: "success",
@@ -106,7 +106,7 @@ export function showModal<T extends ShowModalOptions = ShowModalOptions>(
   options: T
 ): AsyncReturn<T, ShowModalOptions> {
   return wrapperAsyncAPI<T>(options => {
-    const finalOptions = Object.assign(
+    const finalOptions = extend(
       {
         showCancel: true,
         cancelText: "取消",
@@ -147,7 +147,7 @@ export function showLoading<T extends ShowLoadingOptions = ShowLoadingOptions>(
   options: T
 ): AsyncReturn<T, ShowLoadingOptions> {
   return wrapperAsyncAPI<T>(options => {
-    const finalOptions = Object.assign(
+    const finalOptions = extend(
       {
         title: "",
         icon: "loading",
@@ -209,7 +209,7 @@ export function showActionSheet<
   T extends ShowActionSheetOptions = ShowActionSheetOptions
 >(options: T): AsyncReturn<T, ShowActionSheetOptions> {
   return wrapperAsyncAPI<T>(options => {
-    const finalOptions = Object.assign(
+    const finalOptions = extend(
       {
         itemList: []
       },

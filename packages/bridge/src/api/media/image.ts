@@ -11,6 +11,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
+import { extend } from "@nzoth/shared"
 
 const enum Events {
   PREVIEW_IMAGE = "previewImage"
@@ -74,7 +75,7 @@ export function chooseImage<T extends ChooseImageOptions = ChooseImageOptions>(
   options: T
 ): AsyncReturn<T, ChooseImageOptions> {
   return wrapperAsyncAPI<T>(options => {
-    const finalOptions = Object.assign(
+    const finalOptions = extend(
       {
         count: 9,
         sizeType: ["original", "compressed"],

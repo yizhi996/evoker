@@ -5,6 +5,7 @@ import {
   wrapperAsyncAPI
 } from "@nzoth/bridge"
 import { invokeWebViewMethod } from "../../fromWebView"
+import { extend } from "@nzoth/shared"
 
 const enum Events {
   LOAD_FONT_FACE = "loadFontFace"
@@ -45,7 +46,7 @@ export function loadFontFace<
       {
         family: options.family,
         source: options.source,
-        desc: Object.assign(defaultDesc, options.desc)
+        desc: extend(defaultDesc, options.desc)
       },
       result => {
         invokeCallback(Events.LOAD_FONT_FACE, options, result)

@@ -1,7 +1,6 @@
-import { InnerJSBridge } from "../../bridge"
 import { getCurrentWebViewId } from "../../../app"
 import { randomId } from "../../../utils"
-import { SyncFlags } from "@nzoth/shared"
+import { extend, SyncFlags } from "@nzoth/shared"
 import { sync } from "@nzoth/bridge"
 
 type ObserverCallback = (result: ObserverCallbackResult) => void
@@ -114,7 +113,7 @@ export function createIntersectionObserver(
     initialRatio: 0,
     observeAll: false
   }
-  Object.assign(defaultOptions, options)
+  extend(defaultOptions, options)
   return new IntersectionObserver(defaultOptions)
 }
 

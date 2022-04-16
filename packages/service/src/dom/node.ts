@@ -2,6 +2,7 @@ import { NZothPage } from "./page"
 import { NZothEventTarget } from "./eventTarget"
 import { NZothHTMLElement } from "./html"
 import { NZothCSSStyleDeclaration } from "./style"
+import { extend } from "@nzoth/shared"
 
 export class NZothNode extends NZothEventTarget {
   page: NZothPage
@@ -54,7 +55,7 @@ export class NZothNode extends NZothEventTarget {
   }
 
   cloneNode(deep?: boolean): NZothNode {
-    const clone = Object.assign(
+    const clone = extend(
       Object.create(Object.getPrototypeOf(this)),
       this
     ) as NZothHTMLElement
@@ -63,12 +64,12 @@ export class NZothNode extends NZothEventTarget {
     const { attributes, style } = clone
 
     if (attributes) {
-      clone.attributes = Object.assign(Object.create(null), attributes)
+      clone.attributes = extend(Object.create(null), attributes)
     }
 
     if (style) {
       clone.style = new NZothCSSStyleDeclaration(clone)
-      clone.style._style = Object.assign(Object.create(null), style._style)
+      clone.style._style = extend(Object.create(null), style._style)
     }
 
     if (deep) {

@@ -1,5 +1,4 @@
 import "./dom/vdSync"
-import "./dom/intersection"
 
 export { injectComponent } from "./element"
 

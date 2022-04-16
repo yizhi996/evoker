@@ -9,6 +9,7 @@ import {
   openAuthorizationView
 } from "@nzoth/bridge"
 import { innerAppData } from "../../app"
+import { extend } from "@nzoth/shared"
 
 const enum Events {
   GET_USER_PRIFILE = "getUserProfile"
@@ -44,7 +45,7 @@ export function getUserProfile<
     if (accepted) {
       InnerJSBridge.invoke<SuccessResult<T>>(
         Events.GET_USER_PRIFILE,
-        Object.assign({ lang: "en", desc: "" }, options),
+        extend({ lang: "en", desc: "" }, options),
         result => {
           invokeCallback(Events.GET_USER_PRIFILE, options, result)
         }

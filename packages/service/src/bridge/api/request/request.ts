@@ -5,7 +5,7 @@ import {
   invokeFailure,
   invokeSuccess
 } from "@nzoth/bridge"
-import { isString, isNumber, isObject, isArrayBuffer } from "@nzoth/shared"
+import { isString, isNumber, isObject, isArrayBuffer, extend } from "@nzoth/shared"
 import {
   Events,
   CONTENT_TYPE,
@@ -99,7 +99,7 @@ export function request<T extends RequestOptions = RequestOptions>(
       let query = data
       if (ogQuery) {
         query = queryStringToObject(ogQuery)
-        query = Object.assign(query, data)
+        query = extend(query, data)
       }
       url = ogURL + "?" + objectToQueryString(query)
       data = ""

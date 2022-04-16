@@ -1,4 +1,4 @@
-import { isFunction } from "@nzoth/shared"
+import { isFunction, extend } from "@nzoth/shared"
 import type { InvokeCallbackResult } from "./bridge"
 
 export interface GeneralCallbackResult {
@@ -38,7 +38,7 @@ function promisify<T extends SuccessCallback>(
   options: Omit<T, "success" | "fail">
 ): PromiseSuccessResult<T> {
   return new Promise((resolve, reject) => {
-    const finalOptions = Object.assign({}, options, {
+    const finalOptions = extend({}, options, {
       success: resolve,
       fail: reject
     })

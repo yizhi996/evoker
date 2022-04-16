@@ -6,7 +6,7 @@ import {
   invokeCallback,
   wrapperAsyncAPI
 } from "../async"
-import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
+import { addEvent, removeEvent, dispatchEvent, extend } from "@nzoth/shared"
 
 const enum Events {
   GET_LOCATION = "getLocation",
@@ -49,7 +49,7 @@ export function getLocation<T extends GetLocationOptions = GetLocationOptions>(
   return wrapperAsyncAPI<T>(options => {
     invoke<SuccessResult<T>>(
       Events.GET_LOCATION,
-      Object.assign(
+      extend(
         { type: "wgs84", altitude: false, isHighAccuracy: false },
         options
       ),

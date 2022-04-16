@@ -6,6 +6,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
+import { extend } from "@nzoth/shared"
 
 interface ScanCodeOptions {
   onlyFromCamera?: boolean
@@ -30,7 +31,7 @@ export function scanCode<T extends ScanCodeOptions = ScanCodeOptions>(
   options: T
 ): AsyncReturn<T, ScanCodeOptions> {
   return wrapperAsyncAPI<T>(options => {
-    const finalOptions = Object.assign(
+    const finalOptions = extend(
       {
         onlyFromCamera: false,
         scanType: ["barCode", "qrCode"]

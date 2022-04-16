@@ -1,3 +1,5 @@
+import { extend } from "@nzoth/shared"
+
 type AnimationTimingFunction =
   | "linear"
   | "ease"
@@ -298,7 +300,7 @@ class Animation {
       stepTransform[key] = anim
     })
 
-    const transform = Object.assign({}, this.currentTransform, stepTransform)
+    const transform = extend({}, this.currentTransform, stepTransform)
 
     const animations: AnimationStepAction[] = []
     for (const action of Object.values(transform)) {
