@@ -14,18 +14,18 @@ enum NZCryptoAPI: String, NZBuiltInAPI {
     case rsa
     case getRandomValues
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.global().async {
             switch self {
             case .rsa:
-                rsa(args: args, bridge: bridge)
+                rsa(appService: appService, bridge: bridge, args: args)
             case .getRandomValues:
-                getRandomValues(args:args, bridge: bridge)
+                getRandomValues(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func rsa(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func rsa(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -79,7 +79,7 @@ enum NZCryptoAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func getRandomValues(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func getRandomValues(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)

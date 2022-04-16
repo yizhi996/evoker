@@ -15,20 +15,18 @@ enum NZPullDownRefreshAPI: String, NZBuiltInAPI {
     case startPullDownRefresh
     case stopPullDownRefresh
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .startPullDownRefresh:
-                startPullDownRefresh(args: args, bridge: bridge)
+                startPullDownRefresh(appService: appService, bridge: bridge, args: args)
             case .stopPullDownRefresh:
-                stopPullDownRefresh(args: args, bridge: bridge)
+                stopPullDownRefresh(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func startPullDownRefresh(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func startPullDownRefresh(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = (appService.currentPage as? NZWebPage)?.webView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -39,9 +37,7 @@ enum NZPullDownRefreshAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func stopPullDownRefresh(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func stopPullDownRefresh(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = (appService.currentPage as? NZWebPage)?.webView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)

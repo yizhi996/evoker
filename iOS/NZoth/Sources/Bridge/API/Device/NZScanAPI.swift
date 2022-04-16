@@ -13,18 +13,16 @@ enum NZScanAPI: String, NZBuiltInAPI {
     
     case scanCode
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .scanCode:
-                scanCode(args: args, bridge: bridge)
+                scanCode(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func scanCode(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func scanCode(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {        
         guard let params: NZScanCodeViewModel.Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)

@@ -14,20 +14,18 @@ enum NZMapAPI: String, NZBuiltInAPI {
     case insertMap
     case updateMap
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .insertMap:
-                insertMap(args: args, bridge: bridge)
+                insertMap(appService: appService, bridge: bridge, args: args)
             case .updateMap:
-                updateMap(args: args, bridge: bridge)
+                updateMap(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func insertMap(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func insertMap(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -66,9 +64,7 @@ enum NZMapAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func updateMap(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func updateMap(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)

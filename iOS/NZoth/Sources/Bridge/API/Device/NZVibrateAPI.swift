@@ -15,18 +15,18 @@ enum NZVibrateAPI: String, NZBuiltInAPI {
     case vibrateShort
     case vibrateLong
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
         switch self {
             case .vibrateShort:
-                vibrateShort(args: args, bridge: bridge)
+                vibrateShort(appService: appService, bridge: bridge, args: args)
             case .vibrateLong:
-                vibrateLong(args: args, bridge: bridge)
+                vibrateLong(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func vibrateShort(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func vibrateShort(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let type: `Type`
@@ -61,7 +61,7 @@ enum NZVibrateAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func vibrateLong(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func vibrateLong(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
         bridge.invokeCallbackSuccess(args: args)
     }

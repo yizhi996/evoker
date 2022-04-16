@@ -19,32 +19,30 @@ enum NZRouteAPI: String, NZBuiltInAPI {
     case reLaunch
     case openBrowser
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .navigateTo:
-                navigateTo(args: args, bridge: bridge)
+                navigateTo(appService: appService, bridge: bridge, args: args)
             case .navigateBack:
-                navigateBack(args: args, bridge: bridge)
+                navigateBack(appService: appService, bridge: bridge, args: args)
             case .redirectTo:
-                redirectTo(args: args, bridge: bridge)
+                redirectTo(appService: appService, bridge: bridge, args: args)
             case .switchTab:
-                switchTab(args: args, bridge: bridge)
+                switchTab(appService: appService, bridge: bridge, args: args)
             case .reLaunch:
-                reLaunch(args: args, bridge: bridge)
+                reLaunch(appService: appService, bridge: bridge, args: args)
             case .openBrowser:
-                openBrowser(args: args, bridge: bridge)
+                openBrowser(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func navigateTo(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func navigateTo(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let url: String
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -63,13 +61,11 @@ enum NZRouteAPI: String, NZBuiltInAPI {
         })
     }
     
-    private func navigateBack(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func navigateBack(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
        
         struct Params: Decodable {
             let delta: Int
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -81,13 +77,11 @@ enum NZRouteAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func redirectTo(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func redirectTo(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let url: String
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -110,13 +104,11 @@ enum NZRouteAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func switchTab(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func switchTab(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let url: String
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -128,13 +120,11 @@ enum NZRouteAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func reLaunch(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func reLaunch(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let url: String
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -149,9 +139,7 @@ enum NZRouteAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func openBrowser(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func openBrowser(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {        
         guard let params = args.paramsString.toDict() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)

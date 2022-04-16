@@ -16,22 +16,22 @@ enum NZCameraAPI: String, NZBuiltInAPI {
     case operateCamera
     case openNativelyCamera
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .insertCamera:
-                insertCamera(args: args, bridge: bridge)
+                insertCamera(appService: appService, bridge: bridge, args: args)
             case .updateCamera:
-                updateCamera(args: args, bridge: bridge)
+                updateCamera(appService: appService, bridge: bridge, args: args)
             case .operateCamera:
-                operateCamera(args: args, bridge: bridge)
+                operateCamera(appService: appService, bridge: bridge, args: args)
             case .openNativelyCamera:
-                openNativelyCamera(args: args, bridge: bridge)
+                openNativelyCamera(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func insertCamera(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func insertCamera(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable  {
             let parentId: String
@@ -41,8 +41,6 @@ enum NZCameraAPI: String, NZBuiltInAPI {
             let resolution: NZCameraEngine.Resolution
             let flash: NZCameraEngine.FlashMode
         }
-        
-        guard let appService = bridge.appService else { return }
 
         guard let webView = bridge.container as? NZWebView, let page = webView.page else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
@@ -115,14 +113,12 @@ enum NZCameraAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func updateCamera(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func updateCamera(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable  {
             let devicePosition: NZCameraEngine.DevicePosition
             let flash: NZCameraEngine.FlashMode
         }
-        
-        guard let appService = bridge.appService else { return }
 
         guard let webView = bridge.container as? NZWebView, let page = webView.page else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
@@ -154,7 +150,7 @@ enum NZCameraAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func operateCamera(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func operateCamera(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let cameraId: Int
@@ -222,8 +218,6 @@ enum NZCameraAPI: String, NZBuiltInAPI {
                 }
             }
         }
-        
-        guard let appService = bridge.appService else { return }
 
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -298,7 +292,7 @@ enum NZCameraAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func openNativelyCamera(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func openNativelyCamera(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let type: MediaType
@@ -330,8 +324,6 @@ enum NZCameraAPI: String, NZBuiltInAPI {
                 }
             }
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)

@@ -13,16 +13,16 @@ enum NZBatteryAPI: String, NZBuiltInAPI {
    
     case getBatteryInfo
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .getBatteryInfo:
-                getBatteryInfo(args: args, bridge: bridge)
+                getBatteryInfo(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func getBatteryInfo(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func getBatteryInfo(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         UIDevice.current.isBatteryMonitoringEnabled = true
         let level = Int(UIDevice.current.batteryLevel * 100)
         let isCharging = UIDevice.current.batteryState == .charging

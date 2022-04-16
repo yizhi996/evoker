@@ -15,22 +15,22 @@ enum NZOpenAPI: String, NZBuiltInAPI {
     case getUserInfo
     case getUserProfile
 
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .login:
-                self.login(args: args, bridge: bridge)
+                self.login(appService: appService, bridge: bridge, args: args)
             case .checkSession:
-                self.checkSession(args: args, bridge: bridge)
+                self.checkSession(appService: appService, bridge: bridge, args: args)
             case .getUserInfo:
-                self.getUserInfo(args: args, bridge: bridge)
+                self.getUserInfo(appService: appService, bridge: bridge, args: args)
             case .getUserProfile:
-                self.getUserProfile(args: args, bridge: bridge)
+                self.getUserProfile(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func login(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func login(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         if let hook = NZEngineHooks.shared.openAPI.login {
             hook(args, bridge)
         } else {
@@ -39,7 +39,7 @@ enum NZOpenAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func checkSession(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func checkSession(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         if let hook = NZEngineHooks.shared.openAPI.checkSession {
             hook(args, bridge)
         } else {
@@ -48,7 +48,7 @@ enum NZOpenAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func getUserInfo(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func getUserInfo(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         if let hook = NZEngineHooks.shared.openAPI.getUserInfo {
             hook(args, bridge)
         } else {
@@ -57,7 +57,7 @@ enum NZOpenAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func getUserProfile(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func getUserProfile(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         if let hook = NZEngineHooks.shared.openAPI.getUserProfile {
             hook(args, bridge)
         } else {

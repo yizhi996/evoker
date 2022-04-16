@@ -13,16 +13,16 @@ enum NZNavigateAPI: String, NZBuiltInAPI {
     
     case navigateToMiniProgram
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .navigateToMiniProgram:
-                navigateToMiniProgram(args: args, bridge: bridge)
+                navigateToMiniProgram(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func navigateToMiniProgram(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func navigateToMiniProgram(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let appId: String
@@ -36,8 +36,6 @@ enum NZNavigateAPI: String, NZBuiltInAPI {
             case trial
             case release
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)

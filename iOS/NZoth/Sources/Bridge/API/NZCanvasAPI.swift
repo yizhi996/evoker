@@ -12,14 +12,14 @@ enum NZCanvasAPI: String, NZBuiltInAPI {
     
     case drawCanvas
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         switch self {
         case .drawCanvas:
-            drawCanvas(args: args, bridge: bridge)
+            drawCanvas(appService: appService, bridge: bridge, args: args)
         }
     }
     
-    private func drawCanvas(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func drawCanvas(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
     }
     

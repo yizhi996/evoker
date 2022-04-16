@@ -13,22 +13,20 @@ enum NZLifeCycleAPI: String, NZBuiltInAPI {
     
     case pageEffect
 
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .pageEffect:
-                self.pageEffect(args: args, bridge: bridge)
+                self.pageEffect(appService: appService, bridge: bridge, args: args)
             }
         }
     }
 
-    private func pageEffect(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func pageEffect(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let pageId: Int
             let hooks: [String: Bool]
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)

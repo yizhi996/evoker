@@ -17,20 +17,20 @@ enum NZRequestAPI: String, NZBuiltInAPI {
     case downloadFile
     case uploadFile
    
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         switch self {
         case .request:
-            request(args: args, bridge: bridge)
+            request(appService: appService, bridge: bridge, args: args)
         case .cancelRequest:
-            cancelRequest(args: args, bridge: bridge)
+            cancelRequest(appService: appService, bridge: bridge, args: args)
         case .downloadFile:
-            downloadFile(args: args, bridge: bridge)
+            downloadFile(appService: appService, bridge: bridge, args: args)
         case .uploadFile:
-            uploadFile(args: args, bridge: bridge)
+            uploadFile(appService: appService, bridge: bridge, args: args)
         }
     }
     
-    private func request(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func request(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let taskId: Int
@@ -46,8 +46,6 @@ enum NZRequestAPI: String, NZBuiltInAPI {
                 case arraybuffer
             }
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -128,9 +126,7 @@ enum NZRequestAPI: String, NZBuiltInAPI {
         return result ?? ""
     }
     
-    private func cancelRequest(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func cancelRequest(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict(),
               let taskId = params["taskId"] as? Int else {
                   let error = NZError.bridgeFailed(reason: .fieldRequired("id"))
@@ -144,7 +140,7 @@ enum NZRequestAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func downloadFile(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func downloadFile(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let taskId: Int
@@ -153,8 +149,6 @@ enum NZRequestAPI: String, NZBuiltInAPI {
             let filePath: String
             let timeout: TimeInterval
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -214,7 +208,7 @@ enum NZRequestAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func uploadFile(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func uploadFile(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let taskId: Int
@@ -225,8 +219,6 @@ enum NZRequestAPI: String, NZBuiltInAPI {
             let header: [String: String]
             let timeout: TimeInterval
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)

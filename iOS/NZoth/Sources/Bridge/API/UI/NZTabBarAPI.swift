@@ -19,36 +19,34 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
     case removeTabBarBadge
     case setTabBarItem
 
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .showTabBar:
-                showTabBar(args: args, bridge: bridge)
+                showTabBar(appService: appService, bridge: bridge, args: args)
             case .hideTabBar:
-                hideTabBar(args: args, bridge: bridge)
+                hideTabBar(appService: appService, bridge: bridge, args: args)
             case .setTabBarStyle:
-                setTabBarStyle(args: args, bridge: bridge)
+                setTabBarStyle(appService: appService, bridge: bridge, args: args)
             case .showTabBarRedDot:
-                showTabBarRedDot(args: args, bridge: bridge)
+                showTabBarRedDot(appService: appService, bridge: bridge, args: args)
             case .hideTabBarRedDot:
-                hideTabBarRedDot(args: args, bridge: bridge)
+                hideTabBarRedDot(appService: appService, bridge: bridge, args: args)
             case .setTabBarBadge:
-                setTabBarBadge(args: args, bridge: bridge)
+                setTabBarBadge(appService: appService, bridge: bridge, args: args)
             case .removeTabBarBadge:
-                removeTabBarBadge(args: args, bridge: bridge)
+                removeTabBarBadge(appService: appService, bridge: bridge, args: args)
             case .setTabBarItem:
-                setTabBarItem(args: args, bridge: bridge)
+                setTabBarItem(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func showTabBar(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func showTabBar(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let animation: Bool
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let viewController = appService.rootViewController?.viewControllers.last as? NZWebPageViewController else {
             let error = NZError.bridgeFailed(reason: .visibleViewControllerNotFound)
@@ -79,12 +77,10 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func hideTabBar(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func hideTabBar(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let animation: Bool
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let viewController = appService.rootViewController?.viewControllers.last as? NZWebPageViewController else {
             let error = NZError.bridgeFailed(reason: .visibleViewControllerNotFound)
@@ -115,7 +111,7 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func setTabBarStyle(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func setTabBarStyle(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let color: String?
@@ -123,8 +119,6 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
             let backgroundColor: String?
             let borderStyle: NZAppTabBarInfo.BorderStyle?
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -152,13 +146,11 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func showTabBarRedDot(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func showTabBarRedDot(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let index: Int
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -172,13 +164,11 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func hideTabBarRedDot(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func hideTabBarRedDot(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let index: Int
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -192,14 +182,12 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func setTabBarBadge(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func setTabBarBadge(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let index: Int
             let text: String
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -213,13 +201,11 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func removeTabBarBadge(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func removeTabBarBadge(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let index: Int
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -233,7 +219,7 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func setTabBarItem(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func setTabBarItem(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let index: Int
@@ -241,8 +227,6 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
             let iconPath: String?
             let selectedIconPath: String?
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)

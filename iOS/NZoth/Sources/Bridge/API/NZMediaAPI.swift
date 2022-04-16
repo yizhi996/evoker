@@ -30,22 +30,20 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         }
     }
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         runInThread.async {
             switch self {
             case .getLocalImage:
-                getLocalImage(args: args, bridge: bridge)
+                getLocalImage(appService: appService, bridge: bridge, args: args)
             case .previewImage:
-                previewImage(args: args, bridge: bridge)
+                previewImage(appService: appService, bridge: bridge, args: args)
             case .openNativelyAlbum:
-                openNativelyAlbum(args: args, bridge: bridge)
+                openNativelyAlbum(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func getLocalImage(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func getLocalImage(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -112,7 +110,7 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args, result: ["src": dataURL])
     }
     
-    private func previewImage(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func previewImage(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let current: Int
             let urls: [String]
@@ -143,7 +141,7 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func openNativelyAlbum(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func openNativelyAlbum(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let types: [SourceType]
             let sizeType: [SizeType]
@@ -159,8 +157,6 @@ enum NZMediaAPI: String, NZBuiltInAPI {
             case original
             case compressed
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)

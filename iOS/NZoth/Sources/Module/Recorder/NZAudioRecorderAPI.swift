@@ -12,16 +12,16 @@ enum NZAudioRecorderAPI: String, NZBuiltInAPI {
     
     case operateAudioRecorder
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .operateAudioRecorder:
-                self.operateAudioRecorder(args: args, bridge: bridge)
+                self.operateAudioRecorder(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func operateAudioRecorder(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func operateAudioRecorder(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let method: Method
             var startData: NZAudioRecorder.Params?
@@ -33,8 +33,6 @@ enum NZAudioRecorderAPI: String, NZBuiltInAPI {
                 case resume
             }
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let module: NZAudioRecorderModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZAudioRecorderModule.name))

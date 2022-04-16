@@ -12,16 +12,16 @@ enum NZAudioAPI: String, NZBuiltInAPI {
     
     case operateInnerAudioContext
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .operateInnerAudioContext:
-                operateInnerAudioContext(args: args, bridge: bridge)
+                operateInnerAudioContext(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func operateInnerAudioContext(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func operateInnerAudioContext(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let audioId: Int
             let method: Method
@@ -88,8 +88,6 @@ enum NZAudioAPI: String, NZBuiltInAPI {
                 }
             }
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)

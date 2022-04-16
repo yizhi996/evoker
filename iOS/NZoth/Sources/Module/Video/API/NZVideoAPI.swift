@@ -13,20 +13,18 @@ enum NZVideoAPI: String, NZBuiltInAPI {
     case insertVideoPlayer
     case operateVideoPlayer
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .insertVideoPlayer:
-                insertVideoPlayer(args: args, bridge: bridge)
+                insertVideoPlayer(appService: appService, bridge: bridge, args: args)
             case .operateVideoPlayer:
-                operateVideoPlayer(args: args, bridge: bridge)
+                operateVideoPlayer(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func insertVideoPlayer(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func insertVideoPlayer(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -102,7 +100,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func operateVideoPlayer(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func operateVideoPlayer(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let videoPlayerId: Int
@@ -129,8 +127,6 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             case enterFullscreen
             case changeURL
         }
-        
-        guard let appService = bridge.appService else { return }
 
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)

@@ -14,23 +14,23 @@ enum NZClipboardAPI: String, NZBuiltInAPI {
     case getClipboardData
     case setClipboardData
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
         switch self {
             case .getClipboardData:
-            getClipboardData(args: args, bridge: bridge)
+            getClipboardData(appService: appService, bridge: bridge, args: args)
             case .setClipboardData:
-            setClipboardData(args: args, bridge: bridge)
+            setClipboardData(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func getClipboardData(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func getClipboardData(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         let data = UIPasteboard.general.string ?? ""
         bridge.invokeCallbackSuccess(args: args, result: ["data": data])
     }
     
-    private func setClipboardData(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func setClipboardData(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let data: String
         }

@@ -14,22 +14,20 @@ enum NZLocationAPI: String, NZBuiltInAPI {
     case startLocationUpdate
     case stopLocationUpdate
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .getLocation:
-                self.getLocation(args: args, bridge: bridge)
+                self.getLocation(appService: appService, bridge: bridge, args: args)
             case .startLocationUpdate:
-                self.startLocationUpdate(args: args, bridge: bridge)
+                self.startLocationUpdate(appService: appService, bridge: bridge, args: args)
             case .stopLocationUpdate:
-                self.stopLocationUpdate(args: args, bridge: bridge)
+                self.stopLocationUpdate(appService: appService, bridge: bridge, args: args)
             }
         }
     }
             
-    private func getLocation(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func getLocation(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let module: NZLocationModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZLocationModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
@@ -52,12 +50,10 @@ enum NZLocationAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func startLocationUpdate(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func startLocationUpdate(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let type: NZLocationType
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let module: NZLocationModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZLocationModule.name))
@@ -79,9 +75,7 @@ enum NZLocationAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func stopLocationUpdate(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func stopLocationUpdate(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {    
         guard let module: NZLocationModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZLocationModule.name))
             bridge.invokeCallbackFail(args: args, error: error)

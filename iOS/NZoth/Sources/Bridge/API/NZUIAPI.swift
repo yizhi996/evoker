@@ -19,26 +19,26 @@ enum NZUIAPI: String, NZBuiltInAPI {
     case operateScrollView
     case pageScrollTo
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .showPickerView:
-                showPickerView(args: args, bridge: bridge)
+                showPickerView(appService: appService, bridge: bridge, args: args)
             case .showMultiPickerView:
-                showMultiPickerView(args: args, bridge: bridge)
+                showMultiPickerView(appService: appService, bridge: bridge, args: args)
             case .showDatePickerView:
-                showDatePickerView(args: args, bridge: bridge)
+                showDatePickerView(appService: appService, bridge: bridge, args: args)
             case .updateMultiPickerView:
-                updateMultiPickerView(args: args, bridge: bridge)
+                updateMultiPickerView(appService: appService, bridge: bridge, args: args)
             case .operateScrollView:
-                operateScrollView(args: args, bridge: bridge)
+                operateScrollView(appService: appService, bridge: bridge, args: args)
             case .pageScrollTo:
-                pageScrollTo(args: args, bridge: bridge)
+                pageScrollTo(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func showPickerView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func showPickerView(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -80,7 +80,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
         cover.show(to: viewController.view)
     }
     
-    private func showMultiPickerView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func showMultiPickerView(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -126,7 +126,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
         cover.show(to: viewController.view)
     }
     
-    private func showDatePickerView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func showDatePickerView(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -168,7 +168,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
         cover.show(to: viewController.view)
     }
     
-    private func updateMultiPickerView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func updateMultiPickerView(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -198,7 +198,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func operateScrollView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func operateScrollView(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let parentId: String
             let scrollViewId: Int
@@ -235,7 +235,7 @@ enum NZUIAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func pageScrollTo(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func pageScrollTo(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let top: CGFloat
             let duration: TimeInterval

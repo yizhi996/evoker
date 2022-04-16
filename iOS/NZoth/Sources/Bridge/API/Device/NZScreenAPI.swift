@@ -14,22 +14,22 @@ enum NZScreenAPI: String, NZBuiltInAPI {
     case getScreenBrightness
     case setScreenBrightness
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
         switch self {
             case .getScreenBrightness:
-                getScreenBrightness(args: args, bridge: bridge)
+                getScreenBrightness(appService: appService, bridge: bridge, args: args)
             case .setScreenBrightness:
-                setScreenBrightness(args: args, bridge: bridge)
+                setScreenBrightness(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func getScreenBrightness(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func getScreenBrightness(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         bridge.invokeCallbackSuccess(args: args, result: ["value": UIScreen.main.brightness])
     }
     
-    private func setScreenBrightness(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func setScreenBrightness(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let value: CGFloat
         }

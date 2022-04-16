@@ -13,23 +13,23 @@ enum NZNetworkAPI: String, NZBuiltInAPI {
     case getNetworkType
     case getLocalIPAddress
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .getNetworkType:
-                getNetworkType(args: args, bridge: bridge)
+                getNetworkType(appService: appService, bridge: bridge, args: args)
             case .getLocalIPAddress:
-                getLocalIPAddress(args: args, bridge: bridge)
+                getLocalIPAddress(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func getNetworkType(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func getNetworkType(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         let netType = NZEngine.shared.networkType.rawValue
         bridge.invokeCallbackSuccess(args: args, result: ["networkType": netType])
     }
     
-    private func getLocalIPAddress(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func getLocalIPAddress(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         bridge.invokeCallbackSuccess(args: args, result: ["localip": Network.getIPAddress()])
     }
     

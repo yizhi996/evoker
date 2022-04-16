@@ -17,26 +17,24 @@ enum NZNavigationAPI: String, NZBuiltInAPI {
     case setNavigationBarColor
     case hideHomeButton
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .setNavigationBarTitle:
-                setNavigationBarTitle(args: args, bridge: bridge)
+                setNavigationBarTitle(appService: appService, bridge: bridge, args: args)
             case .showNavigationBarLoading:
-                showNavigationBarLoading(args: args, bridge: bridge)
+                showNavigationBarLoading(appService: appService, bridge: bridge, args: args)
             case .hideNavigationBarLoading:
-                hideNavigationBarLoading(args: args, bridge: bridge)
+                hideNavigationBarLoading(appService: appService, bridge: bridge, args: args)
             case .setNavigationBarColor:
-                setNavigationBarColor(args: args, bridge: bridge)
+                setNavigationBarColor(appService: appService, bridge: bridge, args: args)
             case .hideHomeButton:
-                hideHomeButton(args: args, bridge: bridge)
+                hideHomeButton(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func setNavigationBarTitle(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func setNavigationBarTitle(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -59,9 +57,7 @@ enum NZNavigationAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args, result: [:])
     }
     
-    private func showNavigationBarLoading(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func showNavigationBarLoading(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let viewController = appService.currentPage?.viewController as? NZWebPageViewController else {
             let error = NZError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -71,9 +67,7 @@ enum NZNavigationAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func hideNavigationBarLoading(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func hideNavigationBarLoading(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let viewController = appService.currentPage?.viewController else {
             let error = NZError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -83,7 +77,7 @@ enum NZNavigationAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func setNavigationBarColor(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func setNavigationBarColor(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let frontColor: String
@@ -116,8 +110,6 @@ enum NZNavigationAPI: String, NZBuiltInAPI {
             }
         }
         
-        guard let appService = bridge.appService else { return }
-        
         guard let viewController = appService.currentPage?.viewController else {
             let error = NZError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -139,8 +131,7 @@ enum NZNavigationAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func hideHomeButton(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
+    private func hideHomeButton(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         appService.pages.last?.viewController?.navigationBar.hideGotoHomeButton()
         bridge.invokeCallbackSuccess(args: args)
     }

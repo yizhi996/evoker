@@ -14,20 +14,20 @@ enum NZInputAPI: String, NZBuiltInAPI {
     case insertInput
     case operateInput
 
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .insertTextArea:
-                insertTextArea(args: args, bridge: bridge)
+                insertTextArea(appService: appService, bridge: bridge, args: args)
             case .insertInput:
-                insertInput(args: args, bridge: bridge)
+                insertInput(appService: appService, bridge: bridge, args: args)
             case .operateInput:
-                operateInput(args: args, bridge: bridge)
+                operateInput(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func insertTextArea(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func insertTextArea(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
             let parentId: String
@@ -50,8 +50,6 @@ enum NZInputAPI: String, NZBuiltInAPI {
             let disableDefaultPadding: Bool
             let confirmType: NZTextView.ConfirmType
         }
-            
-        guard let appService = bridge.appService else { return }
         
         guard let inputModule: NZInputModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZInputModule.name))
@@ -152,7 +150,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
                                                           "lineCount": lineCount])
     }
     
-    private func insertInput(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func insertInput(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable  {
             let parentId: String
@@ -175,8 +173,6 @@ enum NZInputAPI: String, NZBuiltInAPI {
             let holdKeyboard: Bool
             let cursorSpacing: CGFloat
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let inputModule: NZInputModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZInputModule.name))
@@ -264,7 +260,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func operateInput(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func operateInput(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable  {
             let inputId: Int
@@ -291,8 +287,6 @@ enum NZInputAPI: String, NZBuiltInAPI {
             case updateStyle
             case updatePlaceholderStyle
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let inputModule: NZInputModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZInputModule.name))

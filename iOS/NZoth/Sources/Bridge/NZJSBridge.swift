@@ -42,9 +42,9 @@ public extension NZJSBridge {
         NZLogger.debug("\(appService.appId) - invoke: \(args.eventName)")
         
         if let event = NZEngine.shared.extraAPIs[args.eventName] {
-            event.onInvoke(args: args, bridge: self)
+            event.onInvoke(appService: appService, bridge: self, args: args)
         } else if let event = NZEngine.shared.builtInAPIs[args.eventName] {
-            event.onInvoke(args: args, bridge: self)
+            event.onInvoke(appService: appService, bridge: self, args: args)
         } else {
             let error = NZError.bridgeFailed(reason: .eventNotDefined)
             invokeCallbackFail(args: args, error: error)
@@ -143,7 +143,7 @@ public protocol NZJSContainer: AnyObject {
 
 public protocol NZAPI {
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge)
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs)
 }
 
 protocol NZBuiltInAPI: NZAPI, CaseIterable {

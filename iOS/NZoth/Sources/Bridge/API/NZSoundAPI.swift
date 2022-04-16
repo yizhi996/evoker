@@ -13,16 +13,16 @@ enum NZSoundAPI: String, NZBuiltInAPI {
     
     case playSystemSound
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
         switch self {
             case .playSystemSound:
-                playSystemSound(args: args, bridge: bridge)
+                playSystemSound(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func playSystemSound(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func playSystemSound(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)

@@ -12,16 +12,16 @@ enum NZPhoneAPI: String, NZBuiltInAPI {
     
     case makePhoneCall
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
         switch self {
             case .makePhoneCall:
-            makePhoneCall(args: args, bridge: bridge)
+            makePhoneCall(appService: appService, bridge: bridge, args: args)
             }
         }
     }
 
-    private func makePhoneCall(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func makePhoneCall(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let phoneNumber: String
         }

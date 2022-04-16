@@ -29,20 +29,20 @@ enum NZTongCengAPI: String, NZBuiltInAPI {
         let scrollHeight: CGFloat
     }
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .insertContainer:
-                insertContainer(args: args, bridge: bridge)
+                insertContainer(appService: appService, bridge: bridge, args: args)
             case .updateContainer:
-                updateContainer(args: args, bridge: bridge)
+                updateContainer(appService: appService, bridge: bridge, args: args)
             case .removeContainer:
-                removeContainer(args: args, bridge: bridge)
+                removeContainer(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func insertContainer(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func insertContainer(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -78,7 +78,7 @@ enum NZTongCengAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func updateContainer(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func updateContainer(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -108,7 +108,7 @@ enum NZTongCengAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func removeContainer(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func removeContainer(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let webView = bridge.container as? NZWebView else {
             let error = NZError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)

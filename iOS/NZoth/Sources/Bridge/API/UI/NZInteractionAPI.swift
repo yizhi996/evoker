@@ -15,24 +15,22 @@ enum NZInteractionAPI: String, NZBuiltInAPI {
     case hideToast
     case showActionSheet
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .showModal:
-                showModal(args: args, bridge: bridge)
+                showModal(appService: appService, bridge: bridge, args: args)
             case .showToast:
-                showToast(args: args, bridge: bridge)
+                showToast(appService: appService, bridge: bridge, args: args)
             case .hideToast:
-                hideToast(args: args, bridge: bridge)
+                hideToast(appService: appService, bridge: bridge, args: args)
             case .showActionSheet:
-                showActionSheet(args: args, bridge: bridge)
+                showActionSheet(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func showModal(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func showModal(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params: NZAlertView.Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -59,9 +57,7 @@ enum NZInteractionAPI: String, NZBuiltInAPI {
         cover.show(to: viewController.view)
     }
     
-    private func showToast(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func showToast(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params: NZToast.Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -80,13 +76,11 @@ enum NZInteractionAPI: String, NZBuiltInAPI {
         bridge.invokeCallbackSuccess(args: args)
     }
     
-    private func hideToast(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func hideToast(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
 
     }
     
-    private func showActionSheet(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func showActionSheet(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params: NZActionSheet.Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)

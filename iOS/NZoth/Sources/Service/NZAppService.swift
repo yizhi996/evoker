@@ -142,8 +142,7 @@ final public class NZAppService {
         context.invokeHandler = { [unowned self] message in
             guard let event = message["event"] as? String,
                   let params = message["params"] as? String,
-                  let callbackId = message["callbackId"] as? Int
-            else { return }
+                  let callbackId = message["callbackId"] as? Int else { return }
             let args = NZJSBridge.InvokeArgs(eventName: event,
                                     paramsString: params,
                                     callbackId: callbackId)
@@ -154,8 +153,7 @@ final public class NZAppService {
             guard let event = message["event"] as? String,
                   let webViewId = message["webViewId"] as? Int,
                   let params = message["params"] as? String,
-                  let page = self.findWebPage(from: webViewId)
-            else { return }
+                  let page = self.findWebPage(from: webViewId) else { return }
             page.webView.bridge.subscribeHandler(method: NZSubscribeKey(event),
                                                 data: params,
                                                 webViewId: webViewId)

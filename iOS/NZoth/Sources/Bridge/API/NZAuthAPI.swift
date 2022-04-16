@@ -16,26 +16,24 @@ enum NZAuthAPI: String, NZBuiltInAPI {
     case setAuthorize
     case openSetting
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .openAuthorizationView:
-                self.openAuthorizationView(args: args, bridge: bridge)
+                self.openAuthorizationView(appService: appService, bridge: bridge, args: args)
             case .getSetting:
-                self.getSetting(args: args, bridge: bridge)
+                self.getSetting(appService: appService, bridge: bridge, args: args)
             case .getAuthorize:
-                self.getAuthorize(args: args, bridge: bridge)
+                self.getAuthorize(appService: appService, bridge: bridge, args: args)
             case .setAuthorize:
-                self.setAuthorize(args: args, bridge: bridge)
+                self.setAuthorize(appService: appService, bridge: bridge, args: args)
             case .openSetting:
-                self.openSetting(args: args, bridge: bridge)
+                self.openSetting(appService: appService, bridge: bridge, args: args)
             }
         }
     }
             
-    private func openAuthorizationView(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func openAuthorizationView(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let viewController = appService.rootViewController else {
             let error = NZError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -59,9 +57,7 @@ enum NZAuthAPI: String, NZBuiltInAPI {
         NZEngine.shared.shouldInteractivePopGesture = false
     }
     
-    private func getSetting(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func getSetting(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         let (authSetting, error) = appService.storage.getAllAuthorization()
         if let error = error {
             bridge.invokeCallbackFail(args: args, error: error)
@@ -70,12 +66,10 @@ enum NZAuthAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func getAuthorize(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func getAuthorize(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let scope: String
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -91,13 +85,11 @@ enum NZAuthAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func setAuthorize(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    private func setAuthorize(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         struct Params: Decodable {
             let scope: String
             let authorized: Bool
         }
-        
-        guard let appService = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
@@ -112,9 +104,7 @@ enum NZAuthAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func openSetting(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func openSetting(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         let viewModel = NZSettingViewModel(appService: appService)
         viewModel.popViewControllerHandler = {
             let (authSetting, error) = appService.storage.getAllAuthorization()

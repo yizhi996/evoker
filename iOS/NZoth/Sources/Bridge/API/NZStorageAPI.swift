@@ -20,26 +20,24 @@ enum NZStorageAPI: String, NZBuiltInAPI {
         return DispatchQueue.global()
     }
     
-    func onInvoke(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
+    func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         runInThread.async {
             switch self {
             case .getStorage:
-                getStorage(args: args, bridge: bridge)
+                getStorage(appService: appService, bridge: bridge, args: args)
             case .setStorage:
-                setStorage(args: args, bridge: bridge)
+                setStorage(appService: appService, bridge: bridge, args: args)
             case .removeStorage:
-                removeStorage(args: args, bridge: bridge)
+                removeStorage(appService: appService, bridge: bridge, args: args)
             case .clearStorage:
-                clearStorage(args: args, bridge: bridge)
+                clearStorage(appService: appService, bridge: bridge, args: args)
             case .getStorageInfo:
-                getStorageInfo(args: args, bridge: bridge)
+                getStorageInfo(appService: appService, bridge: bridge, args: args)
             }
         }
     }
     
-    private func getStorage(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func getStorage(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -60,9 +58,7 @@ enum NZStorageAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func setStorage(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func setStorage(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -94,9 +90,7 @@ enum NZStorageAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func removeStorage(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func removeStorage(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -116,9 +110,7 @@ enum NZStorageAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func clearStorage(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func clearStorage(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         if let error = appService.storage.clear() {
            bridge.invokeCallbackFail(args: args, error: error)
         } else {
@@ -126,9 +118,7 @@ enum NZStorageAPI: String, NZBuiltInAPI {
         }
     }
     
-    private func getStorageInfo(args: NZJSBridge.InvokeArgs, bridge: NZJSBridge) {
-        guard let appService = bridge.appService else { return }
-        
+    private func getStorageInfo(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         let (result, error) = appService.storage.info()
         if let (keys, size, limit) = result {
             bridge.invokeCallbackSuccess(args: args, result: ["keys": keys, "currentSize": size, "limitSize": limit])
