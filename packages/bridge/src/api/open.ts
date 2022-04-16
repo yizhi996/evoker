@@ -7,12 +7,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../async"
-import {
-  AuthorizationStatus,
-  getAuthorize,
-  setAuthorize,
-  openAuthorizationView
-} from "./auth"
+import { requestAuthorization } from "./auth"
 import { extend } from "@nzoth/shared"
 
 const enum Events {
@@ -38,35 +33,21 @@ type GetUserInfoCompleteCallback = (res: GeneralCallbackResult) => void
 export function getUserInfo<T extends GetUserInfoOptions = GetUserInfoOptions>(
   options: T
 ): AsyncReturn<T, GetUserInfoOptions> {
-  return wrapperAsyncAPI<T>(async options => {
+  return wrapperAsyncAPI<T>(options => {
     const scope = "scope.userInfo"
-
-    const _getUserInfo = () => {
-      invoke<SuccessResult<T>>(
-        Events.GET_USER_INFO,
-        extend({ withCredentials: false, lang: "en" }, options),
-        result => {
-          invokeCallback(Events.GET_USER_INFO, options, result)
-        }
-      )
-    }
-
-    try {
-      const status = await getAuthorize(scope)
-      if (status === AuthorizationStatus.authorized) {
-        _getUserInfo()
-      } else {
-        const authorized = await openAuthorizationView(scope)
-        if (authorized) {
-          _getUserInfo()
-        } else {
-          invokeFailure(Events.GET_USER_INFO, options, "auth denied")
-        }
-        setAuthorize(scope, authorized)
-      }
-    } catch (error) {
-      invokeFailure(Events.GET_USER_INFO, options, scope + error)
-    }
+    requestAuthorization(scope, false)
+      .then(() => {
+        invoke<SuccessResult<T>>(
+          Events.GET_USER_INFO,
+          extend({ withCredentials: false, lang: "en" }, options),
+          result => {
+            invokeCallback(Events.GET_USER_INFO, options, result)
+          }
+        )
+      })
+      .catch(err => {
+        invokeFailure(Events.GET_USER_INFO, options, err)
+      })
   }, options)
 }
 

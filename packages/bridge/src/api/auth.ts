@@ -68,25 +68,14 @@ type AuthorizeCompleteCallback = (res: GeneralCallbackResult) => void
 export function authorize<T extends AuthorizeOptions = AuthorizeOptions>(
   options: T
 ): AsyncReturn<T, AuthorizeOptions> {
-  return wrapperAsyncAPI<T>(async options => {
-    try {
-      const status = await getAuthorize(options.scope)
-      if (status === AuthorizationStatus.authorized) {
+  return wrapperAsyncAPI<T>(options => {
+    requestAuthorization(options.scope)
+      .then(() => {
         invokeSuccess(Events.AUTHORIZE, options, {})
-      } else if (status === AuthorizationStatus.denied) {
-        invokeFailure(Events.AUTHORIZE, options, options.scope + " denied")
-      } else {
-        const authorized = await openAuthorizationView(options.scope)
-        if (authorized) {
-          invokeSuccess(Events.AUTHORIZE, options, {})
-        } else {
-          invokeFailure(Events.AUTHORIZE, options, options.scope + " denied")
-        }
-        setAuthorize(options.scope, authorized)
-      }
-    } catch (error) {
-      invokeFailure(Events.AUTHORIZE, options, options.scope + error)
-    }
+      })
+      .catch(error => {
+        invokeFailure(Events.AUTHORIZE, options, error)
+      })
   }, options)
 }
 
@@ -164,5 +153,31 @@ export function setAuthorize(
         resolve()
       }
     })
+  })
+}
+
+export function requestAuthorization(
+  scope: string,
+  once: boolean = true
+): Promise<void> {
+  return new Promise(async (reslove, reject) => {
+    try {
+      const status = await getAuthorize(scope)
+      if (status === AuthorizationStatus.authorized) {
+        reslove()
+      } else if (status === AuthorizationStatus.denied && once) {
+        reject(`${scope} auth denied`)
+      } else {
+        const authorized = await openAuthorizationView(scope)
+        if (authorized) {
+          reslove()
+        } else {
+          reject(`${scope} auth denied`)
+        }
+        setAuthorize(scope, authorized)
+      }
+    } catch (error) {
+      reject(`${scope} ${error}`)
+    }
   })
 }
