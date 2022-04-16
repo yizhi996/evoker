@@ -1,6 +1,7 @@
 import { extend } from "@nzoth/shared"
 import { GeneralCallbackResult } from "../../async"
 import { invoke, subscribe } from "../../bridge"
+import { requestAuthorization } from "../auth"
 
 interface RecorderManagerStartOptions {
   duration?: number
@@ -95,15 +96,21 @@ class RecorderManager {
   }
 
   start(options: RecorderManagerStartOptions) {
-    const opt = {
-      duration: 60000,
-      sampleRate: 8000,
-      numberOfChannels: 2,
-      encodeBitRate: 48000,
-      format: "aac"
-    }
-
-    this.operate(Methods.START, extend(opt, options))
+    const scope = "scope.record"
+    requestAuthorization(scope)
+      .then(() => {
+        const opt = {
+          duration: 60000,
+          sampleRate: 8000,
+          numberOfChannels: 2,
+          encodeBitRate: 48000,
+          format: "aac"
+        }
+        this.operate(Methods.START, extend(opt, options))
+      })
+      .catch(error => {
+        this.onErrorCallback && this.onErrorCallback({ errMsg: error })
+      })
   }
 
   stop() {
