@@ -1,4 +1,5 @@
-import { isFunction, isNumber } from "./index"
+import { isFunction } from "@vue/shared"
+import { isNumber } from "./index"
 
 type Callback<T> = (res: T) => void
 

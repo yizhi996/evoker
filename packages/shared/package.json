@@ -16,5 +16,7 @@
   "keywords": [
     "nzoth"
   ],
-  "dependencies": {}
+  "dependencies": {
+    "@vue/shared": "^3.2.32"
+  }
 }

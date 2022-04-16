@@ -3,7 +3,7 @@ import useApp from "./lifecycle/useApp"
 import usePage from "./lifecycle/usePage"
 import "./native"
 import Vue from "vue"
-import { extend } from "@vue/shared"
+import { extend } from "@nzoth/shared"
 
 export { useApp, usePage }
 export { createApp } from "./app"

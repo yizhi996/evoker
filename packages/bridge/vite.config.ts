@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
         formats: ["cjs", "es"]
       },
       rollupOptions: {
-        external: ["vue"]
+        external: ["vue", "@nzoth/shared"]
       }
     }
   }

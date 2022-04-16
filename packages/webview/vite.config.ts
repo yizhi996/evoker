@@ -1,7 +1,7 @@
 import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
 import copy from "rollup-plugin-copy"
-import { isHTMLTag, isSVGTag } from "@vue/shared"
+import { isHTMLTag, isSVGTag } from "@nzoth/shared"
 import { resolve } from "path"
 
 const pkg = require(resolve(__dirname, "package.json"))

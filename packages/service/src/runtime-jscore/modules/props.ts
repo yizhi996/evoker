@@ -3,7 +3,7 @@
 // This can come from explicit usage of v-html or innerHTML as a prop in render
 
 import { warn } from "vue"
-import { includeBooleanAttr } from "@vue/shared"
+import { includeBooleanAttr } from "@nzoth/shared"
 
 // functions. The user is responsible for using them with only trusted content.
 export function patchDOMProp(

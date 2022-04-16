@@ -27,7 +27,8 @@ export default defineConfig(({ mode }) => {
           "@vitejs/plugin-vue",
           "@vue/compiler-core",
           "rollup-plugin-copy",
-          "picocolors"
+          "picocolors",
+          "@nzoth/shared"
         ]
       }
     }

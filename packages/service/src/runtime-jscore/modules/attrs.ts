@@ -1,5 +1,5 @@
 import { ComponentInternalInstance } from "vue"
-import { includeBooleanAttr, isSpecialBooleanAttr } from "@vue/shared"
+import { includeBooleanAttr, isSpecialBooleanAttr } from "@nzoth/shared"
 import { NZothElement } from "../../dom/element"
 
 export const xlinkNS = "http://www.w3.org/1999/xlink"

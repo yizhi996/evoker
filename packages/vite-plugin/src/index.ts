@@ -6,7 +6,7 @@ import type { Options as DevtoolsOptions } from "./vite-plugin-nzoth-devtools"
 import router from "./vite-plugin-nzoth-router"
 import assets from "./vite-plugin-nzoth-assets"
 import buildConfig from "./vite-plugin-nzoth-config"
-import { isHTMLTag, isSVGTag } from "@vue/shared"
+import { isHTMLTag, isSVGTag } from "@nzoth/shared"
 import compiler, {
   baseParse,
   transformModel,

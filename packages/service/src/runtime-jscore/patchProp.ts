@@ -1,7 +1,7 @@
 import { RendererOptions } from "vue"
 import { NZothNode } from "../dom/node"
 import { NZothElement } from "../dom/element"
-import { isOn, isFunction, isString } from "@vue/shared"
+import { isOn, isFunction, isString } from "@nzoth/shared"
 import { patchStyle } from "./modules/style"
 import { patchAttr } from "./modules/attrs"
 import { patchDOMProp } from "./modules/props"

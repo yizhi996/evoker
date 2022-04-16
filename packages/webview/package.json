@@ -21,15 +21,15 @@
     "@nzoth/bridge": "workspace:^0.1.0",
     "@nzoth/shared": "workspace:^0.1.0",
     "@tweenjs/tween.js": "^18.6.4",
-    "@vue/shared": "^3.2.31",
+    "intersection-observer": "^0.12.0",
     "lodash.throttle": "^4.1.1",
-    "vue": "^3.2.31"
+    "vue": "^3.2.32"
   },
   "devDependencies": {
     "@types/lodash.throttle": "^4.1.6",
     "@vitejs/plugin-vue": "^2.3.1",
     "@vue/eslint-config-typescript": "^9.1.0",
-    "@vue/test-utils": "^2.0.0-rc.19",
+    "@vue/test-utils": "^2.0.0-rc.20",
     "@vue/vue3-jest": "^27.0.0-alpha.4",
     "autoprefixer": "^10.4.4",
     "less": "^4.1.2",

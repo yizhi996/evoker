@@ -12,6 +12,9 @@ export default defineConfig(({ mode }) => {
         name: pkg.buildOptions?.name,
         fileName: foramt => `shared.${foramt}.js`,
         formats: ["cjs", "es"]
+      },
+      rollupOptions: {
+        external: ["@vue/shared"]
       }
     }
   }

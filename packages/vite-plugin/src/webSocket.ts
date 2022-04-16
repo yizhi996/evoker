@@ -1,5 +1,5 @@
 import ws from "ws"
-import { isString, isFunction } from "@vue/shared"
+import { isString, isFunction } from "@nzoth/shared"
 
 let websocketServer: ws.Server
 
