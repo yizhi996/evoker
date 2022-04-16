@@ -5,14 +5,16 @@ import {
   render,
   ComponentInternalInstance
 } from "vue"
-import { toHandlerKey } from "@vue/shared"
+import { toHandlerKey } from "@nzoth/shared"
 import { BuiltInComponent, requireBuiltInComponent } from "../element"
 import { restoreNode, NZVNode } from "./vnode"
 import {
   touchEvents,
-  addClickEvent,
   dispatchEvent,
-  createCustomEvent
+  createCustomEvent,
+  addTouchEvent,
+  tapEvents,
+  addTapEvent
 } from "./event"
 
 export type EL =
@@ -161,10 +163,13 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
     ;(el.__slot || el).textContent = textContent
   }
 
-  const events = Object.keys(listeners)
   if (listeners) {
-    for (const name of events) {
-      if (!touchEvents.includes(name)) {
+    for (const [name, options] of Object.entries(listeners)) {
+      if (touchEvents.includes(name)) {
+        addTouchEvent(nodeId, el, name, options)
+      } else if (tapEvents.includes(name)) {
+        addTapEvent(nodeId, el, name, options)
+      } else {
         const eventName = toHandlerKey(name)
         props[eventName] = (...args: any[]) => {
           const ev = {
@@ -178,12 +183,6 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
       }
     }
   }
-
-  touchEvents.forEach(ev => {
-    if (events.includes(ev)) {
-      addClickEvent(nodeId, el, ev, listeners[ev])
-    }
-  })
 
   node.vnode = wrapper
 
@@ -230,7 +229,9 @@ function createNativeElement(node: NZVNode) {
   if (listeners) {
     for (const [name, options] of Object.entries(listeners)) {
       if (touchEvents.includes(name)) {
-        addClickEvent(nodeId, el, name, listeners[name])
+        addTouchEvent(nodeId, el, name, options)
+      } else if (tapEvents.includes(name)) {
+        addTapEvent(nodeId, el, name, options)
       } else {
         el.addEventListener(
           name,

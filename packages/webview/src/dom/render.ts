@@ -1,13 +1,15 @@
 import {
   touchEvents,
-  addClickEvent,
   dispatchEvent,
-  createCustomEvent
+  createCustomEvent,
+  tapEvents,
+  addTouchEvent,
+  addTapEvent
 } from "./event"
 import { nodes, createElement, ElementWithTransition } from "./element"
 import { restoreNode } from "./vnode"
 import { isNZothElement, EL } from "./element"
-import { toHandlerKey } from "@vue/shared"
+import { toHandlerKey } from "@nzoth/shared"
 import { SyncFlags } from "@nzoth/shared"
 
 export function insertBefore(data: any[]) {
@@ -99,10 +101,9 @@ export function addEventListener(data: any[]) {
   if (node && node.el) {
     const { el, props } = node
     if (touchEvents.includes(type)) {
-      addClickEvent(nodeId, el, type, {
-        options,
-        modifiers
-      })
+      addTouchEvent(nodeId, el, type, { options, modifiers })
+    } else if (tapEvents.includes(type)) {
+      addTapEvent(nodeId, el, type, { options, modifiers })
     } else {
       if (isNZothElement(el)) {
         const eventName = toHandlerKey(type)

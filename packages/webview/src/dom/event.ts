@@ -23,19 +23,55 @@ export const enum TouchEventType {
 }
 
 export const touchEvents = [
-  "click",
-  "longpress",
   "touchstart",
   "touchmove",
   "touchend",
   "touchcancel"
 ]
 
+export const tapEvents = ["click", "longpress"]
+
 export function addTouchEvent(
+  nodeId: number,
   el: any,
-  eventCallback?: (type: TouchEventType, ev: TouchEvent) => void,
-  onTap?: (ev: TouchEvent, isLongPress: boolean) => void
+  type: string,
+  options: NZothEventListenerOptions
 ) {
+  const listenerOptions: Record<string, NZothEventListenerOptions> =
+    el.__listenerOptions || (el.__listenerOptions = {})
+
+  listenerOptions[type] = options
+
+  el.addEventListener(
+    type,
+    (ev: TouchEvent) => {
+      const listener = listenerOptions[type]
+      if (listener && listener.modifiers) {
+        if (listener.modifiers.includes("stop")) {
+          ev.stopPropagation()
+        }
+        if (listener.modifiers.includes("prevent")) {
+          ev.preventDefault()
+        }
+      }
+
+      const event = createCustomTouchEvent(el, ev, type)
+      dispatchEvent(nodeId, { type, args: [event] })
+    },
+    {
+      capture: false,
+      passive: true
+    }
+  )
+}
+
+export function addClickEvent(
+  el: any,
+  onClick?: (ev: TouchEvent, isLongPress: boolean) => void
+) {
+  const listenerOptions: Record<string, NZothEventListenerOptions> =
+    el.__listenerOptions || (el.__listenerOptions = {})
+
   let touchStartTimestamp = 0
   let isTouching = false
   let isMoved = false
@@ -55,7 +91,6 @@ export function addTouchEvent(
   const onStart = (ev: TouchEvent) => {
     isTouching = true
     touchStartTimestamp = ev.timeStamp
-    eventCallback && eventCallback(TouchEventType.START, ev)
 
     if (isDisabled()) {
       ev.stopPropagation()
@@ -73,12 +108,9 @@ export function addTouchEvent(
 
   const onMove = (ev: TouchEvent) => {
     isMoved = true
-    eventCallback && eventCallback(TouchEventType.MOVE, ev)
   }
 
   const onEnd = (ev: TouchEvent) => {
-    eventCallback && eventCallback(TouchEventType.END, ev)
-
     isTouching = false
     const firstTouch = ev.changedTouches[0]
     if (firstTouch.identifier !== singleTouch) {
@@ -97,10 +129,7 @@ export function addTouchEvent(
 
     if (!isMoved) {
       const isLongPress = ev.timeStamp - touchStartTimestamp > 350
-      onTap && onTap(ev, isLongPress)
-
-      const listenerOptions: Record<string, NZothEventListenerOptions> =
-        el.__listenerOptions || (el.__listenerOptions = {})
+      onClick && onClick(ev, isLongPress)
 
       const listener = isLongPress
         ? listenerOptions["longpress"]
@@ -118,7 +147,6 @@ export function addTouchEvent(
   }
 
   const onCancel = (ev: TouchEvent) => {
-    eventCallback && eventCallback(TouchEventType.CANCEL, ev)
     isMoved = false
     isTouching = false
     singleTouch = -1
@@ -154,7 +182,7 @@ export function addTouchEvent(
   return remove
 }
 
-export function addClickEvent(
+export function addTapEvent(
   nodeId: number,
   el: any,
   type: string,
@@ -168,21 +196,12 @@ export function addClickEvent(
     return el.__touchEvent as () => void
   }
 
-  el.__touchEvent = addTouchEvent(
-    el,
-    (type, ev) => {
-      if (listenerOptions[type]) {
-        const event = createCustomTouchEvent(el, ev, type)
-        dispatchEvent(nodeId, { type, args: [event] })
-      }
-    },
-    (ev, isLongPress) => {
-      const type =
-        listenerOptions["longpress"] && isLongPress ? "longpress" : "click"
-      const event = createCustomTouchEvent(el, ev, type)
-      dispatchEvent(nodeId, { type, args: [event] })
-    }
-  )
+  el.__touchEvent = addClickEvent(el, (ev, isLongPress) => {
+    const type =
+      listenerOptions["longpress"] && isLongPress ? "longpress" : "click"
+    const event = createCustomTouchEvent(el, ev, type)
+    dispatchEvent(nodeId, { type, args: [event] })
+  })
   return el.__touchEvent as () => void
 }
 

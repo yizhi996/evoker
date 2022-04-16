@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from "vue"
 import { NZothElement } from "../../dom/element"
-import { addTouchEvent } from "../../dom/event"
+import { addClickEvent } from "../../dom/event"
 import { isTrue } from "../../utils"
 import useHover from "../use/useHover"
 import Loading from "./Loading.vue"
@@ -127,7 +127,7 @@ watch(() => props.formType, (formType) => {
   if (formType === "submit" || formType === "reset") {
     nextTick(() => {
       if (buttonRef.value) {
-        builtInClickEvent = addTouchEvent(buttonRef.value, undefined, builtInClick)
+        builtInClickEvent = addClickEvent(buttonRef.value, builtInClick)
       }
     })
   }
@@ -140,7 +140,7 @@ watch(() => props.openType, (openType) => {
   if (openType && ["getUserInfo", "openSetting"].includes(openType)) {
     nextTick(() => {
       if (buttonRef.value) {
-        builtInClickEvent = addTouchEvent(buttonRef.value, undefined, builtInClick)
+        builtInClickEvent = addClickEvent(buttonRef.value, builtInClick)
       }
     })
   }
