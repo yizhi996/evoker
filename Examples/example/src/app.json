@@ -345,6 +345,11 @@
       "component": "pages/API/IntersectionObserver.vue",
       "path": "intersection-observer",
       "style": { "navigationBarTitleText": "节点布局相交状态" }
+    },
+    {
+      "component": "pages/API/GetBatteryInfo.vue",
+      "path": "get-battery-info",
+      "style": { "navigationBarTitleText": "获取手机设备电量" }
     }
   ]
 }

@@ -83,7 +83,7 @@ const list = reactive([
         url: 'get-system-info'
       }, {
         name: '获取手机设备电量',
-        url: 'get-battery-info/get-battery-info'
+        url: 'get-battery-info'
       }, {
         name: '打电话',
         url: 'make-phone-call'
