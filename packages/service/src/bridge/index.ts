@@ -85,6 +85,7 @@ import { getUserProfile } from "./api/open"
 import { openSetting } from "./api/auth"
 import { login, checkSession } from "@nzoth/bridge"
 import { showTabBar, hideTabBar } from "../bridge/api/ui/tabBar"
+import { createIntersectionObserver } from "./api/html/intersection"
 import "./fromWebView"
 
 const env = { USER_DATA_PATH: "nzfile://usr" }
@@ -169,7 +170,8 @@ export {
   authorize,
   getUserProfile,
   login,
-  checkSession
+  checkSession,
+  createIntersectionObserver
 }
 
 export default {
@@ -252,5 +254,6 @@ export default {
   authorize,
   getUserProfile,
   login,
-  checkSession
+  checkSession,
+  createIntersectionObserver
 }

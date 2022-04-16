@@ -340,7 +340,11 @@
       "component": "pages/API/Navigator.vue",
       "path": "api/navigator",
       "style": { "navigationBarTitleText": "页面跳转" }
+    },
+    {
+      "component": "pages/API/IntersectionObserver.vue",
+      "path": "intersection-observer",
+      "style": { "navigationBarTitleText": "节点布局相交状态" }
     }
   ]
 }
-

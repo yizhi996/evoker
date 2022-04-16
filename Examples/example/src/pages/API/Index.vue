@@ -48,9 +48,6 @@ const list = reactive([
         name: '创建动画',
         url: 'animation'
       }, {
-        name: '创建绘画',
-        url: 'canvas/canvas'
-      }, {
         name: '显示操作菜单',
         url: 'action-sheet'
       }, {
@@ -67,7 +64,7 @@ const list = reactive([
         url: 'get-html-node-info'
       }, {
         name: 'HTML 节点布局相交状态',
-        url: 'intersection-observer/intersection-observer'
+        url: 'intersection-observer'
       }
     ]
   }, {
@@ -108,16 +105,6 @@ const list = reactive([
       }
     ]
   }, {
-    id: 'performance',
-    name: '性能',
-    open: false,
-    pages: [
-      {
-        name: '获取性能数据',
-        url: 'get-performance/get-performance'
-      }
-    ]
-  }, {
     id: 'network',
     name: '网络',
     open: false,
@@ -125,9 +112,6 @@ const list = reactive([
       {
         name: '发起一个请求',
         url: 'request'
-      }, {
-        name: 'WebSocket',
-        url: 'web-socket/web-socket'
       }, {
         name: '上传文件',
         url: 'upload-file'
@@ -160,9 +144,6 @@ const list = reactive([
         name: '视频',
         url: 'choose-video'
       }, {
-        name: '音视频合成',
-        url: 'media-container/media-container'
-      }, {
         name: '动态加载字体',
         url: 'load-font-face'
       }
@@ -192,9 +173,6 @@ const list = reactive([
     pages: [{
       name: '双向绑定 v-model',
       url: 'v-model',
-    }, {
-      name: '屏幕旋转',
-      url: 'resizable/resizable'
     }]
   }
 ])

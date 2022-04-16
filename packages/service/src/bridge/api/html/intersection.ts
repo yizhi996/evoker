@@ -1,113 +1,131 @@
-// interface ObserverCallback {
-//   id: string
-//   dataset: Record<string, any>
-//   intersectionRatio: number
-//   intersectionRect: Rect
-//   relativeRect: Rect
-//   time: number
-// }
+import { InnerJSBridge } from "../../bridge"
+import { getCurrentWebViewId } from "../../../app"
+import { randomId } from "../../../utils"
 
-// interface Rect {
-//   left: number
-//   right: number
-//   top: number
-//   bottom: number
-//   width: number
-//   height: number
-// }
+type ObserverCallback = (result: ObserverCallbackResult) => void
 
-// interface Margin {
-//   left: number
-//   right: number
-//   top: number
-//   bottom: number
-// }
+interface ObserverCallbackResult {
+  id: string
+  dataset: Record<string, any>
+  isIntersecting: boolean
+  intersectionRatio: number
+  intersectionRect: Rect
+  boundingClientRect: Rect
+  relativeRect: Rect
+  time: number
+}
 
-// class IntersectionObserver {
-//   options: IntersectionObserverOptions
-//   constructor(options: IntersectionObserverOptions) {
-//     this.options = options
-//   }
+interface Rect {
+  left: number
+  right: number
+  top: number
+  bottom: number
+  width: number
+  height: number
+}
 
-//   observe(targetSelector: string, callback: ObserverCallback): Promise<string> {
-//     return new Promise((resolve, reject) => {
-//       InnerJSBridge.invoke(
-//         "operateCamera",
-//         { cameraId: 1, method: "takePhoto", data: { quality } },
-//         result => {
-//           if (result.errMsg) {
-//             reject(result.errMsg)
-//           } else {
-//             resolve(result.data)
-//           }
-//         }
-//       )
-//     })
-//   }
+interface Margin {
+  left: number
+  right: number
+  top: number
+  bottom: number
+}
 
-//   disconnect(): Promise<void> {
-//     return new Promise((resolve, reject) => {
-//       InnerJSBridge.invoke(
-//         "operateCamera",
-//         { cameraId: 1, method: "startRecord", data: {} },
-//         result => {
-//           if (result.errMsg) {
-//             reject(result.errMsg)
-//           } else {
-//             resolve(result.data)
-//           }
-//         }
-//       )
-//     })
-//   }
+interface RelativeInfo {
+  selector?: string
+  margins?: Margin
+}
 
-//   relativeTo(selector: string, margins: Margin): IntersectionObserver {
-//     return new Promise((resolve, reject) => {
-//       InnerJSBridge.invoke(
-//         "operateCamera",
-//         { cameraId: 1, method: "stopRecord", data: { compressed } },
-//         result => {
-//           if (result.errMsg) {
-//             reject(result.errMsg)
-//           } else {
-//             resolve(result.data)
-//           }
-//         }
-//       )
-//     })
-//   }
+const observers = new Map<string, ObserverCallback>()
 
-//   relativeToViewport(margins: Margin): IntersectionObserver {
-//     return new Promise((resolve, reject) => {
-//       InnerJSBridge.invoke(
-//         "operateCamera",
-//         { cameraId: 1, method: "setZoom", data: { zoom } },
-//         result => {
-//           if (result.errMsg) {
-//             reject(result.errMsg)
-//           } else {
-//             resolve(result.data)
-//           }
-//         }
-//       )
-//     })
-//   }
-// }
+class IntersectionObserver {
+  private pageId: number
 
-// interface IntersectionObserverOptions {
-//   thresholds?: number[]
-//   initialRatio?: number
-//   observeAll?: boolean
-// }
+  private observerId?: string
 
-// export function createIntersectionObserver(
-//   options?: IntersectionObserverOptions
-// ): IntersectionObserver {
-//   const defaultOptions: IntersectionObserverOptions = {
-//     thresholds: [0],
-//     initialRatio: 0,
-//     observeAll: false
-//   }
-//   extend(defaultOptions, options)
-//   return new IntersectionObserver(defaultOptions)
-// }
+  private connected = false
+
+  private options: CreateIntersectionObserverOptions
+
+  private relativeInfo?: RelativeInfo
+
+  constructor(options: CreateIntersectionObserverOptions) {
+    this.options = options
+
+    this.pageId = getCurrentWebViewId()
+  }
+
+  relativeTo(selector: string, margins?: Margin): IntersectionObserver {
+    this.relativeInfo = { selector, margins }
+    return this
+  }
+
+  relativeToViewport(margins?: Margin): IntersectionObserver {
+    this.relativeInfo = { margins }
+    return this
+  }
+
+  observe(targetSelector: string, callback: ObserverCallback) {
+    if (this.connected) {
+      console.error("必须 disconnect 后才能再次 observe")
+      return
+    }
+    this.observerId = randomId()
+    this.connected = true
+    InnerJSBridge.publish(
+      "addIntersectionObserver",
+      {
+        observerId: this.observerId,
+        targetSelector,
+        options: this.options,
+        relativeInfo: this.relativeInfo
+      },
+      this.pageId
+    )
+    observers.set(this.observerId, callback)
+  }
+
+  disconnect() {
+    this.connected = false
+    if (this.observerId) {
+      observers.delete(this.observerId)
+      InnerJSBridge.publish(
+        "removeIntersectionObserver",
+        {
+          observerId: this.observerId
+        },
+        this.pageId
+      )
+      this.observerId = undefined
+    }
+  }
+}
+
+interface CreateIntersectionObserverOptions {
+  thresholds?: number[]
+  initialRatio?: number
+  observeAll?: boolean
+}
+
+export function createIntersectionObserver(
+  options?: CreateIntersectionObserverOptions
+): IntersectionObserver {
+  const defaultOptions: CreateIntersectionObserverOptions = {
+    thresholds: [0],
+    initialRatio: 0,
+    observeAll: false
+  }
+  Object.assign(defaultOptions, options)
+  return new IntersectionObserver(defaultOptions)
+}
+
+InnerJSBridge.subscribe<{ observerId: string; entry: ObserverCallbackResult }>(
+  "intersectionObserverEntry",
+  result => {
+    const { observerId, entry } = result
+    const callback = observers.get(observerId)
+    if (callback) {
+      callback(entry)
+    }
+  }
+)
