@@ -1,14 +1,15 @@
-import { NZJSBridge } from "../bridge"
 import { isNZothElement, nodes } from "./element"
+import { SyncFlags } from "@nzoth/shared"
+import { sync } from "@nzoth/bridge"
 
-const SelectorQueryKey = "selectorQuery"
+interface SelectorQueueItem {
+  selector: string
+  single: boolean
+  fields: Record<string, boolean>
+}
 
-NZJSBridge.subscribe(SelectorQueryKey, message => {
-  const queue = message.queue as {
-    selector: string
-    single: boolean
-    fields: Record<string, boolean>
-  }[]
+export function selector(data: any[]) {
+  const [_, id, queue] = data as [SyncFlags, number, SelectorQueueItem[]]
 
   let resList: Record<string, any>[] = []
 
@@ -77,9 +78,7 @@ NZJSBridge.subscribe(SelectorQueryKey, message => {
     }
   })
 
-  NZJSBridge.publish(
-    SelectorQueryKey,
-    { id: message.id, list: resList },
-    window.webViewId
-  )
-})
+  const message = [SyncFlags.SELECTOR, id, resList]
+
+  sync(message, window.webViewId)
+}

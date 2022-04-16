@@ -1,5 +1,7 @@
 import { NZJSBridge } from "../bridge"
 import "intersection-observer"
+import { SyncFlags } from "@nzoth/shared"
+import { sync } from "@nzoth/bridge"
 
 interface CreateIntersectionObserverOptions {
   thresholds: number[]
@@ -32,13 +34,14 @@ function marginToString(margin?: Margin) {
 
 const observers = new Map<string, IntersectionObserver>()
 
-NZJSBridge.subscribe<{
-  observerId: string
-  targetSelector: string
-  options: CreateIntersectionObserverOptions
-  relativeInfo: RelativeInfo
-}>("addIntersectionObserver", message => {
-  const { observerId, targetSelector, options, relativeInfo } = message
+export function addIntersectionObserver(data: any[]) {
+  const [_, observerId, targetSelector, options, relativeInfo] = data as [
+    SyncFlags,
+    string,
+    string,
+    CreateIntersectionObserverOptions,
+    RelativeInfo
+  ]
 
   let observer = observers.get(observerId)
   if (observer) {
@@ -54,31 +57,20 @@ NZJSBridge.subscribe<{
   observer = new IntersectionObserver(
     entries => {
       entries.forEach(entry => {
-        const {
-          target,
-          intersectionRatio,
-          intersectionRect,
-          boundingClientRect,
-          rootBounds,
-          time,
-          isIntersecting
-        } = entry
-        NZJSBridge.publish(
-          "intersectionObserverEntry",
+        const message = [
+          SyncFlags.INTERSECTION_OBSERVER_ENTRY,
+          observerId,
           {
-            observerId,
-            entry: {
-              id: target.id,
-              isIntersecting,
-              intersectionRatio,
-              intersectionRect,
-              boundingClientRect,
-              relativeRect: rootBounds,
-              time
-            }
-          },
-          window.webViewId
-        )
+            id: entry.target.id,
+            isIntersecting: entry.isIntersecting,
+            intersectionRatio: entry.intersectionRatio,
+            intersectionRect: entry.intersectionRect,
+            boundingClientRect: entry.boundingClientRect,
+            relativeRect: entry.rootBounds,
+            time: entry.time
+          }
+        ]
+        sync(message, window.webViewId)
       })
     },
     {
@@ -96,15 +88,13 @@ NZJSBridge.subscribe<{
     const el = document.querySelector(targetSelector)
     el && observer.observe(el)
   }
-})
+}
 
-NZJSBridge.subscribe<{
-  observerId: string
-}>("removeIntersectionObserver", message => {
-  const { observerId } = message
+export function removeIntersectionObserver(data: any[]) {
+  const [_, observerId] = data as [SyncFlags, string]
   const observer = observers.get(observerId)
   if (observer) {
     observer.disconnect()
     observers.delete(observerId)
   }
-})
+}

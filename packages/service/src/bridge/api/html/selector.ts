@@ -1,20 +1,20 @@
-import { InnerJSBridge } from "../../bridge"
 import { getCurrentPages } from "../../../app"
 import { NZothPage } from "../../../dom/page"
 import { createCanvasNode } from "./node"
-import { isFunction } from "@nzoth/shared"
+import { isFunction, SyncFlags } from "@nzoth/shared"
+import { randomId } from "../../../utils"
+import { sync } from "@nzoth/bridge"
 
-const SelectorQueryKey = "selectorQuery"
 const selectorQueryCallbacks = new Map<string, Function>()
 
-InnerJSBridge.subscribe(SelectorQueryKey, res => {
-  const { id } = res
+export function invokeSelectorQuery(data: any[]) {
+  const [_, id, list] = data as [SyncFlags, string, any[]]
   const callback = selectorQueryCallbacks.get(id)
   if (isFunction(callback)) {
-    callback(res.list)
+    callback(list)
     selectorQueryCallbacks.delete(id)
   }
-})
+}
 
 interface SelectorQueryQueue {
   selector: string
@@ -46,29 +46,25 @@ class SelectorQuery {
     return new NodesRef(this, "", true)
   }
 
-  exec() {
-    return new Promise((resolve, reject) => {
-      const id = "" + Math.random()
-      InnerJSBridge.publish(
-        SelectorQueryKey,
-        { id, queue: this.queue },
-        this.page.pageId
-      )
-      const result = (res: any) => {
-        for (let i = 0; i < this.queueCb.length; i++) {
-          const callback = this.queueCb[i]
-          const node = res[i].node
-          if (node) {
-            if (node.nodeIs === "nz-canvas") {
-              createCanvasNode(node.nodeId, node.canvasType, node.canvasId)
-            }
+  exec(callback: Function) {
+    const id = randomId()
+    const message = [SyncFlags.SELECTOR, id, this.queue]
+    sync(message, this.page.pageId)
+
+    const result = (res: any) => {
+      for (let i = 0; i < this.queueCb.length; i++) {
+        const queueCallback = this.queueCb[i]
+        const node = res[i].node
+        if (node) {
+          if (node.nodeIs === "nz-canvas") {
+            createCanvasNode(node.nodeId, node.canvasType, node.canvasId)
           }
-          isFunction(callback) && callback(res[i])
         }
-        resolve(res)
+        isFunction(queueCallback) && queueCallback(res[i])
       }
-      selectorQueryCallbacks.set(id, result)
-    })
+      isFunction(callback) && callback(res)
+    }
+    selectorQueryCallbacks.set(id, result)
   }
 
   /** @internal */

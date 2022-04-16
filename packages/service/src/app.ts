@@ -7,6 +7,8 @@ import { NZothEvent } from "./dom/eventTarget"
 import { getPageComponentFormRoute, decodeURL } from "./router"
 import { onSync } from "@nzoth/bridge"
 import { SyncFlags } from "@nzoth/shared"
+import { invokeSelectorQuery } from "./bridge/api/html/selector"
+import { intersectionObserverEntry } from "./bridge/api/html/intersection"
 
 export const enum AppState {
   FORE_GROUND = 0,
@@ -113,10 +115,14 @@ InnerJSBridge.subscribe<{ pageId: number; path: string }>(
 )
 
 onSync(messages => {
-  messages.forEach(action => {
-    const ACTION = action[0]
-    if (ACTION === SyncFlags.DISPATCH_EVENT) {
-      dispatchEvent(action)
+  messages.forEach(message => {
+    const flag = message[0]
+    if (flag === SyncFlags.DISPATCH_EVENT) {
+      dispatchEvent(message)
+    } else if (flag === SyncFlags.SELECTOR) {
+      invokeSelectorQuery(message)
+    } else if (flag === SyncFlags.INTERSECTION_OBSERVER_ENTRY) {
+      intersectionObserverEntry(message)
     }
   })
 })

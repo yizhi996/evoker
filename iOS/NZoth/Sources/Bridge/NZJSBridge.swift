@@ -57,7 +57,7 @@ public extension NZJSBridge {
         NZLogger.debug("\(appService.appId) - publish: \(args.eventName)")
         
         switch args.eventName {
-        case "vdSync", "invokeAppServiceMethod", "callbackWebViewMethod", "selectorQuery", "addIntersectionObserver", "removeIntersectionObserver", "intersectionObserverEntry":
+        case "vdSync", "invokeAppServiceMethod", "callbackWebViewMethod":
             appService.bridge.subscribeHandler(method: NZSubscribeKey(args.eventName),
                                                data: args.paramsString,
                                                webViewId: args.webViewId)

@@ -1,6 +1,8 @@
 import { InnerJSBridge } from "../../bridge"
 import { getCurrentWebViewId } from "../../../app"
 import { randomId } from "../../../utils"
+import { SyncFlags } from "@nzoth/shared"
+import { sync } from "@nzoth/bridge"
 
 type ObserverCallback = (result: ObserverCallbackResult) => void
 
@@ -72,16 +74,16 @@ class IntersectionObserver {
     }
     this.observerId = randomId()
     this.connected = true
-    InnerJSBridge.publish(
-      "addIntersectionObserver",
-      {
-        observerId: this.observerId,
-        targetSelector,
-        options: this.options,
-        relativeInfo: this.relativeInfo
-      },
-      this.pageId
-    )
+
+    const message = [
+      SyncFlags.ADD_INTERSECTION_OBSERVER,
+      this.observerId,
+      targetSelector,
+      this.options,
+      this.relativeInfo
+    ]
+    sync(message, this.pageId)
+
     observers.set(this.observerId, callback)
   }
 
@@ -89,13 +91,10 @@ class IntersectionObserver {
     this.connected = false
     if (this.observerId) {
       observers.delete(this.observerId)
-      InnerJSBridge.publish(
-        "removeIntersectionObserver",
-        {
-          observerId: this.observerId
-        },
-        this.pageId
-      )
+
+      const message = [SyncFlags.REMOVE_INTERSECTION_OBSERVER, this.observerId]
+      sync(message, this.pageId)
+
       this.observerId = undefined
     }
   }
@@ -119,13 +118,10 @@ export function createIntersectionObserver(
   return new IntersectionObserver(defaultOptions)
 }
 
-InnerJSBridge.subscribe<{ observerId: string; entry: ObserverCallbackResult }>(
-  "intersectionObserverEntry",
-  result => {
-    const { observerId, entry } = result
-    const callback = observers.get(observerId)
-    if (callback) {
-      callback(entry)
-    }
+export function intersectionObserverEntry(data: any[]) {
+  const [_, observerId, entry] = data
+  const callback = observers.get(observerId)
+  if (callback) {
+    callback(entry)
   }
-)
+}
