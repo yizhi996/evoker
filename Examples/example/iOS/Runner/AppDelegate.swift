@@ -22,6 +22,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window!.makeKeyAndVisible()
         
+        window?.rootViewController = UINavigationController(rootViewController: LaunchpadViewController())
+        
+        DispatchQueue.main.async {
+            self.launchNZothEngine()
+        }
+
+        return true
+    }
+    
+    func launchNZothEngine() {
         if let userId = UserDefaults.standard.string(forKey: "K_UID") {
             NZEngine.shared.userId = userId
         } else {
@@ -33,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         NZEngineHooks.shared.app.getAppInfo = { appId, envVersion, completionHandler in
             if let app = LaunchpadViewController.apps.first(where: { $0.appId == appId }) {
-                completionHandler(NZAppInfo(appName: app.appName, appIconURL: ""))
+                completionHandler(NZAppInfo(appName: app.appName, appIconURL: app.appIcon))
             } else {
                 completionHandler(NZAppInfo(appName: appId, appIconURL: ""))
             }
@@ -43,21 +53,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             completionHandler(true)
         }
         
-        NZEngineHooks.shared.openAPI.login = { args, bridge in
+        NZEngineHooks.shared.openAPI.login = { _, bridge, args in
             bridge.invokeCallbackSuccess(args: args, result: ["code": "abcd..."])
         }
         
-        NZEngineHooks.shared.openAPI.checkSession = { args, bridge in
+        NZEngineHooks.shared.openAPI.checkSession = { _, bridge, args in
             bridge.invokeCallbackSuccess(args: args)
         }
         
-        NZEngineHooks.shared.openAPI.getUserProfile = { args, bridge in
+        NZEngineHooks.shared.openAPI.getUserProfile = { _, bridge, args in
             let userInfo: [String: Any] = ["nickName": "yizhi996",
                                            "avatarUrl": "https://file.lilithvue.com/lilith-test-assets/avatar-new.png"]
             bridge.invokeCallbackSuccess(args: args, result: ["userInfo": userInfo])
         }
         
-        NZEngineHooks.shared.openAPI.getUserInfo = { args, bridge in
+        NZEngineHooks.shared.openAPI.getUserInfo = { _, bridge, args in
             let userInfo: [String: Any] = ["nickName": "yizhi007",
                                            "avatarUrl": "https://file.lilithvue.com/lilith-test-assets/avatar-new.png"]
             bridge.invokeCallbackSuccess(args: args, result: ["userInfo": userInfo])
@@ -66,27 +76,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var config = NZEngineConfig()
         config.devServer.useDevJSSDK = true
         config.devServer.useDevServer = true
-        config.devServer.host = "172.17.205.54"
+        config.devServer.host = "172.17.205.38"
         NZEngine.shared.launch(config)
-        NZEngine.shared.injectModule(NZMapModule.self)
         
         NZVersionManager.shared.updateJSSDK { _ in
             NZEngine.shared.preload()
         }
         
         AMapServices.shared().apiKey = "35130e0c213883fba57defc0d2004c79"
-        
-        window?.rootViewController = UINavigationController(rootViewController: LaunchpadViewController())
-
-        return true
-    }
-    
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        
-    }
-    
-    func applicationWillTerminate(_ application: UIApplication) {
-        FilePath.cleanTemp()
+        NZEngine.shared.injectModule(NZMapModule.self)
     }
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {

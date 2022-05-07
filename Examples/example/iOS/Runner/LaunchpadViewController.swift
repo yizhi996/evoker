@@ -14,12 +14,19 @@ class LaunchpadViewController: UIViewController {
     struct App {
         let appId: String
         let appName: String
+        let appIcon: String
         let envVersion: NZAppEnvVersion
     }
     
     static let apps = [
-        App(appId: "com.nzothdev.example", appName: "小程序示例", envVersion: .develop),
-        App(appId: "com.nzothdev.pdd", appName: "拼多多", envVersion: .develop)
+        App(appId: "com.nzothdev.example",
+            appName: "小程序示例",
+            appIcon: "",
+            envVersion: .develop),
+        App(appId: "com.nzothdev.pdd",
+            appName: "拼多多",
+            appIcon: "",
+            envVersion: .develop)
     ]
     
     override func viewDidLoad() {

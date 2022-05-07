@@ -32,7 +32,7 @@ enum NZOpenAPI: String, NZBuiltInAPI {
     
     private func login(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         if let hook = NZEngineHooks.shared.openAPI.login {
-            hook(args, bridge)
+            hook(appService, bridge, args)
         } else {
             let error = NZError.bridgeFailed(reason: .apiHookNotImplemented)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -41,7 +41,7 @@ enum NZOpenAPI: String, NZBuiltInAPI {
     
     private func checkSession(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         if let hook = NZEngineHooks.shared.openAPI.checkSession {
-            hook(args, bridge)
+            hook(appService, bridge, args)
         } else {
             let error = NZError.bridgeFailed(reason: .apiHookNotImplemented)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -50,7 +50,7 @@ enum NZOpenAPI: String, NZBuiltInAPI {
     
     private func getUserInfo(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         if let hook = NZEngineHooks.shared.openAPI.getUserInfo {
-            hook(args, bridge)
+            hook(appService, bridge, args)
         } else {
             let error = NZError.bridgeFailed(reason: .apiHookNotImplemented)
             bridge.invokeCallbackFail(args: args, error: error)
@@ -59,7 +59,7 @@ enum NZOpenAPI: String, NZBuiltInAPI {
     
     private func getUserProfile(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         if let hook = NZEngineHooks.shared.openAPI.getUserProfile {
-            hook(args, bridge)
+            hook(appService, bridge, args)
         } else {
             let error = NZError.bridgeFailed(reason: .apiHookNotImplemented)
             bridge.invokeCallbackFail(args: args, error: error)

@@ -14,7 +14,7 @@ public class NZEngineHooks {
     
     public class OpenAPI {
         
-        public typealias Callback = (NZJSBridge.InvokeArgs, NZJSBridge) -> (Void)
+        public typealias Callback = (NZAppService, NZJSBridge, NZJSBridge.InvokeArgs) -> (Void)
         
         public var login: Callback?
         
