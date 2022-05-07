@@ -1,13 +1,7 @@
 <template>
-  <div class="relative mt-5 mx-5 h-40">
-    <video
-      class="w-full h-full"
-      :autoplay="false"
-      :muted="false"
-      :src="data.videoURL"
-      :poster="data.poster"
-      loop
-    ></video>
+  <div class="relative h-56">
+    <video class="w-full h-full" enable-play-gesture :show-center-play-btn="true" :autoplay="false" :muted="true"
+      show-mute-btn :src="data.videoURL" loop></video>
   </div>
 </template>
 

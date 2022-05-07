@@ -17,8 +17,6 @@ public struct NZEngineConfig {
     
     public var browserPageClass: NZBrowserPage.Type = NZBrowserPage.self
     
-    public var debugLog = false
-    
     public init() {
         
     }

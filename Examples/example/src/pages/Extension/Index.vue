@@ -8,17 +8,7 @@ import NPageIndex from "../../components/NPageIndex.vue"
 
 const list = reactive([
   {
-    id: 'page',
-    name: '表单',
-    open: false,
-    pages: [
-      {
-        name: '设置界面标题',
-        url: 'set-navigation-bar-title'
-      }
-    ]
-  }, {
-    id: 'device',
+    id: 'view',
     name: '基础组件',
     open: false,
     pages: [

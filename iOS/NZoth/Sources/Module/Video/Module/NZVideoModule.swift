@@ -30,6 +30,24 @@ class NZVideoModule: NZModule {
         
     }
     
+    func onShow(_ page: NZPage) {
+        players.get(page.pageId)?.values.forEach { player in
+            if player.needResume {
+                player.play()
+                player.needResume = false
+            }
+        }
+    }
+    
+    func onHide(_ page: NZPage) {
+        players.get(page.pageId)?.values.forEach { player in
+            if player.isPlaying {
+                player.pause()
+                player.needResume = true
+            }
+        }
+    }
+    
     func onUnload(_ page: NZPage) {
         players.get(page.pageId)?.values.forEach { $0.stop() }
         players.remove(page.pageId)

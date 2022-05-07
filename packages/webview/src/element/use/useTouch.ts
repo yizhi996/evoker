@@ -17,7 +17,7 @@ function getDirection(x: number, y: number) {
 
 export type Touch = ReturnType<typeof Touch>
 
-function Touch() {
+export function Touch() {
   const startX = ref(0)
   const startY = ref(0)
   const deltaX = ref(0)

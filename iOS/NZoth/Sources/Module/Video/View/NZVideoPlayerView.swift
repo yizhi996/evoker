@@ -39,15 +39,25 @@ public struct NZVideoPlayerParams: Codable  {
 open class NZVideoPlayerView: UIView {
         
     var playHandler: NZEmptyBlock?
+    
     var pauseHandler: NZEmptyBlock?
+    
     var endedHandler: NZEmptyBlock?
+    
     var timeUpdateHandler: ((TimeInterval, TimeInterval) -> Void)?
+    
     var fullscreenChangeHandler: ((Bool, CGFloat) -> Void)?
+    
     var waitingHandler: NZEmptyBlock?
+    
     var errorHandler: NZStringBlock?
+    
     var progressHandler: NZCGFloatBlock?
+    
     var loadedMetadataHandler: ((CGFloat, CGFloat, TimeInterval) -> Void)?
+    
     var seekCompletionHandler: NZCGFloatBlock?
+    
     var forceRotateScreen: NZBoolBlock?
     
     var muted: Bool {
@@ -57,6 +67,10 @@ open class NZVideoPlayerView: UIView {
             player.currentPlayerManager.isMuted = newValue
         }
     }
+    
+    var isPlaying = false
+    
+    var needResume = false
     
     private let throttler = Throttler(seconds: 0.25)
     
@@ -122,7 +136,7 @@ open class NZVideoPlayerView: UIView {
                 break
             }
         }
-
+        
         return player
     }()
     
@@ -171,28 +185,27 @@ open class NZVideoPlayerView: UIView {
         print("\(NSStringFromClass(Self.self)) deinit")
     }
     
-    func play(_ data: [String: Any]?) {
+    func play() {
         if url != nil {
             player.currentPlayerManager.play()
-        }
-        
-        if let data = data,
-           let fullscreen = data["fullscreen"] as? Bool,
-           fullscreen {
-//            player.enterFullScreen(fullscreen, animated: true) { [unowned self] in
-////                player.presentView.addSubview(self.controlView)
-//                self.controlView.autoPinEdgesToSuperviewEdges()
-//                Tween(self.controlView).delay(0.25).duration(0.25).ease(.outQuad).to(.key(\.alpha, 1)).play()
-//            }
+            isPlaying = true
         }
     }
     
     func pause() {
         player.currentPlayerManager.pause()
+        isPlaying = false
     }
     
     func stop() {
-        player.stop()
+        player.currentPlayerManager.stop()
+        isPlaying = false
+    }
+    
+    func seek(position: TimeInterval) {
+        player.currentPlayerManager.seek(toTime: position) { [unowned self] _ in
+            self.seekCompletionHandler?(position)
+        }
     }
 }
 
@@ -214,68 +227,6 @@ extension NZVideoPlayerView {
         forceRotateScreen?(false)
     }
     
-    func showMoreAction() {
-        let actionSheet = UIAlertController(title: "更多", message: nil, preferredStyle: .actionSheet)
-        let downloadAction = UIAlertAction(title: "保存至相册",
-                                           style: .default) {
-            [unowned self] _ in
-//            self.player.export(withBeginTime: 0,
-//                               duration: self.player.duration,
-//                               presetName: UUID().uuidString) { player, progress in
-//                print(progress)
-//            } completion: { player, filePath, _ in
-//                print(filePath)
-//                PHPhotoLibrary.requestAuthorization { (status) in
-//                    PHPhotoLibrary.shared().performChanges({
-//                        PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: filePath)
-//                    }, completionHandler: { _, error in
-//                        if let error = error {
-//                            print("Error occurred while saving photo to photo library: \(error)")
-//                        } else {
-//                            print("success")
-//                        }
-//                    })
-//                }
-//            } failure: { player, error in
-//                print(error)
-//            }
-
-        }
-        actionSheet.addAction(downloadAction)
-        let rateAction = UIAlertAction(title: "倍速播放",
-                                           style: .default) {
-            [unowned self] _ in
-            self.showRateAction()
-        }
-        actionSheet.addAction(rateAction)
-        
-        let cancelAction = UIAlertAction(title: "取消",
-                                        style: .cancel)
-        actionSheet.addAction(cancelAction)
-        if let viewController = UIViewController.visibleViewController() {
-            viewController.present(actionSheet, animated: true, completion: nil)
-        }
-    }
-    
-    func showRateAction() {
-        let actionSheet = UIAlertController(title: "倍速播放", message: nil, preferredStyle: .actionSheet)
-        let rates: [Float] = [0.5, 1.0, 1.25, 1.5, 2.0]
-        rates.forEach { rate in
-            let action = UIAlertAction(title: "\(rate)",
-                                               style: .default) {
-                [unowned self] _ in
-                self.player.currentPlayerManager.rate = rate
-            }
-            actionSheet.addAction(action)
-        }
-        
-        let cancelAction = UIAlertAction(title: "取消",
-                                        style: .cancel)
-        actionSheet.addAction(cancelAction)
-        if let viewController = UIViewController.visibleViewController() {
-            viewController.present(actionSheet, animated: true, completion: nil)
-        }
-    }
 }
 
 //MARK: NZSubscribeKey

@@ -96,6 +96,8 @@ final public class NZEngine {
                                                selector: #selector(didEnterBackground),
                                                name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(willTerminate), name: UIApplication.willTerminateNotification, object: nil)
     }
     
     public func launch(_ config: NZEngineConfig) {
@@ -141,6 +143,7 @@ final public class NZEngine {
         NZAuthAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         NZOpenAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         NZTabBarAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
+        NZVolumeAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
     }
     
     func setupBuiltInModules() {
@@ -232,6 +235,10 @@ final public class NZEngine {
         if let webPage = currentApp.currentPage as? NZWebPage {
             webPage.hide()
         }
+    }
+    
+    @objc private func willTerminate() {
+        FilePath.cleanTemp()
     }
     
     public func onError(_ errorHandler: NZErrorBlock?) {

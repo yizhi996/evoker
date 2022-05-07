@@ -6,6 +6,9 @@ export function zeroPad(nr: number, base: number) {
 }
 
 export function secondsToHoursMinutesSeconds(seconds: number) {
+  if (isNaN(seconds)) {
+    return [0, 0, 0]
+  }
   return [
     Math.floor(seconds / 3600),
     Math.floor((seconds % 3600) / 60),

@@ -105,27 +105,53 @@ enum NZVideoAPI: String, NZBuiltInAPI {
         struct Params: Decodable {
             let videoPlayerId: Int
             let method: Method
-            let data: [String: Any]
+            let data: Data
             
-            enum CodingKeys: String, CodingKey {
-                case videoPlayerId, method, data
+            enum Method: String, Decodable {
+                case play
+                case pause
+                case remove
+                case mute
+                case fullscreen
+                case changeURL
+                case seek
             }
             
-            public init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                videoPlayerId = try container.decode(Int.self, forKey: .videoPlayerId)
-                method = try container.decode(Method.self, forKey: .method)
-                data = try container.decode([String: Any].self, forKey: .data)
+            enum Data: Decodable {
+                case mute(MuteData)
+                case fullscreen(FullscreenData)
+                case seek(SeekData)
+                case unknown
+                
+                init(from decoder: Decoder) throws {
+                    let container = try decoder.singleValueContainer()
+                    if let data = try? container.decode(MuteData.self) {
+                        self = .mute(data)
+                        return
+                    }
+                    if let data = try? container.decode(FullscreenData.self) {
+                        self = .fullscreen(data)
+                        return
+                    }
+                    if let data = try? container.decode(SeekData.self) {
+                        self = .seek(data)
+                        return
+                    }
+                    self = .unknown
+                }
+                
+                struct MuteData: Decodable {
+                    let muted: Bool
+                }
+                
+                struct FullscreenData: Decodable {
+                    let enter: Bool
+                }
+                
+                struct SeekData: Decodable {
+                    let position: TimeInterval
+                }
             }
-        }
-        
-        enum Method: String, Decodable {
-            case play
-            case pause
-            case remove
-            case muted
-            case enterFullscreen
-            case changeURL
         }
 
         guard let params: Params = args.paramsString.toModel() else {
@@ -160,27 +186,30 @@ enum NZVideoAPI: String, NZBuiltInAPI {
         
         switch params.method {
         case .play:
-            videoPlayer.play(params.data)
+            videoPlayer.play()
         case .pause:
             videoPlayer.pause()
         case .remove:
             videoPlayer.stop()
             videoModule.players.remove(page.pageId, params.videoPlayerId)
-        case .muted:
-            guard let muted = params.data["muted"] as? Bool else { break }
-            videoPlayer.muted = muted
-        case .enterFullscreen:
-            guard let enterFullscreen = params.data["enterFullscreen"] as? Bool else { break }
-            if enterFullscreen {
-                videoPlayer.enterFullscreen()
-            } else {
-                videoPlayer.quiteFullscreen()
+        case .mute:
+            if case .mute(let data) = params.data {
+                videoPlayer.muted = data.muted
+            }
+        case .fullscreen:
+            if case .fullscreen(let data) = params.data {
+                if data.enter {
+                    videoPlayer.enterFullscreen()
+                } else {
+                    videoPlayer.quiteFullscreen()
+                }
             }
         case .changeURL:
-            guard let url = params.data["url"] as? String else { break }
-            videoPlayer.url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
-                                                                userId: NZEngine.shared.userId,
-                                                                filePath: url) ?? URL(string: url)
+            break
+        case .seek:
+            if case .seek(let data) = params.data {
+                videoPlayer.seek(position: data.position)
+            }
         }
        
         bridge.invokeCallbackSuccess(args: args)
