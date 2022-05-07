@@ -206,6 +206,7 @@ extension NZWebPage {
         guard let view = viewController?.view else { return }
         webView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
         viewController?.setNeedsUpdateOfHomeIndicatorAutoHidden()
+        appService?.uiControl.hideCapsule()
     }
     
     @objc func willQuitFullscreenVideoPlayer(_ notify: Notification) {
@@ -228,6 +229,7 @@ extension NZWebPage {
                                width: view.frame.width,
                                height: view.frame.height - tabBarHeight - navigationBarHeight)
         viewController?.setNeedsUpdateOfHomeIndicatorAutoHidden()
+        appService?.uiControl.showCapsule()
     }
 }
 
