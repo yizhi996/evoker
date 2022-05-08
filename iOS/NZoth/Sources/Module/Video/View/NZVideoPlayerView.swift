@@ -37,14 +37,16 @@ public struct NZVideoPlayerParams: Codable  {
 }
 
 open class NZVideoPlayerView: UIView {
-        
+    
+    var loadedDataHandler: ((TimeInterval, CGFloat, CGFloat) -> Void)?
+    
     var playHandler: NZEmptyBlock?
     
     var pauseHandler: NZEmptyBlock?
     
     var endedHandler: NZEmptyBlock?
     
-    var timeUpdateHandler: ((TimeInterval, TimeInterval) -> Void)?
+    var timeUpdateHandler: ((TimeInterval) -> Void)?
     
     var fullscreenChangeHandler: ((Bool, CGFloat) -> Void)?
     
@@ -53,8 +55,6 @@ open class NZVideoPlayerView: UIView {
     var errorHandler: NZStringBlock?
     
     var progressHandler: NZCGFloatBlock?
-    
-    var loadedMetadataHandler: ((CGFloat, CGFloat, TimeInterval) -> Void)?
     
     var seekCompletionHandler: NZCGFloatBlock?
     
@@ -84,8 +84,16 @@ open class NZVideoPlayerView: UIView {
         player.playerPrepareToPlay = { _, _ in
             print("playerPrepareToPlay")
         }
-        player.playerReadyToPlay = { _, _ in
-            print("playerReadyToPlay")
+        player.playerReadyToPlay = { [unowned self] _, videoURL in
+            let asset = AVAsset(url: videoURL)
+            var width: CGFloat = 0
+            var height: CGFloat = 0
+            if let track = asset.tracks(withMediaType: .video).first {
+                let size = track.naturalSize.applying(track.preferredTransform)
+                width = size.width
+                height = size.height
+            }
+            self.loadedDataHandler?(player.currentPlayerManager.totalTime, width, height)
         }
         player.playerPlayFailed = { [unowned self] _, error in
             self.errorHandler?("\(error)")
@@ -100,7 +108,7 @@ open class NZVideoPlayerView: UIView {
         // 播放进度
         player.playerPlayTimeChanged = { [unowned self] _, currentTime, duration in
             guard let timeUpdateHandler =  self.timeUpdateHandler else { return }
-            self.throttler.invoke { timeUpdateHandler(currentTime, duration) }
+            self.throttler.invoke { timeUpdateHandler(currentTime) }
         }
         // 加载进度
         player.playerBufferTimeChanged = { [unowned self] _, bufferTime in
@@ -211,12 +219,16 @@ open class NZVideoPlayerView: UIView {
 
 extension NZVideoPlayerView {
     
-    func enterFullscreen() {
-        forceRotateScreen?(true)
-        UIDevice.current.setValue(UIInterfaceOrientation.unknown.rawValue, forKey: "orientation")
-        UIDevice.current.setValue(UIInterfaceOrientation.landscapeRight.rawValue, forKey: "orientation")
-        NotificationCenter.default.post(name: NZVideoPlayerView.willEnterFullscreenVideoPlayer, object: nil)
-        forceRotateScreen?(false)
+    func enterFullscreen(orientation: UIInterfaceOrientation) {
+        if orientation == .portrait {
+            NotificationCenter.default.post(name: NZVideoPlayerView.willEnterFullscreenVideoPlayer, object: nil)
+        } else {
+            forceRotateScreen?(true)
+            UIDevice.current.setValue(UIInterfaceOrientation.unknown.rawValue, forKey: "orientation")
+            UIDevice.current.setValue(orientation.rawValue, forKey: "orientation")
+            NotificationCenter.default.post(name: NZVideoPlayerView.willEnterFullscreenVideoPlayer, object: nil)
+            forceRotateScreen?(false)
+        }   
     }
     
     func quiteFullscreen() {
@@ -231,6 +243,8 @@ extension NZVideoPlayerView {
 
 //MARK: NZSubscribeKey
 extension NZVideoPlayerView {
+    
+    public static let onLoadedDataSubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_ON_LOADED_DATA")
     
     public static let onPlaySubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_ON_PLAY")
     

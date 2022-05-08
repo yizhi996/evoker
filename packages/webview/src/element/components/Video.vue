@@ -142,7 +142,7 @@ const {
   updateContainer
 } = useNative()
 
-const { onPlaye, onPause, onError, timeUpdate, bufferUpdate } = usePlayer(videoPlayerId)
+const { onLoadedData, onPlay, onPause, onError, timeUpdate, bufferUpdate } = usePlayer(videoPlayerId)
 
 const enum Methods {
   PLAY = "play",
@@ -169,7 +169,9 @@ const videoData = reactive({
   panTime: 0,
   touching: false,
   muted: false,
-  fullscreen: false
+  fullscreen: false,
+  width: 0,
+  height: 0
 })
 
 const showCenterPlayCover = ref(true)
@@ -178,13 +180,31 @@ const isShowControl = ref(true)
 
 let controlAutoHiddenTimer: ReturnType<typeof setTimeout>
 
+const screenWidth = window.screen.width
+
+const screenHeight = window.screen.height
+
 const tongcengSize = computed(() => {
   if (videoData.fullscreen) {
-    return "width: 812px; height: 375px; position: fixed;"
+    let width = screenHeight
+    let height = screenWidth
+    if (getDirection() === 0) {
+      width = screenWidth
+      height = screenHeight
+    }
+    return `width: ${width}px; height:${height}px; position: fixed;`
   } else {
     return `width: 100%; height: 100%;`
   }
 })
+
+const getDirection = () => {
+  let direction = props.direction
+  if (direction === "") {
+    direction = videoData.width > videoData.height ? -90 : 0
+  }
+  return direction
+}
 
 watch(() => tongcengSize.value, () => {
   setTimeout(() => {
@@ -192,9 +212,15 @@ watch(() => tongcengSize.value, () => {
   }, 100)
 })
 
-onPlaye(() => {
+onLoadedData(data => {
+  videoData.duration = data.duration
+  videoData.width = data.width
+  videoData.height = data.height
+})
+
+onPlay(() => {
   videoData.playing = true
-  emit("play")
+  emit("play", {})
 
   clearTimeout(controlAutoHiddenTimer)
   if (props.controls) {
@@ -206,7 +232,7 @@ onPlaye(() => {
 
 onPause(() => {
   videoData.playing = false
-  emit("pause")
+  emit("pause", {})
 })
 
 onError(() => {
@@ -215,7 +241,6 @@ onError(() => {
 
 timeUpdate(data => {
   videoData.currentTime = data.currentTime
-  videoData.duration = data.duration
 })
 
 bufferUpdate(data => {
@@ -285,7 +310,7 @@ const mutedOnOff = async () => {
 
 const enterFullscreen = () => {
   videoData.fullscreen = !videoData.fullscreen
-  operateVideoPlayer(Methods.FULLSCREEN, { enter: videoData.fullscreen })
+  operateVideoPlayer(Methods.FULLSCREEN, { enter: videoData.fullscreen, direction: getDirection() })
   showControl()
 }
 

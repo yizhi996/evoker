@@ -63,6 +63,13 @@ enum NZVideoAPI: String, NZBuiltInAPI {
         playerView.forceRotateScreen = { value in
             webView.page?.forceRotateScreen = value
         }
+        playerView.loadedDataHandler = { duration, width, height in
+            let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
+                                          "duration": duration,
+                                          "width": width,
+                                          "height": height]
+            webView.bridge.subscribeHandler(method: NZVideoPlayerView.onLoadedDataSubscribeKey, data: message)
+        }
         playerView.playHandler = {
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId]
             webView.bridge.subscribeHandler(method: NZVideoPlayerView.onPlaySubscribeKey, data: message)
@@ -75,10 +82,9 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId]
             webView.bridge.subscribeHandler(method: NZVideoPlayerView.endedSubscribeKey, data: message)
         }
-        playerView.timeUpdateHandler = { currentTime, duration in
+        playerView.timeUpdateHandler = { currentTime in
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
-                                          "currentTime": currentTime,
-                                          "duration": duration]
+                                          "currentTime": currentTime]
             webView.bridge.subscribeHandler(method: NZVideoPlayerView.timeUpdateSubscribeKey, data: message)
         }
         playerView.progressHandler = { bufferTime in
@@ -146,6 +152,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                 
                 struct FullscreenData: Decodable {
                     let enter: Bool
+                    let direction: Int
                 }
                 
                 struct SeekData: Decodable {
@@ -199,7 +206,17 @@ enum NZVideoAPI: String, NZBuiltInAPI {
         case .fullscreen:
             if case .fullscreen(let data) = params.data {
                 if data.enter {
-                    videoPlayer.enterFullscreen()
+                    var orientation: UIInterfaceOrientation
+                    if data.direction == 0 {
+                        orientation = .portrait
+                    } else if data.direction == -90 {
+                        orientation = .landscapeRight
+                    } else if data.direction == 90 {
+                        orientation = .landscapeLeft
+                    } else {
+                        orientation = .landscapeRight
+                    }
+                    videoPlayer.enterFullscreen(orientation: orientation)
                 } else {
                     videoPlayer.quiteFullscreen()
                 }
