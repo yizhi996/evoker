@@ -63,82 +63,6 @@ public class NZVideoPlayerView: UIView {
     
     var needResume = false
     
-//    lazy var player: ZFPlayerController = {
-//        AVURLAsset(url: <#T##URL#>)
-//        AVPlayerItem(asset: <#T##AVAsset#>)
-//        AVPlayer(playerItem: <#T##AVPlayerItem?#>)
-//        let manager = ZFAVPlayerManager()
-//        manager.shouldAutoPlay = false
-//        manager.isMuted = params.muted
-//
-//        let player = ZFPlayerController(playerManager: manager, containerView: self)
-//        player.playerPrepareToPlay = { _, _ in
-//            print("playerPrepareToPlay")
-//        }
-//        player.playerReadyToPlay = { [unowned self] _, videoURL in
-//            let asset = AVAsset(url: videoURL)
-//            var width: CGFloat = 0
-//            var height: CGFloat = 0
-//            if let track = asset.tracks(withMediaType: .video).first {
-//                let size = track.naturalSize.applying(track.preferredTransform)
-//                width = size.width
-//                height = size.height
-//            }
-//            self.loadedDataHandler?(player.currentPlayerManager.totalTime, width, height)
-//        }
-//        player.playerPlayFailed = { [unowned self] _, error in
-//            self.errorHandler?("\(error)")
-//        }
-//        player.playerDidToEnd = { [unowned self] _ in
-//            self.endedHandler?()
-//            if self.params.loop {
-//                player.currentPlayerManager.replay()
-//            }
-//        }
-//
-//        // 播放进度
-//        player.playerPlayTimeChanged = { [unowned self] _, currentTime, duration in
-//            guard let timeUpdateHandler =  self.timeUpdateHandler else { return }
-//            self.throttler.invoke { timeUpdateHandler(currentTime) }
-//        }
-//        // 加载进度
-//        player.playerBufferTimeChanged = { [unowned self] _, bufferTime in
-//            self.progressHandler?(bufferTime)
-//        }
-//        // 加载状态
-//        player.playerLoadStateChanged = { [unowned self] _, state in
-//            switch state {
-//            case .prepare:
-//                print("load prepare")
-//            case .playable:
-//                print("load playable")
-//            case .playthroughOK:
-//                print("load playthroughOK")
-//            case .stalled:
-//                print("load stalled")
-//            default:
-//                break
-//            }
-//        }
-//        // 播放状态
-//        player.playerPlayStateChanged = { [unowned self] _, state in
-//            switch state {
-//            case .playStatePlaying:
-//                self.playHandler?()
-//            case .playStatePaused:
-//                self.pauseHandler?()
-//            case .playStatePlayFailed:
-//                print("playStatePlayFailed")
-//            case .playStatePlayStopped:
-//                print("playStatePlayStopped")
-//            default:
-//                break
-//            }
-//        }
-//
-//        return player
-//    }()
-    
     var params: NZVideoPlayerViewParams!
     
     let playerId: Int
@@ -234,7 +158,7 @@ extension NZVideoPlayerView {
     
     public static let bufferUpdateSubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_BUFFER_UPDATE")
     
-    public static let endedSubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_ENDED")
+    public static let endedSubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_ON_ENDED")
     
 }
 

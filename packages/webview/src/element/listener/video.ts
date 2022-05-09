@@ -5,6 +5,7 @@ enum SubscribeKeys {
   ON_LOADED_DATA = "WEBVIEW_VIDEO_PLAYER_ON_LOADED_DATA",
   ON_PLAY = "WEBVIEW_VIDEO_PLAYER_ON_PLAY",
   ON_PAUSE = "WEBVIEW_VIDEO_PLAYER_ON_PAUSE",
+  ON_ENDED = "WEBVIEW_VIDEO_PLAYER_ON_ENDED",
   ON_ERROR = "WEBVIEW_VIDEO_PLAYER_ON_ERROR",
   TIME_UPDATE = "WEBVIEW_VIDEO_PLAYER_TIME_UPDATE",
   BUFFER_UPDATE = "WEBVIEW_VIDEO_PLAYER_BUFFER_UPDATE"
@@ -44,6 +45,9 @@ export default function useVideoPlayer(videoPlayerId: number) {
     },
     onPause: (callback: () => void) => {
       return createListener(SubscribeKeys.ON_PAUSE, callback)
+    },
+    onEnded: (callback: () => void) => {
+      return createListener(SubscribeKeys.ON_ENDED, callback)
     },
     onError: (callback: (data: any) => void) => {
       return createListener(SubscribeKeys.ON_ERROR, callback)

@@ -142,7 +142,15 @@ const {
   updateContainer
 } = useNative()
 
-const { onLoadedData, onPlay, onPause, onError, timeUpdate, bufferUpdate } = usePlayer(videoPlayerId)
+const {
+  onLoadedData,
+  onPlay,
+  onPause,
+  onEnded,
+  onError,
+  timeUpdate,
+  bufferUpdate
+} = usePlayer(videoPlayerId)
 
 const enum Methods {
   PLAY = "play",
@@ -150,7 +158,8 @@ const enum Methods {
   MUTE = "mute",
   FULLSCREEN = "fullscreen",
   SEEK = "seek",
-  REMOVE = "remove"
+  REMOVE = "remove",
+  REPLAY = "replay"
 }
 
 const operateVideoPlayer = (method: Methods, data: Record<string, any> = {}) => {
@@ -233,6 +242,10 @@ onPlay(() => {
 onPause(() => {
   videoData.playing = false
   emit("pause", {})
+})
+
+onEnded(() => {
+  props.loop && operateVideoPlayer(Methods.REPLAY)
 })
 
 onError(() => {

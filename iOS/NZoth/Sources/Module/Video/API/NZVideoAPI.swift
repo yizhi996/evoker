@@ -121,6 +121,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                 case fullscreen
                 case changeURL
                 case seek
+                case replay
             }
             
             enum Data: Decodable {
@@ -227,6 +228,8 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             if case .seek(let data) = params.data {
                 playerView.seek(position: data.position)
             }
+        case .replay:
+            playerView.player.replay()
         }
        
         bridge.invokeCallbackSuccess(args: args)
