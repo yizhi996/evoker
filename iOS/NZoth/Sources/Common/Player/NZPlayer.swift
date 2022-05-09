@@ -1,73 +1,78 @@
 //
-//  NZAudioPlayer.swift
+//  NZPlayer.swift
 //
 //  Copyright (c) NZoth. All rights reserved. (https://nzothdev.com)
-//
+//  
 //  This source code is licensed under The MIT license.
 //
 
 import Foundation
-import UIKit
 import AVFoundation
 import KTVHTTPCache
+import UIKit
 
-protocol NZAudioPlayerDelegate: NSObject {
+class NZPlayer: NSObject {
     
-    func audioPlayer(_ audioPlayer: NZAudioPlayer, canplay duration: Double)
-    
-    func didStartPlay(audioPlayer: NZAudioPlayer)
-    
-    func didPausePlay(audioPlayer: NZAudioPlayer)
-    
-    func didStopPlay(audioPlayer: NZAudioPlayer)
-    
-    func didEndPlay(audioPlayer: NZAudioPlayer)
-    
-    func audioPlayer(_ audioPlayer: NZAudioPlayer, timeUpdate time: Double)
-    
-    func willSeek(audioPlayer: NZAudioPlayer)
-    
-    func didSeek(audioPlayer: NZAudioPlayer)
-    
-    func audioPlayer(_ audioPlayer: NZAudioPlayer, playFailed error: (Int, Error))
-}
-
-class NZAudioPlayer: NSObject {
-    
-    struct Params: Decodable {
-        let src: String
-        let volume: Float
-        let playbackRate: Float
-        var _url: URL?
+    enum PlayStatus {
+        
+        case none
+        
+        case playing
+        
+        case pause
+        
+        case stoped
+        
+        case failed
     }
+    
+    var readyToPlayHandler: NZDoubleBlock?
+    
+    var playFailedHandler: NZStringBlock?
+    
+    var playHandler: NZEmptyBlock?
+    
+    var pauseHandler: NZEmptyBlock?
+    
+    var endedHandler: NZEmptyBlock?
+    
+    var timeUpdateHandler: ((TimeInterval) -> Void)?
+    
+    var bufferUpdateHandler: ((TimeInterval) -> Void)?
+    
+    var seekCompletionHandler: NZCGFloatBlock?
     
     var currentPlayURL: URL?
-    
-    var params: Params? {
-        didSet {
-            guard let params = params, let url = params._url else { return }
-            setURL(url)
-        }
-    }
     
     var player: AVPlayer?
     
     var playerItem: AVPlayerItem?
     
-    var timeObserver: Any?
+    var timeUpdateObserver: Any?
     
-    weak var delegate: NZAudioPlayerDelegate?
+    var isPlaying = false
     
-    let audioId: Int
+    var playStatus: PlayStatus = .none {
+        didSet {
+            switch playStatus {
+            case .playing:
+                playHandler?()
+            case .pause:
+                pauseHandler?()
+            default:
+                break
+            }
+        }
+    }
     
-    init(audioId: Int) {
-        self.audioId = audioId
-        super.init()
+    var isMuted: Bool = false {
+        didSet {
+            player?.isMuted = isMuted
+        }
     }
     
     deinit {
-        timeObserver = nil
-        player?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.status))
+        destroy()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -84,33 +89,18 @@ class NZAudioPlayer: NSObject {
             }
         }
         
-        timeObserver = nil
-        
-        if let player = player {
-            player.removeObserver(self, forKeyPath: #keyPath(AVPlayer.status))
-            player.pause()
-            player.replaceCurrentItem(with: nil)
-            self.player = nil
-        }
-        
-        if let playerItem = playerItem {
-            NotificationCenter.default.removeObserver(self,
-                                                      name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
-                                                      object: playerItem)
-            self.playerItem = nil
-        }
+        destroy()
         
         if let proxyURL = KTVHTTPCache.proxyURL(withOriginalURL: url) {
             playerItem = AVPlayerItem(url: proxyURL)
             player = AVPlayer(playerItem: playerItem)
-        }
-        
-        if let player = player, let playerItem = playerItem {
-            player.addObserver(self, forKeyPath: #keyPath(AVPlayer.status), options: [.new], context: nil)
+            
+            playerItem!.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: [.new], context: nil)
+            playerItem!.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges), options: [.new], context: nil)
             let interval = CMTime(seconds: 0.25, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-            timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
+            timeUpdateObserver = player!.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
                 guard let self = self else { return }
-                self.delegate?.audioPlayer(self, timeUpdate: time.seconds)
+                self.timeUpdateHandler?(time.seconds)
             }
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(onPlayEnded(_:)),
@@ -122,16 +112,15 @@ class NZAudioPlayer: NSObject {
     func play() {
         guard let player = player else { return }
         player.play()
-        player.volume = params?.volume ?? 1.0
-        player.rate = params?.playbackRate ?? 1.0
-        delegate?.didStartPlay(audioPlayer: self)
+        player.isMuted = isMuted
+        playStatus = .playing
     }
     
     func pause() {
         guard let player = player, let playerItem = playerItem else { return }
         player.pause()
         playerItem.cancelPendingSeeks()
-        delegate?.didPausePlay(audioPlayer: self)
+        playStatus = .pause
     }
     
     func stop() {
@@ -139,7 +128,25 @@ class NZAudioPlayer: NSObject {
         playerItem.cancelPendingSeeks()
         player.pause()
         player.seek(to: .zero)
-        delegate?.didStopPlay(audioPlayer: self)
+        playStatus = .stoped
+    }
+    
+    func destroy() {
+        stop()
+        player?.replaceCurrentItem(with: nil)
+        timeUpdateObserver = nil
+        if let playerItem = playerItem {
+            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
+            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
+            NotificationCenter.default.removeObserver(self,
+                                                      name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+                                                      object: playerItem)
+        }
+        playerItem = nil
+        player = nil
+        currentPlayURL = nil
+        isPlaying = false
+        playStatus = .none
     }
     
     func replay() {
@@ -162,11 +169,10 @@ class NZAudioPlayer: NSObject {
     
     func seek(position: TimeInterval) {
         guard let player = player else { return }
-        delegate?.willSeek(audioPlayer: self)
         let to = CMTime(seconds: position, preferredTimescale: player.currentTime().timescale)
         player.seek(to: to, completionHandler: { [weak self] _ in
             guard let self = self else { return }
-            self.delegate?.didSeek(audioPlayer: self)
+            self.seekCompletionHandler?(position)
         })
     }
     
@@ -175,22 +181,33 @@ class NZAudioPlayer: NSObject {
         guard let playerItem = playerItem,
               let object = notification.object as? AVPlayerItem,
               object == playerItem else { return }
-        delegate?.didEndPlay(audioPlayer: self)
+        endedHandler?()
     }
     
     override func observeValue(forKeyPath keyPath: String?,
                                of object: Any?,
                                change: [NSKeyValueChangeKey : Any]?,
                                context: UnsafeMutableRawPointer?) {
-        if keyPath == #keyPath(AVPlayer.status) {
-            if let statusNumber = change?[.newKey] as? Int, let status = AVPlayer.Status(rawValue: statusNumber) {
+        if keyPath == #keyPath(AVPlayerItem.status) {
+            if let statusValue = change?[.newKey] as? Int, let status = AVPlayerItem.Status(rawValue: statusValue) {
                 if status == .readyToPlay {
                     if let playerItem = playerItem {
                         let duration = playerItem.asset.duration.seconds
-                        delegate?.audioPlayer(self, canplay: duration)
+                        readyToPlayHandler?(duration)
+                    }
+                } else if status == .failed {
+                    playStatus = .failed
+                    if let error = player?.currentItem?.error {
+                        playFailedHandler?(error.localizedDescription)
+                    } else {
+                        playFailedHandler?("player play failed")
                     }
                 }
             }
+        } else if keyPath == #keyPath(AVPlayerItem.loadedTimeRanges) {
+            let timeRange = playerItem!.loadedTimeRanges.first as! CMTimeRange
+            let duration = CMTimeGetSeconds(timeRange.end)
+            bufferUpdateHandler?(duration)
         }
     }
 }

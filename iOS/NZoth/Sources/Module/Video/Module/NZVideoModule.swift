@@ -24,33 +24,36 @@ class NZVideoModule: NZModule {
         return result
     }
     
-    lazy var players: DoubleLevelDictionary<PageId, VideoId, NZVideoPlayerView> = DoubleLevelDictionary()
+    lazy var playerViews: DoubleLevelDictionary<PageId, VideoId, NZVideoPlayerView> = DoubleLevelDictionary()
     
     required init(appService: NZAppService) {
         
     }
     
     func onShow(_ page: NZPage) {
-        players.get(page.pageId)?.values.forEach { player in
-            if player.needResume {
-                player.play()
-                player.needResume = false
+        playerViews.get(page.pageId)?.values.forEach { playerView in
+            if playerView.needResume {
+                playerView.play()
+                playerView.needResume = false
             }
         }
     }
     
     func onHide(_ page: NZPage) {
-        players.get(page.pageId)?.values.forEach { player in
-            if player.isPlaying {
-                player.pause()
-                player.needResume = true
+        playerViews.get(page.pageId)?.values.forEach { playerView in
+            if playerView.player.isPlaying {
+                playerView.pause()
+                playerView.needResume = true
             }
         }
     }
     
     func onUnload(_ page: NZPage) {
-        players.get(page.pageId)?.values.forEach { $0.stop() }
-        players.remove(page.pageId)
+        playerViews.get(page.pageId)?.forEach { (_, playerView) in
+            playerView.stop()
+            playerView.removeFromSuperview()
+        }
+        playerViews.remove(page.pageId)
     }
     
 }

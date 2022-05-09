@@ -41,8 +41,6 @@ Pod::Spec.new do |s|
       ss.dependency 'CryptoSwift', '~> 1.4.1'
       ss.dependency 'Zip', '~> 2.1'
       ss.dependency 'ZLPhotoBrowser'
-      ss.dependency 'ZFPlayer'
-      ss.dependency 'ZFPlayer/AVPlayer', '~> 4.0'
       ss.dependency 'KTVHTTPCache', '~> 2.0.0'
       ss.dependency 'SQLite.swift', '~> 0.13.2'
     end

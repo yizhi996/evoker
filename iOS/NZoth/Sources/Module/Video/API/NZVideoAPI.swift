@@ -37,7 +37,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard var params: NZVideoPlayerParams = args.paramsString.toModel() else {
+        guard var params: NZVideoPlayerViewParams = args.paramsString.toModel() else {
             let error = NZError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -49,7 +49,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let videoModule: NZVideoModule = appService.getModule() else {
+        guard let module: NZVideoModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZVideoModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -70,29 +70,29 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                                           "height": height]
             webView.bridge.subscribeHandler(method: NZVideoPlayerView.onLoadedDataSubscribeKey, data: message)
         }
-        playerView.playHandler = {
+        playerView.player.playHandler = {
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId]
             webView.bridge.subscribeHandler(method: NZVideoPlayerView.onPlaySubscribeKey, data: message)
         }
-        playerView.pauseHandler = {
+        playerView.player.pauseHandler = {
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId]
             webView.bridge.subscribeHandler(method: NZVideoPlayerView.onPauseSubscribeKey, data: message)
         }
-        playerView.endedHandler = {
+        playerView.player.endedHandler = {
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId]
             webView.bridge.subscribeHandler(method: NZVideoPlayerView.endedSubscribeKey, data: message)
         }
-        playerView.timeUpdateHandler = { currentTime in
+        playerView.player.timeUpdateHandler = { currentTime in
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
                                           "currentTime": currentTime]
             webView.bridge.subscribeHandler(method: NZVideoPlayerView.timeUpdateSubscribeKey, data: message)
         }
-        playerView.progressHandler = { bufferTime in
+        playerView.player.bufferUpdateHandler = { bufferTime in
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
                                           "bufferTime": bufferTime]
             webView.bridge.subscribeHandler(method: NZVideoPlayerView.bufferUpdateSubscribeKey, data: message)
         }
-        playerView.errorHandler = { error in
+        playerView.player.playFailedHandler = { error in
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
                                           "error": error]
             webView.bridge.subscribeHandler(method: NZVideoPlayerView.onErrorSubscribeKey, data: message)
@@ -101,7 +101,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
         container.addSubview(playerView)
         playerView.autoPinEdgesToSuperviewEdges()
         
-        videoModule.players.set(page.pageId, params.videoPlayerId, value: playerView)
+        module.playerViews.set(page.pageId, params.videoPlayerId, value: playerView)
         
         bridge.invokeCallbackSuccess(args: args)
     }
@@ -179,13 +179,13 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let videoModule: NZVideoModule = appService.getModule() else {
+        guard let module: NZVideoModule = appService.getModule() else {
             let error = NZError.bridgeFailed(reason: .moduleNotFound(NZVideoModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        guard let videoPlayer = videoModule.players.get(page.pageId, params.videoPlayerId) else {
+        guard let playerView = module.playerViews.get(page.pageId, params.videoPlayerId) else {
             let error = NZError.bridgeFailed(reason: .videoPlayerIdNotFound(params.videoPlayerId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -193,15 +193,15 @@ enum NZVideoAPI: String, NZBuiltInAPI {
         
         switch params.method {
         case .play:
-            videoPlayer.play()
+            playerView.play()
         case .pause:
-            videoPlayer.pause()
+            playerView.pause()
         case .remove:
-            videoPlayer.stop()
-            videoModule.players.remove(page.pageId, params.videoPlayerId)
+            playerView.stop()
+            module.playerViews.remove(page.pageId, params.videoPlayerId)
         case .mute:
             if case .mute(let data) = params.data {
-                videoPlayer.muted = data.muted
+                playerView.player.isMuted = data.muted
             }
         case .fullscreen:
             if case .fullscreen(let data) = params.data {
@@ -216,16 +216,16 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                     } else {
                         orientation = .landscapeRight
                     }
-                    videoPlayer.enterFullscreen(orientation: orientation)
+                    playerView.enterFullscreen(orientation: orientation)
                 } else {
-                    videoPlayer.quiteFullscreen()
+                    playerView.quiteFullscreen()
                 }
             }
         case .changeURL:
             break
         case .seek:
             if case .seek(let data) = params.data {
-                videoPlayer.seek(position: data.position)
+                playerView.seek(position: data.position)
             }
         }
        

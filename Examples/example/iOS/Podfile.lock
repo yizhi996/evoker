@@ -40,8 +40,6 @@ PODS:
     - SDWebImageWebPCoder
     - SQLite.swift (~> 0.13.2)
     - Telegraph
-    - ZFPlayer
-    - ZFPlayer/AVPlayer (~> 4.0)
     - Zip (~> 2.1)
     - ZLPhotoBrowser
   - NZoth/Map (0.1.0):
@@ -62,11 +60,6 @@ PODS:
   - Telegraph (0.29):
     - CocoaAsyncSocket (~> 7.6)
     - HTTPParserC (~> 2.9)
-  - ZFPlayer (4.0.3):
-    - ZFPlayer/Core (= 4.0.3)
-  - ZFPlayer/AVPlayer (4.0.3):
-    - ZFPlayer/Core
-  - ZFPlayer/Core (4.0.3)
   - Zip (2.1.2)
   - ZLPhotoBrowser (4.2.5):
     - ZLPhotoBrowser/Core (= 4.2.5)
@@ -98,7 +91,6 @@ SPEC REPOS:
     - SDWebImageWebPCoder
     - SQLite.swift
     - Telegraph
-    - ZFPlayer
     - Zip
     - ZLPhotoBrowser
 
@@ -121,13 +113,12 @@ SPEC CHECKSUMS:
   KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961
-  NZoth: 68274ae4141f5e1ce7d7dde09f7d13ef5b439ba0
+  NZoth: 9a30811119813a4fe58b851716ac3b55914f2796
   PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
   SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   SQLite.swift: 903bfa3bc9ab06345fdfbb578e34f47cfcf417da
   Telegraph: 0cae12d0c9efa5a33de08286c8a71d4c4d16a70c
-  ZFPlayer: 624c92de06eb34df322c3b53b4c9ce760f528f7a
   Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
   ZLPhotoBrowser: 4bfab86b851042e18d7f413284472aa68759626a
 
