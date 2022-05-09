@@ -114,6 +114,7 @@ class NZPlayer: NSObject {
         player.play()
         player.isMuted = isMuted
         playStatus = .playing
+        isPlaying = true
     }
     
     func pause() {
@@ -121,6 +122,7 @@ class NZPlayer: NSObject {
         player.pause()
         playerItem.cancelPendingSeeks()
         playStatus = .pause
+        isPlaying = false
     }
     
     func stop() {
@@ -129,6 +131,7 @@ class NZPlayer: NSObject {
         player.pause()
         player.seek(to: .zero)
         playStatus = .stoped
+        isPlaying = false
     }
     
     func destroy() {
