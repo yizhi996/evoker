@@ -4,6 +4,7 @@
     <div class="nz-video__native" ref="containerRef" :id="tongcengKey" :style="tongcengSize">
       <div style="width: 100%;" :style="height"></div>
     </div>
+    <img v-if="poster && videoData.showPoster" class="nz-video__poster" :src="poster" />
     <div v-if="showCenterPlayBtn && showCenterPlayCover" class="nz-video__cover">
       <div class="nz-video__cover__play nz-video__control__button--play" v-tap.stop="clickCenterPlayButton"></div>
       <span class="nz-video__cover__duration">{{ secondsToDuration(videoData.duration) }}</span>
@@ -184,7 +185,8 @@ const videoData = reactive({
   muted: false,
   fullscreen: false,
   width: 0,
-  height: 0
+  height: 0,
+  showPoster: true
 })
 
 const showCenterPlayCover = ref(true)
@@ -229,10 +231,12 @@ onLoadedData(data => {
   videoData.duration = props.duration || data.duration
   videoData.width = data.width
   videoData.height = data.height
+  props.initialTime > 0 && seekTo(props.initialTime)
 })
 
 onPlay(() => {
   videoData.playing = true
+  videoData.showPoster = false
   emit("play", {})
 
   clearTimeout(controlAutoHiddenTimer)
@@ -249,7 +253,10 @@ onPause(() => {
 })
 
 onEnded(() => {
-  props.loop && operateVideoPlayer(Methods.REPLAY)
+  if (props.loop) {
+    operateVideoPlayer(Methods.REPLAY)
+    props.initialTime > 0 && seekTo(props.initialTime)
+  }
 })
 
 onError(() => {
@@ -314,12 +321,16 @@ const clickCenterPlayButton = () => {
   play()
 }
 
-const play = async () => {
+const play = () => {
   operateVideoPlayer(videoData.playing ? Methods.PAUSE : Methods.PLAY)
   showControl()
 }
 
-const mutedOnOff = async () => {
+const seekTo = (position: number) => {
+  operateVideoPlayer(Methods.SEEK, { position })
+}
+
+const mutedOnOff = () => {
   videoData.muted = !videoData.muted
   operateVideoPlayer(Methods.MUTE, { muted: videoData.muted })
   showControl()
@@ -428,10 +439,8 @@ const onMoveSlideProgress = (ev: TouchEvent) => {
 const onEndSlideProgress = (ev: TouchEvent) => {
   isSlidingProgress.value = false
   touch.reset()
-
   showControl()
-
-  operateVideoPlayer(Methods.SEEK, { position: slidingTime.value })
+  seekTo(slidingTime.value)
 }
 
 const enum GestureEvents {
@@ -543,7 +552,7 @@ const onEndPanGesture = (ev: TouchEvent) => {
   touch.reset()
 
   if (currentGestureEvent === GestureEvents.SEEK) {
-    operateVideoPlayer(Methods.SEEK, { position: slidingTime.value })
+    seekTo(slidingTime.value)
   }
 }
 
@@ -570,6 +579,13 @@ nz-video {
     top: 0;
     overflow: scroll;
     -webkit-overflow-scrolling: touch;
+  }
+
+  &__poster {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 
   &__cover {
