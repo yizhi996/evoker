@@ -12,6 +12,7 @@
       <div v-show="isShowControl" class="nz-video__control" :style="tongcengSize">
         <div v-show="videoData.fullscreen" class="nz-video__control__bar__top">
           <div class="nz-video__control__button nz-video__control__button--back" v-tap.stop="enterFullscreen"></div>
+          <div class="nz-video__title">{{ title }}</div>
         </div>
         <div v-if="playBtnPosition === 'center'" class="nz-video__control__button nz-video__control__center__playButton"
           :class="`nz-video__control__button--${videoData.playing ? 'pause' : 'play'}`"
@@ -592,6 +593,16 @@ nz-video {
       color: white;
       margin-top: 5px;
     }
+  }
+
+  &__title {
+    text-align: left;
+    color: #fff;
+    font-size: 16px;
+    width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__control {
