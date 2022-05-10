@@ -226,7 +226,7 @@ watch(() => tongcengSize.value, () => {
 })
 
 onLoadedData(data => {
-  videoData.duration = data.duration
+  videoData.duration = props.duration || data.duration
   videoData.width = data.width
   videoData.height = data.height
 })
@@ -270,6 +270,10 @@ watch(() => props.src, (newValue) => {
 
 watch(() => props.muted, (newValue) => {
   videoData.muted = newValue
+}, { immediate: true })
+
+watch(() => props.duration, (newValue) => {
+  newValue && (videoData.duration = newValue)
 }, { immediate: true })
 
 onMounted(() => {
