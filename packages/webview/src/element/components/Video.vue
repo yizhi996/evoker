@@ -16,9 +16,9 @@
         <div v-if="playBtnPosition === 'center'" class="nz-video__control__button nz-video__control__center__playButton"
           :class="`nz-video__control__button--${videoData.playing ? 'pause' : 'play'}`"
           style="width: 36px;height: 36px;" v-tap.stop="play"></div>
-        <div class="nz-video__control__bar" v-tap.stop="showControl">
-          <div v-if="showPlayBtn && playBtnPosition === 'bottom'" class="nz-video__control__button"
-            style="flex-grow: 1;" v-tap.stop="play">
+        <div class="nz-video__control__bar" :class="videoData.fullscreen ? 'nz-video__control__bar--fullscreen' : ''"
+          v-tap.stop="showControl">
+          <div v-if="showPlayBtn && playBtnPosition === 'bottom'" class="nz-video__control__button" v-tap.stop="play">
             <div class="nz-video__control__button"
               :class="`nz-video__control__button--${videoData.playing ? 'pause' : 'play'}`"></div>
           </div>
@@ -42,11 +42,13 @@
                 secondsToDuration(videoData.duration)
             }}</span>
           </template>
-          <div v-if="showMuteBtn" class="nz-video__control__button"
-            :class="`nz-video__control__button--mute-${videoData.muted ? 'on' : 'off'}`" style="margin-left: 8px"
-            v-tap.stop="mutedOnOff"></div>
-          <div v-if="showFullscreenBtn" class="nz-video__control__button nz-video__control__button--fullscreen"
-            style="margin-left: 8px" v-tap.stop="enterFullscreen"></div>
+          <div class="nz-video__control__bar__right">
+            <div v-if="showMuteBtn" class="nz-video__control__button"
+              :class="`nz-video__control__button--mute-${videoData.muted ? 'on' : 'off'}`" style="margin-left: 8px"
+              v-tap.stop="mutedOnOff"></div>
+            <div v-if="showFullscreenBtn" class="nz-video__control__button nz-video__control__button--fullscreen"
+              style="margin-right: 8px" v-tap.stop="enterFullscreen"></div>
+          </div>
         </div>
       </div>
     </template>
@@ -159,7 +161,8 @@ const enum Methods {
   FULLSCREEN = "fullscreen",
   SEEK = "seek",
   REMOVE = "remove",
-  REPLAY = "replay"
+  REPLAY = "replay",
+  CHANGE_URL = "changeURL"
 }
 
 const operateVideoPlayer = (method: Methods, data: Record<string, any> = {}) => {
@@ -261,11 +264,7 @@ bufferUpdate(data => {
 })
 
 watch(() => props.src, (newValue) => {
-  NZJSBridge.invoke("operateVideoPlayer", {
-    videoPlayerId,
-    method: "changeURL",
-    data: { url: newValue }
-  })
+  operateVideoPlayer(Methods.CHANGE_URL, { url: newValue })
 })
 
 watch(() => props.muted, (newValue) => {
@@ -501,6 +500,7 @@ const onMovePanGesture = async (ev: TouchEvent) => {
     value = clamp(value, 0, videoData.duration)
     slidingTime.value = value
     isSlidingProgress.value = true
+    showControl()
   } else if (currentGestureEvent === GestureEvents.VOLUME) {
     const position = touch.startY.value - (touch.deltaY.value + touch.startY.value)
     const percent = position / (rect.height * 0.5)
@@ -511,7 +511,7 @@ const onMovePanGesture = async (ev: TouchEvent) => {
     setVolume({ volume: value })
 
     systemVolume.value = value
-
+    showControl()
   } else if (currentGestureEvent === GestureEvents.BRIGHTNESS) {
     const position = touch.startY.value - (touch.deltaY.value + touch.startY.value)
     const percent = position / (rect.height * 0.5)
@@ -529,6 +529,7 @@ const onMovePanGesture = async (ev: TouchEvent) => {
     showScreenBrightnessToastTimer = setTimeout(() => {
       isShowScreenBrightnessToast.value = false
     }, 1500)
+    showControl()
   }
 }
 
@@ -610,7 +611,7 @@ nz-video {
     &__bar {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       position: absolute;
       left: 0;
       right: 0;
@@ -623,12 +624,11 @@ nz-video {
       padding: 0 14px;
 
       &--fullscreen {
-        bottom: -1px;
-        height: 60px;
+        padding-left: var(--safe-area-inset-left);
+        padding-right: var(--safe-area-inset-right);
         padding-top: 0;
-        padding-right: calc(var(--safe-area-inset-right) + 24px);
-        padding-bottom: calc(var(--safe-area-inset-bottom) / 2);
-        padding-left: calc(var(--safe-area-inset-left) + 24px);
+        padding-bottom: calc(var(--safe-area-inset-bottom) + 14px);
+        height: 62px;
       }
 
       &__top {
@@ -645,7 +645,13 @@ nz-video {
         line-height: 60px;
         padding-left: var(--safe-area-inset-left);
         padding-right: var(--safe-area-inset-right);
-        padding-top: calc(var(--safe-area-inset-top) / 2);
+        padding-top: var(--safe-area-inset-top);
+      }
+
+      &__right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
 
