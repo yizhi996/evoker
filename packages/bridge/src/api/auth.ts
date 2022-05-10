@@ -46,8 +46,9 @@ export function getSetting<T extends GetSettingOptions = GetSettingOptions>(
   options: T
 ): AsyncReturn<T, GetSettingOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.GET_SETTING, {}, result => {
-      invokeCallback(Events.GET_SETTING, options, result)
+    const event = Events.GET_SETTING
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -69,12 +70,13 @@ export function authorize<T extends AuthorizeOptions = AuthorizeOptions>(
   options: T
 ): AsyncReturn<T, AuthorizeOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.AUTHORIZE
     requestAuthorization(options.scope)
       .then(() => {
-        invokeSuccess(Events.AUTHORIZE, options, {})
+        invokeSuccess(event, options, {})
       })
       .catch(error => {
-        invokeFailure(Events.AUTHORIZE, options, error)
+        invokeFailure(event, options, error)
       })
   }, options)
 }

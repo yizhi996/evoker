@@ -34,8 +34,9 @@ export function getBatteryInfo<
   T extends GetBatteryInfoOptions = GetBatteryInfoOptions
 >(options: T): AsyncReturn<T, GetBatteryInfoOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.GET_BATTERY_INFO, {}, result => {
-      invokeCallback(Events.GET_BATTERY_INFO, options, result)
+    const event = Events.GET_BATTERY_INFO
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

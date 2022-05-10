@@ -136,9 +136,10 @@ export function navigateBack<
   T extends NavigateBackOptions = NavigateBackOptions
 >(options: T): AsyncReturn<T, NavigateBackOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.NAVIGATE_BACK
     if (innerAppData.routerLock) {
       invokeFailure(
-        Events.NAVIGATE_BACK,
+        event,
         options,
         "防止重复多次打开页面，需要在新页面打开完成后才能调用。"
       )
@@ -147,11 +148,11 @@ export function navigateBack<
 
     innerAppData.routerLock = true
     InnerJSBridge.invoke<SuccessResult<T>>(
-      Events.NAVIGATE_BACK,
+      event,
       { delta: options.delta || 1 },
       result => {
         innerAppData.routerLock = false
-        invokeCallback(Events.NAVIGATE_BACK, options, result)
+        invokeCallback(event, options, result)
       }
     )
   }, options)
@@ -220,8 +221,9 @@ export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
   options: T
 ): AsyncReturn<T, ReLaunchOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.RE_LAUNCH
     if (!options.url) {
-      invokeFailure(Events.RE_LAUNCH, options, "options url can not be empty")
+      invokeFailure(event, options, "options url can not be empty")
       return
     }
 
@@ -232,22 +234,18 @@ export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
     })
 
     if (exist === undefined) {
-      invokeFailure(Events.RE_LAUNCH, options, `${options.url} is not found`)
+      invokeFailure(event, options, `${options.url} is not found`)
       return
     }
 
-    InnerJSBridge.invoke<SuccessResult<T>>(
-      Events.RE_LAUNCH,
-      options,
-      result => {
-        if (result.errMsg) {
-          invokeFailure(Events.RE_LAUNCH, options, result.errMsg)
-        } else {
-          innerAppData.query = query
-          invokeSuccess(Events.RE_LAUNCH, options, {})
-        }
+    InnerJSBridge.invoke<SuccessResult<T>>(event, options, result => {
+      if (result.errMsg) {
+        invokeFailure(event, options, result.errMsg)
+      } else {
+        innerAppData.query = query
+        invokeSuccess(event, options, {})
       }
-    )
+    })
   }, options)
 }
 
@@ -268,8 +266,9 @@ export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
   options: T
 ): AsyncReturn<T, SwitchTabOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.SWITCH_TAB
     if (!options.url) {
-      invokeFailure(Events.SWITCH_TAB, options, "options url can not be empty")
+      invokeFailure(event, options, "options url can not be empty")
       return
     }
 
@@ -279,18 +278,14 @@ export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
         return item.path === path
       })
       if (exist === undefined) {
-        invokeFailure(Events.SWITCH_TAB, options, `${path} is not found`)
+        invokeFailure(event, options, `${path} is not found`)
         return
       }
-      InnerJSBridge.invoke<SuccessResult<T>>(
-        Events.SWITCH_TAB,
-        { url: path },
-        result => {
-          invokeCallback(Events.SWITCH_TAB, options, result)
-        }
-      )
+      InnerJSBridge.invoke<SuccessResult<T>>(event, { url: path }, result => {
+        invokeCallback(event, options, result)
+      })
     } else {
-      invokeFailure(Events.SWITCH_TAB, options, `app.config tabBar undefined`)
+      invokeFailure(event, options, `app.config tabBar undefined`)
       return
     }
   }, options)

@@ -37,12 +37,13 @@ export function getClipboardData<
   T extends GetClipboardDataOptions = GetClipboardDataOptions
 >(options: T): AsyncReturn<T, GetClipboardDataOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.GET_CLIPBOARD_DATA, {}, result => {
+    const event = Events.GET_CLIPBOARD_DATA
+    invoke<SuccessResult<T>>(event, {}, result => {
       if (result.errMsg) {
-        invokeFailure(Events.GET_CLIPBOARD_DATA, options, result.errMsg)
+        invokeFailure(event, options, result.errMsg)
         return
       } else {
-        invokeSuccess(Events.GET_CLIPBOARD_DATA, options, result.data)
+        invokeSuccess(event, options, result.data)
         showToast({
           title: `“${globalThis.__NZConfig.appName}” 读取了你的剪切板内容`,
           icon: "none",
@@ -70,19 +71,16 @@ export function setClipboardData<
   T extends SetClipboardDataOptions = SetClipboardDataOptions
 >(options: T): AsyncReturn<T, SetClipboardDataOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.SET_CLIPBOARD_DATA
     if (!isString(options.data)) {
-      invokeFailure(
-        Events.SET_CLIPBOARD_DATA,
-        options,
-        "data type require string"
-      )
+      invokeFailure(event, options, "data type require string")
     }
-    invoke<SuccessResult<T>>(Events.SET_CLIPBOARD_DATA, options, result => {
+    invoke<SuccessResult<T>>(event, options, result => {
       if (result.errMsg) {
-        invokeFailure(Events.SET_CLIPBOARD_DATA, options, result.errMsg)
+        invokeFailure(event, options, result.errMsg)
         return
       } else {
-        invokeSuccess(Events.SET_CLIPBOARD_DATA, options, result.data)
+        invokeSuccess(event, options, result.data)
         showToast({ title: "内容已复制", icon: "none", duration: 1500 })
       }
     })

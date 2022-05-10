@@ -33,9 +33,10 @@ export function getUserProfile<
   T extends GetUserProfileOptions = GetUserProfileOptions
 >(options: T): AsyncReturn<T, GetUserProfileOptions> {
   return wrapperAsyncAPI<T>(async options => {
+    const event = Events.GET_USER_PRIFILE
     if (!innerAppData.eventFromUserClick) {
       invokeFailure(
-        Events.GET_USER_PRIFILE,
+        event,
         options,
         "can only be invoked by user click gesture."
       )
@@ -44,14 +45,14 @@ export function getUserProfile<
     const accepted = await openAuthorizationView("scope.userInfo")
     if (accepted) {
       InnerJSBridge.invoke<SuccessResult<T>>(
-        Events.GET_USER_PRIFILE,
+        event,
         extend({ lang: "en", desc: "" }, options),
         result => {
-          invokeCallback(Events.GET_USER_PRIFILE, options, result)
+          invokeCallback(event, options, result)
         }
       )
     } else {
-      invokeFailure(Events.GET_USER_PRIFILE, options, "fail auth deny")
+      invokeFailure(event, options, "fail auth deny")
     }
   }, options)
 }

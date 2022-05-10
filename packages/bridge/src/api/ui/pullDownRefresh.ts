@@ -27,8 +27,9 @@ export function startPullDownRefresh<
   T extends StartPullDownRefreshOptions = StartPullDownRefreshOptions
 >(options: T): AsyncReturn<T, StartPullDownRefreshOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke(Events.START_PULL_DOWN_REFRESH, {}, result => {
-      invokeCallback(Events.START_PULL_DOWN_REFRESH, options, result)
+    const event = Events.START_PULL_DOWN_REFRESH
+    invoke(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -49,8 +50,9 @@ export function stopPullDownRefresh<
   T extends StopPullDownRefreshOptions = StopPullDownRefreshOptions
 >(options: T): AsyncReturn<T, StopPullDownRefreshOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke(Events.STOP_PULL_DOWN_REFRESH, {}, result => {
-      invokeCallback(Events.STOP_PULL_DOWN_REFRESH, options, result)
+    const event = Events.STOP_PULL_DOWN_REFRESH
+    invoke(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

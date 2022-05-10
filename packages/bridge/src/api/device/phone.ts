@@ -31,12 +31,9 @@ export function makePhoneCall<
   T extends MakePhoneCallOptions = MakePhoneCallOptions
 >(options: T): AsyncReturn<T, MakePhoneCallOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.MAKE_PHONE_CALL
     if (!options.phoneNumber) {
-      invokeFailure(
-        Events.MAKE_PHONE_CALL,
-        options,
-        "phoneNumber cannot be empty"
-      )
+      invokeFailure(event, options, "phoneNumber cannot be empty")
       return
     }
     let phoneNumber = options.phoneNumber
@@ -48,19 +45,15 @@ export function makePhoneCall<
       .then(result => {
         const tapIndex = result.tapIndex
         if (tapIndex === -1) {
-          invokeFailure(Events.MAKE_PHONE_CALL, options, "error")
+          invokeFailure(event, options, "error")
         } else if (tapIndex === 0) {
-          invoke<SuccessResult<T>>(
-            Events.MAKE_PHONE_CALL,
-            { phoneNumber },
-            result => {
-              invokeCallback(Events.MAKE_PHONE_CALL, options, result)
-            }
-          )
+          invoke<SuccessResult<T>>(event, { phoneNumber }, result => {
+            invokeCallback(event, options, result)
+          })
         }
       })
       .catch(error => {
-        invokeFailure(Events.MAKE_PHONE_CALL, options, error)
+        invokeFailure(event, options, error)
       })
   }, options)
 }

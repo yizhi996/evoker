@@ -34,19 +34,20 @@ export function getUserInfo<T extends GetUserInfoOptions = GetUserInfoOptions>(
   options: T
 ): AsyncReturn<T, GetUserInfoOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.GET_USER_INFO
     const scope = "scope.userInfo"
     requestAuthorization(scope, false)
       .then(() => {
         invoke<SuccessResult<T>>(
-          Events.GET_USER_INFO,
+          event,
           extend({ withCredentials: false, lang: "en" }, options),
           result => {
-            invokeCallback(Events.GET_USER_INFO, options, result)
+            invokeCallback(event, options, result)
           }
         )
       })
       .catch(err => {
-        invokeFailure(Events.GET_USER_INFO, options, err)
+        invokeFailure(event, options, err)
       })
   }, options)
 }
@@ -71,8 +72,9 @@ export function login<T extends LoginOptions = LoginOptions>(
   options: T
 ): AsyncReturn<T, LoginOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.LOGIN, options, result => {
-      invokeCallback(Events.LOGIN, options, result)
+    const event = Events.LOGIN
+    invoke<SuccessResult<T>>(event, options, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -93,8 +95,9 @@ export function checkSession<
   T extends CheckSessionOptions = CheckSessionOptions
 >(options: T): AsyncReturn<T, CheckSessionOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.CHECK_SESSION, options, result => {
-      invokeCallback(Events.CHECK_SESSION, options, result)
+    const event = Events.CHECK_SESSION
+    invoke<SuccessResult<T>>(event, options, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

@@ -37,8 +37,9 @@ export function rsa<T extends RSAOptions = RSAOptions>(
   options: T
 ): AsyncReturn<T, RSAOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.RSA, options, result => {
-      invokeCallback(Events.RSA, options, result)
+    const event = Events.RSA
+    invoke<SuccessResult<T>>(event, options, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -60,17 +61,18 @@ export function getRandomValues<
   T extends GetRandomValuesOptions = GetRandomValuesOptions
 >(options: T): AsyncReturn<T, GetRandomValuesOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.GET_RANDOM_VALUES
     if (
       !isNumber(options.length) ||
       options.length <= 0 ||
       options.length > 1048576
     ) {
-      invokeFailure(Events.GET_RANDOM_VALUES, options, "invalid length")
+      invokeFailure(event, options, "invalid length")
       return
     }
 
-    invoke<SuccessResult<T>>(Events.GET_RANDOM_VALUES, options, result => {
-      invokeCallback(Events.GET_RANDOM_VALUES, options, result)
+    invoke<SuccessResult<T>>(event, options, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

@@ -5,7 +5,13 @@ import {
   invokeFailure,
   invokeSuccess
 } from "@nzoth/bridge"
-import { isString, isNumber, isObject, isArrayBuffer, extend } from "@nzoth/shared"
+import {
+  isString,
+  isNumber,
+  isObject,
+  isArrayBuffer,
+  extend
+} from "@nzoth/shared"
 import {
   Events,
   CONTENT_TYPE,
@@ -71,13 +77,14 @@ type RequestCompleteCallback = (res: GeneralCallbackResult) => void
 export function request<T extends RequestOptions = RequestOptions>(
   options: T
 ): RequestTask | undefined {
+  const event = Events.REQUEST
   if (!options.url || !isString(options.url)) {
-    invokeFailure(Events.REQUEST, options, "request url cannot be empty")
+    invokeFailure(event, options, "request url cannot be empty")
     return
   }
 
   if (!/^https?:\/\//.test(options.url)) {
-    invokeFailure(Events.REQUEST, options, "request url scheme wrong")
+    invokeFailure(event, options, "request url scheme wrong")
     return
   }
 
@@ -136,9 +143,9 @@ export function request<T extends RequestOptions = RequestOptions>(
   const task = new RequestTask()
   request.taskId = task.taskId
 
-  InnerJSBridge.invoke<SuccessResult<T>>(Events.REQUEST, request, result => {
+  InnerJSBridge.invoke<SuccessResult<T>>(event, request, result => {
     if (result.errMsg) {
-      invokeFailure(Events.REQUEST, options, result.errMsg)
+      invokeFailure(event, options, result.errMsg)
       return
     } else {
       let { data } = result.data as { data: string | number[] | ArrayBuffer }
@@ -152,7 +159,7 @@ export function request<T extends RequestOptions = RequestOptions>(
         }
       }
       result.data!.data = data
-      invokeSuccess(Events.REQUEST, options, result.data)
+      invokeSuccess(event, options, result.data)
     }
   })
   return task

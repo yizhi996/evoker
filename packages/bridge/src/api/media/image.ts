@@ -35,6 +35,7 @@ export function previewImage<
   T extends PreviewImageOptions = PreviewImageOptions
 >(options: T): AsyncReturn<T, PreviewImageOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.PREVIEW_IMAGE
     if (!options.urls) {
       invokeFailure(
         Events.PREVIEW_IMAGE,
@@ -43,8 +44,8 @@ export function previewImage<
       )
       return
     }
-    invoke<SuccessResult<T>>(Events.PREVIEW_IMAGE, options, result => {
-      invokeCallback(Events.PREVIEW_IMAGE, options, result)
+    invoke<SuccessResult<T>>(event, options, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

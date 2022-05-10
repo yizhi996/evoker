@@ -36,20 +36,21 @@ export function loadFontFace<
   T extends LoadFontFaceOptions = LoadFontFaceOptions
 >(options: T): AsyncReturn<T, LoadFontFaceOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.LOAD_FONT_FACE
     const defaultDesc = {
       style: "normal",
       weight: "normal",
       variant: "normal"
     }
     invokeWebViewMethod(
-      Events.LOAD_FONT_FACE,
+      event,
       {
         family: options.family,
         source: options.source,
         desc: extend(defaultDesc, options.desc)
       },
       result => {
-        invokeCallback(Events.LOAD_FONT_FACE, options, result)
+        invokeCallback(event, options, result)
       }
     )
   }, options)

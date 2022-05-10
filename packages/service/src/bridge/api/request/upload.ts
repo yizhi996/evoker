@@ -97,18 +97,19 @@ type UploadFileCompleteCallback = (res: GeneralCallbackResult) => void
 export function uploadFile<T extends UploadFileOptions = UploadFileOptions>(
   options: T
 ): UploadTask | undefined {
+  const event = Events.UPLOAD_FILE
   if (!options.url || !isString(options.url)) {
-    invokeFailure(Events.UPLOAD_FILE, options, "upload url cannot be empty")
+    invokeFailure(event, options, "upload url cannot be empty")
     return
   }
 
   if (!/^https?:\/\//.test(options.url)) {
-    invokeFailure(Events.UPLOAD_FILE, options, "upload url scheme invalid")
+    invokeFailure(event, options, "upload url scheme invalid")
     return
   }
 
   if (!options.name || !isString(options.name)) {
-    invokeFailure(Events.UPLOAD_FILE, options, "upload name invalid")
+    invokeFailure(event, options, "upload name invalid")
     return
   }
 
@@ -117,7 +118,7 @@ export function uploadFile<T extends UploadFileOptions = UploadFileOptions>(
     !isString(options.filePath) ||
     !options.filePath.startsWith("nzfile://")
   ) {
-    invokeFailure(Events.UPLOAD_FILE, options, "upload filePath invalid")
+    invokeFailure(event, options, "upload filePath invalid")
     return
   }
 
@@ -147,19 +148,15 @@ export function uploadFile<T extends UploadFileOptions = UploadFileOptions>(
   const task = new UploadTask()
   request.taskId = task.taskId
 
-  InnerJSBridge.invoke<SuccessResult<T>>(
-    Events.UPLOAD_FILE,
-    request,
-    result => {
-      task.destroy()
-      uploadTasks.delete(task.taskId)
-      if (result.errMsg) {
-        invokeFailure(Events.UPLOAD_FILE, options, result.errMsg)
-        return
-      } else {
-        invokeSuccess(Events.UPLOAD_FILE, options, result.data)
-      }
+  InnerJSBridge.invoke<SuccessResult<T>>(event, request, result => {
+    task.destroy()
+    uploadTasks.delete(task.taskId)
+    if (result.errMsg) {
+      invokeFailure(event, options, result.errMsg)
+      return
+    } else {
+      invokeSuccess(event, options, result.data)
     }
-  )
+  })
   return task
 }

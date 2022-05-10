@@ -54,13 +54,14 @@ export function getStorage<
   U extends GetStorageOptions<T> = GetStorageOptions<T>
 >(options: U): AsyncReturn<U, GetStorageOptions<T>> {
   return wrapperAsyncAPI<U>(options => {
+    const event = Events.GET
     if (!isString(options.key)) {
-      invokeFailure(Events.GET, options, "key type required string")
+      invokeFailure(event, options, "key type required string")
       return
     }
-    invoke<SuccessResult<U>>(Events.GET, { key: options.key }, result => {
+    invoke<SuccessResult<U>>(event, { key: options.key }, result => {
       if (result.errMsg && result.errMsg.length) {
-        invokeFailure(Events.GET, options, result.errMsg)
+        invokeFailure(event, options, result.errMsg)
       } else {
         const { data, dataType } = result.data as any
         let finalData: unknown
@@ -94,13 +95,13 @@ export function getStorage<
             break
           default:
             invokeFailure(
-              Events.GET,
+              event,
               options,
               "data type illegal, supports string, number, boolean, bigint, array, object, date, undefined or null."
             )
             return
         }
-        invokeSuccess(Events.GET, options, { data: finalData })
+        invokeSuccess(event, options, { data: finalData })
       }
     })
   }, options)
@@ -125,8 +126,9 @@ export function setStorage<
   U extends SetStorageOptions<T> = SetStorageOptions<T>
 >(options: U): AsyncReturn<U, SetStorageOptions<T>> {
   return wrapperAsyncAPI<U>(options => {
+    const event = Events.SET
     if (!isString(options.key)) {
-      invokeFailure(Events.SET, options, "key type required string")
+      invokeFailure(event, options, "key type required string")
       return
     }
 
@@ -160,7 +162,7 @@ export function setStorage<
       type = DataType.BIGINT
     } else {
       invokeFailure(
-        Events.SET,
+        event,
         options,
         "data type illegal, supports string, number, boolean, bigint, array, object, date, undefined or null."
       )
@@ -168,10 +170,10 @@ export function setStorage<
     }
 
     invoke<SuccessResult<U>>(
-      Events.SET,
+      event,
       { key: options.key, data, dataType: type },
       result => {
-        invokeCallback(Events.SET, options, result)
+        invokeCallback(event, options, result)
       }
     )
   }, options)
@@ -194,13 +196,14 @@ export function removeStorage<
   T extends RemoveStorageOptions = RemoveStorageOptions
 >(options: T): AsyncReturn<T, RemoveStorageOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.REMOVE
     if (!isString(options.key)) {
-      invokeFailure(Events.REMOVE, options, "key type required string")
+      invokeFailure(event, options, "key type required string")
       return
     }
 
-    invoke<SuccessResult<T>>(Events.REMOVE, { key: options.key }, result => {
-      invokeCallback(Events.REMOVE, options, result)
+    invoke<SuccessResult<T>>(event, { key: options.key }, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -221,8 +224,9 @@ export function clearStorage<
   T extends ClearStorageOptions = ClearStorageOptions
 >(options: T): AsyncReturn<T, ClearStorageOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.CLEAR, {}, result => {
-      invokeCallback(Events.CLEAR, options, result)
+    const event = Events.CLEAR
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -252,8 +256,9 @@ export function getStorageInfo<
   T extends GetStorageInfoOptions = GetStorageInfoOptions
 >(options: T): AsyncReturn<T, GetStorageInfoOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.INFO, {}, result => {
-      invokeCallback(Events.INFO, options, result)
+    const event = Events.INFO
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

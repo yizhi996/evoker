@@ -18,8 +18,9 @@
       "  T extends $1Options = $1Options",
       ">(options: T): AsyncReturn<T, $1Options> {",
       "  return wrapperAsyncAPI<T>(options => {",
-      "    invoke<SuccessResult<T>>($2, { $0 }, result => {",
-      "      invokeCallback($2, options, result)",
+      "    const event = $0",
+      "    invoke<SuccessResult<T>>(event, options, result => {",
+      "      invokeCallback(event, options, result)",
       "    })",
       "  }, options)",
       "}"

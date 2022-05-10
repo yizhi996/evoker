@@ -31,10 +31,8 @@ export function pageScrollTo<
   T extends PageScrollToOptions = PageScrollToOptions
 >(options: T): AsyncReturn<T, PageScrollToOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invokeWebViewMethod(
-      Events.PAGE_SCROLL_TO,
-      extend({ duration: 300 }, options)
-    )
-    invokeSuccess(Events.PAGE_SCROLL_TO, options, {})
+    const event = Events.PAGE_SCROLL_TO
+    invokeWebViewMethod(event, extend({ duration: 300 }, options))
+    invokeSuccess(event, options, {})
   }, options)
 }

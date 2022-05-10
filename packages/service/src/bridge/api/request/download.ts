@@ -97,13 +97,14 @@ type DownloadFileCompleteCallback = (res: GeneralCallbackResult) => void
 export function downloadFile<
   T extends DownloadFileOptions = DownloadFileOptions
 >(options: T): DownloadTask | undefined {
+  const event = Events.DOWNLOAD_FILE
   if (!options.url || !isString(options.url)) {
-    invokeFailure(Events.DOWNLOAD_FILE, options, "download url cannot be empty")
+    invokeFailure(event, options, "download url cannot be empty")
     return
   }
 
   if (!/^https?:\/\//.test(options.url)) {
-    invokeFailure(Events.DOWNLOAD_FILE, options, "download url scheme invalid")
+    invokeFailure(event, options, "download url scheme invalid")
     return
   }
 
@@ -113,7 +114,7 @@ export function downloadFile<
       !isString(options.filePath) ||
       !options.filePath.startsWith(env.USER_DATA_PATH + "/")
     ) {
-      invokeFailure(Events.DOWNLOAD_FILE, options, "download filePath invalid")
+      invokeFailure(event, options, "download filePath invalid")
       return
     }
     filePath = options.filePath.substring(env.USER_DATA_PATH.length + 1)
@@ -140,22 +141,18 @@ export function downloadFile<
   const task = new DownloadTask()
   request.taskId = task.taskId
 
-  InnerJSBridge.invoke<SuccessResult<T>>(
-    Events.DOWNLOAD_FILE,
-    request,
-    result => {
-      task.destroy()
-      downloadTasks.delete(task.taskId)
-      if (result.errMsg) {
-        invokeFailure(Events.DOWNLOAD_FILE, options, result.errMsg)
-        return
-      } else {
-        if (filePath) {
-          result.data!.filePath = options.filePath!
-        }
-        invokeSuccess(Events.DOWNLOAD_FILE, options, result.data)
+  InnerJSBridge.invoke<SuccessResult<T>>(event, request, result => {
+    task.destroy()
+    downloadTasks.delete(task.taskId)
+    if (result.errMsg) {
+      invokeFailure(event, options, result.errMsg)
+      return
+    } else {
+      if (filePath) {
+        result.data!.filePath = options.filePath!
       }
+      invokeSuccess(event, options, result.data)
     }
-  )
+  })
   return task
 }

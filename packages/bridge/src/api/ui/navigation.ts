@@ -36,8 +36,9 @@ export function showNavigationBarLoading<
   T extends ShowNavigationBarLoadingOptions = ShowNavigationBarLoadingOptions
 >(options: T): AsyncReturn<T, ShowNavigationBarLoadingOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.SHOW_NAVIGATION_BAR_LOADING, {}, result => {
-      invokeCallback(Events.SHOW_NAVIGATION_BAR_LOADING, options, result)
+    const event = Events.SHOW_NAVIGATION_BAR_LOADING
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -62,8 +63,9 @@ export function hideNavigationBarLoading<
   T extends HideNavigationBarLoadingOptions = HideNavigationBarLoadingOptions
 >(options: T): AsyncReturn<T, HideNavigationBarLoadingOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.HIDE_NAVIGATION_BAR_LOADING, {}, result => {
-      invokeCallback(Events.HIDE_NAVIGATION_BAR_LOADING, options, result)
+    const event = Events.HIDE_NAVIGATION_BAR_LOADING
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -94,6 +96,7 @@ export function setNavigationBarColor<
   T extends SetNavigationBarColorOptions = SetNavigationBarColorOptions
 >(options: T): AsyncReturn<T, SetNavigationBarColorOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.SET_NAVIGATION_BAR_COLOR
     const finalOptions = extend(
       {
         animation: {
@@ -103,8 +106,8 @@ export function setNavigationBarColor<
       },
       options
     )
-    invoke(Events.SET_NAVIGATION_BAR_COLOR, finalOptions, result => {
-      invokeCallback(Events.SET_NAVIGATION_BAR_COLOR, finalOptions, result)
+    invoke(event, finalOptions, result => {
+      invokeCallback(event, finalOptions, result)
     })
   }, options)
 }
@@ -128,13 +131,10 @@ export function setNavigationBarTitle<
   T extends SetNavigationBarTitleOptions = SetNavigationBarTitleOptions
 >(options: T): AsyncReturn<T, SetNavigationBarTitleOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(
-      Events.SET_NAVIGATION_BAR_TITLE,
-      { title: options.title ?? "" },
-      result => {
-        invokeCallback(Events.SET_NAVIGATION_BAR_TITLE, options, result)
-      }
-    )
+    const event = Events.SET_NAVIGATION_BAR_TITLE
+    invoke<SuccessResult<T>>(event, { title: options.title ?? "" }, result => {
+      invokeCallback(event, options, result)
+    })
   }, options)
 }
 
@@ -154,8 +154,9 @@ export function hideHomeButton<
   T extends HideHomeButtonOptions = HideHomeButtonOptions
 >(options: T): AsyncReturn<T, HideHomeButtonOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.HIDE_HOMM_BUTTON, {}, result => {
-      invokeCallback(Events.HIDE_HOMM_BUTTON, options, result)
+    const event = Events.HIDE_HOMM_BUTTON
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

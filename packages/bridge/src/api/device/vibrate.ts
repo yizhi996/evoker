@@ -29,8 +29,9 @@ export function vibrateShort<
   T extends VibrateShortOptions = VibrateShortOptions
 >(options: T): AsyncReturn<T, VibrateShortOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.SHORT, { type: options.type }, result => {
-      invokeCallback(Events.SHORT, options, result)
+    const event = Events.SHORT
+    invoke<SuccessResult<T>>(event, { type: options.type }, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -51,8 +52,9 @@ export function vibrateLong<T extends VibrateLongOptions = VibrateLongOptions>(
   options: T
 ): AsyncReturn<T, VibrateLongOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.LONG, {}, result => {
-      invokeCallback(Events.LONG, options, result)
+    const event = Events.LONG
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

@@ -36,16 +36,17 @@ export function openSetting<T extends OpenSettingOptions = OpenSettingOptions>(
   options: T
 ): AsyncReturn<T, OpenSettingOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.OPEN_SETTING
     if (!innerAppData.eventFromUserClick) {
       invokeFailure(
-        Events.OPEN_SETTING,
+        event,
         options,
         "can only be invoked by user click gesture."
       )
       return
     }
-    InnerJSBridge.invoke<SuccessResult<T>>(Events.OPEN_SETTING, {}, result => {
-      invokeCallback(Events.OPEN_SETTING, options, result)
+    InnerJSBridge.invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

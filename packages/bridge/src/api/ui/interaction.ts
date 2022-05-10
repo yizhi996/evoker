@@ -38,6 +38,7 @@ export function showToast<T extends ShowToastOptions = ShowToastOptions>(
   options: T
 ): AsyncReturn<T, ShowToastOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.SHOW_TOAST
     const finalOptions = extend(
       {
         title: "",
@@ -47,8 +48,8 @@ export function showToast<T extends ShowToastOptions = ShowToastOptions>(
       },
       options
     )
-    invoke<SuccessResult<T>>(Events.SHOW_TOAST, finalOptions, result => {
-      invokeCallback(Events.SHOW_TOAST, finalOptions, result)
+    invoke<SuccessResult<T>>(event, finalOptions, result => {
+      invokeCallback(event, finalOptions, result)
     })
   }, options)
 }
@@ -69,8 +70,9 @@ export function hideToast<T extends HideToastOptions = HideToastOptions>(
   options: T
 ): AsyncReturn<T, HideToastOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.HIDE_TOASE, {}, result => {
-      invokeCallback(Events.HIDE_TOASE, options, result)
+    const event = Events.HIDE_TOASE
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -106,6 +108,7 @@ export function showModal<T extends ShowModalOptions = ShowModalOptions>(
   options: T
 ): AsyncReturn<T, ShowModalOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.SHOW_MODAL
     const finalOptions = extend(
       {
         showCancel: true,
@@ -123,8 +126,8 @@ export function showModal<T extends ShowModalOptions = ShowModalOptions>(
     if (finalOptions.content && !isString(finalOptions.content)) {
       finalOptions.content = finalOptions.content + ""
     }
-    invoke<SuccessResult<T>>(Events.SHOW_MODAL, finalOptions, result => {
-      invokeCallback(Events.SHOW_MODAL, finalOptions, result)
+    invoke<SuccessResult<T>>(event, finalOptions, result => {
+      invokeCallback(event, finalOptions, result)
     })
   }, options)
 }
@@ -209,14 +212,15 @@ export function showActionSheet<
   T extends ShowActionSheetOptions = ShowActionSheetOptions
 >(options: T): AsyncReturn<T, ShowActionSheetOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.SHOW_ACTION_SHEET
     const finalOptions = extend(
       {
         itemList: []
       },
       options
     )
-    invoke<SuccessResult<T>>(Events.SHOW_ACTION_SHEET, finalOptions, result => {
-      invokeCallback(Events.SHOW_ACTION_SHEET, finalOptions, result)
+    invoke<SuccessResult<T>>(event, finalOptions, result => {
+      invokeCallback(event, finalOptions, result)
     })
   }, options)
 }

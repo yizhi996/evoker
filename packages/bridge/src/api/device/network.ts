@@ -36,8 +36,9 @@ export function getNetworkType<
   T extends GetNetworkTypeOptions = GetNetworkTypeOptions
 >(options: T): AsyncReturn<T, GetNetworkTypeOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.GET_NETWORK_TYPE, {}, result => {
-      invokeCallback(Events.GET_NETWORK_TYPE, options, result)
+    const event = Events.GET_NETWORK_TYPE
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }
@@ -64,8 +65,9 @@ export function getLocalIPAddress<
   T extends GetLocalIPAddressOptions = GetLocalIPAddressOptions
 >(options: T): AsyncReturn<T, GetLocalIPAddressOptions> {
   return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.GET_LOCAL_IP_ADDRESS, {}, result => {
-      invokeCallback(Events.GET_LOCAL_IP_ADDRESS, options, result)
+    const event = Events.GET_LOCAL_IP_ADDRESS
+    invoke<SuccessResult<T>>(event, {}, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

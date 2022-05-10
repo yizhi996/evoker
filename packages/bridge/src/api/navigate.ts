@@ -35,6 +35,7 @@ export function navigateToMiniProgram<
   T extends NavigateToMiniProgramOptions = NavigateToMiniProgramOptions
 >(options: T): AsyncReturn<T, NavigateToMiniProgramOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.NAVIGATE_TO_MINI_PROGRAM
     const finalOptions = extend(
       {
         appId: "",
@@ -44,17 +45,13 @@ export function navigateToMiniProgram<
     )
 
     if (!finalOptions.appId) {
-      invokeFailure(
-        Events.NAVIGATE_TO_MINI_PROGRAM,
-        finalOptions,
-        "options required appId"
-      )
+      invokeFailure(event, finalOptions, "options required appId")
       return
     }
 
     if (!["release", "trial", "develop"].includes(finalOptions.envVersion!)) {
       invokeFailure(
-        Events.NAVIGATE_TO_MINI_PROGRAM,
+        event,
         finalOptions,
         "options envVersion required release, trial or develop"
       )
@@ -67,12 +64,8 @@ export function navigateToMiniProgram<
       finalOptions.extraData = undefined
     }
 
-    invoke<SuccessResult<T>>(
-      Events.NAVIGATE_TO_MINI_PROGRAM,
-      finalOptions,
-      result => {
-        invokeCallback(Events.NAVIGATE_TO_MINI_PROGRAM, finalOptions, result)
-      }
-    )
+    invoke<SuccessResult<T>>(event, finalOptions, result => {
+      invokeCallback(event, finalOptions, result)
+    })
   }, options)
 }
