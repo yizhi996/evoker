@@ -173,10 +173,10 @@ class NZPlayer: NSObject {
     func seek(position: TimeInterval) {
         guard let player = player else { return }
         let to = CMTime(seconds: position, preferredTimescale: player.currentTime().timescale)
-        player.seek(to: to, completionHandler: { [weak self] _ in
+        player.seek(to: to, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
             guard let self = self else { return }
             self.seekCompletionHandler?(position)
-        })
+        }
     }
     
     @objc
