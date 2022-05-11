@@ -32,9 +32,9 @@ class NZVideoModule: NZModule {
     
     func onShow(_ page: NZPage) {
         playerViews.get(page.pageId)?.values.forEach { playerView in
-            if playerView.needResume {
+            if playerView.player.needResume {
                 playerView.play()
-                playerView.needResume = false
+                playerView.player.needResume = false
             }
         }
     }
@@ -43,7 +43,7 @@ class NZVideoModule: NZModule {
         playerViews.get(page.pageId)?.values.forEach { playerView in
             if playerView.player.isPlaying {
                 playerView.pause()
-                playerView.needResume = true
+                playerView.player.needResume = true
             }
         }
     }

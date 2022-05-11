@@ -61,8 +61,6 @@ public class NZVideoPlayerView: UIView {
     
     var player = NZVideoPlayer()
     
-    var needResume = false
-    
     var params: NZVideoPlayerViewParams!
     
     let playerId: Int

@@ -71,9 +71,39 @@ class NZPlayer: NSObject {
         }
     }
     
+    var needResume = false
+    
+    override init() {
+        super.init()
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(willResignActive),
+                                               name: UIApplication.willResignActiveNotification,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
+    }
+    
     deinit {
         destroy()
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc func willResignActive() {
+        if isPlaying {
+            pause()
+            needResume = true
+        }
+    }
+    
+    @objc func didBecomeActive() {
+        if needResume {
+            play()
+            needResume = false
+        }
     }
     
     func setURL(_ url: URL) {
