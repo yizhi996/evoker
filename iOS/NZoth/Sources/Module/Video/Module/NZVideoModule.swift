@@ -32,19 +32,13 @@ class NZVideoModule: NZModule {
     
     func onShow(_ page: NZPage) {
         playerViews.get(page.pageId)?.values.forEach { playerView in
-            if playerView.player.needResume {
-                playerView.play()
-                playerView.player.needResume = false
-            }
+            playerView.player.didBecomeActive()
         }
     }
     
     func onHide(_ page: NZPage) {
         playerViews.get(page.pageId)?.values.forEach { playerView in
-            if playerView.player.isPlaying {
-                playerView.pause()
-                playerView.player.needResume = true
-            }
+            playerView.player.willResignActive()
         }
     }
     

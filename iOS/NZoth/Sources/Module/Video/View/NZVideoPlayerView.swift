@@ -55,8 +55,6 @@ public class NZVideoPlayerView: UIView {
     
     var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
     
-    var loadedDataHandler: ((TimeInterval, CGFloat, CGFloat) -> Void)?
-    
     var forceRotateScreen: NZBoolBlock?
     
     var player = NZVideoPlayer()
@@ -71,17 +69,6 @@ public class NZVideoPlayerView: UIView {
         super.init(frame: .zero)
         
         backgroundColor = .black
-        
-        player.readyToPlayHandler = { [unowned self] duration in
-            var width: CGFloat = 0
-            var height: CGFloat = 0
-            if let asset = self.player.player?.currentItem?.asset, let track = asset.tracks(withMediaType: .video).first {
-                let size = track.naturalSize.applying(track.preferredTransform)
-                width = size.width
-                height = size.height
-            }
-            self.loadedDataHandler?(duration, width, height)
-        }
         
         if let url = params._url {
             player.setURL(url)
@@ -138,25 +125,6 @@ extension NZVideoPlayerView {
         NotificationCenter.default.post(name: NZVideoPlayerView.willQuitFullscreenVideoPlayer, object: nil)
         forceRotateScreen?(false)
     }
-    
-}
-
-//MARK: NZSubscribeKey
-extension NZVideoPlayerView {
-    
-    public static let onLoadedDataSubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_ON_LOADED_DATA")
-    
-    public static let onPlaySubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_ON_PLAY")
-    
-    public static let onPauseSubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_ON_PAUSE")
-    
-    public static let onErrorSubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_ON_ERROR")
-    
-    public static let timeUpdateSubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_TIME_UPDATE")
-    
-    public static let bufferUpdateSubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_BUFFER_UPDATE")
-    
-    public static let endedSubscribeKey = NZSubscribeKey("WEBVIEW_VIDEO_PLAYER_ON_ENDED")
     
 }
 

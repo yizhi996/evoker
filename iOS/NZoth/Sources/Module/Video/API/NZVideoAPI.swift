@@ -63,41 +63,49 @@ enum NZVideoAPI: String, NZBuiltInAPI {
         playerView.forceRotateScreen = { value in
             webView.page?.forceRotateScreen = value
         }
-        playerView.loadedDataHandler = { duration, width, height in
+        playerView.player.loadedDataHandler = { duration, width, height in
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
                                           "duration": duration,
                                           "width": width,
                                           "height": height]
-            webView.bridge.subscribeHandler(method: NZVideoPlayerView.onLoadedDataSubscribeKey, data: message)
+            webView.bridge.subscribeHandler(method: NZVideoPlayer.onLoadedDataSubscribeKey, data: message)
         }
         playerView.player.playHandler = {
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId]
-            webView.bridge.subscribeHandler(method: NZVideoPlayerView.onPlaySubscribeKey, data: message)
+            webView.bridge.subscribeHandler(method: NZVideoPlayer.onPlaySubscribeKey, data: message)
         }
         playerView.player.pauseHandler = {
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId]
-            webView.bridge.subscribeHandler(method: NZVideoPlayerView.onPauseSubscribeKey, data: message)
+            webView.bridge.subscribeHandler(method: NZVideoPlayer.onPauseSubscribeKey, data: message)
         }
         playerView.player.endedHandler = {
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId]
-            webView.bridge.subscribeHandler(method: NZVideoPlayerView.endedSubscribeKey, data: message)
+            webView.bridge.subscribeHandler(method: NZVideoPlayer.endedSubscribeKey, data: message)
         }
         playerView.player.timeUpdateHandler = { currentTime in
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
                                           "currentTime": currentTime]
-            webView.bridge.subscribeHandler(method: NZVideoPlayerView.timeUpdateSubscribeKey, data: message)
+            webView.bridge.subscribeHandler(method: NZVideoPlayer.timeUpdateSubscribeKey, data: message)
         }
         playerView.player.bufferUpdateHandler = { bufferTime in
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
                                           "bufferTime": bufferTime]
-            webView.bridge.subscribeHandler(method: NZVideoPlayerView.bufferUpdateSubscribeKey, data: message)
+            webView.bridge.subscribeHandler(method: NZVideoPlayer.bufferUpdateSubscribeKey, data: message)
         }
         playerView.player.playFailedHandler = { error in
             let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
                                           "error": error]
-            webView.bridge.subscribeHandler(method: NZVideoPlayerView.onErrorSubscribeKey, data: message)
+            webView.bridge.subscribeHandler(method: NZVideoPlayer.onErrorSubscribeKey, data: message)
         }
-        
+        playerView.player.fullscreenChangeHandler = {
+            let message: [String: Any] = ["videoPlayerId": params.videoPlayerId]
+            webView.bridge.subscribeHandler(method: NZVideoPlayer.fullscreenChangeSubscribeKey, data: message)
+        }
+        playerView.player.seekCompletionHandler = { position in
+            let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
+                                          "position": position]
+            webView.bridge.subscribeHandler(method: NZVideoPlayer.seekCompleteSubscribeKey, data: message)
+        }
         container.addSubview(playerView)
         playerView.autoPinEdgesToSuperviewEdges()
         

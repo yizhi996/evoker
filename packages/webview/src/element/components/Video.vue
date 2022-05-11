@@ -112,10 +112,7 @@ const props = withDefaults(defineProps<{
   playBtnPosition?: "bottom" | "center"
   vslideGesture?: boolean
   vslideGestureInFullscreen?: boolean
-  showCastingButton?: boolean
-  enableAutoRotation?: boolean
   showScreenLockButton?: boolean
-  showSnapshotButton?: boolean
   referrerPolicy?: "origin" | "no-referrer"
 }>(), {
   controls: true,
@@ -135,9 +132,6 @@ const props = withDefaults(defineProps<{
   playBtnPosition: "bottom",
   vslideGesture: false,
   vslideGestureInFullscreen: true,
-  showCastingButton: false,
-  enableAutoRotation: false,
-  showSnapshotButton: false,
   referrerPolicy: "no-referrer",
 })
 
@@ -159,7 +153,9 @@ const {
   onEnded,
   onError,
   timeUpdate,
-  bufferUpdate
+  bufferUpdate,
+  fullscreenChange,
+  seekComplete
 } = usePlayer(videoPlayerId)
 
 const enum Methods {
@@ -171,14 +167,6 @@ const enum Methods {
   REMOVE = "remove",
   REPLAY = "replay",
   CHANGE_URL = "changeURL"
-}
-
-const operateVideoPlayer = (method: Methods, data: Record<string, any> = {}) => {
-  NZJSBridge.invoke("operateVideoPlayer", {
-    videoPlayerId,
-    method,
-    data
-  })
 }
 
 const videoData = reactive({
@@ -229,17 +217,20 @@ const getDirection = () => {
   return direction
 }
 
-watch(() => tongcengSize.value, () => {
-  setTimeout(() => {
-    updateContainer()
-  }, 100)
-})
+const operateVideoPlayer = (method: Methods, data: Record<string, any> = {}) => {
+  NZJSBridge.invoke("operateVideoPlayer", {
+    videoPlayerId,
+    method,
+    data
+  })
+}
 
 onLoadedData(data => {
   videoData.duration = props.duration || data.duration
   videoData.width = data.width
   videoData.height = data.height
   props.initialTime > 0 && seekTo(props.initialTime)
+  emit("loadedmetadata", { duration: data.duration, width: videoData.width, height: videoData.height })
 })
 
 onPlay(() => {
@@ -247,12 +238,7 @@ onPlay(() => {
   videoData.showPoster = false
   emit("play", {})
 
-  clearTimeout(controlAutoHiddenTimer)
-  if (props.controls) {
-    controlAutoHiddenTimer = setTimeout(() => {
-      isShowControl.value = false
-    }, 5000)
-  }
+  showControl(isShowControl.value)
 })
 
 onPause(() => {
@@ -261,22 +247,45 @@ onPause(() => {
 })
 
 onEnded(() => {
+  emit("ended", {})
   if (props.loop) {
     operateVideoPlayer(Methods.REPLAY)
     props.initialTime > 0 && seekTo(props.initialTime)
   }
 })
 
-onError(() => {
+onError((data) => {
   videoData.playing = false
+  emit("error", { error: data.error })
 })
 
 timeUpdate(data => {
   videoData.currentTime = data.currentTime
+  emit("timeupdate", { currentTime: videoData.currentTime, duration: videoData.duration })
 })
 
 bufferUpdate(data => {
   videoData.bufferTime = data.bufferTime
+  emit("progress", { buffered: data.bufferTime })
+})
+
+fullscreenChange(() => {
+  const direction = getDirection() === 0 ? "vertical" : "horizontal"
+  emit("fullscreenchange", { fullScreen: videoData.fullscreen, direction })
+})
+
+seekComplete(data => {
+  emit("seekcomplete", { position: data.position })
+})
+
+watch(() => tongcengSize.value, () => {
+  setTimeout(() => {
+    updateContainer()
+  }, 100)
+})
+
+watch(isShowControl, (show) => {
+  emit("controlstoggle", { show })
 })
 
 watch(() => props.src, (newValue) => {
@@ -350,27 +359,13 @@ const enterFullscreen = () => {
   showControl()
 }
 
-const AUTO_HIDE_CONTROL_DELAY = 5000
-
 let clickTimes = 0
+
 let doubleClickTimer: ReturnType<typeof setTimeout>
 
 const showOrHideControl = () => {
   if (props.showCenterPlayBtn && showCenterPlayCover.value) {
     return
-  }
-
-  const exec = (show: boolean) => {
-    if (!props.controls) {
-      return
-    }
-    clearTimeout(controlAutoHiddenTimer)
-    isShowControl.value = show
-    if (isShowControl.value) {
-      controlAutoHiddenTimer = setTimeout(() => {
-        isShowControl.value = false
-      }, AUTO_HIDE_CONTROL_DELAY)
-    }
   }
 
   if (props.enablePlayGesture) {
@@ -380,29 +375,31 @@ const showOrHideControl = () => {
       clickTimes = 0
       if (!isLocked.value) {
         play()
-        exec(true)
+        showControl(true)
       }
     } else {
       doubleClickTimer = setTimeout(() => {
         clickTimes = 0
-        exec(!isShowControl.value)
+        showControl(!isShowControl.value)
       }, 200)
     }
   } else {
-    exec(!isShowControl.value)
+    showControl(!isShowControl.value)
   }
 }
 
-const showControl = () => {
+const showControl = (show = true) => {
   if (!props.controls) {
     return
   }
   clearTimeout(controlAutoHiddenTimer)
-  isShowControl.value = true
+  isShowControl.value = show
 
-  controlAutoHiddenTimer = setTimeout(() => {
-    isShowControl.value = false
-  }, AUTO_HIDE_CONTROL_DELAY)
+  if (isShowControl.value) {
+    controlAutoHiddenTimer = setTimeout(() => {
+      isShowControl.value = false
+    }, 5000)
+  }
 }
 
 const controlsLock = () => {
@@ -486,17 +483,11 @@ const onStartPanGesture = (ev: TouchEvent) => {
 const onMovePanGesture = async (ev: TouchEvent) => {
   ev.preventDefault()
 
-  if (isLocked.value) {
-    return
-  }
-
-  if (props.showCenterPlayBtn && showCenterPlayCover.value) {
+  if (isLocked.value || props.showCenterPlayBtn && showCenterPlayCover.value) {
     return
   }
 
   touch.move(ev)
-
-
 
   const visideEnabled = () => {
     let result = true
