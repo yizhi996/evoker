@@ -4,63 +4,64 @@
     <div class="nz-video__native" ref="containerRef" :id="tongcengKey" :style="tongcengSize">
       <div style="width: 100%;" :style="height"></div>
     </div>
-    <img v-if="poster && videoData.showPoster" class="nz-video__poster"
-      :style="{ position: videoData.fullscreen ? 'fixed' : 'absolute' }" :src="poster" />
-    <div v-if="showCenterPlayBtn && showCenterPlayCover" class="nz-video__cover">
-      <div class="nz-video__cover__play nz-video__icon--play" v-tap.stop="clickCenterPlayButton"></div>
-      <span class="nz-video__cover__duration">{{ secondsToDuration(videoData.duration) }}</span>
-    </div>
-    <template v-else-if="controls">
-      <div v-show="isShowControl" class="nz-video__control" :style="tongcengSize">
-        <div v-show="videoData.fullscreen && showScreenLockButton"
-          class="nz-video__control__button nz-video__control__lock"
-          :class="`nz-video__icon--${isLocked ? 'lock' : 'unlock'}`" v-tap.stop="controlsLock"></div>
-        <div v-show="videoData.fullscreen && !isLocked" class="nz-video__control__bar__top">
-          <div class="nz-video__control__button nz-video__icon--back" v-tap.stop="enterFullscreen"></div>
-          <div class="nz-video__title">{{ title }}</div>
-        </div>
-        <div v-if="playBtnPosition === 'center' && !isLocked"
-          class="nz-video__control__button nz-video__control__center__playButton"
-          :class="`nz-video__icon--${videoData.playing ? 'pause' : 'play'}`" style="width: 36px;height: 36px;"
-          v-tap.stop="play"></div>
-        <div v-show="!isLocked" class="nz-video__control__bar"
-          :class="videoData.fullscreen ? 'nz-video__control__bar--fullscreen' : ''" v-tap.stop="showControl">
-          <div v-if="showPlayBtn && playBtnPosition === 'bottom'" class="nz-video__control__button" v-tap.stop="play">
-            <div class="nz-video__control__button" :class="`nz-video__icon--${videoData.playing ? 'pause' : 'play'}`">
-            </div>
-          </div>
-          <template v-if="showProgress">
-            <span class="nz-video__control__progress__time" style="margin-right: 8px">{{
-                secondsToDuration(currentTime)
-            }}</span>
-            <div ref="progressRef" class="nz-video__control__progress">
-              <div class="nz-video__control__progress__buffer"
-                :style="{ width: dutationPercent(videoData.bufferTime) }">
-              </div>
-              <div class="nz-video__control__progress__played" :style="{ width: dutationPercent(currentTime) }">
-              </div>
-              <div class="nz-video__control__progress__handle" :style="{ left: dutationPercent(currentTime) }"
-                @touchstart="onStartSlideProgress" @touchmove="onMoveSlideProgress" @touchend="onEndSlideProgress"
-                @touchcancel="onEndSlideProgress">
-                <div class="nz-video__control__progress__ball"></div>
-              </div>
-            </div>
-            <span class="nz-video__control__progress__time" style="margin-left: 8px">{{
-                secondsToDuration(videoData.duration)
-            }}</span>
-          </template>
-          <div class="nz-video__control__bar__right">
-            <div v-if="showMuteBtn" class="nz-video__control__button"
-              :class="`nz-video__icon--mute-${videoData.muted ? 'on' : 'off'}`" style="margin-left: 8px"
-              v-tap.stop="mutedOnOff"></div>
-            <div v-if="showFullscreenBtn" class="nz-video__control__button nz-video__icon--fullscreen"
-              style="margin-right: 8px" v-tap.stop="enterFullscreen"></div>
-          </div>
-        </div>
+    <div class="nz-video__wrapper" :style="tongcengSize">
+      <loading v-if="isBufferLoading" class="nz-video__loading" size="50px" color="white"></loading>
+      <img v-if="poster && videoData.showPoster" class="nz-video__poster" :src="poster" />
+      <div v-if="showCenterPlayBtn && showCenterPlayCover" class="nz-video__cover">
+        <div class="nz-video__cover__play nz-video__icon--play" v-tap.stop="clickCenterPlayButton"></div>
+        <span class="nz-video__cover__duration">{{ secondsToDuration(videoData.duration) }}</span>
       </div>
-    </template>
-    <video-screen-brightness v-show="isShowScreenBrightnessToast" :value="screenBrightness"
-      :style="{ position: videoData.fullscreen ? 'fixed' : 'absolute' }"></video-screen-brightness>
+      <template v-else-if="controls">
+        <div v-show="isShowControl" class="nz-video__control">
+          <div v-show="videoData.fullscreen && showScreenLockButton"
+            class="nz-video__control__button nz-video__control__lock"
+            :class="`nz-video__icon--${isLocked ? 'lock' : 'unlock'}`" v-tap.stop="controlsLock"></div>
+          <div v-show="videoData.fullscreen && !isLocked" class="nz-video__control__bar__top">
+            <div class="nz-video__control__button nz-video__icon--back" v-tap.stop="enterFullscreen"></div>
+            <div class="nz-video__title">{{ title }}</div>
+          </div>
+          <div v-if="playBtnPosition === 'center' && !isLocked"
+            class="nz-video__control__button nz-video__control__center__playButton"
+            :class="`nz-video__icon--${videoData.playing ? 'pause' : 'play'}`" style="width: 36px;height: 36px;"
+            v-tap.stop="play"></div>
+          <div v-show="!isLocked" class="nz-video__control__bar"
+            :class="videoData.fullscreen ? 'nz-video__control__bar--fullscreen' : ''" v-tap.stop="showControl">
+            <div v-if="showPlayBtn && playBtnPosition === 'bottom'" class="nz-video__control__button" v-tap.stop="play">
+              <div class="nz-video__control__button" :class="`nz-video__icon--${videoData.playing ? 'pause' : 'play'}`">
+              </div>
+            </div>
+            <template v-if="showProgress">
+              <span class="nz-video__control__progress__time" style="margin-right: 8px">{{
+                  secondsToDuration(currentTime)
+              }}</span>
+              <div ref="progressRef" class="nz-video__control__progress">
+                <div class="nz-video__control__progress__buffer"
+                  :style="{ width: dutationPercent(videoData.bufferTime) }">
+                </div>
+                <div class="nz-video__control__progress__played" :style="{ width: dutationPercent(currentTime) }">
+                </div>
+                <div class="nz-video__control__progress__handle" :style="{ left: dutationPercent(currentTime) }"
+                  @touchstart="onStartSlideProgress" @touchmove="onMoveSlideProgress" @touchend="onEndSlideProgress"
+                  @touchcancel="onEndSlideProgress">
+                  <div class="nz-video__control__progress__ball"></div>
+                </div>
+              </div>
+              <span class="nz-video__control__progress__time" style="margin-left: 8px">{{
+                  secondsToDuration(videoData.duration)
+              }}</span>
+            </template>
+            <div class="nz-video__control__bar__right">
+              <div v-if="showMuteBtn" class="nz-video__control__button"
+                :class="`nz-video__icon--mute-${videoData.muted ? 'on' : 'off'}`" style="margin-left: 8px"
+                v-tap.stop="mutedOnOff"></div>
+              <div v-if="showFullscreenBtn" class="nz-video__control__button nz-video__icon--fullscreen"
+                style="margin-right: 8px" v-tap.stop="enterFullscreen"></div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <video-screen-brightness v-show="isShowScreenBrightnessToast" :value="screenBrightness"></video-screen-brightness>
+    </div>
   </nz-video>
 </template>
 
@@ -75,6 +76,7 @@ import { Touch } from "../use/useTouch"
 import { clamp } from "@nzoth/shared"
 import { getVolume, setVolume, setScreenBrightness, getScreenBrightness } from "@nzoth/bridge"
 import VideoScreenBrightness from "./VideoScreenBrightness.vue"
+import Loading from "./Loading.vue"
 
 const emit = defineEmits([
   "play",
@@ -155,7 +157,8 @@ const {
   timeUpdate,
   bufferUpdate,
   fullscreenChange,
-  seekComplete
+  seekComplete,
+  waiting
 } = usePlayer(videoPlayerId)
 
 const enum Methods {
@@ -188,6 +191,8 @@ const showCenterPlayCover = ref(true)
 const isShowControl = ref(true)
 
 const isLocked = ref(false)
+
+const isBufferLoading = ref(false)
 
 let controlAutoHiddenTimer: ReturnType<typeof setTimeout>
 
@@ -276,6 +281,11 @@ fullscreenChange(() => {
 
 seekComplete(data => {
   emit("seekcomplete", { position: data.position })
+})
+
+waiting(data => {
+  isBufferLoading.value = data.isBufferLoading
+  isBufferLoading.value && emit("waiting", {})
 })
 
 watch(() => tongcengSize.value, () => {
@@ -599,6 +609,13 @@ nz-video {
     -webkit-overflow-scrolling: touch;
   }
 
+  &__wrapper {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   &__poster {
     position: absolute;
     width: 100%;
@@ -767,6 +784,10 @@ nz-video {
       top: 50%;
       transform: translate(0, -50%);
     }
+  }
+
+  &__loading {
+    position: absolute;
   }
 
   &__icon {

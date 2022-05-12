@@ -10,7 +10,8 @@ enum SubscribeKeys {
   TIME_UPDATE = "TIME_UPDATE",
   BUFFER_UPDATE = "BUFFER_UPDATE",
   FULLSCREEN_CHANGE = "FULLSCREEN_CHANGE",
-  SEEK_COMPLETE = "SEEK_COMPLETE"
+  SEEK_COMPLETE = "SEEK_COMPLETE",
+  WAITING = "WAITING"
 }
 
 const combineSubscribeKey = (key: SubscribeKeys) => {
@@ -71,6 +72,9 @@ export default function useVideoPlayer(videoPlayerId: number) {
     },
     seekComplete: (callback: (data: { position: number }) => void) => {
       return createListener(SubscribeKeys.SEEK_COMPLETE, callback)
+    },
+    waiting: (callback: (data: any) => void) => {
+      return createListener(SubscribeKeys.WAITING, callback)
     },
     removaAllListener: () => {
       ids.forEach((id, event) => removeEvent(event, id))

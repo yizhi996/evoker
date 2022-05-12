@@ -83,13 +83,11 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             webView.bridge.subscribeHandler(method: NZVideoPlayer.endedSubscribeKey, data: message)
         }
         playerView.player.timeUpdateHandler = { currentTime in
-            let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
-                                          "currentTime": currentTime]
+            let message: [String: Any] = ["videoPlayerId": params.videoPlayerId, "currentTime": currentTime]
             webView.bridge.subscribeHandler(method: NZVideoPlayer.timeUpdateSubscribeKey, data: message)
         }
         playerView.player.bufferUpdateHandler = { bufferTime in
-            let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
-                                          "bufferTime": bufferTime]
+            let message: [String: Any] = ["videoPlayerId": params.videoPlayerId, "bufferTime": bufferTime]
             webView.bridge.subscribeHandler(method: NZVideoPlayer.bufferUpdateSubscribeKey, data: message)
         }
         playerView.player.playFailedHandler = { error in
@@ -102,9 +100,12 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             webView.bridge.subscribeHandler(method: NZVideoPlayer.fullscreenChangeSubscribeKey, data: message)
         }
         playerView.player.seekCompletionHandler = { position in
-            let message: [String: Any] = ["videoPlayerId": params.videoPlayerId,
-                                          "position": position]
+            let message: [String: Any] = ["videoPlayerId": params.videoPlayerId, "position": position]
             webView.bridge.subscribeHandler(method: NZVideoPlayer.seekCompleteSubscribeKey, data: message)
+        }
+        playerView.player.waitingHandler = { isBufferLoading in
+            let message: [String: Any] = ["videoPlayerId": params.videoPlayerId, "isBufferLoading": isBufferLoading]
+            webView.bridge.subscribeHandler(method: NZVideoPlayer.waitingSubscribeKey, data: message)
         }
         container.addSubview(playerView)
         playerView.autoPinEdgesToSuperviewEdges()

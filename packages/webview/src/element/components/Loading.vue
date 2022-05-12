@@ -35,7 +35,7 @@ nz-loading {
   width: 100%;
   height: 100%;
 
-  > circle {
+  >circle {
     stroke: currentColor;
     stroke-width: 3;
     stroke-linecap: round;
@@ -47,6 +47,7 @@ nz-loading {
   0% {
     transform: rotate(0);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -57,10 +58,12 @@ nz-loading {
     stroke-dasharray: 1, 200;
     stroke-dashoffset: 0;
   }
+
   50% {
     stroke-dasharray: 90, 150;
     stroke-dashoffset: -40;
   }
+
   to {
     stroke-dasharray: 90, 150;
     stroke-dashoffset: -120;

@@ -42,6 +42,8 @@ class NZPlayer: NSObject {
     
     var seekCompletionHandler: NZCGFloatBlock?
     
+    var waitingHandler: NZBoolBlock?
+    
     var currentPlayURL: URL?
     
     var player: AVPlayer?
@@ -125,8 +127,11 @@ class NZPlayer: NSObject {
             playerItem = AVPlayerItem(url: proxyURL)
             player = AVPlayer(playerItem: playerItem)
             
-            playerItem!.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: [.new], context: nil)
-            playerItem!.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges), options: [.new], context: nil)
+            playerItem!.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), options: .new, context: nil)
+            playerItem!.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges), options: .new, context:
+                                        nil)
+            playerItem!.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferEmpty), options: .new, context: nil)
+            playerItem!.addObserver(self, forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp), options: .new, context: nil)
             let interval = CMTime(seconds: 0.25, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
             timeUpdateObserver = player!.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
                 guard let self = self else { return }
@@ -151,6 +156,7 @@ class NZPlayer: NSObject {
         guard let player = player, let playerItem = playerItem else { return }
         player.pause()
         playerItem.cancelPendingSeeks()
+        playerItem.asset.cancelLoading()
         playStatus = .pause
         isPlaying = false
     }
@@ -158,6 +164,7 @@ class NZPlayer: NSObject {
     func stop() {
         guard let player = player, let playerItem = playerItem else { return }
         playerItem.cancelPendingSeeks()
+        playerItem.asset.cancelLoading()
         player.pause()
         player.seek(to: .zero)
         playStatus = .stoped
@@ -171,6 +178,8 @@ class NZPlayer: NSObject {
         if let playerItem = playerItem {
             playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
             playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
+            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferEmpty))
+            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp))
             NotificationCenter.default.removeObserver(self,
                                                       name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
                                                       object: playerItem)
@@ -241,6 +250,12 @@ class NZPlayer: NSObject {
             let timeRange = playerItem!.loadedTimeRanges.first as! CMTimeRange
             let duration = CMTimeGetSeconds(timeRange.end)
             bufferUpdateHandler?(duration)
+        } else if keyPath == #keyPath(AVPlayerItem.isPlaybackBufferEmpty) {
+            waitingHandler?(true)
+        } else if keyPath == #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp) {
+            if playerItem!.isPlaybackLikelyToKeepUp {
+                waitingHandler?(false)
+            }
         }
     }
 }

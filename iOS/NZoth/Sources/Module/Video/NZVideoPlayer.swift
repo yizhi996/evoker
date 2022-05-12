@@ -16,8 +16,6 @@ class NZVideoPlayer: NZPlayer {
     
     var fullscreenChangeHandler: NZEmptyBlock?
     
-    var waitingHandler: NZEmptyBlock?
-    
     override init() {
         super.init()
         
@@ -54,4 +52,6 @@ extension NZVideoPlayer {
     public static let fullscreenChangeSubscribeKey = NZSubscribeKey("MODULE_VIDEO_FULLSCREEN_CHANGE")
     
     public static let seekCompleteSubscribeKey = NZSubscribeKey("MODULE_VIDEO_SEEK_COMPLETE")
+    
+    public static let waitingSubscribeKey = NZSubscribeKey("MODULE_VIDEO_WAITING")
 }
