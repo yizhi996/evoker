@@ -13,6 +13,7 @@ import KTVHTTPCache
 import Alamofire
 import SDWebImage
 import SDWebImageWebPCoder
+import MediaPlayer
 
 final public class NZEngine {
 
@@ -57,6 +58,11 @@ final public class NZEngine {
     public private(set) var extraAPIs: [String: NZAPI] = [:]
     
     private var errorHandler: NZErrorBlock?
+    
+    lazy var volumeSlider: UISlider = {
+        let volumeView = MPVolumeView()
+        return volumeView.subviews.first(ofType: UISlider.self)!
+    }()
     
     var jsContextPool: NZPool<NZJSContext>!
     
