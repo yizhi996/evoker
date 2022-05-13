@@ -46,7 +46,7 @@ const builtInComponent: Record<string, BuiltInComponent> = {
   swiper: { component: Swiper, slot: ".nz-swiper__slide__frame" },
   "swiper-item": { component: SwiperItem },
   button: { component: Button, slot: "#content" },
-  video: { component: Video },
+  video: { component: Video, slot: ".nz-video__slot" },
   progress: { component: Progress },
   slider: { component: Slider },
   navigator: { component: Navigator },

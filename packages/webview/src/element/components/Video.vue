@@ -62,6 +62,7 @@
       </template>
       <video-screen-brightness v-show="isShowScreenBrightnessToast" :value="screenBrightness"></video-screen-brightness>
     </div>
+    <div class="nz-video__slot" :style="tongcengSize"></div>
   </nz-video>
 </template>
 
@@ -217,7 +218,11 @@ const tongcengSize = computed(() => {
 const getDirection = () => {
   let direction = props.direction
   if (direction === "") {
-    direction = videoData.width > videoData.height ? -90 : 0
+    if (videoData.width === 0 || videoData.height === 0) {
+      direction = -90
+    } else {
+      direction = videoData.width > videoData.height ? -90 : 0
+    }
   }
   return direction
 }
@@ -365,6 +370,7 @@ const mutedOnOff = () => {
 
 const enterFullscreen = () => {
   videoData.fullscreen = !videoData.fullscreen
+  viewRef.value!.style.zIndex = videoData.fullscreen ? "100000" : ""
   operateVideoPlayer(Methods.FULLSCREEN, { enter: videoData.fullscreen, direction: getDirection() })
   showControl()
 }
@@ -788,6 +794,14 @@ nz-video {
 
   &__loading {
     position: absolute;
+  }
+
+  &__slot {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: hidden;
+    pointer-events: none;
   }
 
   &__icon {

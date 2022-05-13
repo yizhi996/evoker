@@ -134,7 +134,7 @@ export function addClickEvent(
       const listener = isLongPress
         ? listenerOptions["longpress"]
         : listenerOptions["click"]
-      if (listener.modifiers) {
+      if (listener && listener.modifiers) {
         if (listener.modifiers.includes("stop")) {
           ev.stopPropagation()
         }
