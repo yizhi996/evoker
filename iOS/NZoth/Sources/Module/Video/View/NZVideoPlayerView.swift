@@ -19,13 +19,13 @@ public struct NZVideoPlayerViewParams: Codable  {
     
     let videoPlayerId: Int
     
-    let url: String
+    var url: String
     
-    let objectFit: ObjectFit
+    var objectFit: ObjectFit
     
-    let muted: Bool
+    var muted: Bool
     
-    let loop: Bool
+    var loop: Bool
     
     var _url: URL?
     
@@ -85,6 +85,14 @@ public class NZVideoPlayerView: UIView {
     
     deinit {
         print("\(Self.self) deinit")
+    }
+    
+    func setURL(_ url: URL) {
+        params._url = url
+        player.setURL(url)
+        playerLayer.player = player.player
+        playerLayer.videoGravity = params.objectFit.toNatively()
+        player.isMuted = params.muted
     }
     
     func play() {

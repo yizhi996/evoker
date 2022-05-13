@@ -53,7 +53,7 @@
             <div class="nz-video__control__bar__right">
               <div v-if="showMuteBtn" class="nz-video__control__button"
                 :class="`nz-video__icon--mute-${videoData.muted ? 'on' : 'off'}`" style="margin-left: 8px"
-                v-tap.stop="mutedOnOff"></div>
+                v-tap.stop="mutedSwitch"></div>
               <div v-if="showFullscreenBtn" class="nz-video__control__button nz-video__icon--fullscreen"
                 style="margin-right: 8px" v-tap.stop="enterFullscreen"></div>
             </div>
@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, onMounted, onUnmounted, ref, watch, computed } from "vue"
+import { reactive, onMounted, onUnmounted, ref, watch, computed, getCurrentInstance } from "vue"
 import { NZJSBridge } from "../../bridge"
 import useNative from "../use/useNative"
 import { vTap } from "../directive/tap"
@@ -78,6 +78,8 @@ import { clamp } from "@nzoth/shared"
 import { getVolume, setVolume, setScreenBrightness, getScreenBrightness } from "@nzoth/bridge"
 import VideoScreenBrightness from "./VideoScreenBrightness.vue"
 import Loading from "./Loading.vue"
+
+const instance = getCurrentInstance()!
 
 const emit = defineEmits([
   "play",
@@ -304,7 +306,12 @@ watch(isShowControl, (show) => {
 })
 
 watch(() => props.src, (newValue) => {
-  operateVideoPlayer(Methods.CHANGE_URL, { url: newValue })
+  videoData.playing = false
+  operateVideoPlayer(Methods.CHANGE_URL, {
+    url: newValue,
+    objectFit: props.objectFit,
+    muted: props.muted,
+  })
 })
 
 watch(() => props.muted, (newValue) => {
@@ -362,9 +369,11 @@ const seekTo = (position: number) => {
   operateVideoPlayer(Methods.SEEK, { position })
 }
 
-const mutedOnOff = () => {
-  videoData.muted = !videoData.muted
-  operateVideoPlayer(Methods.MUTE, { muted: videoData.muted })
+const mutedSwitch = () => {
+  const muted = !videoData.muted
+  instance.props.muted = muted
+  videoData.muted = muted
+  operateVideoPlayer(Methods.MUTE, { muted })
   showControl()
 }
 

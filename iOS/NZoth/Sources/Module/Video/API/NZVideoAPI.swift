@@ -55,9 +55,11 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             return
         }
         
-        params._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
-                                                        userId: NZEngine.shared.userId,
-                                                        filePath: params.url) ?? URL(string: params.url)
+        if !params.url.isEmpty {
+            params._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
+                                                            userId: NZEngine.shared.userId,
+                                                            filePath: params.url) ?? URL(string: params.url)
+        }
         
         let playerView = NZVideoPlayerView(params: params)
         playerView.forceRotateScreen = { value in
@@ -137,10 +139,15 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                 case mute(MuteData)
                 case fullscreen(FullscreenData)
                 case seek(SeekData)
+                case changeURL(ChangeURLData)
                 case unknown
                 
                 init(from decoder: Decoder) throws {
                     let container = try decoder.singleValueContainer()
+                    if let data = try? container.decode(ChangeURLData.self) {
+                        self = .changeURL(data)
+                        return
+                    }
                     if let data = try? container.decode(MuteData.self) {
                         self = .mute(data)
                         return
@@ -167,6 +174,12 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                 
                 struct SeekData: Decodable {
                     let position: TimeInterval
+                }
+                
+                struct ChangeURLData: Decodable {
+                    let url: String
+                    let objectFit: NZVideoPlayerViewParams.ObjectFit
+                    let muted: Bool
                 }
             }
         }
@@ -232,7 +245,22 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                 }
             }
         case .changeURL:
-            break
+            if case .changeURL(let data) = params.data {
+                let src = data.url
+                playerView.params.url = src
+                playerView.params.objectFit = data.objectFit
+                playerView.params.muted = data.muted
+                if !src.isEmpty {
+                    if let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
+                                                                   userId: NZEngine.shared.userId,
+                                                                   filePath: src) ?? URL(string: src) {
+                        playerView.setURL(url)
+                    }
+                } else {
+                    playerView.params._url = nil
+                    playerView.player.destroy()
+                }
+            }
         case .seek:
             if case .seek(let data) = params.data {
                 playerView.seek(position: data.position)
