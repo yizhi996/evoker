@@ -43,11 +43,7 @@ export function patchStyle(el: NZothElement, prev: Style, next: Style) {
 
 const importantRE = /\s*!important$/
 
-function setStyle(
-  style: NZothCSSStyleDeclaration,
-  name: string,
-  val: string | string[]
-) {
+function setStyle(style: NZothCSSStyleDeclaration, name: string, val: string | string[]) {
   if (isArray(val)) {
     val.forEach(v => setStyle(style, name, v))
   } else {
@@ -58,11 +54,7 @@ function setStyle(
       const prefixed = autoPrefix(style, name)
       if (importantRE.test(val)) {
         // !important
-        style.setProperty(
-          hyphenate(prefixed),
-          val.replace(importantRE, ""),
-          "important"
-        )
+        style.setProperty(hyphenate(prefixed), val.replace(importantRE, ""), "important")
       } else {
         style.setProperty(prefixed, val)
       }

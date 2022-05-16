@@ -10,8 +10,7 @@ export default defineConfig(() => {
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
         name: pkg.buildOptions?.name,
-        fileName: foramt =>
-          `service.${foramt === "iife" ? "global" : "esm"}.js`,
+        fileName: foramt => `service.${foramt === "iife" ? "global" : "esm"}.js`,
         formats: ["iife", "es"]
       },
       rollupOptions: {

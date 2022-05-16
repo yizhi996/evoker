@@ -24,45 +24,55 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, watch, getCurrentInstance, nextTick, watchEffect } from "vue"
 import { unitToPx } from "../utils/format"
-import useJSAnimation from "../use/useJSAnimation";
+import useJSAnimation from "../use/useJSAnimation"
 import { Easing } from "@tweenjs/tween.js"
 import useNative from "../use/useNative"
-import { NZJSBridge } from "../../bridge";
+import { NZJSBridge } from "../../bridge"
 
 const instance = getCurrentInstance()!
 
-const emit = defineEmits(["scrolltoupper", "scrolltolower", "scroll", "dragstart", "dragging", "dragend"])
+const emit = defineEmits([
+  "scrolltoupper",
+  "scrolltolower",
+  "scroll",
+  "dragstart",
+  "dragging",
+  "dragend"
+])
 
-const props = withDefaults(defineProps<{
-  scrollX?: boolean
-  scrollY?: boolean
-  scrollTop?: number | string
-  scrollLeft?: number | string
-  scrollIntoView?: string
-  upperThreshold?: number | string
-  lowerThreshold?: number | string
-  scrollWithAnimation?: boolean
-  enableFlex?: boolean
-  enhanced?: boolean
-  bounces?: boolean
-  showScrollbar?: boolean
-  pagingEnabled?: boolean
-  fastDeceleration?: boolean
-}>(), {
-  scrollX: false,
-  scrollY: false,
-  scrollTop: 0,
-  scrollLeft: 0,
-  upperThreshold: 50,
-  lowerThreshold: 50,
-  scrollWithAnimation: false,
-  enableFlex: false,
-  enhanced: false,
-  bounces: true,
-  showScrollbar: true,
-  pagingEnabled: false,
-  fastDeceleration: false
-})
+const props = withDefaults(
+  defineProps<{
+    scrollX?: boolean
+    scrollY?: boolean
+    scrollTop?: number | string
+    scrollLeft?: number | string
+    scrollIntoView?: string
+    upperThreshold?: number | string
+    lowerThreshold?: number | string
+    scrollWithAnimation?: boolean
+    enableFlex?: boolean
+    enhanced?: boolean
+    bounces?: boolean
+    showScrollbar?: boolean
+    pagingEnabled?: boolean
+    fastDeceleration?: boolean
+  }>(),
+  {
+    scrollX: false,
+    scrollY: false,
+    scrollTop: 0,
+    scrollLeft: 0,
+    upperThreshold: 50,
+    lowerThreshold: 50,
+    scrollWithAnimation: false,
+    enableFlex: false,
+    enhanced: false,
+    bounces: true,
+    showScrollbar: true,
+    pagingEnabled: false,
+    fastDeceleration: false
+  }
+)
 
 const {
   tongcengKey,
@@ -75,28 +85,37 @@ let lastScrollTime = 0
 let lastScrollTop = 0
 let lastScrollLeft = 0
 
-watch(() => props.scrollTop, (scrollTop) => {
-  const target = unitToPx(scrollTop)
-  if (target === lastScrollTop) {
-    return
+watch(
+  () => props.scrollTop,
+  scrollTop => {
+    const target = unitToPx(scrollTop)
+    if (target === lastScrollTop) {
+      return
+    }
+    props.scrollY && scrollTo(target, Axis.VETRICAL)
   }
-  props.scrollY && scrollTo(target, Axis.VETRICAL)
-})
+)
 
-watch(() => props.scrollLeft, (scrollLeft) => {
-  const target = unitToPx(scrollLeft)
-  if (target === lastScrollLeft) {
-    return
+watch(
+  () => props.scrollLeft,
+  scrollLeft => {
+    const target = unitToPx(scrollLeft)
+    if (target === lastScrollLeft) {
+      return
+    }
+    props.scrollX && scrollTo(target, Axis.HORIZONTAL)
   }
-  props.scrollX && scrollTo(target, Axis.HORIZONTAL)
-})
+)
 
-watch(() => props.scrollIntoView, (scrollIntoView) => {
-  if (scrollIntoView && /^[_a-zA-Z][-_a-zA-Z0-9:]*$/.test(scrollIntoView)) {
-    const view = mainRef.value && mainRef.value.querySelector("#" + scrollIntoView)
-    view && scrollToElement(view)
+watch(
+  () => props.scrollIntoView,
+  scrollIntoView => {
+    if (scrollIntoView && /^[_a-zA-Z][-_a-zA-Z0-9:]*$/.test(scrollIntoView)) {
+      const view = mainRef.value && mainRef.value.querySelector("#" + scrollIntoView)
+      view && scrollToElement(view)
+    }
   }
-})
+)
 
 const onTouchStart = (ev: TouchEvent) => {
   const el = ev.target as HTMLElement
@@ -129,19 +148,23 @@ const removeDragEvent = () => {
   el.removeEventListener("touchcancel", onTouchEnd)
 }
 
-watch(() => props.enhanced, (enhanced) => {
-  nextTick(() => {
-    if (enhanced) {
-      addDragEvent()
-    } else {
-      removeDragEvent()
-    }
-  })
-}, { immediate: true })
+watch(
+  () => props.enhanced,
+  enhanced => {
+    nextTick(() => {
+      if (enhanced) {
+        addDragEvent()
+      } else {
+        removeDragEvent()
+      }
+    })
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   if (mainRef.value) {
-    mainRef.value.addEventListener('scroll', onScroll)
+    mainRef.value.addEventListener("scroll", onScroll)
     if (props.enhanced) {
       setTimeout(() => {
         insertContainer(success => {
@@ -156,7 +179,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (mainRef.value) {
-    mainRef.value.removeEventListener('scroll', onScroll)
+    mainRef.value.removeEventListener("scroll", onScroll)
   }
 })
 
@@ -219,7 +242,10 @@ const onScroll = (ev: Event) => {
         emit("scrolltoupper", {
           direction: Directions.LEFT
         })
-      } else if (x < 0 && target.scrollLeft + target.offsetWidth + lowerThreshold >= target.scrollWidth) {
+      } else if (
+        x < 0 &&
+        target.scrollLeft + target.offsetWidth + lowerThreshold >= target.scrollWidth
+      ) {
         emit("scrolltolower", {
           direction: Directions.RIGHT
         })
@@ -232,7 +258,10 @@ const onScroll = (ev: Event) => {
         emit("scrolltoupper", {
           direction: Directions.TOP
         })
-      } else if (y < 0 && target.scrollTop + target.offsetHeight + lowerThreshold >= target.scrollHeight) {
+      } else if (
+        y < 0 &&
+        target.scrollTop + target.offsetHeight + lowerThreshold >= target.scrollHeight
+      ) {
         emit("scrolltolower", {
           direction: Directions.BOTTOM
         })
@@ -288,15 +317,14 @@ const scrollTo = (target: number, axis: Axis) => {
       end: { target },
       duration: 500,
       easing: Easing.Quadratic.InOut,
-      onUpdate: (({ target }) => {
+      onUpdate: ({ target }) => {
         update(target)
-      })
+      }
     })
   } else {
     update(target)
   }
 }
-
 </script>
 
 <style lang="less">

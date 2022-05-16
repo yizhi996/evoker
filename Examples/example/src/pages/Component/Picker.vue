@@ -19,9 +19,9 @@
         :value="weeks.value"
         @change="onChangeWeeks"
       >
-        <div
-          class="px-2.5"
-        >当前选择： {{ weeks.range[0][weeks.value[0]] }} {{ weeks.range[1][weeks.value[1]] }}</div>
+        <div class="px-2.5">
+          当前选择： {{ weeks.range[0][weeks.value[0]] }} {{ weeks.range[1][weeks.value[1]] }}
+        </div>
       </picker>
     </n-cell>
     <n-cell title="联动">
@@ -33,9 +33,10 @@
         @change="onChangeCities"
         @columnchange="onColumnChange"
       >
-        <div
-          class="px-2.5"
-        >当前选择： {{ cities.range[0][cities.value[0]] }} {{ cities.range[1][cities.value[1]] }} {{ cities.range[2][cities.value[2]] }}</div>
+        <div class="px-2.5">
+          当前选择： {{ cities.range[0][cities.value[0]] }} {{ cities.range[1][cities.value[1]] }}
+          {{ cities.range[2][cities.value[2]] }}
+        </div>
       </picker>
     </n-cell>
     <n-cell title="时间">
@@ -73,36 +74,40 @@ const fruits = reactive({
   value: 0
 })
 
-const onChangeFruits = (e) => {
+const onChangeFruits = e => {
   const value = e.detail.value
   fruits.value = value
 }
 
 const weeks = reactive({
   range: [
-    ['周一', '周二', '周三', '周四', '周五'],
-    ['上午', '下午', '晚上']
+    ["周一", "周二", "周三", "周四", "周五"],
+    ["上午", "下午", "晚上"]
   ],
   value: [0, 0],
   column: 0
 })
 
-const onChangeWeeks = (e) => {
+const onChangeWeeks = e => {
   const value = e.detail.value
   weeks.value = value
 }
 
 const cities = reactive({
-  range: [["浙江", "福建"], ["杭州", "温州"], ["西湖区", "余杭区"]],
+  range: [
+    ["浙江", "福建"],
+    ["杭州", "温州"],
+    ["西湖区", "余杭区"]
+  ],
   value: [0, 0, 0]
 })
 
-const onChangeCities = (e) => {
+const onChangeCities = e => {
   const value = e.detail.value
   cities.value = value
 }
 
-const onColumnChange = (e) => {
+const onColumnChange = e => {
   const { column, value } = e.detail
   cities.value[column] = value
   if (column === 0) {
@@ -135,16 +140,15 @@ const onColumnChange = (e) => {
 
 const timeValue = ref("11:00")
 
-const onChangeTime = (e) => {
+const onChangeTime = e => {
   const value = e.detail.value
   timeValue.value = value
 }
 
 const dateValue = ref("2018-08-08")
 
-const onChangeDate = (e) => {
+const onChangeDate = e => {
   const value = e.detail.value
   dateValue.value = value
 }
-
 </script>

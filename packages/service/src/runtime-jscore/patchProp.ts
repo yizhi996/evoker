@@ -38,15 +38,7 @@ export const patchProp: DOMRendererOptions["patchProp"] = (
       ? ((key = key.slice(1)), false)
       : shouldSetAsProp(el, key, nextValue, isSVG)
   ) {
-    patchDOMProp(
-      el,
-      key,
-      nextValue,
-      prevChildren,
-      parentComponent,
-      parentSuspense,
-      unmountChildren
-    )
+    patchDOMProp(el, key, nextValue, prevChildren, parentComponent, parentSuspense, unmountChildren)
   } else {
     // special case for <input v-model type="checkbox"> with
     // :true-value & :false-value
@@ -63,12 +55,7 @@ export const patchProp: DOMRendererOptions["patchProp"] = (
 
 const nativeOnRE = /^on[a-z]/
 
-function shouldSetAsProp(
-  el: NZothElement,
-  key: string,
-  value: unknown,
-  isSVG: boolean
-) {
+function shouldSetAsProp(el: NZothElement, key: string, value: unknown, isSVG: boolean) {
   if (isSVG) {
     // most keys must be set as attribute on svg elements to work
     // ...except innerHTML & textContent

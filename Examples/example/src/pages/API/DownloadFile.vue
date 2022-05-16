@@ -10,7 +10,8 @@
 <script setup lang="ts">
 import { ref } from "vue"
 
-const url = "https://file.lilithvue.com/lilith-test-assets/wallhaven-43y68y.jpg?imageMogr2/thumbnail/512x"
+const url =
+  "https://file.lilithvue.com/lilith-test-assets/wallhaven-43y68y.jpg?imageMogr2/thumbnail/512x"
 
 const src = ref("")
 
@@ -22,7 +23,8 @@ const onDownload = () => {
     filePath: nz.env.USER_DATA_PATH + "/test_img.jpg",
     success: res => {
       src.value = res.filePath
-    }, fail: err => {
+    },
+    fail: err => {
       console.log(err)
     }
   })

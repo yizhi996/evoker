@@ -21,5 +21,4 @@ const onChange = () => {
   text.value = "OUTER"
   sliderValue.value = 80
 }
-
-</script> 
+</script>

@@ -23,10 +23,7 @@ export function decodeURL(url: string) {
     const path = arr[0]
     const queryStr = arr[1]
     if (queryStr) {
-      const s = decodeURI(queryStr)
-        .replace(/"/g, `\\"`)
-        .replace(/&/g, `","`)
-        .replace(/=/g, `":"`)
+      const s = decodeURI(queryStr).replace(/"/g, `\\"`).replace(/&/g, `","`).replace(/=/g, `":"`)
       query = JSON.parse(`{"${s}"}`)
     }
     return { path, query }

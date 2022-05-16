@@ -8,16 +8,10 @@ export interface ElementWithTransition extends NZothElement {
   _vtc?: Set<string>
 }
 
-export function patchClass(
-  el: NZothElement,
-  value: string | null,
-  isSVG: boolean
-) {
+export function patchClass(el: NZothElement, value: string | null, isSVG: boolean) {
   const transitionClasses = (el as ElementWithTransition)._vtc
   if (transitionClasses) {
-    value = (
-      value ? [value, ...transitionClasses] : [...transitionClasses]
-    ).join(" ")
+    value = (value ? [value, ...transitionClasses] : [...transitionClasses]).join(" ")
   }
   if (value == null) {
     el.className = ""

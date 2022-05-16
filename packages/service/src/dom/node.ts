@@ -55,10 +55,7 @@ export class NZothNode extends NZothEventTarget {
   }
 
   cloneNode(deep?: boolean): NZothNode {
-    const clone = extend(
-      Object.create(Object.getPrototypeOf(this)),
-      this
-    ) as NZothHTMLElement
+    const clone = extend(Object.create(Object.getPrototypeOf(this)), this) as NZothHTMLElement
     clone.isMounted = false
 
     const { attributes, style } = clone
@@ -73,9 +70,7 @@ export class NZothNode extends NZothEventTarget {
     }
 
     if (deep) {
-      clone.childNodes = clone.childNodes.map(childNode =>
-        childNode.cloneNode(true)
-      )
+      clone.childNodes = clone.childNodes.map(childNode => childNode.cloneNode(true))
     }
 
     return clone

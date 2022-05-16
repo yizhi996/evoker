@@ -79,5 +79,4 @@ const turnDevice = () => {
     device.value = "back"
   }
 }
-
 </script>

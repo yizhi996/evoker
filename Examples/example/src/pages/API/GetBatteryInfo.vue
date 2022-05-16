@@ -8,8 +8,8 @@
 
 <script setup lang="ts">
 import { reactive } from "vue"
-import NCellGroup from '../../components/NCellGroup.vue'
-import NCell from '../../components/NCell.vue'
+import NCellGroup from "../../components/NCellGroup.vue"
+import NCell from "../../components/NCell.vue"
 
 const info = reactive({
   level: "未获取",

@@ -23,7 +23,8 @@ const onRequest = () => {
     success: res => {
       result.value = res.data
       header.value = res.header
-    }, fail: err => {
+    },
+    fail: err => {
       result.value = err
       header.value = {}
     }

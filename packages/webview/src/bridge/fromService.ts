@@ -34,17 +34,14 @@ export function invokeAppServiceMethod<T = unknown>(
   }
 }
 
-NZJSBridge.subscribe<{ callbackId: number; result: any }>(
-  Events.CALLBACK_APP_SERVICE,
-  message => {
-    const { callbackId, result } = message
-    const callback = callbacks.get(callbackId)
-    if (callback) {
-      callback(result)
-      callbacks.delete(callbackId)
-    }
+NZJSBridge.subscribe<{ callbackId: number; result: any }>(Events.CALLBACK_APP_SERVICE, message => {
+  const { callbackId, result } = message
+  const callback = callbacks.get(callbackId)
+  if (callback) {
+    callback(result)
+    callbacks.delete(callbackId)
   }
-)
+})
 
 const methods: Record<string, Function> = {
   pageScrollTo,

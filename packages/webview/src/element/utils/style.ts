@@ -7,18 +7,10 @@ function defaultParseFloat(string: string, def: number = 0): number {
 export function getInputStyle(el: HTMLElement) {
   const style = window.getComputedStyle(el)
 
-  const left =
-    defaultParseFloat(style.borderLeftWidth) +
-    defaultParseFloat(style.paddingLeft)
-  const right =
-    defaultParseFloat(style.borderRightWidth) +
-    defaultParseFloat(style.paddingRight)
-  const top =
-    defaultParseFloat(style.borderTopWidth) +
-    defaultParseFloat(style.paddingTop)
-  const bottom =
-    defaultParseFloat(style.borderBottomWidth) +
-    defaultParseFloat(style.paddingBottom)
+  const left = defaultParseFloat(style.borderLeftWidth) + defaultParseFloat(style.paddingLeft)
+  const right = defaultParseFloat(style.borderRightWidth) + defaultParseFloat(style.paddingRight)
+  const top = defaultParseFloat(style.borderTopWidth) + defaultParseFloat(style.paddingTop)
+  const bottom = defaultParseFloat(style.borderBottomWidth) + defaultParseFloat(style.paddingBottom)
 
   const fontSize = defaultParseFloat(style.fontSize, 16)
 

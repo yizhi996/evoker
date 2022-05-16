@@ -32,10 +32,7 @@ interface Props {
   animation: AnimationAction[]
 }
 
-export default function useCSSAnimation(
-  viewRef: Ref<HTMLElement | undefined>,
-  props: Props
-) {
+export default function useCSSAnimation(viewRef: Ref<HTMLElement | undefined>, props: Props) {
   watch(
     () => [...props.animation],
     animation => {
@@ -108,9 +105,7 @@ export default function useCSSAnimation(
           transform.push(`${type}(${action.args[0]})`)
           break
         case "translate3d":
-          transform.push(
-            `${type}(${action.args[0]},${action.args[1]},${action.args[2]})`
-          )
+          transform.push(`${type}(${action.args[0]},${action.args[1]},${action.args[2]})`)
           break
         case "skew":
           transform.push(`${type}(${action.args[0]},${action.args[1]})`)

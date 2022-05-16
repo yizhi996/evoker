@@ -26,9 +26,7 @@ const nodeOps: Omit<RendererOptions<NZothNode, NZothElement>, "patchProp"> = {
   /** @ts-ignore */
   createElement: (tag, isSVG, is, props, container): NZothElement => {
     const page = container.page as NZothPage
-    const el = isSVG
-      ? new NZothSVGElement(svgNS, tag, page)
-      : new NZothHTMLElement(tag, page)
+    const el = isSVG ? new NZothSVGElement(svgNS, tag, page) : new NZothHTMLElement(tag, page)
     return el
   },
 

@@ -1,17 +1,6 @@
 import { InnerJSBridge } from "../../bridge"
-import {
-  SuccessResult,
-  GeneralCallbackResult,
-  invokeFailure,
-  invokeSuccess
-} from "@nzoth/bridge"
-import {
-  isString,
-  isNumber,
-  isObject,
-  isArrayBuffer,
-  extend
-} from "@nzoth/shared"
+import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@nzoth/bridge"
+import { isString, isNumber, isObject, isArrayBuffer, extend } from "@nzoth/shared"
 import {
   Events,
   CONTENT_TYPE,
@@ -45,15 +34,7 @@ interface RequestOptions {
   data?: string | Record<any, any> | ArrayBuffer
   header?: Record<string, string>
   timeout?: number
-  method?:
-    | "OPTIONS"
-    | "GET"
-    | "HEAD"
-    | "POST"
-    | "PUT"
-    | "DELETE"
-    | "TRACE"
-    | "CONNECT"
+  method?: "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT"
   dataType?: "json" | string
   responseType?: "text" | "arraybuffer"
   success?: RequestSuccessCallback

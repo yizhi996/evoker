@@ -39,11 +39,7 @@ export class NZothPage {
     this.nodes.clear()
   }
 
-  onInsertBefore(
-    parent: NZothNode,
-    child: NZothNode,
-    anchor?: NZothNode | null
-  ) {
+  onInsertBefore(parent: NZothNode, child: NZothNode, anchor?: NZothNode | null) {
     let message = [SyncFlags.INSERT, minifyNode(child), minifyNode(parent)]
     if (anchor) {
       message.push(minifyNode(anchor))
@@ -75,11 +71,7 @@ export class NZothPage {
     if (!el.isMounted) {
       return
     }
-    const message = [
-      SyncFlags.DISPLAY,
-      el.nodeId,
-      (el as NZothHTMLElement).style.display
-    ]
+    const message = [SyncFlags.DISPLAY, el.nodeId, (el as NZothHTMLElement).style.display]
     sync(message, this.pageId)
   }
 
@@ -113,11 +105,7 @@ export class NZothPage {
     if (!el.isMounted) {
       return
     }
-    const message = [
-      SyncFlags.ADD_EVENT,
-      el.nodeId,
-      { type, options, modifiers }
-    ]
+    const message = [SyncFlags.ADD_EVENT, el.nodeId, { type, options, modifiers }]
     sync(message, this.pageId)
   }
 }

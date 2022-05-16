@@ -1,11 +1,4 @@
-import {
-  isString,
-  isNumber,
-  clamp,
-  addEvent,
-  removeEvent,
-  dispatchEvent
-} from "@nzoth/shared"
+import { isString, isNumber, clamp, addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
 import { invoke, subscribe } from "../../bridge"
 import {
   invokeFailure,
@@ -33,9 +26,7 @@ interface GetScreenBrightnessSuccessCallbackResult {
   value: number
 }
 
-type GetScreenBrightnessSuccessCallback = (
-  res: GetScreenBrightnessSuccessCallbackResult
-) => void
+type GetScreenBrightnessSuccessCallback = (res: GetScreenBrightnessSuccessCallbackResult) => void
 
 type GetScreenBrightnessFailCallback = (res: GeneralCallbackResult) => void
 
@@ -98,18 +89,14 @@ type SetKeepScreenOnFailCallback = (res: GeneralCallbackResult) => void
 
 type SetKeepScreenOnCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function setKeepScreenOn<
-  T extends SetKeepScreenOnOptions = SetKeepScreenOnOptions
->(options: T): AsyncReturn<T, SetKeepScreenOnOptions> {
+export function setKeepScreenOn<T extends SetKeepScreenOnOptions = SetKeepScreenOnOptions>(
+  options: T
+): AsyncReturn<T, SetKeepScreenOnOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SET_KEEP_SCREEN_ON
-    invoke<SuccessResult<T>>(
-      event,
-      { keepScreenOn: options.keepScreenOn },
-      result => {
-        invokeCallback(event, options, result)
-      }
-    )
+    invoke<SuccessResult<T>>(event, { keepScreenOn: options.keepScreenOn }, result => {
+      invokeCallback(event, options, result)
+    })
   }, options)
 }
 

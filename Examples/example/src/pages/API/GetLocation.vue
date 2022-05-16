@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-white text-center py-20 text-xl">{{ location.latitude }}, {{ location.longitude }}</div>
+  <div class="bg-white text-center py-20 text-xl">
+    {{ location.latitude }}, {{ location.longitude }}
+  </div>
   <button type="primary" @click="getLocation">获取当前坐标</button>
 </template>
 
@@ -32,5 +34,4 @@ const onLocationChange = ({ latitude, longitude }) => {
   location.latitude = latitude.toFixed(3)
   location.longitude = longitude.toFixed(3)
 }
-
 </script>

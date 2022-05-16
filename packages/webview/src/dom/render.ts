@@ -110,9 +110,7 @@ export function addEventListener(data: any[]) {
         props![eventName] = (...args: any[]) => {
           const ev = {
             type: type,
-            args: type.startsWith("update:")
-              ? args
-              : [createCustomEvent(el, type, args[0])]
+            args: type.startsWith("update:") ? args : [createCustomEvent(el, type, args[0])]
           }
           dispatchEvent(nodeId, ev)
         }
@@ -140,16 +138,12 @@ export function updateProp(data: any[]) {
       el.id = value
     } else if (name === "class") {
       if (el instanceof SVGAElement) {
-        value == null
-          ? el.removeAttribute("class")
-          : el.setAttribute("class", value)
+        value == null ? el.removeAttribute("class") : el.setAttribute("class", value)
       } else {
         let className = value
         const transitionClasses = (el as ElementWithTransition)._vtc
         if (transitionClasses) {
-          className = (
-            value ? [value, ...transitionClasses] : [...transitionClasses]
-          ).join(" ")
+          className = (value ? [value, ...transitionClasses] : [...transitionClasses]).join(" ")
         }
         el.className = className
       }

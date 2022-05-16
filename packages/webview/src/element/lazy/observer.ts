@@ -1,9 +1,4 @@
-import {
-  ImageLoadState,
-  ImageLoadResult,
-  loadImage,
-  imageLazyLoadInfos
-} from "./loader"
+import { ImageLoadState, ImageLoadResult, loadImage, imageLazyLoadInfos } from "./loader"
 
 export const supportIntersectionObserver = "IntersectionObserver" in window
 

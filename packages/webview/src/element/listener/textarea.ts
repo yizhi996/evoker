@@ -26,11 +26,7 @@ export default function useTextArea(inputId: number) {
   }
 
   function onTextAreaHeightChange(
-    callback: (data: {
-      inputId: number
-      height: number
-      lineCount: number
-    }) => void
+    callback: (data: { inputId: number; height: number; lineCount: number }) => void
   ) {
     return createListener(SubscribeKeys.HEIGHT_CHANGE, callback)
   }

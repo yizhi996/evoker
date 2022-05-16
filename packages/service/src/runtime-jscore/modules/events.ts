@@ -85,10 +85,7 @@ function parseName(name: string): [string, EventListenerOptions | undefined] {
   return [hyphenate(name.slice(2)), options]
 }
 
-function createInvoker(
-  initialValue: EventValue,
-  instance: ComponentInternalInstance | null
-) {
+function createInvoker(initialValue: EventValue, instance: ComponentInternalInstance | null) {
   const invoker: Invoker = (e: NZothEvent) => {
     // async edge case #6566: inner click event triggers patch, event handler
     // attached to outer element during patch, and triggered again. This
@@ -103,12 +100,9 @@ function createInvoker(
         // emit
         callWithAsyncErrorHandling(invoker.value, instance, 6, e.args)
       } else {
-        callWithAsyncErrorHandling(
-          patchStopImmediatePropagation(e, invoker.value),
-          instance,
-          5,
-          [e]
-        )
+        callWithAsyncErrorHandling(patchStopImmediatePropagation(e, invoker.value), instance, 5, [
+          e
+        ])
       }
     }
   }
@@ -117,10 +111,7 @@ function createInvoker(
   return invoker
 }
 
-function patchStopImmediatePropagation(
-  e: NZothEvent,
-  value: EventValue
-): EventValue {
+function patchStopImmediatePropagation(e: NZothEvent, value: EventValue): EventValue {
   if (isArray(value)) {
     const originalStop = e.stopImmediatePropagation
     e.stopImmediatePropagation = () => {

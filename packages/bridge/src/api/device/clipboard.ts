@@ -25,17 +25,15 @@ interface GetClipboardDataSuccessCallbackResult {
   data: string
 }
 
-type GetClipboardDataSuccessCallback = (
-  res: GetClipboardDataSuccessCallbackResult
-) => void
+type GetClipboardDataSuccessCallback = (res: GetClipboardDataSuccessCallbackResult) => void
 
 type GetClipboardDataFailCallback = (res: GeneralCallbackResult) => void
 
 type GetClipboardDataCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function getClipboardData<
-  T extends GetClipboardDataOptions = GetClipboardDataOptions
->(options: T): AsyncReturn<T, GetClipboardDataOptions> {
+export function getClipboardData<T extends GetClipboardDataOptions = GetClipboardDataOptions>(
+  options: T
+): AsyncReturn<T, GetClipboardDataOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.GET_CLIPBOARD_DATA
     invoke<SuccessResult<T>>(event, {}, result => {
@@ -67,9 +65,9 @@ type SetClipboardDataFailCallback = (res: GeneralCallbackResult) => void
 
 type SetClipboardDataCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function setClipboardData<
-  T extends SetClipboardDataOptions = SetClipboardDataOptions
->(options: T): AsyncReturn<T, SetClipboardDataOptions> {
+export function setClipboardData<T extends SetClipboardDataOptions = SetClipboardDataOptions>(
+  options: T
+): AsyncReturn<T, SetClipboardDataOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SET_CLIPBOARD_DATA
     if (!isString(options.data)) {

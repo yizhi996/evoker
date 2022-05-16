@@ -3,11 +3,7 @@ import colors from "picocolors"
 import ws from "ws"
 import path from "path"
 import { getDirAllFiles, getFileHash, getAppId, zip } from "./utils"
-import {
-  runWebSocketServer,
-  createMessage,
-  createFileMessage
-} from "./webSocket"
+import { runWebSocketServer, createMessage, createFileMessage } from "./webSocket"
 
 let firstBuildFinished = false
 
@@ -153,9 +149,7 @@ function sendAllPackageFile() {
     updateFiles.push(...appFiles)
 
     if (updateFiles.length) {
-      config.logger.info(
-        `\n${colors.green(`✓`)} ${updateFiles.length} files required update.\n`
-      )
+      config.logger.info(`\n${colors.green(`✓`)} ${updateFiles.length} files required update.\n`)
 
       const files: string[] = []
 
@@ -192,9 +186,7 @@ function sendAllPackageFile() {
           send(data)
         }
 
-        config.logger.info(
-          colors.cyan(`push ${appId} update files to client completed.\n`)
-        )
+        config.logger.info(colors.cyan(`push ${appId} update files to client completed.\n`))
       }
     } else {
       config.logger.info(colors.cyan("\nno update"))

@@ -31,17 +31,13 @@ type PreviewImageFailCallback = (res: GeneralCallbackResult) => void
 
 type PreviewImageCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function previewImage<
-  T extends PreviewImageOptions = PreviewImageOptions
->(options: T): AsyncReturn<T, PreviewImageOptions> {
+export function previewImage<T extends PreviewImageOptions = PreviewImageOptions>(
+  options: T
+): AsyncReturn<T, PreviewImageOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.PREVIEW_IMAGE
     if (!options.urls) {
-      invokeFailure(
-        Events.PREVIEW_IMAGE,
-        options,
-        "options urls cannot be empty"
-      )
+      invokeFailure(Events.PREVIEW_IMAGE, options, "options urls cannot be empty")
       return
     }
     invoke<SuccessResult<T>>(event, options, result => {
@@ -64,9 +60,7 @@ interface ChooseImageSuccessCallbackResult {
   tempFiles: TempFile[]
 }
 
-type ChooseImageSuccessCallback = (
-  res: ChooseImageSuccessCallbackResult
-) => void
+type ChooseImageSuccessCallback = (res: ChooseImageSuccessCallbackResult) => void
 
 type ChooseImageFailCallback = (res: GeneralCallbackResult) => void
 

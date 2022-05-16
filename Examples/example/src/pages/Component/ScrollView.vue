@@ -66,5 +66,4 @@ const toNext = () => {
 const onScroll = ({ scrollTop }) => {
   scrollTop.value = scrollTop
 }
-
 </script>

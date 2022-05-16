@@ -32,9 +32,7 @@ interface ChooseVideoSuccessCallbackResult {
   height: number
 }
 
-type ChooseVideoSuccessCallback = (
-  res: ChooseVideoSuccessCallbackResult
-) => void
+type ChooseVideoSuccessCallback = (res: ChooseVideoSuccessCallbackResult) => void
 
 type ChooseVideoFailCallback = (res: GeneralCallbackResult) => void
 

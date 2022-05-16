@@ -19,9 +19,7 @@ export type SuccessResult<T extends CallbackOptions> = Parameters<
   Exclude<T["success"], undefined>
 >[0]
 
-export type PromiseSuccessResult<T extends CallbackOptions> = Promise<
-  SuccessResult<T>
->
+export type PromiseSuccessResult<T extends CallbackOptions> = Promise<SuccessResult<T>>
 
 export type AsyncReturn<T, U extends CallbackOptions> = T extends {
   success: (...args: any) => any

@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePage } from 'nzoth'
+import { usePage } from "nzoth"
 
 const { onPullDownRefresh } = usePage()
 

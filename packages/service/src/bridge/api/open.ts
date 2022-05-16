@@ -29,17 +29,13 @@ type GetUserProfileFailCallback = (res: GeneralCallbackResult) => void
 
 type GetUserProfileCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function getUserProfile<
-  T extends GetUserProfileOptions = GetUserProfileOptions
->(options: T): AsyncReturn<T, GetUserProfileOptions> {
+export function getUserProfile<T extends GetUserProfileOptions = GetUserProfileOptions>(
+  options: T
+): AsyncReturn<T, GetUserProfileOptions> {
   return wrapperAsyncAPI<T>(async options => {
     const event = Events.GET_USER_PRIFILE
     if (!innerAppData.eventFromUserClick) {
-      invokeFailure(
-        event,
-        options,
-        "can only be invoked by user click gesture."
-      )
+      invokeFailure(event, options, "can only be invoked by user click gesture.")
       return
     }
     const accepted = await openAuthorizationView("scope.userInfo")

@@ -14,14 +14,13 @@ describe("button type", () => {
 })
 
 describe("button size", () => {
-    test("button mini", () => {
-      const wrapper = mount(Button, {
-        props: {
-          size: "mini"
-        }
-      })
-  
-      expect(wrapper.classes("nz-button--mini")).toBe(true)
+  test("button mini", () => {
+    const wrapper = mount(Button, {
+      props: {
+        size: "mini"
+      }
     })
+
+    expect(wrapper.classes("nz-button--mini")).toBe(true)
   })
-  
+})

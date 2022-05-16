@@ -129,24 +129,17 @@ export const enum AuthorizationStatus {
 
 export function getAuthorize(scope: string): Promise<AuthorizationStatus> {
   return new Promise((resolve, reject) => {
-    invoke<{ status: AuthorizationStatus }>(
-      Events.GET_AUTHORIZE,
-      { scope },
-      result => {
-        if (result.errMsg) {
-          reject(result.errMsg)
-        } else {
-          resolve(result.data!.status)
-        }
+    invoke<{ status: AuthorizationStatus }>(Events.GET_AUTHORIZE, { scope }, result => {
+      if (result.errMsg) {
+        reject(result.errMsg)
+      } else {
+        resolve(result.data!.status)
       }
-    )
+    })
   })
 }
 
-export function setAuthorize(
-  scope: string,
-  authorized: boolean
-): Promise<void> {
+export function setAuthorize(scope: string, authorized: boolean): Promise<void> {
   return new Promise((resolve, reject) => {
     invoke(Events.SET_AUTHORIZE, { scope, authorized }, result => {
       if (result.errMsg) {
@@ -158,10 +151,7 @@ export function setAuthorize(
   })
 }
 
-export function requestAuthorization(
-  scope: string,
-  once: boolean = true
-): Promise<void> {
+export function requestAuthorization(scope: string, once: boolean = true): Promise<void> {
   return new Promise(async (reslove, reject) => {
     try {
       const status = await getAuthorize(scope)

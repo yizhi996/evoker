@@ -24,17 +24,15 @@ interface GetNetworkTypeSuccessCallbackResult {
   networkType: "wifi" | "2g" | "3g" | "4g" | "5g" | "unknown" | "none"
 }
 
-type GetNetworkTypeSuccessCallback = (
-  res: GetNetworkTypeSuccessCallbackResult
-) => void
+type GetNetworkTypeSuccessCallback = (res: GetNetworkTypeSuccessCallbackResult) => void
 
 type GetNetworkTypeFailCallback = (res: GeneralCallbackResult) => void
 
 type GetNetworkTypeCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function getNetworkType<
-  T extends GetNetworkTypeOptions = GetNetworkTypeOptions
->(options: T): AsyncReturn<T, GetNetworkTypeOptions> {
+export function getNetworkType<T extends GetNetworkTypeOptions = GetNetworkTypeOptions>(
+  options: T
+): AsyncReturn<T, GetNetworkTypeOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.GET_NETWORK_TYPE
     invoke<SuccessResult<T>>(event, {}, result => {
@@ -53,17 +51,15 @@ interface GetLocalIPAddressSuccessCallbackResult {
   localip: string
 }
 
-type GetLocalIPAddressSuccessCallback = (
-  res: GetLocalIPAddressSuccessCallbackResult
-) => void
+type GetLocalIPAddressSuccessCallback = (res: GetLocalIPAddressSuccessCallbackResult) => void
 
 type GetLocalIPAddressFailCallback = (res: GeneralCallbackResult) => void
 
 type GetLocalIPAddressCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function getLocalIPAddress<
-  T extends GetLocalIPAddressOptions = GetLocalIPAddressOptions
->(options: T): AsyncReturn<T, GetLocalIPAddressOptions> {
+export function getLocalIPAddress<T extends GetLocalIPAddressOptions = GetLocalIPAddressOptions>(
+  options: T
+): AsyncReturn<T, GetLocalIPAddressOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.GET_LOCAL_IP_ADDRESS
     invoke<SuccessResult<T>>(event, {}, result => {
@@ -77,16 +73,11 @@ interface OnNetworkStatusChangeCallbackResult {
   networkType: "wifi" | "2g" | "3g" | "4g" | "5g" | "unknown" | "none"
 }
 
-type OnNetworkStatusChangeCallback = (
-  result: OnNetworkStatusChangeCallbackResult
-) => void
+type OnNetworkStatusChangeCallback = (result: OnNetworkStatusChangeCallbackResult) => void
 
-subscribe<OnNetworkStatusChangeCallbackResult>(
-  Events.ON_NETWORK_STATUS_CHANGE,
-  result => {
-    dispatchEvent(Events.ON_NETWORK_STATUS_CHANGE, result)
-  }
-)
+subscribe<OnNetworkStatusChangeCallbackResult>(Events.ON_NETWORK_STATUS_CHANGE, result => {
+  dispatchEvent(Events.ON_NETWORK_STATUS_CHANGE, result)
+})
 
 export function onNetworkStatusChange(callback: OnNetworkStatusChangeCallback) {
   addEvent(Events.ON_NETWORK_STATUS_CHANGE, callback)

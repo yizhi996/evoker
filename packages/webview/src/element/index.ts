@@ -75,9 +75,7 @@ const builtInComponent: Record<string, BuiltInComponent> = {
   label: { component: Label }
 }
 
-export function requireBuiltInComponent(
-  tag: string
-): BuiltInComponent | undefined {
+export function requireBuiltInComponent(tag: string): BuiltInComponent | undefined {
   if (tag === "img") {
     return builtInComponent["image"]
   } else if (tag === "a") {
@@ -86,10 +84,6 @@ export function requireBuiltInComponent(
   return builtInComponent[tag]
 }
 
-export function injectComponent(
-  tag: string,
-  component: Component,
-  slot?: string
-) {
+export function injectComponent(tag: string, component: Component, slot?: string) {
   builtInComponent[tag] = { component, slot }
 }

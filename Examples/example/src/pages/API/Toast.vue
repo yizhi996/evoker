@@ -8,7 +8,6 @@
 </template>
 
 <script setup lang="ts">
-
 const showToast = () => {
   nz.showToast({ title: "默认" })
 }

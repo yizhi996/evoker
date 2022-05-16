@@ -23,12 +23,12 @@ const setStorage = () => {
   if (key.value.length) {
     nz.setStorage({ key: key.value, data: value.value })
     nz.showModal({
-      title: '存储数据成功'
+      title: "存储数据成功"
     })
   } else {
     nz.showModal({
-      title: '保存数据失败',
-      content: 'key 不能为空'
+      title: "保存数据失败",
+      content: "key 不能为空"
     })
   }
 }
@@ -39,19 +39,19 @@ const getStorage = async () => {
       const res = await nz.getStorage({ key: key.value })
       value.value = res.data
       nz.showModal({
-        title: '读取数据成功',
+        title: "读取数据成功",
         content: `${res.data}`
       })
     } catch (error) {
       nz.showModal({
-        title: '读取数据失败',
+        title: "读取数据失败",
         content: error.errMsg
       })
     }
   } else {
     nz.showModal({
-      title: '读取数据失败',
-      content: 'key 不能为空'
+      title: "读取数据失败",
+      content: "key 不能为空"
     })
   }
 }

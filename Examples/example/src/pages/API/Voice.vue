@@ -1,10 +1,8 @@
 <template>
-  <button type="primary" @click="operateRecorder">{{ recording ? '停止录制' : '开始录制' }}</button>
-  <button
-    v-if="tempFilePath.length"
-    type="primary"
-    @click="operatePlayer"
-  >{{ playing ? '停止播放' : '开始播放' }}</button>
+  <button type="primary" @click="operateRecorder">{{ recording ? "停止录制" : "开始录制" }}</button>
+  <button v-if="tempFilePath.length" type="primary" @click="operatePlayer">
+    {{ playing ? "停止播放" : "开始播放" }}
+  </button>
 </template>
 
 <script setup lang="ts">

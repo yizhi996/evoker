@@ -8,7 +8,8 @@
           class="bg-blue-400 w-12 h-12 flex items-center justify-center text-xl"
           v-model:x="position.x"
           v-model:y="position.y"
-        >😅</movable-view>
+          >😅</movable-view
+        >
       </movable-area>
       <button type="primary" @click="onMove">点击移动到(30px, 30px)</button>
     </div>
@@ -18,7 +19,8 @@
         <movable-view
           class="bg-blue-400 w-12 h-12 flex items-center justify-center text-xl"
           direction="horizontal"
-        >😅</movable-view>
+          >😅</movable-view
+        >
       </movable-area>
     </div>
     <span>只可以垂直移动</span>
@@ -27,7 +29,8 @@
         <movable-view
           class="bg-blue-400 w-12 h-12 flex items-center justify-center text-xl"
           direction="vertical"
-        >😅</movable-view>
+          >😅</movable-view
+        >
       </movable-area>
     </div>
   </div>
@@ -42,5 +45,4 @@ const onMove = () => {
   position.x = 30
   position.y = 30
 }
-
 </script>

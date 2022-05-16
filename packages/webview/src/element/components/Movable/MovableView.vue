@@ -1,7 +1,7 @@
 <template>
   <nz-movable-view
     ref="movableRef"
-    style="transform-origin: center;"
+    style="transform-origin: center"
     :style="{ 'will-change': isTouching ? 'transform' : 'auto', transform: transform }"
   ></nz-movable-view>
 </template>
@@ -17,30 +17,32 @@ import useJSAnimation from "../../use/useJSAnimation"
 
 const emit = defineEmits(["update:x", "update:y", "change", "scale"])
 
-const props = withDefaults(defineProps<{
-  direction?: "all" | "vertical" | "horizontal" | "none",
-  inertia?: boolean,
-  outOfBounds?: boolean,
-  x?: number | string
-  y?: number | string
-  damping?: number,
-  friction?: number,
-  disabled?: boolean,
-  scale?: boolean,
-  scaleMin?: number,
-  scaleMax?: number,
-  scaleValue?: number,
-  animation?: boolean
-}
->(), {
-  direction: "none",
-  damping: 20,
-  friction: 2,
-  scaleMin: 0.5,
-  scaleMax: 10,
-  scaleValue: 1,
-  animation: true
-})
+const props = withDefaults(
+  defineProps<{
+    direction?: "all" | "vertical" | "horizontal" | "none"
+    inertia?: boolean
+    outOfBounds?: boolean
+    x?: number | string
+    y?: number | string
+    damping?: number
+    friction?: number
+    disabled?: boolean
+    scale?: boolean
+    scaleMin?: number
+    scaleMax?: number
+    scaleValue?: number
+    animation?: boolean
+  }>(),
+  {
+    direction: "none",
+    damping: 20,
+    friction: 2,
+    scaleMin: 0.5,
+    scaleMax: 10,
+    scaleValue: 1,
+    animation: true
+  }
+)
 
 const instance = getCurrentInstance()!
 
@@ -54,18 +56,21 @@ const startOffset = { x: 0, y: 0 }
 let isTouching = false
 let isMounted = false
 
-watch(() => [props.x, props.y], () => {
-  if (isTouching) {
-    return
-  }
-  const x = unitToPx(props.x || 0)
-  const y = unitToPx(props.y || 0)
-  if (x !== offset.x || y !== offset.y) {
-    if (isMounted) {
-      onMoveWithPropsChange(x, y, true)
+watch(
+  () => [props.x, props.y],
+  () => {
+    if (isTouching) {
+      return
+    }
+    const x = unitToPx(props.x || 0)
+    const y = unitToPx(props.y || 0)
+    if (x !== offset.x || y !== offset.y) {
+      if (isMounted) {
+        onMoveWithPropsChange(x, y, true)
+      }
     }
   }
-})
+)
 
 onMounted(() => {
   addTouchEvent()
@@ -151,7 +156,7 @@ const onMoveWithPropsChange = (x: number, y: number, animation: boolean) => {
   onMove(sfaeX, safeY, animation)
 }
 
-const { startAnimation, stopAnimation } = useJSAnimation<{ x: number, y: number, scale: number }>()
+const { startAnimation, stopAnimation } = useJSAnimation<{ x: number; y: number; scale: number }>()
 
 const onMove = (x: number, y: number, animation: boolean) => {
   const scale = 1
@@ -159,7 +164,6 @@ const onMove = (x: number, y: number, animation: boolean) => {
   stopAnimation()
 
   if (animation && props.animation) {
-
     startAnimation({
       begin: { x: offset.x, y: offset.y, scale },
       end: { x, y, scale },
@@ -220,7 +224,6 @@ const setAreaRect = (rect: DOMRect) => {
 defineExpose({
   setAreaRect
 })
-
 </script>
 
 <style>

@@ -7,21 +7,9 @@ import {
   getSystemInfoAsync,
   getSystemInfoSync
 } from "./api/base/system"
-import {
-  navigateTo,
-  navigateBack,
-  redirectTo,
-  reLaunch,
-  switchTab
-} from "./api/route"
+import { navigateTo, navigateBack, redirectTo, reLaunch, switchTab } from "./api/route"
 import { navigateToMiniProgram } from "@nzoth/bridge"
-import {
-  getStorage,
-  setStorage,
-  removeStorage,
-  clearStorage,
-  getStorageInfo
-} from "@nzoth/bridge"
+import { getStorage, setStorage, removeStorage, clearStorage, getStorageInfo } from "@nzoth/bridge"
 import {
   showModal,
   showToast,

@@ -1,10 +1,5 @@
 import { InnerJSBridge } from "../../bridge"
-import {
-  SuccessResult,
-  GeneralCallbackResult,
-  invokeFailure,
-  invokeSuccess
-} from "@nzoth/bridge"
+import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@nzoth/bridge"
 import { isString, isNumber } from "@nzoth/shared"
 import { Events, MAX_TIMEOUT, headerValueToString } from "./util"
 import { env } from "../../index"
@@ -86,17 +81,15 @@ interface DownloadFileSuccessCallbackResult {
   statusCode: number
 }
 
-type DownloadFileSuccessCallback = (
-  res: DownloadFileSuccessCallbackResult
-) => void
+type DownloadFileSuccessCallback = (res: DownloadFileSuccessCallbackResult) => void
 
 type DownloadFileFailCallback = (res: GeneralCallbackResult) => void
 
 type DownloadFileCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function downloadFile<
-  T extends DownloadFileOptions = DownloadFileOptions
->(options: T): DownloadTask | undefined {
+export function downloadFile<T extends DownloadFileOptions = DownloadFileOptions>(
+  options: T
+): DownloadTask | undefined {
   const event = Events.DOWNLOAD_FILE
   if (!options.url || !isString(options.url)) {
     invokeFailure(event, options, "download url cannot be empty")
@@ -110,10 +103,7 @@ export function downloadFile<
 
   let filePath = ""
   if (options.filePath) {
-    if (
-      !isString(options.filePath) ||
-      !options.filePath.startsWith(env.USER_DATA_PATH + "/")
-    ) {
+    if (!isString(options.filePath) || !options.filePath.startsWith(env.USER_DATA_PATH + "/")) {
       invokeFailure(event, options, "download filePath invalid")
       return
     }

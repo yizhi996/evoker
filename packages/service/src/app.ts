@@ -48,9 +48,7 @@ export function createApp(
 export function getCurrentPages() {
   const currentTabIndex = innerAppData.currentTabIndex
   const pages: NZothPage[] = []
-  innerAppData.pages.forEach(
-    page => page.tabIndex === currentTabIndex && pages.push(page)
-  )
+  innerAppData.pages.forEach(page => page.tabIndex === currentTabIndex && pages.push(page))
   return pages.sort((left, right) => {
     return left.pageId < right.pageId ? -1 : 1
   })
@@ -105,14 +103,11 @@ export function unmountPage(pageId: number) {
   }
 }
 
-InnerJSBridge.subscribe<{ pageId: number; path: string }>(
-  "PAGE_BEGIN_MOUNT",
-  message => {
-    const { pageId, path } = message
-    const { path: route, query } = decodeURL(path)
-    mountPage(pageId, route, query)
-  }
-)
+InnerJSBridge.subscribe<{ pageId: number; path: string }>("PAGE_BEGIN_MOUNT", message => {
+  const { pageId, path } = message
+  const { path: route, query } = decodeURL(path)
+  mountPage(pageId, route, query)
+})
 
 onSync(messages => {
   messages.forEach(message => {

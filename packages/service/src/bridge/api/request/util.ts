@@ -44,9 +44,7 @@ export function headerValueToString(header: Record<string, any>) {
   }, {} as Record<string, string>)
 }
 
-export function headerContentTypeKeyToLowerCase(
-  header: Record<string, string>
-) {
+export function headerContentTypeKeyToLowerCase(header: Record<string, string>) {
   return Object.keys(header).reduce((prev, key) => {
     if (key.toLowerCase() === CONTENT_TYPE) {
       prev[CONTENT_TYPE] = header[key]

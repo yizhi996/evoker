@@ -1,7 +1,7 @@
 <template>
   <nz-canvas>
     <div ref="containerRef" class="nz-native__container nz-canvas-tongceng" :id="tongcengKey">
-      <div ref="innerRef" style="width: 100%;" :style="height"></div>
+      <div ref="innerRef" style="width: 100%" :style="height"></div>
     </div>
     <canvas></canvas>
   </nz-canvas>
@@ -9,17 +9,27 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue"
-import useNative from '../use/useNative'
+import useNative from "../use/useNative"
 import { NZJSBridge } from "../../bridge"
 
-const props = withDefaults(defineProps<{
-  type: "2d" | "webgl"
-  canvasId?: string
-}>(), {
-  type: "2d"
-})
+const props = withDefaults(
+  defineProps<{
+    type: "2d" | "webgl"
+    canvasId?: string
+  }>(),
+  {
+    type: "2d"
+  }
+)
 
-const { tongcengKey, nativeId: canvasId, containerRef, innerRef, height, insertContainer } = useNative()
+const {
+  tongcengKey,
+  nativeId: canvasId,
+  containerRef,
+  innerRef,
+  height,
+  insertContainer
+} = useNative()
 
 onMounted(() => {
   setTimeout(() => {
@@ -28,7 +38,7 @@ onMounted(() => {
 })
 
 const insert = () => {
-  insertContainer((success) => {
+  insertContainer(success => {
     if (success) {
       NZJSBridge.invoke("insertCanvas2D", {
         parentId: tongcengKey,
@@ -43,7 +53,6 @@ defineExpose({
   type: props.type,
   canvasId
 })
-
 </script>
 
 <style>

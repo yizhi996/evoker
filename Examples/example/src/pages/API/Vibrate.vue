@@ -4,12 +4,11 @@
 </template>
 
 <script setup lang="ts">
-
 const long = () => {
   nz.vibrateLong()
 }
 
 const short = () => {
-  nz.vibrateShort({ type: 'light' })
+  nz.vibrateShort({ type: "light" })
 }
 </script>

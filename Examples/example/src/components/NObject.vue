@@ -13,5 +13,5 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ object: Record<string, any>, placeholder?: string }>()
+defineProps<{ object: Record<string, any>; placeholder?: string }>()
 </script>

@@ -91,9 +91,9 @@ type CheckSessionFailCallback = (res: GeneralCallbackResult) => void
 
 type CheckSessionCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function checkSession<
-  T extends CheckSessionOptions = CheckSessionOptions
->(options: T): AsyncReturn<T, CheckSessionOptions> {
+export function checkSession<T extends CheckSessionOptions = CheckSessionOptions>(
+  options: T
+): AsyncReturn<T, CheckSessionOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.CHECK_SESSION
     invoke<SuccessResult<T>>(event, options, result => {

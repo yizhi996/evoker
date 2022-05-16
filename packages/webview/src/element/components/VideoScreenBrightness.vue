@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { clamp } from "@nzoth/shared";
+import { clamp } from "@nzoth/shared"
 import { computed } from "vue"
 
 const props = withDefaults(defineProps<{ value: number }>(), {
@@ -19,7 +19,6 @@ const props = withDefaults(defineProps<{ value: number }>(), {
 const count = computed(() => {
   return clamp(Math.floor(props.value * 100 * 0.15), 0, 15)
 })
-
 </script>
 
 <style lang="less">

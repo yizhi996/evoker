@@ -2,13 +2,22 @@
   <nz-slider>
     <div class="nz-slider__wrapper">
       <div class="nz-slider__input">
-        <div class="nz-slider__input__bar" ref="barRef" :style="{ 'background-color': backgroundColor }">
+        <div
+          class="nz-slider__input__bar"
+          ref="barRef"
+          :style="{ 'background-color': backgroundColor }"
+        >
           <div class="nz-slider__input__handle" ref="handleRef" :style="handleStyle"></div>
           <div class="nz-slider__input__thumb" :style="handleStyle"></div>
-          <div class="nz-slider__input__track" :style="{ width: width, 'background-color': activeColor }"></div>
+          <div
+            class="nz-slider__input__track"
+            :style="{ width: width, 'background-color': activeColor }"
+          ></div>
         </div>
       </div>
-      <span v-if="showValue" class="nz-slider__value" :style="{ width: valueWidth }">{{ value }}</span>
+      <span v-if="showValue" class="nz-slider__value" :style="{ width: valueWidth }">{{
+        value
+      }}</span>
     </div>
   </nz-slider>
 </template>
@@ -21,30 +30,33 @@ import { clamp } from "@nzoth/shared"
 
 const emit = defineEmits(["update:value", "change", "changing"])
 
-const props = withDefaults(defineProps<{
-  value?: number,
-  min?: number
-  max?: number
-  step?: number
-  activeColor?: string
-  backgroundColor?: string
-  blockSize?: number
-  blockColor?: string
-  showValue?: boolean
-  disabled?: boolean
-  name?: string
-}>(), {
-  value: 0,
-  min: 0,
-  max: 100,
-  step: 1,
-  activeColor: "#1989fa",
-  backgroundColor: "#e5e5e5",
-  blockSize: 28,
-  blockColor: "#ffffff",
-  showValue: false,
-  disabled: false
-})
+const props = withDefaults(
+  defineProps<{
+    value?: number
+    min?: number
+    max?: number
+    step?: number
+    activeColor?: string
+    backgroundColor?: string
+    blockSize?: number
+    blockColor?: string
+    showValue?: boolean
+    disabled?: boolean
+    name?: string
+  }>(),
+  {
+    value: 0,
+    min: 0,
+    max: 100,
+    step: 1,
+    activeColor: "#1989fa",
+    backgroundColor: "#e5e5e5",
+    blockSize: 28,
+    blockColor: "#ffffff",
+    showValue: false,
+    disabled: false
+  }
+)
 
 const instance = getCurrentInstance()!
 
@@ -68,8 +80,8 @@ const handleStyle = computed(() => {
     left: width.value,
     width: size,
     height: size,
-    'margin-left': margin,
-    'margin-top': margin,
+    "margin-left": margin,
+    "margin-top": margin,
     "background-color": props.blockColor
   }
 })
@@ -129,7 +141,6 @@ defineExpose({
   formData,
   resetFormData
 })
-
 </script>
 
 <style lang="less">

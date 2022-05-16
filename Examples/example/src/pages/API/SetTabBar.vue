@@ -1,22 +1,20 @@
 <template>
   <button @click="setTabBarBadge">
-    {{ isSetTabBarBadge ? '移除 tab 徽标' : '设置 tab 徽标' }}
+    {{ isSetTabBarBadge ? "移除 tab 徽标" : "设置 tab 徽标" }}
   </button>
   <button @click="showTabBarRedDot">
-    {{ isShowTabBarRedDot ? '隐藏红点' : '显示红点' }}
+    {{ isShowTabBarRedDot ? "隐藏红点" : "显示红点" }}
   </button>
   <button @click="setTabBarStyle">
-    {{ isSetTabBarStyle ? '移除自定义 tab 样式' : '自定义 tab 样式' }}
+    {{ isSetTabBarStyle ? "移除自定义 tab 样式" : "自定义 tab 样式" }}
   </button>
   <button @click="setTabBarItem">
-    {{ isSetTabBarItem ? '移除自定义 tab 信息' : '自定义 tab 信息' }}
+    {{ isSetTabBarItem ? "移除自定义 tab 信息" : "自定义 tab 信息" }}
   </button>
   <button @click="hideTabBar">
-    {{ isShowTabBar ? '显示 TabBar' : '隐藏 TabBar' }}
+    {{ isShowTabBar ? "显示 TabBar" : "隐藏 TabBar" }}
   </button>
-  <button type="primary" @click="onClose">
-    返回
-  </button>
+  <button type="primary" @click="onClose">返回</button>
 </template>
 
 <script setup lang="ts">
@@ -57,16 +55,16 @@ const setTabBarStyle = () => {
   if (isSetTabBarStyle.value) {
     isSetTabBarStyle.value = false
     nz.setTabBarStyle({
-      color: '#86868b',
-      selectedColor: '#1989fa',
-      backgroundColor: '#ffffff',
+      color: "#86868b",
+      selectedColor: "#1989fa",
+      backgroundColor: "#ffffff"
     })
   } else {
     isSetTabBarStyle.value = true
     nz.setTabBarStyle({
-      color: '#fff',
-      selectedColor: '#1989fa',
-      backgroundColor: '#000',
+      color: "#fff",
+      selectedColor: "#1989fa",
+      backgroundColor: "#000"
     })
   }
 }
@@ -79,7 +77,12 @@ const setTabBarItem = () => {
     nz.setTabBarItem({ index: 2, text: "接口", selectedIconPath: "assets/icon_API_HL.png" })
   } else {
     isSetTabBarItem.value = true
-    nz.setTabBarItem({ index: 2, text: "API", selectedIconPath: "https://file.lilithvue.com/lilith-test-assets/wallhaven-43y68y.jpg?imageMogr2/thumbnail/81x" })
+    nz.setTabBarItem({
+      index: 2,
+      text: "API",
+      selectedIconPath:
+        "https://file.lilithvue.com/lilith-test-assets/wallhaven-43y68y.jpg?imageMogr2/thumbnail/81x"
+    })
   }
 }
 

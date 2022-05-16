@@ -1,7 +1,7 @@
 <template>
   <nz-input ref="rootRef">
     <div ref="containerRef" class="nz-native__container" :id="tongcengKey">
-      <div ref="innerRef" style="width: 100%;" :style="height"></div>
+      <div ref="innerRef" style="width: 100%" :style="height"></div>
     </div>
     <p
       ref="placeholderRef"
@@ -30,43 +30,46 @@ const emit = defineEmits([
   "update:value"
 ])
 
-const props = withDefaults(defineProps<{
-  value?: string
-  type?: "text" | "number" | "digit"
-  password?: boolean
-  placeholder?: string
-  placeholderStyle?: string
-  placeholderClass?: string
-  disabled?: boolean
-  maxlength?: number
-  cursorSpacing?: number
-  focus?: boolean
-  confirmType?: "send" | "search" | "next" | "go" | "done"
-  confirmHold?: boolean
-  cursor?: number
-  selectionStart?: number
-  selectionEnd?: number
-  adjustPosition?: boolean
-  holdKeyboard?: boolean
-  name?: string
-}>(), {
-  value: "",
-  type: "text",
-  password: false,
-  placeholder: "",
-  placeholderClass: "nz-input__placeholder",
-  disabled: false,
-  maxlength: 140,
-  cursorSpacing: 0,
-  focus: false,
-  confirmType: "done",
-  confirmHold: false,
-  cursor: -1,
-  selectionStart: -1,
-  selectionEnd: -1,
-  adjustPosition: true,
-  holdKeyboard: false,
-})
+const props = withDefaults(
+  defineProps<{
+    value?: string
+    type?: "text" | "number" | "digit"
+    password?: boolean
+    placeholder?: string
+    placeholderStyle?: string
+    placeholderClass?: string
+    disabled?: boolean
+    maxlength?: number
+    cursorSpacing?: number
+    focus?: boolean
+    confirmType?: "send" | "search" | "next" | "go" | "done"
+    confirmHold?: boolean
+    cursor?: number
+    selectionStart?: number
+    selectionEnd?: number
+    adjustPosition?: boolean
+    holdKeyboard?: boolean
+    name?: string
+  }>(),
+  {
+    value: "",
+    type: "text",
+    password: false,
+    placeholder: "",
+    placeholderClass: "nz-input__placeholder",
+    disabled: false,
+    maxlength: 140,
+    cursorSpacing: 0,
+    focus: false,
+    confirmType: "done",
+    confirmHold: false,
+    cursor: -1,
+    selectionStart: -1,
+    selectionEnd: -1,
+    adjustPosition: true,
+    holdKeyboard: false
+  }
+)
 
 const {
   tongcengKey,
@@ -122,7 +125,7 @@ onMounted(() => {
 })
 
 const insert = () => {
-  insertContainer((success) => {
+  insertContainer(success => {
     if (success) {
       NZJSBridge.invoke("insertInput", {
         parentId: tongcengKey,
@@ -162,25 +165,43 @@ const operateInput = (method: OperateMethods, data: Record<string, any> = {}) =>
   NZJSBridge.invoke("operateInput", { inputId, method, data })
 }
 
-watch(() => props.value, () => {
-  changeValue()
-})
+watch(
+  () => props.value,
+  () => {
+    changeValue()
+  }
+)
 
 const changeValue = () => {
   operateInput(OperateMethods.CHANGE_VALUE, { text: props.value })
 }
 
-watch(() => props.focus, () => {
-  props.focus ? operateInput(OperateMethods.FOCUS) : operateInput(OperateMethods.BLUR)
-})
+watch(
+  () => props.focus,
+  () => {
+    props.focus ? operateInput(OperateMethods.FOCUS) : operateInput(OperateMethods.BLUR)
+  }
+)
 
-watch(() => props.placeholderClass, () => {
-  operateInput(OperateMethods.UPDATE_PLACEHOLDER_STYLE, getInputPlaceholderStyle(placeholderRef.value!))
-})
+watch(
+  () => props.placeholderClass,
+  () => {
+    operateInput(
+      OperateMethods.UPDATE_PLACEHOLDER_STYLE,
+      getInputPlaceholderStyle(placeholderRef.value!)
+    )
+  }
+)
 
-watch(() => props.placeholderStyle, () => {
-  operateInput(OperateMethods.UPDATE_PLACEHOLDER_STYLE, getInputPlaceholderStyle(placeholderRef.value!))
-})
+watch(
+  () => props.placeholderStyle,
+  () => {
+    operateInput(
+      OperateMethods.UPDATE_PLACEHOLDER_STYLE,
+      getInputPlaceholderStyle(placeholderRef.value!)
+    )
+  }
+)
 
 onUpdatedContainer(() => {
   operateInput(OperateMethods.UPDATE_STYLE, getInputStyle(rootRef.value!))

@@ -42,9 +42,11 @@ const value = ref<number[]>([9999, 1, 1])
 
 const selectedDate = ref("")
 
-const onChange = (e) => {
+const onChange = e => {
   const val = e.detail.value
   value.value = val
-  selectedDate.value = `${years[val[0]]}年${months[val[1]]}月${days[val[2]]}日${val[3] ? '黑夜' : '白天'}`
+  selectedDate.value = `${years[val[0]]}年${months[val[1]]}月${days[val[2]]}日${
+    val[3] ? "黑夜" : "白天"
+  }`
 }
 </script>

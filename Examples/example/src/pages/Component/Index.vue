@@ -12,20 +12,15 @@ const list = reactive([
     id: "view",
     name: "视图容器",
     open: false,
-    pages: [
-      { url: "view" },
-      { url: "scroll-view" },
-      { url: "swiper" },
-      { url: "movable-view" }]
-  }, {
+    pages: [{ url: "view" }, { url: "scroll-view" }, { url: "swiper" }, { url: "movable-view" }]
+  },
+  {
     id: "content",
     name: "基础内容",
     open: false,
-    pages: [
-      { url: "text" },
-      { url: "icon" },
-      { url: "progress" }]
-  }, {
+    pages: [{ url: "text" }, { url: "icon" }, { url: "progress" }]
+  },
+  {
     id: "form",
     name: "表单组件",
     open: false,
@@ -40,36 +35,35 @@ const list = reactive([
       { url: "radio" },
       { url: "slider" },
       { url: "switch" },
-      { url: "textarea" }]
-  }, {
+      { url: "textarea" }
+    ]
+  },
+  {
     id: "nav",
     name: "导航",
     open: false,
-    pages: [
-      { url: "navigator" }
-    ]
-  }, {
+    pages: [{ url: "navigator" }]
+  },
+  {
     id: "media",
     name: "媒体组件",
     open: false,
-    pages: [
-      { url: "image" },
-      { url: "video" },
-      { url: "camera" }]
-  }, {
+    pages: [{ url: "image" }, { url: "video" }, { url: "camera" }]
+  },
+  {
     id: "map",
     name: "地图",
     open: false,
-    pages: [
-      { url: "map" }
-    ]
-  }, {
+    pages: [{ url: "map" }]
+  },
+  {
     id: "canvas",
     name: "画布",
     open: false,
     pages: [
       { name: "canvas-2d 暂未支持", url: "canvas-2d" },
-      { name: "webgl 暂未支持", url: "webgl" }]
+      { name: "webgl 暂未支持", url: "webgl" }
+    ]
   }
 ])
 
@@ -94,5 +88,4 @@ onHide(() => {
 onUnload(() => {
   console.log("Page onUnload")
 })
-
 </script>

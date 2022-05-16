@@ -44,11 +44,7 @@ export function selector(data: any[]) {
           const { vnode } = llnode
           res.node = { nodeIs: el.tagName, nodeId: el.__nodeId }
 
-          if (
-            el.tagName === "nz-canvas" &&
-            vnode.component &&
-            vnode.component.exposed
-          ) {
+          if (el.tagName === "nz-canvas" && vnode.component && vnode.component.exposed) {
             const { type, canvasId } = vnode.component.exposed
             res.node.canvasType = type
             res.node.canvasId = canvasId

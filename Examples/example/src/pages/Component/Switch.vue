@@ -22,7 +22,7 @@ const value2 = ref(false)
 const value3 = ref(true)
 const value4 = ref(true)
 
-const onChange = (e) => {
+const onChange = e => {
   const value = e.detail.value
   value1.value = value
 }

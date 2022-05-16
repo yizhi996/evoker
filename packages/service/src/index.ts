@@ -21,9 +21,7 @@ Function.prototype.constructor = hijack
 
 const _withModifiers = Vue.withModifiers
 const withModifiers = (fn: Function, modifiers: string[]) => {
-  const wrapper = _withModifiers(fn, modifiers) as ReturnType<
-    typeof Vue.withModifiers
-  > & {
+  const wrapper = _withModifiers(fn, modifiers) as ReturnType<typeof Vue.withModifiers> & {
     modifiers?: string[]
   }
   wrapper.modifiers = modifiers

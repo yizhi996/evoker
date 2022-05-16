@@ -8,15 +8,18 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
-import { unitToPx } from '../utils/format'
+import { unitToPx } from "../utils/format"
 
-const props = withDefaults(defineProps<{
-  size?: number | string
-  color?: string
-}>(), {
-  size: 20,
-  color: "white"
-})
+const props = withDefaults(
+  defineProps<{
+    size?: number | string
+    color?: string
+  }>(),
+  {
+    size: 20,
+    color: "white"
+  }
+)
 
 const finalSize = computed(() => {
   return unitToPx(props.size) + "px"
@@ -35,7 +38,7 @@ nz-loading {
   width: 100%;
   height: 100%;
 
-  >circle {
+  > circle {
     stroke: currentColor;
     stroke-width: 3;
     stroke-linecap: round;

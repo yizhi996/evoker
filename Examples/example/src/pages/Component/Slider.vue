@@ -12,6 +12,4 @@ import { ref } from "vue"
 const value1 = ref(50)
 const value2 = ref(50)
 const value3 = ref(50)
-
-
 </script>

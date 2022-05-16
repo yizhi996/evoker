@@ -22,15 +22,11 @@ interface ShowNavigationBarLoadingOptions {
   complete?: ShowNavigationBarLoadingCompleteCallback
 }
 
-type ShowNavigationBarLoadingSuccessCallback = (
-  res: GeneralCallbackResult
-) => void
+type ShowNavigationBarLoadingSuccessCallback = (res: GeneralCallbackResult) => void
 
 type ShowNavigationBarLoadingFailCallback = (res: GeneralCallbackResult) => void
 
-type ShowNavigationBarLoadingCompleteCallback = (
-  res: GeneralCallbackResult
-) => void
+type ShowNavigationBarLoadingCompleteCallback = (res: GeneralCallbackResult) => void
 
 export function showNavigationBarLoading<
   T extends ShowNavigationBarLoadingOptions = ShowNavigationBarLoadingOptions
@@ -49,15 +45,11 @@ interface HideNavigationBarLoadingOptions {
   complete?: HideNavigationBarLoadingCompleteCallback
 }
 
-type HideNavigationBarLoadingSuccessCallback = (
-  res: GeneralCallbackResult
-) => void
+type HideNavigationBarLoadingSuccessCallback = (res: GeneralCallbackResult) => void
 
 type HideNavigationBarLoadingFailCallback = (res: GeneralCallbackResult) => void
 
-type HideNavigationBarLoadingCompleteCallback = (
-  res: GeneralCallbackResult
-) => void
+type HideNavigationBarLoadingCompleteCallback = (res: GeneralCallbackResult) => void
 
 export function hideNavigationBarLoading<
   T extends HideNavigationBarLoadingOptions = HideNavigationBarLoadingOptions
@@ -88,9 +80,7 @@ type SetNavigationBarColorSuccessCallback = (res: GeneralCallbackResult) => void
 
 type SetNavigationBarColorFailCallback = (res: GeneralCallbackResult) => void
 
-type SetNavigationBarColorCompleteCallback = (
-  res: GeneralCallbackResult
-) => void
+type SetNavigationBarColorCompleteCallback = (res: GeneralCallbackResult) => void
 
 export function setNavigationBarColor<
   T extends SetNavigationBarColorOptions = SetNavigationBarColorOptions
@@ -123,9 +113,7 @@ type SetNavigationBarTitleSuccessCallback = (res: GeneralCallbackResult) => void
 
 type SetNavigationBarTitleFailCallback = (res: GeneralCallbackResult) => void
 
-type SetNavigationBarTitleCompleteCallback = (
-  res: GeneralCallbackResult
-) => void
+type SetNavigationBarTitleCompleteCallback = (res: GeneralCallbackResult) => void
 
 export function setNavigationBarTitle<
   T extends SetNavigationBarTitleOptions = SetNavigationBarTitleOptions
@@ -150,9 +138,9 @@ type HideHomeButtonFailCallback = (res: GeneralCallbackResult) => void
 
 type HideHomeButtonCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function hideHomeButton<
-  T extends HideHomeButtonOptions = HideHomeButtonOptions
->(options: T): AsyncReturn<T, HideHomeButtonOptions> {
+export function hideHomeButton<T extends HideHomeButtonOptions = HideHomeButtonOptions>(
+  options: T
+): AsyncReturn<T, HideHomeButtonOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.HIDE_HOMM_BUTTON
     invoke<SuccessResult<T>>(event, {}, result => {

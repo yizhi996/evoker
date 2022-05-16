@@ -11,11 +11,12 @@ let timer: ReturnType<typeof setInterval>
 
 onMounted(() => {
   const query = nz.createSelectorQuery()
-  query.select('#canvas')
+  query
+    .select("#canvas")
     .fields({ node: true, size: true })
-    .exec((res) => {
+    .exec(res => {
       const canvas = res[0].node
-      ctx = canvas.getContext('2d')
+      ctx = canvas.getContext("2d")
 
       const dpr = nz.getSystemInfoSync().pixelRatio
       canvas.width = res[0].width * dpr
@@ -34,7 +35,6 @@ onUnmounted(() => {
 
 const render = () => {
   if (ctx) {
-
   }
 }
 </script>

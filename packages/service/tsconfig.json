@@ -4,7 +4,7 @@
     "lib": [
       "esnext",
       "dom"
-    ],
+    ]
   },
   "include": [
     "src/",

@@ -1,9 +1,4 @@
-import {
-  AsyncReturn,
-  GeneralCallbackResult,
-  invokeSuccess,
-  wrapperAsyncAPI
-} from "@nzoth/bridge"
+import { AsyncReturn, GeneralCallbackResult, invokeSuccess, wrapperAsyncAPI } from "@nzoth/bridge"
 import { invokeWebViewMethod } from "../../fromWebView"
 import { extend } from "@nzoth/shared"
 
@@ -27,9 +22,9 @@ type PageScrollToFailCallback = (res: GeneralCallbackResult) => void
 
 type PageScrollToCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function pageScrollTo<
-  T extends PageScrollToOptions = PageScrollToOptions
->(options: T): AsyncReturn<T, PageScrollToOptions> {
+export function pageScrollTo<T extends PageScrollToOptions = PageScrollToOptions>(
+  options: T
+): AsyncReturn<T, PageScrollToOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.PAGE_SCROLL_TO
     invokeWebViewMethod(event, extend({ duration: 300 }, options))

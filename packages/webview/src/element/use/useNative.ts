@@ -10,9 +10,7 @@ const enum NativeInvokeKeys {
   REMOVE = "removeContainer"
 }
 
-export default function useNative(
-  options: { scrollEnabled?: boolean } = { scrollEnabled: false }
-) {
+export default function useNative(options: { scrollEnabled?: boolean } = { scrollEnabled: false }) {
   const tongcengId = incTongcengId++
   const tongcengKey = "__nzoth_tongceng_id_" + tongcengId
   const containerRef = ref<HTMLElement>()
@@ -24,13 +22,11 @@ export default function useNative(
   let containerInserted = false
 
   onMounted(() => {
-    containerRef.value &&
-      containerRef.value.addEventListener("resize", onResize)
+    containerRef.value && containerRef.value.addEventListener("resize", onResize)
   })
 
   onUnmounted(() => {
-    containerRef.value &&
-      containerRef.value.removeEventListener("resize", onResize)
+    containerRef.value && containerRef.value.removeEventListener("resize", onResize)
     removeContainer()
   })
 

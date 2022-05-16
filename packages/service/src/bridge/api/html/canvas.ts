@@ -5,10 +5,7 @@ class CanvasPattern {
   image: any
   repetition
 
-  constructor(
-    image: any,
-    repetition: "repeat" | "repeat-x" | "repeat-y" | "no-repeat"
-  ) {
+  constructor(image: any, repetition: "repeat" | "repeat-x" | "repeat-y" | "no-repeat") {
     this.repetition = repetition ?? "repeat"
     this.image = image
   }
@@ -56,14 +53,7 @@ class CanvasRadialGradient extends CanvasGradient {
 
   endPosition: RadialGradientPosition
 
-  constructor(
-    x0: number,
-    y0: number,
-    r0: number,
-    x1: number,
-    y1: number,
-    r1: number
-  ) {
+  constructor(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number) {
     super()
     this.startPosition = { x: x0, y: y0, r: r0 }
     this.endPosition = { x: x1, y: y1, r: r1 }
@@ -446,14 +436,7 @@ export class CanvasRenderingContext2D {
     }
   }
 
-  setTransform(
-    a: number,
-    b: number,
-    c: number,
-    d: number,
-    tx: number,
-    ty: number
-  ) {
+  setTransform(a: number, b: number, c: number, d: number, tx: number, ty: number) {
     this.enqueue([
       "t",
       a === 1 ? "1" : a.toFixed(2),
@@ -465,14 +448,7 @@ export class CanvasRenderingContext2D {
     ])
   }
 
-  transform(
-    a: number,
-    b: number,
-    c: number,
-    d: number,
-    tx: number,
-    ty: number
-  ) {
+  transform(a: number, b: number, c: number, d: number, tx: number, ty: number) {
     this.enqueue([
       "f",
       a === 1 ? "1" : a.toFixed(2),
@@ -513,10 +489,7 @@ export class CanvasRenderingContext2D {
     }
   }
 
-  createPattern(
-    image: any,
-    repetition: "repeat" | "repeat-x" | "repeat-y" | "no-repeat"
-  ) {
+  createPattern(image: any, repetition: "repeat" | "repeat-x" | "repeat-y" | "no-repeat") {
     return new CanvasPattern(image, repetition)
   }
 
@@ -567,14 +540,7 @@ export class CanvasRenderingContext2D {
     this.enqueue([Canvas2DMethods.QuadraticCurveTo, cpx, cpy, x, y])
   }
 
-  bezierCurveTo(
-    cp1x: number,
-    cp1y: number,
-    cp2x: number,
-    cp2y: number,
-    x: number,
-    y: number
-  ) {
+  bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number) {
     this.enqueue([
       "z",
       cp1x.toFixed(2),
@@ -671,16 +637,7 @@ export class CanvasRenderingContext2D {
 
     function drawImageCommands() {
       if (numArgs === 3) {
-        return [
-          "d",
-          image._id,
-          image.width,
-          image.height,
-          sx,
-          sy,
-          image.width,
-          image.height
-        ]
+        return ["d", image._id, image.width, image.height, sx, sy, image.width, image.height]
       } else if (numArgs === 5) {
         return [
           "d",

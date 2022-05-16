@@ -19,30 +19,31 @@ let filename = ""
 const onChooseImage = async () => {
   const result = await nz.chooseImage({
     count: 1,
-    sizeType: ['compressed'],
-    sourceType: ['album'],
+    sizeType: ["compressed"],
+    sourceType: ["album"]
   })
   const { url, dir, auth, token } = await getAuthToken()
 
   deleteImage()
 
   const filePath = result.tempFilePaths[0]
-  const key = dir + filePath.substr(filePath.lastIndexOf('/') + 1)
+  const key = dir + filePath.substr(filePath.lastIndexOf("/") + 1)
   filename = key
   const task = nz.uploadFile({
     url,
     name: "file",
     filePath: result.tempFilePaths[0],
     formData: {
-      'key': key,
-      'success_action_status': 200,
-      'Signature': auth,
-      'x-cos-security-token': token,
-      'Content-Type': '',
+      key: key,
+      success_action_status: 200,
+      Signature: auth,
+      "x-cos-security-token": token,
+      "Content-Type": ""
     },
     success: res => {
       src.value = url + key
-    }, fail: err => {
+    },
+    fail: err => {
       console.log(err)
     }
   })
@@ -58,7 +59,8 @@ const getAuthToken = () => {
       method: "POST",
       success: res => {
         resolve(res.data.data)
-      }, fail: err => {
+      },
+      fail: err => {
         reject(err)
       }
     })
@@ -78,5 +80,4 @@ const deleteImage = () => {
 onUnmounted(() => {
   deleteImage()
 })
-
 </script>

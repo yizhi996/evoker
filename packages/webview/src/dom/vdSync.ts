@@ -10,10 +10,7 @@ import {
   setModelValue
 } from "./render"
 import { selector } from "./selector"
-import {
-  addIntersectionObserver,
-  removeIntersectionObserver
-} from "./intersection"
+import { addIntersectionObserver, removeIntersectionObserver } from "./intersection"
 
 onSync(message => {
   message.forEach((action: any[]) => {

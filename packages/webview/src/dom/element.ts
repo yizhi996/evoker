@@ -1,10 +1,4 @@
-import {
-  createApp,
-  reactive,
-  createVNode,
-  render,
-  ComponentInternalInstance
-} from "vue"
+import { createApp, reactive, createVNode, render, ComponentInternalInstance } from "vue"
 import { toHandlerKey } from "@nzoth/shared"
 import { BuiltInComponent, requireBuiltInComponent } from "../element"
 import { restoreNode, NZVNode } from "./vnode"
@@ -17,14 +11,7 @@ import {
   addTapEvent
 } from "./event"
 
-export type EL =
-  | Node
-  | Element
-  | HTMLElement
-  | NZothElement
-  | Text
-  | Comment
-  | SVGAElement
+export type EL = Node | Element | HTMLElement | NZothElement | Text | Comment | SVGAElement
 
 const vueApp = createApp({})
 vueApp.config.warnHandler = msg => {
@@ -103,16 +90,7 @@ export function createElement(data: any[]): EL | null {
 function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
   node.props = reactive({})
 
-  const {
-    id,
-    nodeId,
-    props,
-    className,
-    style,
-    attributes,
-    listeners,
-    textContent
-  } = node
+  const { id, nodeId, props, className, style, attributes, listeners, textContent } = node
 
   if (id) {
     props.id = id
@@ -174,9 +152,7 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
         props[eventName] = (...args: any[]) => {
           const ev = {
             type: name,
-            args: name.startsWith("update:")
-              ? args
-              : [createCustomEvent(el, name, args[0])]
+            args: name.startsWith("update:") ? args : [createCustomEvent(el, name, args[0])]
           }
           dispatchEvent(nodeId, ev)
         }
@@ -190,17 +166,7 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
 }
 
 function createNativeElement(node: NZVNode) {
-  const {
-    isSVG,
-    tagName,
-    className,
-    id,
-    nodeId,
-    attributes,
-    listeners,
-    textContent,
-    style
-  } = node
+  const { isSVG, tagName, className, id, nodeId, attributes, listeners, textContent, style } = node
 
   let el: HTMLElement | SVGElement
 

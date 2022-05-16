@@ -4,9 +4,7 @@ import fs from "fs"
 
 let config: ResolvedConfig
 
-export default function vitePluginNZothConfig(
-  options: BuildOptions = {}
-): Plugin {
+export default function vitePluginNZothConfig(options: BuildOptions = {}): Plugin {
   return {
     name: "vite:nzoth-config",
     enforce: "pre",

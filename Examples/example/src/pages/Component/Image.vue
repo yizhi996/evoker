@@ -17,13 +17,16 @@
 </template>
 
 <script setup lang="ts">
-
 const files = [
-  "wallhaven-43y68y.jpg", "wallhaven-4vvd13.jpg",
-  "wallhaven-0wvdkx.jpg", "wallhaven-4dmozo.jpg",
-  "wallhaven-45jmq8.jpg", "wallhaven-42wox6.jpg"
+  "wallhaven-43y68y.jpg",
+  "wallhaven-4vvd13.jpg",
+  "wallhaven-0wvdkx.jpg",
+  "wallhaven-4dmozo.jpg",
+  "wallhaven-45jmq8.jpg",
+  "wallhaven-42wox6.jpg"
 ]
 
-const images = files.map(f => `https://file.lilithvue.com/lilith-test-assets/${f}?imageMogr2/thumbnail/512x`)
-
+const images = files.map(
+  f => `https://file.lilithvue.com/lilith-test-assets/${f}?imageMogr2/thumbnail/512x`
+)
 </script>

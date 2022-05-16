@@ -15,7 +15,9 @@
             v-for="i of itemCount"
             class="nz-swiper__indicators__item"
             :class="vertical ? 'nz-swiper__indicators__item--vertical' : ''"
-            :style="{ 'background-color': i - 1 === currentIndex ? indicatorActiveColor : indicatorColor }"
+            :style="{
+              'background-color': i - 1 === currentIndex ? indicatorActiveColor : indicatorColor
+            }"
           ></i>
         </div>
       </div>
@@ -36,37 +38,40 @@ const containerRef = ref<HTMLElement>()
 
 const emit = defineEmits(["change", "transition", "animationfinish"])
 
-const props = withDefaults(defineProps<{
-  indicatorDots?: boolean
-  indicatorColor?: string
-  indicatorActiveColor?: string
-  autoplay?: boolean
-  current?: number
-  interval?: number
-  duration?: number
-  circular?: boolean
-  vertical?: boolean
-  previousMargin?: string
-  nextMargin?: string
-  snapToEdge?: boolean
-  displayMultipleItems?: number
-  easingFunction?: "default" | "linear" | "easeInCubic" | "easeOutCubic" | "easeInOutCubic"
-}>(), {
-  indicatorDots: false,
-  indicatorColor: "rgba(0, 0, 0, .3)",
-  indicatorActiveColor: "#000",
-  autoplay: false,
-  current: 0,
-  interval: 5000,
-  duration: 500,
-  circular: false,
-  vertical: false,
-  previousMargin: "0px",
-  nextMargin: "0px",
-  snapToEdge: false,
-  displayMultipleItems: 1,
-  easingFunction: "default"
-})
+const props = withDefaults(
+  defineProps<{
+    indicatorDots?: boolean
+    indicatorColor?: string
+    indicatorActiveColor?: string
+    autoplay?: boolean
+    current?: number
+    interval?: number
+    duration?: number
+    circular?: boolean
+    vertical?: boolean
+    previousMargin?: string
+    nextMargin?: string
+    snapToEdge?: boolean
+    displayMultipleItems?: number
+    easingFunction?: "default" | "linear" | "easeInCubic" | "easeOutCubic" | "easeInOutCubic"
+  }>(),
+  {
+    indicatorDots: false,
+    indicatorColor: "rgba(0, 0, 0, .3)",
+    indicatorActiveColor: "#000",
+    autoplay: false,
+    current: 0,
+    interval: 5000,
+    duration: 500,
+    circular: false,
+    vertical: false,
+    previousMargin: "0px",
+    nextMargin: "0px",
+    snapToEdge: false,
+    displayMultipleItems: 1,
+    easingFunction: "default"
+  }
+)
 
 const instance = getCurrentInstance()!
 
@@ -83,21 +88,29 @@ const nextIndex = ref(0)
 
 const offset = ref(0)
 
-watch(() => [...children], () => {
-  nextTick(() => {
-    setChildStyle()
-    scrollTo(props.current, Easing.Linear.None, 0, Sources.OTHER)
-  })
-})
+watch(
+  () => [...children],
+  () => {
+    nextTick(() => {
+      setChildStyle()
+      scrollTo(props.current, Easing.Linear.None, 0, Sources.OTHER)
+    })
+  }
+)
 
-watch(() => props.circular, () => {
-  setChildStyle()
-})
+watch(
+  () => props.circular,
+  () => {
+    setChildStyle()
+  }
+)
 
 const transform = computed(() => {
   const boxSize = getBoxSize()
   const pos = -(offset.value / boxSize) * 100
-  return props.vertical ? `translate(0px, ${pos}%) translateZ(0px)` : `translate(${pos}%, 0px) translateZ(0px)`
+  return props.vertical
+    ? `translate(0px, ${pos}%) translateZ(0px)`
+    : `translate(${pos}%, 0px) translateZ(0px)`
 })
 
 const slideMargin = computed(() => {
@@ -113,17 +126,26 @@ const slideMargin = computed(() => {
     right = props.nextMargin
   }
   return {
-    top, left, bottom, right
+    top,
+    left,
+    bottom,
+    right
   }
 })
 
-watch(() => props.autoplay, () => {
-  autoScroll()
-})
+watch(
+  () => props.autoplay,
+  () => {
+    autoScroll()
+  }
+)
 
-watch(() => props.current, () => {
-  scrollTo(props.current, Easing.Linear.None, 0, Sources.OTHER)
-})
+watch(
+  () => props.current,
+  () => {
+    scrollTo(props.current, Easing.Linear.None, 0, Sources.OTHER)
+  }
+)
 
 onMounted(() => {
   nextTick(() => {
@@ -188,7 +210,7 @@ const addTouchEvent = () => {
     })
 
     const { onTouchStart, onTouchMove, onTouchEnd } = useTouch(containerRef.value)
-    onTouchStart((ev) => {
+    onTouchStart(ev => {
       touchStartTimestamp = ev.timeStamp
       touching = true
       clearTimeout(autoScrollTimer)
@@ -288,7 +310,12 @@ const enum Sources {
   OTHER = ""
 }
 
-const scrollTo = (next: number, easing: (amount: number) => number, duration: number, source: Sources) => {
+const scrollTo = (
+  next: number,
+  easing: (amount: number) => number,
+  duration: number,
+  source: Sources
+) => {
   if (touching) {
     return
   }
@@ -351,9 +378,9 @@ const setChildStyle = () => {
   let height = "100%"
 
   if (props.vertical) {
-    height = (100 / props.displayMultipleItems) + "%"
+    height = 100 / props.displayMultipleItems + "%"
   } else {
-    width = (100 / props.displayMultipleItems) + "%"
+    width = 100 / props.displayMultipleItems + "%"
   }
 
   children.forEach((child, i) => {
@@ -427,7 +454,6 @@ const setChildStyleFromTouch = (direction: number) => {
     }
   }
 }
-
 </script>
 
 <style lang="less">

@@ -6,7 +6,6 @@
 </template>
 
 <script setup lang="ts">
-
 const onShow = () => {
   nz.showNavigationBarLoading()
 }

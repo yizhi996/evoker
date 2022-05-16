@@ -1,9 +1,4 @@
-import {
-  AsyncReturn,
-  GeneralCallbackResult,
-  invokeCallback,
-  wrapperAsyncAPI
-} from "@nzoth/bridge"
+import { AsyncReturn, GeneralCallbackResult, invokeCallback, wrapperAsyncAPI } from "@nzoth/bridge"
 import { invokeWebViewMethod } from "../../fromWebView"
 import { extend } from "@nzoth/shared"
 
@@ -32,9 +27,9 @@ type LoadFontFaceFailCallback = (res: GeneralCallbackResult) => void
 
 type LoadFontFaceCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function loadFontFace<
-  T extends LoadFontFaceOptions = LoadFontFaceOptions
->(options: T): AsyncReturn<T, LoadFontFaceOptions> {
+export function loadFontFace<T extends LoadFontFaceOptions = LoadFontFaceOptions>(
+  options: T
+): AsyncReturn<T, LoadFontFaceOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.LOAD_FONT_FACE
     const defaultDesc = {

@@ -3,9 +3,9 @@
     <div
       ref="containerRef"
       :id="tongcengKey"
-      style="width:100%;height:100%;overflow:scroll;-webkit-overflow-scrolling:touch;"
+      style="width: 100%; height: 100%; overflow: scroll; -webkit-overflow-scrolling: touch"
     >
-      <div style="width: 100%;" :style="height"></div>
+      <div style="width: 100%" :style="height"></div>
     </div>
   </nz-camera>
 </template>
@@ -19,17 +19,20 @@ import { AuthorizationStatus } from "@nzoth/bridge"
 
 const emit = defineEmits(["initdone", "scancode", "error", "stop"])
 
-const props = withDefaults(defineProps<{
-  mode?: "normal" | "scanCode"
-  resolution?: "low" | "medium" | "high"
-  devicePosition?: "front" | "back"
-  flash?: "auto" | "on" | "off" | "torch"
-}>(), {
-  mode: "normal",
-  resolution: "medium",
-  devicePosition: "back",
-  flash: "auto"
-})
+const props = withDefaults(
+  defineProps<{
+    mode?: "normal" | "scanCode"
+    resolution?: "low" | "medium" | "high"
+    devicePosition?: "front" | "back"
+    flash?: "auto" | "on" | "off" | "torch"
+  }>(),
+  {
+    mode: "normal",
+    resolution: "medium",
+    devicePosition: "back",
+    flash: "auto"
+  }
+)
 
 const { tongcengKey, nativeId: cameraId, containerRef, height, insertContainer } = useNative()
 
@@ -52,17 +55,26 @@ onError(data => {
   emit("error", { errMsg: data.error })
 })
 
-watch(() => props.devicePosition, () => {
-  update()
-})
+watch(
+  () => props.devicePosition,
+  () => {
+    update()
+  }
+)
 
-watch(() => props.flash, () => {
-  update()
-})
+watch(
+  () => props.flash,
+  () => {
+    update()
+  }
+)
 
-watch(() => props.resolution, () => {
-  update()
-})
+watch(
+  () => props.resolution,
+  () => {
+    update()
+  }
+)
 
 onMounted(() => {
   setTimeout(async () => {
@@ -76,7 +88,7 @@ onMounted(() => {
 })
 
 const insert = () => {
-  insertContainer((success) => {
+  insertContainer(success => {
     if (success) {
       NZJSBridge.invoke("insertCamera", {
         parentId: tongcengKey,
@@ -97,7 +109,6 @@ const update = () => {
     devicePosition: props.devicePosition
   })
 }
-
 </script>
 
 <style>

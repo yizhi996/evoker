@@ -11,13 +11,7 @@
     />
 
     <n-topic>Auto Height</n-topic>
-    <textarea
-      class="w-full bg-white"
-      value=""
-      :maxlength="0"
-      auto-height
-      placeholder="请输入..."
-    />
+    <textarea class="w-full bg-white" value="" :maxlength="0" auto-height placeholder="请输入..." />
 
     <n-topic>Custom Style</n-topic>
     <textarea
@@ -40,5 +34,4 @@ const onFocus = () => {
 const onBlur = () => {
   focus.value = false
 }
-
 </script>

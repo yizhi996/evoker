@@ -35,9 +35,7 @@ interface GetLocationSuccessCallbackResult {
   horizontalAccuracy: number
 }
 
-type GetLocationSuccessCallback = (
-  res: GetLocationSuccessCallbackResult
-) => void
+type GetLocationSuccessCallback = (res: GetLocationSuccessCallbackResult) => void
 
 type GetLocationFailCallback = (res: GeneralCallbackResult) => void
 
@@ -50,10 +48,7 @@ export function getLocation<T extends GetLocationOptions = GetLocationOptions>(
     const event = Events.GET_LOCATION
     invoke<SuccessResult<T>>(
       event,
-      extend(
-        { type: "wgs84", altitude: false, isHighAccuracy: false },
-        options
-      ),
+      extend({ type: "wgs84", altitude: false, isHighAccuracy: false }, options),
       result => {
         invokeCallback(event, options, result)
       }
@@ -79,13 +74,9 @@ export function startLocationUpdate<
 >(options: T): AsyncReturn<T, StartLocationUpdateOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.START_LOCATION_UPDATE
-    invoke<SuccessResult<T>>(
-      event,
-      { type: options.type || "gcj02" },
-      result => {
-        invokeCallback(event, options, result)
-      }
-    )
+    invoke<SuccessResult<T>>(event, { type: options.type || "gcj02" }, result => {
+      invokeCallback(event, options, result)
+    })
   }, options)
 }
 
@@ -101,9 +92,9 @@ type StopLocationUpdateFailCallback = (res: GeneralCallbackResult) => void
 
 type StopLocationUpdateCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function stopLocationUpdate<
-  T extends StopLocationUpdateOptions = StopLocationUpdateOptions
->(options: T): AsyncReturn<T, StopLocationUpdateOptions> {
+export function stopLocationUpdate<T extends StopLocationUpdateOptions = StopLocationUpdateOptions>(
+  options: T
+): AsyncReturn<T, StopLocationUpdateOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.STOP_LOCATION_UPDATE
     invoke<SuccessResult<T>>(event, {}, result => {

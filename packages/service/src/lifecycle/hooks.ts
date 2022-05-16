@@ -26,11 +26,7 @@ const pageEvents: Record<number, Map<LifecycleHooks, Function>> = {}
 
 const pageEffectHooks: Record<number, Record<string, boolean>> = {}
 
-function injectHook(
-  lifecycle: LifecycleHooks,
-  hook: Function,
-  pageId?: number
-) {
+function injectHook(lifecycle: LifecycleHooks, hook: Function, pageId?: number) {
   if (pageId === undefined) {
     const hooks = appEvents[lifecycle] || (appEvents[lifecycle] = [])
     hooks.push(hook)
@@ -99,51 +95,33 @@ InnerJSBridge.subscribe<{ pageId: number; query: Record<string, any> }>(
   }
 )
 
-InnerJSBridge.subscribe<{ pageId: number }>(
-  LifecycleHooks.PAGE_ON_SHOW,
-  message => {
-    invokePageHook(LifecycleHooks.PAGE_ON_SHOW, message.pageId)
-  }
-)
+InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_SHOW, message => {
+  invokePageHook(LifecycleHooks.PAGE_ON_SHOW, message.pageId)
+})
 
-InnerJSBridge.subscribe<{ pageId: number }>(
-  LifecycleHooks.PAGE_ON_READY,
-  message => {
-    invokePageHook(LifecycleHooks.PAGE_ON_READY, message.pageId)
-  }
-)
+InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_READY, message => {
+  invokePageHook(LifecycleHooks.PAGE_ON_READY, message.pageId)
+})
 
-InnerJSBridge.subscribe<{ pageId: number }>(
-  LifecycleHooks.PAGE_ON_HIDE,
-  message => {
-    invokePageHook(LifecycleHooks.PAGE_ON_HIDE, message.pageId)
-  }
-)
+InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_HIDE, message => {
+  invokePageHook(LifecycleHooks.PAGE_ON_HIDE, message.pageId)
+})
 
-InnerJSBridge.subscribe<{ pageId: number }>(
-  LifecycleHooks.PAGE_ON_UNLOAD,
-  message => {
-    const { pageId } = message
-    unmountPage(pageId)
-    invokePageHook(LifecycleHooks.PAGE_ON_UNLOAD, pageId)
-    delete pageEvents[pageId]
-    delete pageEffectHooks[pageId]
-  }
-)
+InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_UNLOAD, message => {
+  const { pageId } = message
+  unmountPage(pageId)
+  invokePageHook(LifecycleHooks.PAGE_ON_UNLOAD, pageId)
+  delete pageEvents[pageId]
+  delete pageEffectHooks[pageId]
+})
 
-InnerJSBridge.subscribe<{ pageId: number }>(
-  LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH,
-  message => {
-    invokePageHook(LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH, message.pageId)
-  }
-)
+InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH, message => {
+  invokePageHook(LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH, message.pageId)
+})
 
-InnerJSBridge.subscribe<{ pageId: number }>(
-  LifecycleHooks.PAGE_ON_REACH_BOTTOM,
-  message => {
-    invokePageHook(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message.pageId)
-  }
-)
+InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message => {
+  invokePageHook(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message.pageId)
+})
 
 InnerJSBridge.subscribe<{ pageId: number; scrollTop: number }>(
   LifecycleHooks.PAGE_ON_SCROLL,
@@ -154,27 +132,14 @@ InnerJSBridge.subscribe<{ pageId: number; scrollTop: number }>(
   }
 )
 
-InnerJSBridge.subscribe<{ pageId: number }>(
-  LifecycleHooks.PAGE_ON_RESIZE,
-  message => {
-    invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId)
-  }
-)
+InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_RESIZE, message => {
+  invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId)
+})
 
-InnerJSBridge.subscribe<{ pageId: number }>(
-  LifecycleHooks.PAGE_ON_TAB_ITEM_TAP,
-  message => {
-    invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId, message)
-  }
-)
+InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_TAB_ITEM_TAP, message => {
+  invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId, message)
+})
 
-InnerJSBridge.subscribe<{ pageId: number }>(
-  LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE,
-  message => {
-    invokePageHook(
-      LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE,
-      message.pageId,
-      message
-    )
-  }
-)
+InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE, message => {
+  invokePageHook(LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE, message.pageId, message)
+})

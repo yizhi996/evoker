@@ -41,18 +41,15 @@ interface GetStorageSuccessCallbackResult<T> {
   data: T
 }
 
-type GetStorageSuccessCallback<T> = (
-  res: GetStorageSuccessCallbackResult<T>
-) => void
+type GetStorageSuccessCallback<T> = (res: GetStorageSuccessCallbackResult<T>) => void
 
 type GetStorageFailCallback = (res: GeneralCallbackResult) => void
 
 type GetStorageCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function getStorage<
-  T = any,
-  U extends GetStorageOptions<T> = GetStorageOptions<T>
->(options: U): AsyncReturn<U, GetStorageOptions<T>> {
+export function getStorage<T = any, U extends GetStorageOptions<T> = GetStorageOptions<T>>(
+  options: U
+): AsyncReturn<U, GetStorageOptions<T>> {
   return wrapperAsyncAPI<U>(options => {
     const event = Events.GET
     if (!isString(options.key)) {
@@ -121,10 +118,9 @@ type SetStorageFailCallback = (res: GeneralCallbackResult) => void
 
 type SetStorageCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function setStorage<
-  T = any,
-  U extends SetStorageOptions<T> = SetStorageOptions<T>
->(options: U): AsyncReturn<U, SetStorageOptions<T>> {
+export function setStorage<T = any, U extends SetStorageOptions<T> = SetStorageOptions<T>>(
+  options: U
+): AsyncReturn<U, SetStorageOptions<T>> {
   return wrapperAsyncAPI<U>(options => {
     const event = Events.SET
     if (!isString(options.key)) {
@@ -169,13 +165,9 @@ export function setStorage<
       return
     }
 
-    invoke<SuccessResult<U>>(
-      event,
-      { key: options.key, data, dataType: type },
-      result => {
-        invokeCallback(event, options, result)
-      }
-    )
+    invoke<SuccessResult<U>>(event, { key: options.key, data, dataType: type }, result => {
+      invokeCallback(event, options, result)
+    })
   }, options)
 }
 
@@ -192,9 +184,9 @@ type RemoveStorageFailCallback = (res: GeneralCallbackResult) => void
 
 type RemoveStorageCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function removeStorage<
-  T extends RemoveStorageOptions = RemoveStorageOptions
->(options: T): AsyncReturn<T, RemoveStorageOptions> {
+export function removeStorage<T extends RemoveStorageOptions = RemoveStorageOptions>(
+  options: T
+): AsyncReturn<T, RemoveStorageOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.REMOVE
     if (!isString(options.key)) {
@@ -220,9 +212,9 @@ type ClearStorageFailCallback = (res: GeneralCallbackResult) => void
 
 type ClearStorageCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function clearStorage<
-  T extends ClearStorageOptions = ClearStorageOptions
->(options: T): AsyncReturn<T, ClearStorageOptions> {
+export function clearStorage<T extends ClearStorageOptions = ClearStorageOptions>(
+  options: T
+): AsyncReturn<T, ClearStorageOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.CLEAR
     invoke<SuccessResult<T>>(event, {}, result => {
@@ -244,17 +236,15 @@ interface GetStorageInfoSuccessCallbackResult {
   errMsg: string
 }
 
-type GetStorageInfoSuccessCallback = (
-  res: GetStorageInfoSuccessCallbackResult
-) => void
+type GetStorageInfoSuccessCallback = (res: GetStorageInfoSuccessCallbackResult) => void
 
 type GetStorageInfoFailCallback = (res: GeneralCallbackResult) => void
 
 type GetStorageInfoCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function getStorageInfo<
-  T extends GetStorageInfoOptions = GetStorageInfoOptions
->(options: T): AsyncReturn<T, GetStorageInfoOptions> {
+export function getStorageInfo<T extends GetStorageInfoOptions = GetStorageInfoOptions>(
+  options: T
+): AsyncReturn<T, GetStorageInfoOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.INFO
     invoke<SuccessResult<T>>(event, {}, result => {

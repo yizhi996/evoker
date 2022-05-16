@@ -1,9 +1,4 @@
-import {
-  ImageLoadState,
-  ImageLoadResult,
-  loadImage,
-  imageLazyLoadInfos
-} from "./loader"
+import { ImageLoadState, ImageLoadResult, loadImage, imageLazyLoadInfos } from "./loader"
 import { supportIntersectionObserver } from "./observer"
 import throttle from "lodash.throttle"
 
@@ -56,9 +51,5 @@ export function removeEventObserve(el: HTMLElement) {
 
 export function checkInView(el: HTMLElement) {
   const rect = el.getBoundingClientRect()
-  return (
-    rect.top < window.innerHeight &&
-    rect.left < window.innerWidth &&
-    rect.right > 0
-  )
+  return rect.top < window.innerHeight && rect.left < window.innerWidth && rect.right > 0
 }

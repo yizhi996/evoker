@@ -35,17 +35,13 @@ export class NZothEventTarget {
   ) {
     const listeners =
       this.listeners ||
-      ((this.listeners = Object.create(null)) as Record<
-        string,
-        NZothEventListenerParams[]
-      >)
+      ((this.listeners = Object.create(null)) as Record<string, NZothEventListenerParams[]>)
 
     !(type in listeners) && (listeners[type] = [])
 
     listeners[type].push({ listener, options, modifiers })
 
-    isNZothNode(this) &&
-      this.page.onAddEventListener(this, type, options, modifiers)
+    isNZothNode(this) && this.page.onAddEventListener(this, type, options, modifiers)
   }
 
   removeEventListener(type: string, listener: NZothEventListener): void {

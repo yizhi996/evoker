@@ -13,12 +13,15 @@ const { children, linkChildren } = useChildren(MOVABLE_KEY)
 
 linkChildren({})
 
-watch(() => [...children], (children) => {
-  const rect = areaRef.value?.getBoundingClientRect()
-  children.forEach(child => {
-    child.exposed!.setAreaRect(rect)
-  })
-})
+watch(
+  () => [...children],
+  children => {
+    const rect = areaRef.value?.getBoundingClientRect()
+    children.forEach(child => {
+      child.exposed!.setAreaRect(rect)
+    })
+  }
+)
 </script>
 
 <style>

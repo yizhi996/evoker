@@ -13,8 +13,7 @@ export default defineConfig(() => {
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
         name: pkg.buildOptions?.name,
-        fileName: foramt =>
-          `webview.${foramt === "iife" ? "global" : "esm"}.js`,
+        fileName: foramt => `webview.${foramt === "iife" ? "global" : "esm"}.js`,
         formats: ["iife", "es"]
       },
       rollupOptions: {
@@ -32,8 +31,7 @@ export default defineConfig(() => {
       vue({
         template: {
           compilerOptions: {
-            isNativeTag: tag =>
-              isHTMLTag(tag) || isSVGTag(tag) || tag.startsWith("nz-")
+            isNativeTag: tag => isHTMLTag(tag) || isSVGTag(tag) || tag.startsWith("nz-")
           }
         }
       }),

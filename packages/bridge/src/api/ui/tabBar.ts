@@ -30,9 +30,9 @@ type SetTabBarBadgeFailCallback = (res: GeneralCallbackResult) => void
 
 type SetTabBarBadgeCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function setTabBarBadge<
-  T extends SetTabBarBadgeOptions = SetTabBarBadgeOptions
->(options: T): AsyncReturn<T, SetTabBarBadgeOptions> {
+export function setTabBarBadge<T extends SetTabBarBadgeOptions = SetTabBarBadgeOptions>(
+  options: T
+): AsyncReturn<T, SetTabBarBadgeOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SET_TAB_BAR_BADGE
     invoke<SuccessResult<T>>(event, options, result => {
@@ -54,9 +54,9 @@ type RemoveTabBarBadgeFailCallback = (res: GeneralCallbackResult) => void
 
 type RemoveTabBarBadgeCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function removeTabBarBadge<
-  T extends RemoveTabBarBadgeOptions = RemoveTabBarBadgeOptions
->(options: T): AsyncReturn<T, RemoveTabBarBadgeOptions> {
+export function removeTabBarBadge<T extends RemoveTabBarBadgeOptions = RemoveTabBarBadgeOptions>(
+  options: T
+): AsyncReturn<T, RemoveTabBarBadgeOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.REMOVE_TAB_BAR_BADGE
     invoke<SuccessResult<T>>(event, options, result => {
@@ -78,9 +78,9 @@ type ShowTabBarRedDotFailCallback = (res: GeneralCallbackResult) => void
 
 type ShowTabBarRedDotCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function showTabBarRedDot<
-  T extends ShowTabBarRedDotOptions = ShowTabBarRedDotOptions
->(options: T): AsyncReturn<T, ShowTabBarRedDotOptions> {
+export function showTabBarRedDot<T extends ShowTabBarRedDotOptions = ShowTabBarRedDotOptions>(
+  options: T
+): AsyncReturn<T, ShowTabBarRedDotOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SHOW_TAB_BAR_RED_DOT
     invoke<SuccessResult<T>>(event, options, result => {
@@ -102,9 +102,9 @@ type HideTabBarRedDotFailCallback = (res: GeneralCallbackResult) => void
 
 type HideTabBarRedDotCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function hideTabBarRedDot<
-  T extends HideTabBarRedDotOptions = HideTabBarRedDotOptions
->(options: T): AsyncReturn<T, HideTabBarRedDotOptions> {
+export function hideTabBarRedDot<T extends HideTabBarRedDotOptions = HideTabBarRedDotOptions>(
+  options: T
+): AsyncReturn<T, HideTabBarRedDotOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.HIDE_TAB_BAR_RED_DOT
     invoke<SuccessResult<T>>(event, options, result => {
@@ -129,9 +129,9 @@ type SetTabBarItemFailCallback = (res: GeneralCallbackResult) => void
 
 type SetTabBarItemCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function setTabBarItem<
-  T extends SetTabBarItemOptions = SetTabBarItemOptions
->(options: T): AsyncReturn<T, SetTabBarItemOptions> {
+export function setTabBarItem<T extends SetTabBarItemOptions = SetTabBarItemOptions>(
+  options: T
+): AsyncReturn<T, SetTabBarItemOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SET_TAB_BAR_ITEM
     invoke<SuccessResult<T>>(event, options, result => {
@@ -156,9 +156,9 @@ type SetTabBarStyleFailCallback = (res: GeneralCallbackResult) => void
 
 type SetTabBarStyleCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function setTabBarStyle<
-  T extends SetTabBarStyleOptions = SetTabBarStyleOptions
->(options: T): AsyncReturn<T, SetTabBarStyleOptions> {
+export function setTabBarStyle<T extends SetTabBarStyleOptions = SetTabBarStyleOptions>(
+  options: T
+): AsyncReturn<T, SetTabBarStyleOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SET_TAB_BAR_STYLE
     invoke<SuccessResult<T>>(event, options, result => {

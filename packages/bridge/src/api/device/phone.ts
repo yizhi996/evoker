@@ -27,9 +27,9 @@ type MakePhoneCallFailCallback = (res: GeneralCallbackResult) => void
 
 type MakePhoneCallCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function makePhoneCall<
-  T extends MakePhoneCallOptions = MakePhoneCallOptions
->(options: T): AsyncReturn<T, MakePhoneCallOptions> {
+export function makePhoneCall<T extends MakePhoneCallOptions = MakePhoneCallOptions>(
+  options: T
+): AsyncReturn<T, MakePhoneCallOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.MAKE_PHONE_CALL
     if (!options.phoneNumber) {

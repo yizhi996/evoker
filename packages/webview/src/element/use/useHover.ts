@@ -9,10 +9,7 @@ interface Props {
   loading?: boolean
 }
 
-export default function useHover(
-  viewRef: Ref<HTMLElement | undefined>,
-  props: Props
-) {
+export default function useHover(viewRef: Ref<HTMLElement | undefined>, props: Props) {
   const hovering = ref(false)
 
   let hoverStartTimer: ReturnType<typeof setTimeout>
@@ -69,12 +66,7 @@ export default function useHover(
   const hoverTouchStart = (e: TouchEvent) => {
     props.hoverStopPropagation && e.stopPropagation()
 
-    if (
-      props.disabled ||
-      props.loading ||
-      e.touches.length > 1 ||
-      hovering.value
-    ) {
+    if (props.disabled || props.loading || e.touches.length > 1 || hovering.value) {
       return
     }
 

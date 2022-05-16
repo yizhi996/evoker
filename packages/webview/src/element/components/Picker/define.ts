@@ -6,5 +6,4 @@ export interface PickerViewProvide {
   onPickEnd: () => void
 }
 
-export const PICKER_VIEW_KEY: InjectionKey<PickerViewProvide> =
-  Symbol("picker-view")
+export const PICKER_VIEW_KEY: InjectionKey<PickerViewProvide> = Symbol("picker-view")

@@ -16,18 +16,21 @@ import {
   exit
 } from "../../bridge"
 
-const props = withDefaults(defineProps<{
-  target?: "self" | "miniProgram"
-  url?: string
-  openType?: "navigate" | "redirect" | "switchTab" | "reLaunch" | "navigateBack" | "exit"
-  delta?: number
-  appId?: string
-  path?: string
-}>(), {
-  target: "self",
-  openType: "navigate",
-  delta: 1
-})
+const props = withDefaults(
+  defineProps<{
+    target?: "self" | "miniProgram"
+    url?: string
+    openType?: "navigate" | "redirect" | "switchTab" | "reLaunch" | "navigateBack" | "exit"
+    delta?: number
+    appId?: string
+    path?: string
+  }>(),
+  {
+    target: "self",
+    openType: "navigate",
+    delta: 1
+  }
+)
 
 const invoke = () => {
   if (props.target === "self") {

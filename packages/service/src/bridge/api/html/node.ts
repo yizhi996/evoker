@@ -1,10 +1,6 @@
 import { CanvasRenderingContext2D } from "./canvas"
 
-export function createCanvasNode(
-  nodeId: number,
-  canvasType: "2d" | "webgl",
-  canvasId: number
-) {
+export function createCanvasNode(nodeId: number, canvasType: "2d" | "webgl", canvasId: number) {
   return new CanvasNode(nodeId, canvasType, canvasId)
 }
 

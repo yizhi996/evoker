@@ -13,71 +13,92 @@ const instance = getCurrentInstance()!
 
 const emit = defineEmits(["pickstart", "pickend", "change"])
 
-const props = withDefaults(defineProps<{
-  value: number[]
-  indicatorStyle?: string
-  indicatorClass?: string
-  maskStyle?: string
-  maskClass?: string
-}>(), {
-  value: () => [],
-})
+const props = withDefaults(
+  defineProps<{
+    value: number[]
+    indicatorStyle?: string
+    indicatorClass?: string
+    maskStyle?: string
+    maskClass?: string
+  }>(),
+  {
+    value: () => []
+  }
+)
 
 const containerRef = ref<HTMLElement>()
 
 const { children, linkChildren } = useChildren(PICKER_VIEW_KEY)
 linkChildren({})
 
-watch(() => [...children], () => {
-  children.forEach((child, i) => {
-    const exposed = child.exposed!
-    exposed.setIndicatorStyle(props.indicatorStyle)
-    exposed.setIndicatorClass(props.indicatorClass)
-    exposed.setMaskStyle(props.maskStyle)
-    exposed.setMaskClass(props.maskClass)
-    exposed.setHeight(containerRef.value!.offsetHeight)
-    exposed.setValue(props.value[i])
-  })
-})
+watch(
+  () => [...children],
+  () => {
+    children.forEach((child, i) => {
+      const exposed = child.exposed!
+      exposed.setIndicatorStyle(props.indicatorStyle)
+      exposed.setIndicatorClass(props.indicatorClass)
+      exposed.setMaskStyle(props.maskStyle)
+      exposed.setMaskClass(props.maskClass)
+      exposed.setHeight(containerRef.value!.offsetHeight)
+      exposed.setValue(props.value[i])
+    })
+  }
+)
 
-watch(() => props.indicatorStyle, () => {
-  children.forEach((child, i) => {
-    const exposed = child.exposed!
-    exposed.setIndicatorStyle(props.indicatorStyle)
-    exposed.setHeight(containerRef.value!.offsetHeight)
-    exposed.setValue(props.value[i])
-  })
-})
+watch(
+  () => props.indicatorStyle,
+  () => {
+    children.forEach((child, i) => {
+      const exposed = child.exposed!
+      exposed.setIndicatorStyle(props.indicatorStyle)
+      exposed.setHeight(containerRef.value!.offsetHeight)
+      exposed.setValue(props.value[i])
+    })
+  }
+)
 
-watch(() => props.indicatorClass, () => {
-  children.forEach((child, i) => {
-    const exposed = child.exposed!
-    exposed.setIndicatorClass(props.indicatorClass)
-    exposed.setHeight(containerRef.value!.offsetHeight)
-    exposed.setValue(props.value[i])
-  })
-})
+watch(
+  () => props.indicatorClass,
+  () => {
+    children.forEach((child, i) => {
+      const exposed = child.exposed!
+      exposed.setIndicatorClass(props.indicatorClass)
+      exposed.setHeight(containerRef.value!.offsetHeight)
+      exposed.setValue(props.value[i])
+    })
+  }
+)
 
-watch(() => props.maskStyle, () => {
-  children.forEach((child) => {
-    const exposed = child.exposed!
-    exposed.setMaskStyle(props.maskStyle)
-  })
-})
+watch(
+  () => props.maskStyle,
+  () => {
+    children.forEach(child => {
+      const exposed = child.exposed!
+      exposed.setMaskStyle(props.maskStyle)
+    })
+  }
+)
 
-watch(() => props.maskClass, () => {
-  children.forEach((child) => {
-    const exposed = child.exposed!
-    exposed.setMaskClass(props.maskClass)
-  })
-})
+watch(
+  () => props.maskClass,
+  () => {
+    children.forEach(child => {
+      const exposed = child.exposed!
+      exposed.setMaskClass(props.maskClass)
+    })
+  }
+)
 
-watch(() => [...props.value], () => {
-  children.forEach((child, i) => {
-    const exposed = child.exposed!
-    exposed.setValue(props.value[i])
-  })
-})
+watch(
+  () => [...props.value],
+  () => {
+    children.forEach((child, i) => {
+      const exposed = child.exposed!
+      exposed.setValue(props.value[i])
+    })
+  }
+)
 
 const onChange = () => {
   const value = children.map(child => {
@@ -100,7 +121,6 @@ linkChildren({
   onPickStart,
   onPickEnd
 })
-
 </script>
 
 <style lang="less">

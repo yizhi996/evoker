@@ -1,10 +1,5 @@
 import { invoke } from "../../bridge"
-import {
-  invokeCallback,
-  GeneralCallbackResult,
-  AsyncReturn,
-  wrapperAsyncAPI
-} from "../../async"
+import { invokeCallback, GeneralCallbackResult, AsyncReturn, wrapperAsyncAPI } from "../../async"
 
 const enum Events {
   START_PULL_DOWN_REFRESH = "startPullDownRefresh",

@@ -1,7 +1,7 @@
 <template>
   <nz-textarea ref="rootRef">
     <div ref="containerRef" class="nz-native__container" :id="tongcengKey">
-      <div ref="innerRef" style="width: 100%;" :style="height"></div>
+      <div ref="innerRef" style="width: 100%" :style="height"></div>
     </div>
     <p
       ref="placeholderRef"
@@ -32,48 +32,51 @@ const emit = defineEmits([
   "update:value"
 ])
 
-const props = withDefaults(defineProps<{
-  value?: string
-  placeholder?: string
-  placeholderStyle?: string
-  placeholderClass?: string
-  disabled?: boolean
-  maxlength?: number
-  autoFocus?: boolean
-  focus?: boolean
-  autoHeight?: boolean
-  fixed?: boolean
-  cursorSpacing?: number
-  cursor?: number
-  showConfirmBar?: boolean
-  selectionStart?: number
-  selectionEnd?: number
-  adjustPosition?: boolean
-  holdKeyboard?: boolean
-  disableDefaultPadding?: boolean
-  confirmType?: "send" | "search" | "next" | "go" | "done" | "return"
-  confirmHold?: boolean
-}>(), {
-  value: "",
-  placeholder: "",
-  placeholderClass: "nz-textarea__placeholder",
-  disabled: false,
-  maxlength: 140,
-  autoFocus: false,
-  focus: false,
-  autoHeight: false,
-  fixed: false,
-  cursorSpacing: 0,
-  cursor: -1,
-  selectionStart: -1,
-  selectionEnd: -1,
-  showConfirmBar: true,
-  adjustPosition: true,
-  holdKeyboard: false,
-  disableDefaultPadding: false,
-  confirmType: "return",
-  confirmHold: false,
-})
+const props = withDefaults(
+  defineProps<{
+    value?: string
+    placeholder?: string
+    placeholderStyle?: string
+    placeholderClass?: string
+    disabled?: boolean
+    maxlength?: number
+    autoFocus?: boolean
+    focus?: boolean
+    autoHeight?: boolean
+    fixed?: boolean
+    cursorSpacing?: number
+    cursor?: number
+    showConfirmBar?: boolean
+    selectionStart?: number
+    selectionEnd?: number
+    adjustPosition?: boolean
+    holdKeyboard?: boolean
+    disableDefaultPadding?: boolean
+    confirmType?: "send" | "search" | "next" | "go" | "done" | "return"
+    confirmHold?: boolean
+  }>(),
+  {
+    value: "",
+    placeholder: "",
+    placeholderClass: "nz-textarea__placeholder",
+    disabled: false,
+    maxlength: 140,
+    autoFocus: false,
+    focus: false,
+    autoHeight: false,
+    fixed: false,
+    cursorSpacing: 0,
+    cursor: -1,
+    selectionStart: -1,
+    selectionEnd: -1,
+    showConfirmBar: true,
+    adjustPosition: true,
+    holdKeyboard: false,
+    disableDefaultPadding: false,
+    confirmType: "return",
+    confirmHold: false
+  }
+)
 
 const {
   tongcengKey,
@@ -86,7 +89,6 @@ const {
   onUpdatedContainer
 } = useNative()
 
-
 const rootRef = ref<HTMLElement>()
 const placeholderRef = ref<HTMLElement>()
 
@@ -95,12 +97,8 @@ const onInput = (value: string) => {
   emit("input", { value })
 }
 
-const {
-  onKeyboardSetValue,
-  onKeyboardShow,
-  onKeyboardHide,
-  onKeyboardConfirm
-} = useKeyboard(inputId)
+const { onKeyboardSetValue, onKeyboardShow, onKeyboardHide, onKeyboardConfirm } =
+  useKeyboard(inputId)
 
 onKeyboardSetValue(data => {
   instance.props.value = data.value
@@ -133,37 +131,41 @@ onMounted(() => {
 })
 
 const insert = () => {
-  insertContainer((success) => {
+  insertContainer(success => {
     if (success) {
-      NZJSBridge.invoke<{ height: number, lineCount: number }>("insertTextArea", {
-        parentId: tongcengKey,
-        inputId,
-        text: props.value,
-        style: getInputStyle(rootRef.value!),
-        placeholder: props.placeholder,
-        placeholderStyle: getInputPlaceholderStyle(placeholderRef.value!),
-        focus: props.focus,
-        confirmType: props.confirmType,
-        maxlength: props.maxlength,
-        adjustPosition: props.adjustPosition,
-        autoHeight: props.autoHeight,
-        disableDefaultPadding: props.disableDefaultPadding,
-        disabled: props.disabled,
-        cursor: props.cursor,
-        selectionStart: props.selectionStart,
-        selectionEnd: props.selectionEnd,
-        confirmHold: props.confirmHold,
-        holdKeyboard: props.holdKeyboard,
-        cursorSpacing: props.cursorSpacing,
-        showConfirmBar: props.showConfirmBar
-      }, result => {
-        if (result.data) {
-          if (props.autoHeight) {
-            rootRef.value!.style.height = result.data.height + "px"
-            updateContainer()
+      NZJSBridge.invoke<{ height: number; lineCount: number }>(
+        "insertTextArea",
+        {
+          parentId: tongcengKey,
+          inputId,
+          text: props.value,
+          style: getInputStyle(rootRef.value!),
+          placeholder: props.placeholder,
+          placeholderStyle: getInputPlaceholderStyle(placeholderRef.value!),
+          focus: props.focus,
+          confirmType: props.confirmType,
+          maxlength: props.maxlength,
+          adjustPosition: props.adjustPosition,
+          autoHeight: props.autoHeight,
+          disableDefaultPadding: props.disableDefaultPadding,
+          disabled: props.disabled,
+          cursor: props.cursor,
+          selectionStart: props.selectionStart,
+          selectionEnd: props.selectionEnd,
+          confirmHold: props.confirmHold,
+          holdKeyboard: props.holdKeyboard,
+          cursorSpacing: props.cursorSpacing,
+          showConfirmBar: props.showConfirmBar
+        },
+        result => {
+          if (result.data) {
+            if (props.autoHeight) {
+              rootRef.value!.style.height = result.data.height + "px"
+              updateContainer()
+            }
           }
         }
-      })
+      )
     }
   })
 }
@@ -181,29 +183,50 @@ const operateInput = (method: OperateMethods, data: Record<string, any> = {}) =>
   NZJSBridge.invoke("operateInput", { inputId, method, data })
 }
 
-watch(() => props.value, () => {
-  changeValue()
-})
+watch(
+  () => props.value,
+  () => {
+    changeValue()
+  }
+)
 
 const changeValue = () => {
   operateInput(OperateMethods.CHANGE_VALUE, { text: props.value })
 }
 
-watch(() => props.focus, () => {
-  props.focus ? operateInput(OperateMethods.FOCUS) : operateInput(OperateMethods.BLUR)
-})
+watch(
+  () => props.focus,
+  () => {
+    props.focus ? operateInput(OperateMethods.FOCUS) : operateInput(OperateMethods.BLUR)
+  }
+)
 
-watch(() => props.autoFocus, () => {
-  props.focus ? operateInput(OperateMethods.FOCUS) : operateInput(OperateMethods.BLUR)
-})
+watch(
+  () => props.autoFocus,
+  () => {
+    props.focus ? operateInput(OperateMethods.FOCUS) : operateInput(OperateMethods.BLUR)
+  }
+)
 
-watch(() => props.placeholderClass, () => {
-  operateInput(OperateMethods.UPDATE_PLACEHOLDER_STYLE, getInputPlaceholderStyle(placeholderRef.value!))
-})
+watch(
+  () => props.placeholderClass,
+  () => {
+    operateInput(
+      OperateMethods.UPDATE_PLACEHOLDER_STYLE,
+      getInputPlaceholderStyle(placeholderRef.value!)
+    )
+  }
+)
 
-watch(() => props.placeholderStyle, () => {
-  operateInput(OperateMethods.UPDATE_PLACEHOLDER_STYLE, getInputPlaceholderStyle(placeholderRef.value!))
-})
+watch(
+  () => props.placeholderStyle,
+  () => {
+    operateInput(
+      OperateMethods.UPDATE_PLACEHOLDER_STYLE,
+      getInputPlaceholderStyle(placeholderRef.value!)
+    )
+  }
+)
 
 onUpdatedContainer(() => {
   operateInput(OperateMethods.UPDATE_STYLE, getInputStyle(rootRef.value!))
@@ -224,7 +247,7 @@ watchEffect(() => {
     cursorSpacing: props.cursorSpacing,
     showConfirmBar: props.showConfirmBar,
     autoHeight: props.autoHeight,
-    disableDefaultPadding: props.disableDefaultPadding,
+    disableDefaultPadding: props.disableDefaultPadding
   })
 })
 

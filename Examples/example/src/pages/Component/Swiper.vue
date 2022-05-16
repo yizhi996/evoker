@@ -13,11 +13,12 @@
       :next-margin="`${nextMargin}px`"
     >
       <swiper-item
-        v-for="color, i of items"
+        v-for="(color, i) of items"
         :key="color"
         class="flex items-center justify-center"
         :class="color"
-      >{{ i }}</swiper-item>
+        >{{ i }}</swiper-item
+      >
     </swiper>
     <n-topic>Vertical</n-topic>
     <swiper
@@ -33,11 +34,12 @@
       :next-margin="`${nextMargin}px`"
     >
       <swiper-item
-        v-for="color, i of items"
+        v-for="(color, i) of items"
         :key="color"
         class="flex items-center justify-center"
         :class="color"
-      >{{ i }}</swiper-item>
+        >{{ i }}</swiper-item
+      >
     </swiper>
 
     <div class="mt-5 mx-2.5">
@@ -75,7 +77,13 @@
           @change="onChangePreviousMargin"
         ></slider>
         <span>后边距(px)</span>
-        <slider :value="nextMargin" show-value :min="0" :max="50" @change="onChangeNextMargin"></slider>
+        <slider
+          :value="nextMargin"
+          show-value
+          :min="0"
+          :max="50"
+          @change="onChangeNextMargin"
+        ></slider>
       </div>
     </div>
   </div>
@@ -84,12 +92,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
 
-const items = [
-  "bg-blue-400",
-  "bg-red-400",
-  "bg-yellow-400",
-  "bg-green-400"
-]
+const items = ["bg-blue-400", "bg-red-400", "bg-yellow-400", "bg-green-400"]
 
 const autoplay = ref(true)
 
@@ -97,28 +100,28 @@ const circular = ref(true)
 
 const interval = ref(2000)
 
-const onChangeInterval = (e) => {
+const onChangeInterval = e => {
   const value = e.detail.value
   interval.value = value
 }
 
 const duration = ref(500)
 
-const onChangeDuration = (e) => {
+const onChangeDuration = e => {
   const value = e.detail.value
   duration.value = value
 }
 
 const previousMargin = ref(0)
 
-const onChangePreviousMargin = (e) => {
+const onChangePreviousMargin = e => {
   const value = e.detail.value
   previousMargin.value = value
 }
 
 const nextMargin = ref(0)
 
-const onChangeNextMargin = (e) => {
+const onChangeNextMargin = e => {
   const value = e.detail.value
   nextMargin.value = value
 }

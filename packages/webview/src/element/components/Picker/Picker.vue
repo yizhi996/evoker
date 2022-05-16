@@ -10,39 +10,45 @@ import { isObject } from "@nzoth/shared"
 
 const emit = defineEmits(["change", "columnchange", "cancel"])
 
-const props = withDefaults(defineProps<{
-  headerText?: string
-  mode: "selector" | "multiSelector" | "time" | "date"
-  // for selector | multiSelector
-  range?: any[]
-  // for selector | multiSelector
-  rangeKey?: string
-  // for selector | multiSelector | time
-  value?: number | number[] | string
-  // for time | date
-  start?: string
-  // for time | date
-  end?: string
-  // for date
-  fields?: "year" | "month" | "day"
-  disabled?: boolean
-  name?: string
-}>(), {
-  mode: "selector",
-  disabled: false,
-  range: () => [],
-  value: 0,
-  fields: "day"
-})
+const props = withDefaults(
+  defineProps<{
+    headerText?: string
+    mode: "selector" | "multiSelector" | "time" | "date"
+    // for selector | multiSelector
+    range?: any[]
+    // for selector | multiSelector
+    rangeKey?: string
+    // for selector | multiSelector | time
+    value?: number | number[] | string
+    // for time | date
+    start?: string
+    // for time | date
+    end?: string
+    // for date
+    fields?: "year" | "month" | "day"
+    disabled?: boolean
+    name?: string
+  }>(),
+  {
+    mode: "selector",
+    disabled: false,
+    range: () => [],
+    value: 0,
+    fields: "day"
+  }
+)
 
 let isShow = false
 
-watch(() => [...props.range], () => {
-  updateMultiPickerView({
-    columns: formatData.value,
-    current: props.value
-  })
-})
+watch(
+  () => [...props.range],
+  () => {
+    updateMultiPickerView({
+      columns: formatData.value,
+      current: props.value
+    })
+  }
+)
 
 const dataType = computed(() => {
   if (props.mode === "multiSelector") {
@@ -86,46 +92,66 @@ const formatData = computed(() => {
 const onClick = () => {
   if (props.mode === "time" || props.mode === "date") {
     isShow = true
-    NZJSBridge.invoke<{ value: string }>("showDatePickerView", {
-      start: props.start,
-      end: props.end,
-      value: props.value,
-      mode: props.mode,
-      title: props.headerText
-    }, result => {
-      if (result.data) {
-        result.data.value === "cancel" ? emit("cancel") : emit("change", { value: result.data.value })
+    NZJSBridge.invoke<{ value: string }>(
+      "showDatePickerView",
+      {
+        start: props.start,
+        end: props.end,
+        value: props.value,
+        mode: props.mode,
+        title: props.headerText
+      },
+      result => {
+        if (result.data) {
+          result.data.value === "cancel"
+            ? emit("cancel")
+            : emit("change", { value: result.data.value })
+        }
       }
-    })
-  } if (props.mode === "selector") {
+    )
+  }
+  if (props.mode === "selector") {
     isShow = true
-    NZJSBridge.invoke<{ value: number }>("showPickerView", {
-      columns: formatData.value,
-      title: props.headerText,
-      current: props.value
-    }, result => {
-      isShow = false
-      if (result.data) {
-        result.data.value === -1 ? emit("cancel") : emit("change", { value: result.data.value })
+    NZJSBridge.invoke<{ value: number }>(
+      "showPickerView",
+      {
+        columns: formatData.value,
+        title: props.headerText,
+        current: props.value
+      },
+      result => {
+        isShow = false
+        if (result.data) {
+          result.data.value === -1 ? emit("cancel") : emit("change", { value: result.data.value })
+        }
       }
-    })
+    )
   } else if (props.mode === "multiSelector") {
     isShow = true
-    NZJSBridge.invoke<{ value: number[] | string }>("showMultiPickerView", {
-      columns: formatData.value,
-      title: props.headerText,
-      current: props.value
-    }, result => {
-      isShow = false
-      if (result.data) {
-        result.data.value === "cancel" ? emit("cancel") : emit("change", { value: result.data.value })
+    NZJSBridge.invoke<{ value: number[] | string }>(
+      "showMultiPickerView",
+      {
+        columns: formatData.value,
+        title: props.headerText,
+        current: props.value
+      },
+      result => {
+        isShow = false
+        if (result.data) {
+          result.data.value === "cancel"
+            ? emit("cancel")
+            : emit("change", { value: result.data.value })
+        }
       }
-    })
-    NZJSBridge.subscribe<{ column: number, value: number }>("WEBVIEW_MULTI_PICKER_COLUMN_CHANGE", result => {
-      if (isShow) {
-        emit("columnchange", { column: result.column, value: result.value })
+    )
+    NZJSBridge.subscribe<{ column: number; value: number }>(
+      "WEBVIEW_MULTI_PICKER_COLUMN_CHANGE",
+      result => {
+        if (isShow) {
+          emit("columnchange", { column: result.column, value: result.value })
+        }
       }
-    })
+    )
   }
 }
 
@@ -154,7 +180,6 @@ defineExpose({
   formData,
   resetFormData
 })
-
 </script>
 
 <style>

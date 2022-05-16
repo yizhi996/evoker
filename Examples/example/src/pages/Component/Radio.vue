@@ -4,11 +4,9 @@
     <radio-group class="mt-2.5" @change="onChange">
       <n-cell-group>
         <n-cell v-for="fruit of fruits" :key="fruit.value">
-          <radio
-            class="w-full h-full"
-            :value="fruit.value"
-            :checked="fruit.checked"
-          >{{ fruit.name }}</radio>
+          <radio class="w-full h-full" :value="fruit.value" :checked="fruit.checked">{{
+            fruit.name
+          }}</radio>
         </n-cell>
       </n-cell-group>
     </radio-group>
@@ -17,7 +15,6 @@
 
 <script setup lang="ts">
 import { ref, reactive } from "vue"
-
 
 const fruits = reactive([
   { name: "苹果", value: "apple" },
@@ -29,7 +26,7 @@ const fruits = reactive([
 
 const checked = ref("菠萝")
 
-const onChange = (e) => {
+const onChange = e => {
   const value = e.detail.value
   checked.value = fruits.find(item => item.value === value)!.name
 }

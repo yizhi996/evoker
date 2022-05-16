@@ -56,7 +56,7 @@ const form = ref({})
 
 const columns = ["Apple", "OPPO", "vivo", "Xiaomi", "Others"]
 
-const onSubmit = (e) => {
+const onSubmit = e => {
   const value = e.detail.value
   form.value = value
 }
@@ -65,7 +65,7 @@ const onReset = () => {
   form.value = {}
 }
 
-const onChangePicker = (e) => {
+const onChangePicker = e => {
   const value = e.detail.value
   info.pickerIndex = value
 }

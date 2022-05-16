@@ -25,9 +25,7 @@ type CameraContextTakePhotoSuccessCallback = (
 
 type CameraContextTakePhotoFailCallback = (res: GeneralCallbackResult) => void
 
-type CameraContextTakePhotoCompleteCallback = (
-  res: GeneralCallbackResult
-) => void
+type CameraContextTakePhotoCompleteCallback = (res: GeneralCallbackResult) => void
 
 interface CameraContextStartRecordOptions {
   success?: CameraContextStartRecordSuccessCallback
@@ -35,15 +33,11 @@ interface CameraContextStartRecordOptions {
   complete?: CameraContextStartRecordCompleteCallback
 }
 
-type CameraContextStartRecordSuccessCallback = (
-  res: GeneralCallbackResult
-) => void
+type CameraContextStartRecordSuccessCallback = (res: GeneralCallbackResult) => void
 
 type CameraContextStartRecordFailCallback = (res: GeneralCallbackResult) => void
 
-type CameraContextStartRecordCompleteCallback = (
-  res: GeneralCallbackResult
-) => void
+type CameraContextStartRecordCompleteCallback = (res: GeneralCallbackResult) => void
 
 interface CameraContextStopRecordOptions {
   compressed?: boolean
@@ -63,9 +57,7 @@ type CameraContextStopRecordSuccessCallback = (
 
 type CameraContextStopRecordFailCallback = (res: GeneralCallbackResult) => void
 
-type CameraContextStopRecordCompleteCallback = (
-  res: GeneralCallbackResult
-) => void
+type CameraContextStopRecordCompleteCallback = (res: GeneralCallbackResult) => void
 
 interface CameraContextSetZoomOptions {
   zoom: number
@@ -94,9 +86,9 @@ class CameraContext {
     this.cameraId = cameraId
   }
 
-  takePhoto<
-    T extends CameraContextTakePhotoOptions = CameraContextTakePhotoOptions
-  >(options: T): AsyncReturn<T, CameraContextTakePhotoOptions> {
+  takePhoto<T extends CameraContextTakePhotoOptions = CameraContextTakePhotoOptions>(
+    options: T
+  ): AsyncReturn<T, CameraContextTakePhotoOptions> {
     return wrapperAsyncAPI<T>(options => {
       let quality = options.quality || "normal"
       if (!["low", "normal", "high"].includes(quality)) {
@@ -116,9 +108,9 @@ class CameraContext {
     }, options)
   }
 
-  startRecord<
-    T extends CameraContextStartRecordOptions = CameraContextStartRecordOptions
-  >(options: T): AsyncReturn<T, CameraContextStartRecordOptions> {
+  startRecord<T extends CameraContextStartRecordOptions = CameraContextStartRecordOptions>(
+    options: T
+  ): AsyncReturn<T, CameraContextStartRecordOptions> {
     return wrapperAsyncAPI<T>(options => {
       InnerJSBridge.invoke<SuccessResult<T>>(
         "operateCamera",
@@ -130,9 +122,9 @@ class CameraContext {
     }, options)
   }
 
-  stopRecord<
-    T extends CameraContextStopRecordOptions = CameraContextStopRecordOptions
-  >(options: T): AsyncReturn<T, CameraContextStopRecordOptions> {
+  stopRecord<T extends CameraContextStopRecordOptions = CameraContextStopRecordOptions>(
+    options: T
+  ): AsyncReturn<T, CameraContextStopRecordOptions> {
     return wrapperAsyncAPI<T>(options => {
       InnerJSBridge.invoke<SuccessResult<T>>(
         "operateCamera",

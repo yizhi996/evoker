@@ -6,15 +6,13 @@
         :range="sourceType.range"
         :value="sourceType.value"
         @change="onChangeSourceType"
-      >{{ sourceType.range[sourceType.value] }}</picker>
+        >{{ sourceType.range[sourceType.value] }}</picker
+      >
     </n-cell>
     <n-cell title="摄像头">
-      <picker
-        class="w-full"
-        :range="camera.range"
-        :value="camera.value"
-        @change="onChangeCamera"
-      >{{ camera.range[camera.value] }}</picker>
+      <picker class="w-full" :range="camera.range" :value="camera.value" @change="onChangeCamera">{{
+        camera.range[camera.value]
+      }}</picker>
     </n-cell>
     <n-cell title="拍摄长度">
       <picker
@@ -22,7 +20,8 @@
         :range="duration.range"
         :value="duration.value"
         @change="onChangeDuration"
-      >{{ duration.range[duration.value] }}</picker>
+        >{{ duration.range[duration.value] }}</picker
+      >
     </n-cell>
   </n-cell-group>
   <button type="primary" @click="onChoose">选择</button>
@@ -41,7 +40,7 @@ const sourceType = reactive({
   value: 2
 })
 
-const onChangeSourceType = (e) => {
+const onChangeSourceType = e => {
   const value = e.detail.value
   sourceType.value = value
 }
@@ -51,7 +50,7 @@ const camera = reactive({
   value: 2
 })
 
-const onChangeCamera = (e) => {
+const onChangeCamera = e => {
   const value = e.detail.value
   camera.value = value
 }
@@ -69,7 +68,7 @@ const duration = reactive({
   value: 59
 })
 
-const onChangeDuration = (e) => {
+const onChangeDuration = e => {
   const value = e.detail.value
   duration.value = value
 }
@@ -79,9 +78,8 @@ const onChoose = async () => {
     maxDuration: parseInt(duration.range[duration.value]),
     camera: [["front"], ["back"], ["back"]][camera.value],
     sourceType: [["camera"], ["album"], ["camera", "album"]][sourceType.value],
-    compressed: false,
+    compressed: false
   })
   videoSrc.value = res.tempFilePath
 }
-
 </script>

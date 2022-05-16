@@ -21,31 +21,34 @@ import { getUserInfo } from "@nzoth/bridge"
 
 const emit = defineEmits(["getuserinfo"])
 
-const props = withDefaults(defineProps<{
-  type?: "primary" | "default" | "warn" | "success" | "danger"
-  size?: "default" | "mini" | "large" | "small"
-  color?: string
-  plain?: boolean
-  disabled?: boolean
-  loading?: boolean
-  hoverClass?: string
-  hoverStopPropagation?: boolean
-  hoverStartTime?: number
-  hoverStayTime?: number,
-  formType?: "submit" | "reset"
-  openType?: "getUserInfo" | "openSetting"
-}>(), {
-  type: "default",
-  size: "default",
-  color: "",
-  plain: false,
-  disabled: false,
-  loading: false,
-  hoverClass: "nz-button--hover",
-  hoverStopPropagation: false,
-  hoverStartTime: 20,
-  hoverStayTime: 70
-})
+const props = withDefaults(
+  defineProps<{
+    type?: "primary" | "default" | "warn" | "success" | "danger"
+    size?: "default" | "mini" | "large" | "small"
+    color?: string
+    plain?: boolean
+    disabled?: boolean
+    loading?: boolean
+    hoverClass?: string
+    hoverStopPropagation?: boolean
+    hoverStartTime?: number
+    hoverStayTime?: number
+    formType?: "submit" | "reset"
+    openType?: "getUserInfo" | "openSetting"
+  }>(),
+  {
+    type: "default",
+    size: "default",
+    color: "",
+    plain: false,
+    disabled: false,
+    loading: false,
+    hoverClass: "nz-button--hover",
+    hoverStopPropagation: false,
+    hoverStartTime: 20,
+    hoverStayTime: 70
+  }
+)
 
 const buttonRef = ref<HTMLElement>()
 
@@ -104,7 +107,8 @@ const onTapOpenType = () => {
         withCredentials: true,
         success: res => {
           emit("getuserinfo", res)
-        }, fail: res => {
+        },
+        fail: res => {
           emit("getuserinfo", res)
         }
       })
@@ -122,31 +126,39 @@ const builtInClick = () => {
 
 let builtInClickEvent: Function
 
-watch(() => props.formType, (formType) => {
-  builtInClickEvent && builtInClickEvent()
-  if (formType === "submit" || formType === "reset") {
-    nextTick(() => {
-      if (buttonRef.value) {
-        builtInClickEvent = addClickEvent(buttonRef.value, builtInClick)
-      }
-    })
+watch(
+  () => props.formType,
+  formType => {
+    builtInClickEvent && builtInClickEvent()
+    if (formType === "submit" || formType === "reset") {
+      nextTick(() => {
+        if (buttonRef.value) {
+          builtInClickEvent = addClickEvent(buttonRef.value, builtInClick)
+        }
+      })
+    }
+  },
+  {
+    immediate: true
   }
-}, {
-  immediate: true
-})
+)
 
-watch(() => props.openType, (openType) => {
-  builtInClickEvent && builtInClickEvent()
-  if (openType && ["getUserInfo", "openSetting"].includes(openType)) {
-    nextTick(() => {
-      if (buttonRef.value) {
-        builtInClickEvent = addClickEvent(buttonRef.value, builtInClick)
-      }
-    })
+watch(
+  () => props.openType,
+  openType => {
+    builtInClickEvent && builtInClickEvent()
+    if (openType && ["getUserInfo", "openSetting"].includes(openType)) {
+      nextTick(() => {
+        if (buttonRef.value) {
+          builtInClickEvent = addClickEvent(buttonRef.value, builtInClick)
+        }
+      })
+    }
+  },
+  {
+    immediate: true
   }
-}, {
-  immediate: true
-})
+)
 
 defineExpose({
   onTapLabel: () => {
@@ -161,7 +173,6 @@ defineExpose({
     }
   }
 })
-
 </script>
 
 <style lang="less">

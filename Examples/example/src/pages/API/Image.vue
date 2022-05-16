@@ -6,7 +6,8 @@
         :range="sourceType.range"
         :value="sourceType.value"
         @change="onChangeSourceType"
-      >{{ sourceType.range[sourceType.value] }}</picker>
+        >{{ sourceType.range[sourceType.value] }}</picker
+      >
     </n-cell>
     <n-cell title="图片质量">
       <picker
@@ -14,15 +15,13 @@
         :range="sizeType.range"
         :value="sizeType.value"
         @change="onChangeSizeType"
-      >{{ sizeType.range[sizeType.value] }}</picker>
+        >{{ sizeType.range[sizeType.value] }}</picker
+      >
     </n-cell>
     <n-cell title="数量限制">
-      <picker
-        class="w-full"
-        :range="limit.range"
-        :value="limit.value"
-        @change="onChangeLimit"
-      >{{ limit.range[limit.value] }}</picker>
+      <picker class="w-full" :range="limit.range" :value="limit.value" @change="onChangeLimit">{{
+        limit.range[limit.value]
+      }}</picker>
     </n-cell>
   </n-cell-group>
   <button type="primary" @click="onChoose">选择</button>
@@ -48,7 +47,7 @@ const sourceType = reactive({
   value: 2
 })
 
-const onChangeSourceType = (e) => {
+const onChangeSourceType = e => {
   const value = e.detail.value
   sourceType.value = value
 }
@@ -58,7 +57,7 @@ const sizeType = reactive({
   value: 2
 })
 
-const onChangeSizeType = (e) => {
+const onChangeSizeType = e => {
   const value = e.detail.value
   sizeType.value = value
 }
@@ -68,7 +67,7 @@ const limit = reactive({
   value: 8
 })
 
-const onChangeLimit = (e) => {
+const onChangeLimit = e => {
   const value = e.detail.value
   limit.value = value
 }
@@ -77,7 +76,7 @@ const onChoose = async () => {
   const res = await nz.chooseImage({
     count: parseInt(limit.range[limit.value]),
     sizeType: [["compressed"], ["original"], ["original", "compressed"]][sizeType.value],
-    sourceType: [["camera"], ["album"], ["camera", "album"]][sourceType.value],
+    sourceType: [["camera"], ["album"], ["camera", "album"]][sourceType.value]
   })
   images.value = res.tempFilePaths
 }
@@ -85,5 +84,4 @@ const onChoose = async () => {
 const onPreview = (idx: number) => {
   nz.previewImage({ urls: images.value, current: idx })
 }
-
 </script>

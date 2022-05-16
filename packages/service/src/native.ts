@@ -4,10 +4,7 @@ const nativeTimer = globalThis.__NZAppServiceNativeSDK.timer
 
 if (nativeTimer) {
   /** @ts-ignore */
-  globalThis.setTimeout = (
-    callback: (args: void) => void,
-    ms?: number
-  ): NodeJS.Timer => {
+  globalThis.setTimeout = (callback: (args: void) => void, ms?: number): NodeJS.Timer => {
     if (!isFunction(callback)) {
       throw new TypeError("setTimeout require a function as first argument")
     }
@@ -19,10 +16,7 @@ if (nativeTimer) {
   }
 
   /** @ts-ignore */
-  globalThis.setInterval = (
-    callback: (args: void) => void,
-    ms?: number
-  ): NodeJS.Timer => {
+  globalThis.setInterval = (callback: (args: void) => void, ms?: number): NodeJS.Timer => {
     if (!isFunction(callback)) {
       throw new TypeError("setInterval require a function as first argument")
     }

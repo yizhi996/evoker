@@ -13,10 +13,7 @@ type ComponentInstance = ComponentInternalInstance & {
   provides: Record<string | symbol, unknown>
 }
 
-function getParent<T>(
-  container: HTMLElement,
-  key: InjectionKey<ParentProvide<T>>
-) {
+function getParent<T>(container: HTMLElement, key: InjectionKey<ParentProvide<T>>) {
   let parentInstance: ComponentInstance | undefined
   let parent: any = container
   while ((parent = parent && parent.parentNode)) {
@@ -34,10 +31,7 @@ function getParent<T>(
   return parentInstance
 }
 
-function inject<T>(
-  container: HTMLElement,
-  key: InjectionKey<ParentProvide<T>>
-) {
+function inject<T>(container: HTMLElement, key: InjectionKey<ParentProvide<T>>) {
   const parent = getParent(container, key)
   if (parent) {
     return parent.provides[key as string | symbol] as ParentProvide<T>

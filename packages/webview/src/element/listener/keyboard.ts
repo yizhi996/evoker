@@ -45,9 +45,7 @@ export default function useKeyboard(inputId: number) {
     return createListener(SubscribeKeys.ON_CONFIRM, callback)
   }
 
-  function onKeyboardHeightChange(
-    callback: (data: { height: number; duration: number }) => void
-  ) {
+  function onKeyboardHeightChange(callback: (data: { height: number; duration: number }) => void) {
     return createListener(SubscribeKeys.HEIGHT_CHANGE, callback)
   }
 

@@ -200,17 +200,15 @@ interface ShowActionSheetSuccessCallbackResult {
   tapIndex: number
 }
 
-type ShowActionSheetSuccessCallback = (
-  res: ShowActionSheetSuccessCallbackResult
-) => void
+type ShowActionSheetSuccessCallback = (res: ShowActionSheetSuccessCallbackResult) => void
 
 type ShowActionSheetFailCallback = (res: GeneralCallbackResult) => void
 
 type ShowActionSheetCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function showActionSheet<
-  T extends ShowActionSheetOptions = ShowActionSheetOptions
->(options: T): AsyncReturn<T, ShowActionSheetOptions> {
+export function showActionSheet<T extends ShowActionSheetOptions = ShowActionSheetOptions>(
+  options: T
+): AsyncReturn<T, ShowActionSheetOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SHOW_ACTION_SHEET
     const finalOptions = extend(

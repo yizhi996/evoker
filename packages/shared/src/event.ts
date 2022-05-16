@@ -19,10 +19,7 @@ export function addEvent<T = unknown>(type: string, callback: Callback<T>) {
   return id
 }
 
-export function removeEvent<T = unknown>(
-  type: string,
-  callback: number | Callback<T>
-) {
+export function removeEvent<T = unknown>(type: string, callback: number | Callback<T>) {
   if (events[type]) {
     let idx = -1
     if (isNumber(callback)) {

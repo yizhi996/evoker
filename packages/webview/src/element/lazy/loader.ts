@@ -48,17 +48,13 @@ export function loadImage(src: string): Promise<ImageLoadResult> {
     } else if (/^\s*data:image\//.test(src)) {
       image.src = src
     } else {
-      NZJSBridge.invoke<{ src: string }>(
-        "getLocalImage",
-        { path: src },
-        result => {
-          if (result.errMsg) {
-            reject(result.errMsg)
-          } else {
-            image.src = result.data!.src
-          }
+      NZJSBridge.invoke<{ src: string }>("getLocalImage", { path: src }, result => {
+        if (result.errMsg) {
+          reject(result.errMsg)
+        } else {
+          image.src = result.data!.src
         }
-      )
+      })
     }
   })
 }

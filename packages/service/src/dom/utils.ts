@@ -19,13 +19,7 @@ const enum Index {
 }
 
 export function minifyNode(
-  node:
-    | NZothNode
-    | NZothElement
-    | NZothHTMLElement
-    | NZothComment
-    | NZothText
-    | NZothSVGElement
+  node: NZothNode | NZothElement | NZothHTMLElement | NZothComment | NZothText | NZothSVGElement
 ) {
   const miniNode: any[] = [node.nodeId, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 

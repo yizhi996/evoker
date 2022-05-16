@@ -61,10 +61,6 @@ export function createMessage(header: string, data: any) {
   return Buffer.concat([result, body])
 }
 
-export function createFileMessage(
-  appId: string,
-  packageName: string,
-  data: Buffer
-) {
+export function createFileMessage(appId: string, packageName: string, data: Buffer) {
   return createMessage(`${appId}---${packageName}`, data)
 }

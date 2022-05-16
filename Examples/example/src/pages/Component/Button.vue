@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, onUnmounted } from 'vue'
+import { onMounted, onBeforeUnmount, onUnmounted } from "vue"
 
 onMounted(() => {
   console.log("onMounted")

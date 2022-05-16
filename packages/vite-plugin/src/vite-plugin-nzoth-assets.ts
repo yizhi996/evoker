@@ -57,8 +57,7 @@ const urlRE = /(\?|&)url(?:&|$)/
 const queryRE = /\?.*$/s
 const hashRE = /#.*$/s
 
-const cleanUrl = (url: string): string =>
-  url.replace(hashRE, "").replace(queryRE, "")
+const cleanUrl = (url: string): string => url.replace(hashRE, "").replace(queryRE, "")
 
 const isWindows = os.platform() === "win32"
 
@@ -95,11 +94,7 @@ function emitTabBarIcon(iconPath: string, pluginContext: PluginContext) {
   }
 }
 
-function fileToUrl(
-  id: string,
-  config: ResolvedConfig,
-  pluginContext: PluginContext
-) {
+function fileToUrl(id: string, config: ResolvedConfig, pluginContext: PluginContext) {
   let url = cache.get(id)
   if (url) {
     return url

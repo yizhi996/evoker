@@ -328,9 +328,7 @@ function useAudio(audioId: number) {
     onWaiting: (callback: () => void) => {
       return createListener(Events.ON_WAITING, callback)
     },
-    onError: (
-      callback: (res: InnerAudioContextErrorCallbackResult) => void
-    ) => {
+    onError: (callback: (res: InnerAudioContextErrorCallbackResult) => void) => {
       return createListener(Events.ON_ERROR, callback)
     },
     onSeeking: (callback: () => void) => {

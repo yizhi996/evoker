@@ -6,7 +6,8 @@
         v-model:x="position.x"
         v-model:y="position.y"
         @change="getNodeInfo"
-      >Drag</movable-view>
+        >Drag</movable-view
+      >
     </movable-area>
     <div class="flex flex-col mt-5 w-1/2">
       <div v-for="(value, name) in rect" :key="name" class="flex justify-between">
@@ -19,7 +20,7 @@
 
 <script setup lang="ts">
 import { reactive } from "vue"
-import { usePage } from 'nzoth'
+import { usePage } from "nzoth"
 
 const { onReady } = usePage()
 
@@ -33,7 +34,8 @@ onReady(() => {
 
 const getNodeInfo = () => {
   const query = nz.createSelectorQuery()
-  query.select(".target")
+  query
+    .select(".target")
     .boundingClientRect(res => {
       rect.left = res.left
       rect.right = res.right
@@ -41,7 +43,7 @@ const getNodeInfo = () => {
       rect.bottom = res.bottom
       rect.width = res.width
       rect.height = res.height
-    }).exec()
+    })
+    .exec()
 }
-
 </script>

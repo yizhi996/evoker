@@ -48,12 +48,12 @@ import { ref, reactive } from "vue"
 const fruits = reactive([
   { name: "苹果", value: "apple" },
   { name: "香蕉", value: "banana" },
-  { name: "菠萝", value: "pineapple", checked: true },
+  { name: "菠萝", value: "pineapple", checked: true }
 ])
 
 const checked1 = ref("菠萝")
 
-const onChangeCheckbox = (e) => {
+const onChangeCheckbox = e => {
   const value = e.detail.value
   let res: string[] = []
   value.forEach(x => {
@@ -67,7 +67,7 @@ const onChangeCheckbox = (e) => {
 
 const checked2 = ref("菠萝")
 
-const onChangeRadio = (e) => {
+const onChangeRadio = e => {
   const value = e.detail.value
   checked2.value = fruits.find(item => item.value === value)!.name
 }

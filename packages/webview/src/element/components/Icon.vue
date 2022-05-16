@@ -24,18 +24,20 @@ type IconType =
   | "circle"
   | "info-circle"
 
-const props = withDefaults(defineProps<{
-  type: IconType
-  size?: number | string
-  color?: string
-}>(), {
-  size: 23
-})
+const props = withDefaults(
+  defineProps<{
+    type: IconType
+    size?: number | string
+    color?: string
+  }>(),
+  {
+    size: 23
+  }
+)
 
 const iconSize = computed(() => {
   return unitToPx(props.size) + "px"
 })
-
 </script>
 
 <style lang="less">

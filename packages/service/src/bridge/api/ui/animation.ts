@@ -287,8 +287,7 @@ class Animation {
       transformOrigin: options.transformOrigin || this.option.transformOrigin,
       transition: {
         duration: options.duration ?? this.option.transition.duration,
-        timingFunction:
-          options.timingFunction || this.option.transition.timingFunction,
+        timingFunction: options.timingFunction || this.option.transition.timingFunction,
         delay: options.delay ?? this.option.transition.delay
       }
     }

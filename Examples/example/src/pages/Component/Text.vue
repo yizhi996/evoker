@@ -1,5 +1,5 @@
 <template>
-  <div class="m-5 bg-white rounded-sm shadow-sm p-3" style="min-height: 200px;">
+  <div class="m-5 bg-white rounded-sm shadow-sm p-3" style="min-height: 200px">
     <span class="whitespace-pre-line" v-for="text of texts" :key="text">{{ text }}</span>
   </div>
   <button type="primary" @click="add" :disabled="!canAdd">add line</button>

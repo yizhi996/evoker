@@ -22,12 +22,7 @@ export const enum TouchEventType {
   CANCEL = "touchcancel"
 }
 
-export const touchEvents = [
-  "touchstart",
-  "touchmove",
-  "touchend",
-  "touchcancel"
-]
+export const touchEvents = ["touchstart", "touchmove", "touchend", "touchcancel"]
 
 export const tapEvents = ["click", "longpress"]
 
@@ -65,10 +60,7 @@ export function addTouchEvent(
   )
 }
 
-export function addClickEvent(
-  el: any,
-  onClick?: (ev: TouchEvent, isLongPress: boolean) => void
-) {
+export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: boolean) => void) {
   const listenerOptions: Record<string, NZothEventListenerOptions> =
     el.__listenerOptions || (el.__listenerOptions = {})
 
@@ -131,9 +123,7 @@ export function addClickEvent(
       const isLongPress = ev.timeStamp - touchStartTimestamp > 350
       onClick && onClick(ev, isLongPress)
 
-      const listener = isLongPress
-        ? listenerOptions["longpress"]
-        : listenerOptions["click"]
+      const listener = isLongPress ? listenerOptions["longpress"] : listenerOptions["click"]
       if (listener && listener.modifiers) {
         if (listener.modifiers.includes("stop")) {
           ev.stopPropagation()
@@ -197,19 +187,14 @@ export function addTapEvent(
   }
 
   el.__touchEvent = addClickEvent(el, (ev, isLongPress) => {
-    const type =
-      listenerOptions["longpress"] && isLongPress ? "longpress" : "click"
+    const type = listenerOptions["longpress"] && isLongPress ? "longpress" : "click"
     const event = createCustomTouchEvent(el, ev, type)
     dispatchEvent(nodeId, { type, args: [event] })
   })
   return el.__touchEvent as () => void
 }
 
-function createCustomTouchEvent(
-  currentTarget: HTMLElement,
-  ev: TouchEvent,
-  type: string
-) {
+function createCustomTouchEvent(currentTarget: HTMLElement, ev: TouchEvent, type: string) {
   const target = ev.target as HTMLElement
 
   const changedTouches: NZTouch[] = []

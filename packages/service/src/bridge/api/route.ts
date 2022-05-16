@@ -132,29 +132,21 @@ type NavigateBackFailCallback = (res: GeneralCallbackResult) => void
 
 type NavigateBackCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function navigateBack<
-  T extends NavigateBackOptions = NavigateBackOptions
->(options: T): AsyncReturn<T, NavigateBackOptions> {
+export function navigateBack<T extends NavigateBackOptions = NavigateBackOptions>(
+  options: T
+): AsyncReturn<T, NavigateBackOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.NAVIGATE_BACK
     if (innerAppData.routerLock) {
-      invokeFailure(
-        event,
-        options,
-        "防止重复多次打开页面，需要在新页面打开完成后才能调用。"
-      )
+      invokeFailure(event, options, "防止重复多次打开页面，需要在新页面打开完成后才能调用。")
       return
     }
 
     innerAppData.routerLock = true
-    InnerJSBridge.invoke<SuccessResult<T>>(
-      event,
-      { delta: options.delta || 1 },
-      result => {
-        innerAppData.routerLock = false
-        invokeCallback(event, options, result)
-      }
-    )
+    InnerJSBridge.invoke<SuccessResult<T>>(event, { delta: options.delta || 1 }, result => {
+      innerAppData.routerLock = false
+      invokeCallback(event, options, result)
+    })
   }, options)
 }
 

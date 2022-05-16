@@ -33,9 +33,7 @@ type RSAFailCallback = (res: GeneralCallbackResult) => void
 
 type RSACompleteCallback = (res: GeneralCallbackResult) => void
 
-export function rsa<T extends RSAOptions = RSAOptions>(
-  options: T
-): AsyncReturn<T, RSAOptions> {
+export function rsa<T extends RSAOptions = RSAOptions>(options: T): AsyncReturn<T, RSAOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.RSA
     invoke<SuccessResult<T>>(event, options, result => {
@@ -57,16 +55,12 @@ type GetRandomValuesFailCallback = (res: GeneralCallbackResult) => void
 
 type GetRandomValuesCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function getRandomValues<
-  T extends GetRandomValuesOptions = GetRandomValuesOptions
->(options: T): AsyncReturn<T, GetRandomValuesOptions> {
+export function getRandomValues<T extends GetRandomValuesOptions = GetRandomValuesOptions>(
+  options: T
+): AsyncReturn<T, GetRandomValuesOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.GET_RANDOM_VALUES
-    if (
-      !isNumber(options.length) ||
-      options.length <= 0 ||
-      options.length > 1048576
-    ) {
+    if (!isNumber(options.length) || options.length <= 0 || options.length > 1048576) {
       invokeFailure(event, options, "invalid length")
       return
     }

@@ -6,7 +6,7 @@
       style="position: absolute"
       :id="tongcengKey"
     >
-      <div ref="innerRef" style="width: 100%;" :style="height"></div>
+      <div ref="innerRef" style="width: 100%" :style="height"></div>
     </div>
   </nz-map>
 </template>
@@ -17,93 +17,142 @@ import useNative from "../use/useNative"
 import useMap from "../listener/map"
 import { NZJSBridge } from "../../bridge"
 
-const props = withDefaults(defineProps<{
-  longitude: number
-  latitude: number
-  scale?: number
-  minScale?: number
-  maxScale?: number
-  showLocation?: boolean
-  showCompass?: boolean
-  showScale?: boolean
-  enableZoom?: boolean
-  enableScroll?: boolean
-  enableRotate?: boolean
-  enableSatellite?: boolean
-  enableTraffic?: boolean
-  enableBuilding?: boolean
-  enable3D?: boolean
-}>(), {
-  scale: 16.0,
-  minScale: 3.0,
-  maxScale: 20.0,
-  showLocation: false,
-  showCompass: false,
-  showScale: false,
-  enableZoom: false,
-  enableScroll: false,
-  enableRotate: false,
-  enableSatellite: false,
-  enableTraffic: false,
-  enableBuilding: false,
-  enable3D: false
-})
+const props = withDefaults(
+  defineProps<{
+    longitude: number
+    latitude: number
+    scale?: number
+    minScale?: number
+    maxScale?: number
+    showLocation?: boolean
+    showCompass?: boolean
+    showScale?: boolean
+    enableZoom?: boolean
+    enableScroll?: boolean
+    enableRotate?: boolean
+    enableSatellite?: boolean
+    enableTraffic?: boolean
+    enableBuilding?: boolean
+    enable3D?: boolean
+  }>(),
+  {
+    scale: 16.0,
+    minScale: 3.0,
+    maxScale: 20.0,
+    showLocation: false,
+    showCompass: false,
+    showScale: false,
+    enableZoom: false,
+    enableScroll: false,
+    enableRotate: false,
+    enableSatellite: false,
+    enableTraffic: false,
+    enableBuilding: false,
+    enable3D: false
+  }
+)
 
-const { tongcengKey, nativeId: mapId, containerRef, innerRef, height, insertContainer } = useNative()
+const {
+  tongcengKey,
+  nativeId: mapId,
+  containerRef,
+  innerRef,
+  height,
+  insertContainer
+} = useNative()
 
-const { } = useMap(mapId)
+const {} = useMap(mapId)
 
-watch(() => props.scale, (newValue) => {
-  update({ scale: newValue })
-})
+watch(
+  () => props.scale,
+  newValue => {
+    update({ scale: newValue })
+  }
+)
 
-watch(() => props.minScale, (newValue) => {
-  update({ minScale: newValue })
-})
+watch(
+  () => props.minScale,
+  newValue => {
+    update({ minScale: newValue })
+  }
+)
 
-watch(() => props.maxScale, (newValue) => {
-  update({ maxScale: newValue })
-})
+watch(
+  () => props.maxScale,
+  newValue => {
+    update({ maxScale: newValue })
+  }
+)
 
-watch(() => props.showLocation, (newValue) => {
-  update({ showLocation: newValue })
-})
+watch(
+  () => props.showLocation,
+  newValue => {
+    update({ showLocation: newValue })
+  }
+)
 
-watch(() => props.showCompass, (newValue) => {
-  update({ showCompass: newValue })
-})
+watch(
+  () => props.showCompass,
+  newValue => {
+    update({ showCompass: newValue })
+  }
+)
 
-watch(() => props.showScale, (newValue) => {
-  update({ showScale: newValue })
-})
+watch(
+  () => props.showScale,
+  newValue => {
+    update({ showScale: newValue })
+  }
+)
 
-watch(() => props.enableZoom, (newValue) => {
-  update({ enableZoom: newValue })
-})
+watch(
+  () => props.enableZoom,
+  newValue => {
+    update({ enableZoom: newValue })
+  }
+)
 
-watch(() => props.enableScroll, (newValue) => {
-  update({ enableScroll: newValue })
-})
+watch(
+  () => props.enableScroll,
+  newValue => {
+    update({ enableScroll: newValue })
+  }
+)
 
-watch(() => props.enableRotate, (newValue) => {
-  update({ enableRotate: newValue })
-})
+watch(
+  () => props.enableRotate,
+  newValue => {
+    update({ enableRotate: newValue })
+  }
+)
 
-watch(() => props.enableSatellite, (newValue) => {
-  update({ enableSatellite: newValue })
-})
+watch(
+  () => props.enableSatellite,
+  newValue => {
+    update({ enableSatellite: newValue })
+  }
+)
 
-watch(() => props.enableTraffic, (newValue) => {
-  update({ enableTraffic: newValue })
-})
+watch(
+  () => props.enableTraffic,
+  newValue => {
+    update({ enableTraffic: newValue })
+  }
+)
 
-watch(() => props.enableBuilding, (newValue) => {
-  update({ enableBuilding: newValue })
-})
+watch(
+  () => props.enableBuilding,
+  newValue => {
+    update({ enableBuilding: newValue })
+  }
+)
 
-watch(() => props.enable3D, (newValue) => {
-  update({ enable3D: newValue })
-})
+watch(
+  () => props.enable3D,
+  newValue => {
+    update({ enable3D: newValue })
+  }
+)
 
 onMounted(() => {
   setTimeout(() => {
@@ -112,7 +161,7 @@ onMounted(() => {
 })
 
 const insert = () => {
-  insertContainer((success) => {
+  insertContainer(success => {
     if (success) {
       NZJSBridge.invoke("insertMap", {
         parentId: tongcengKey,
@@ -140,7 +189,6 @@ const insert = () => {
 const update = (params: Record<string, any>) => {
   NZJSBridge.invoke("updateMap", params)
 }
-
 </script>
 
 <style>

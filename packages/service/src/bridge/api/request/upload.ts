@@ -1,10 +1,5 @@
 import { InnerJSBridge } from "../../bridge"
-import {
-  SuccessResult,
-  GeneralCallbackResult,
-  invokeFailure,
-  invokeSuccess
-} from "@nzoth/bridge"
+import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@nzoth/bridge"
 import { isString, isNumber } from "@nzoth/shared"
 import { Events, MAX_TIMEOUT, headerValueToString } from "./util"
 import { env } from "../../index"

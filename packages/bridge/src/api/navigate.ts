@@ -27,9 +27,7 @@ type NavigateToMiniProgramSuccessCallback = (res: GeneralCallbackResult) => void
 
 type NavigateToMiniProgramFailCallback = (res: GeneralCallbackResult) => void
 
-type NavigateToMiniProgramCompleteCallback = (
-  res: GeneralCallbackResult
-) => void
+type NavigateToMiniProgramCompleteCallback = (res: GeneralCallbackResult) => void
 
 export function navigateToMiniProgram<
   T extends NavigateToMiniProgramOptions = NavigateToMiniProgramOptions
@@ -50,17 +48,14 @@ export function navigateToMiniProgram<
     }
 
     if (!["release", "trial", "develop"].includes(finalOptions.envVersion!)) {
-      invokeFailure(
-        event,
-        finalOptions,
-        "options envVersion required release, trial or develop"
-      )
+      invokeFailure(event, finalOptions, "options envVersion required release, trial or develop")
       return
     }
 
     if (finalOptions.extraData) {
-      ;(finalOptions as T & { extraDataString: string }).extraDataString =
-        JSON.stringify(finalOptions.extraData)
+      ;(finalOptions as T & { extraDataString: string }).extraDataString = JSON.stringify(
+        finalOptions.extraData
+      )
       finalOptions.extraData = undefined
     }
 

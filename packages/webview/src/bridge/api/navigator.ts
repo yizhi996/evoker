@@ -24,10 +24,7 @@ export function exit() {
   invokeAppServiceMethod("exit", {})
 }
 
-export function navigateToMiniProgram(options: {
-  appId: string
-  path?: string
-}) {
+export function navigateToMiniProgram(options: { appId: string; path?: string }) {
   invokeAppServiceMethod("navigateToMiniProgram", {
     appId: options.appId,
     path: options.path

@@ -36,8 +36,7 @@ body {
   }
 
   @supports not (
-    (bottom: constant(safe-area-inset-bottom)) or
-      (bottom: env(safe-area-inset-bottom))
+    (bottom: constant(safe-area-inset-bottom)) or (bottom: env(safe-area-inset-bottom))
   ) {
     @media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
       --safe-area-inset-top: 44px;

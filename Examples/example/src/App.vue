@@ -14,7 +14,6 @@ onShow(options => {
 onHide(() => {
   console.log("APP onHide")
 })
-
 </script>
 
 <style>

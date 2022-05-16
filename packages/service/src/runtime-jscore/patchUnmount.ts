@@ -55,17 +55,15 @@ export function unmount(
   parentComponent: ComponentInternalInstance | null,
   optimized: boolean = false
 ) {
-  const { type, props, children, dynamicChildren, shapeFlag, patchFlag, dirs } =
-    vnode as VNode & { dynamicChildren: VNode[] }
+  const { type, props, children, dynamicChildren, shapeFlag, patchFlag, dirs } = vnode as VNode & {
+    dynamicChildren: VNode[]
+  }
 
   const shouldInvokeDirs = shapeFlag & ShapeFlags.ELEMENT && dirs
   const shouldInvokeVnodeHook = !isAsyncWrapper(vnode)
 
   let vnodeHook: VNodeHook | undefined | null
-  if (
-    shouldInvokeVnodeHook &&
-    (vnodeHook = props && props.onVnodeBeforeUnmount)
-  ) {
+  if (shouldInvokeVnodeHook && (vnodeHook = props && props.onVnodeBeforeUnmount)) {
     invokeVNodeHook(vnodeHook, parentComponent, vnode)
   }
 
@@ -75,15 +73,13 @@ export function unmount(
     if (
       dynamicChildren &&
       // #1153: fast path should not be taken for non-stable (v-for) fragments
-      (type !== Fragment ||
-        (patchFlag > 0 && patchFlag & PatchFlags.STABLE_FRAGMENT))
+      (type !== Fragment || (patchFlag > 0 && patchFlag & PatchFlags.STABLE_FRAGMENT))
     ) {
       // fast path for block nodes: only need to unmount dynamic children.
       unmountChildren(dynamicChildren, parentComponent, true)
     } else if (
       (type === Fragment &&
-        patchFlag &
-          (PatchFlags.KEYED_FRAGMENT | PatchFlags.UNKEYED_FRAGMENT)) ||
+        patchFlag & (PatchFlags.KEYED_FRAGMENT | PatchFlags.UNKEYED_FRAGMENT)) ||
       (!optimized && shapeFlag & ShapeFlags.ARRAY_CHILDREN)
     ) {
       unmountChildren(children as VNode[], parentComponent)
@@ -112,12 +108,11 @@ export function unmountChildren(
 }
 
 export function unmountComponent(instance: ComponentInternalInstance) {
-  const { bum, scope, update, subTree, um } =
-    instance as ComponentInternalInstance & {
-      um: LifecycleHook<Function>
-      bum: LifecycleHook<Function>
-      scope: EffectScope
-    }
+  const { bum, scope, update, subTree, um } = instance as ComponentInternalInstance & {
+    um: LifecycleHook<Function>
+    bum: LifecycleHook<Function>
+    scope: EffectScope
+  }
 
   // beforeUnmount hook
   if (bum) {
@@ -150,8 +145,5 @@ export function invokeVNodeHook(
   vnode: VNode,
   prevVNode: VNode | null = null
 ) {
-  callWithAsyncErrorHandling(hook, instance, ErrorCodes.VNODE_HOOK, [
-    vnode,
-    prevVNode
-  ])
+  callWithAsyncErrorHandling(hook, instance, ErrorCodes.VNODE_HOOK, [vnode, prevVNode])
 }

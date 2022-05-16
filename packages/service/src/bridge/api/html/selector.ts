@@ -68,12 +68,7 @@ class SelectorQuery {
   }
 
   /** @internal */
-  push(
-    selector: string,
-    single: boolean,
-    fields: NodeFields,
-    callback?: (object: any) => void
-  ) {
+  push(selector: string, single: boolean, fields: NodeFields, callback?: (object: any) => void) {
     this.queue.push({
       selector,
       single,

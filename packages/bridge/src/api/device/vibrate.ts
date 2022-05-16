@@ -25,9 +25,9 @@ type VibrateShortFailCallback = (res: GeneralCallbackResult) => void
 
 type VibrateShortCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function vibrateShort<
-  T extends VibrateShortOptions = VibrateShortOptions
->(options: T): AsyncReturn<T, VibrateShortOptions> {
+export function vibrateShort<T extends VibrateShortOptions = VibrateShortOptions>(
+  options: T
+): AsyncReturn<T, VibrateShortOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SHORT
     invoke<SuccessResult<T>>(event, { type: options.type }, result => {

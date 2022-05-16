@@ -14,7 +14,12 @@
     <n-topic>Account: {{ account }}</n-topic>
     <input class="w-full h-12 bg-white px-2.5" v-model:value="account" placeholder="请输入" />
     <n-topic>Password: {{ password }}</n-topic>
-    <input class="w-full h-12 bg-white px-2.5" v-model:value="password" password placeholder="请输入" />
+    <input
+      class="w-full h-12 bg-white px-2.5"
+      v-model:value="password"
+      password
+      placeholder="请输入"
+    />
     <n-topic>Number Type</n-topic>
     <input class="w-full h-12 bg-white px-2.5" type="number" placeholder="请输入" />
     <n-topic>Decimal Type</n-topic>
@@ -42,5 +47,4 @@ const onFocus = () => {
 const onBlur = () => {
   focus.value = false
 }
-
 </script>

@@ -1,12 +1,6 @@
 import { InnerJSBridge } from "./bridge"
 import type { InvokeCallback } from "@nzoth/bridge"
-import {
-  navigateTo,
-  navigateBack,
-  redirectTo,
-  reLaunch,
-  switchTab
-} from "./api/route"
+import { navigateTo, navigateBack, redirectTo, reLaunch, switchTab } from "./api/route"
 import { getCurrentWebViewId } from "../app"
 
 const enum Events {
@@ -40,17 +34,14 @@ export function invokeWebViewMethod<T = unknown>(
   }
 }
 
-InnerJSBridge.subscribe<{ callbackId: number; result: any }>(
-  Events.CALLBACL_WEB_VIEW,
-  message => {
-    const { callbackId, result } = message
-    const callback = callbacks.get(callbackId)
-    if (callback) {
-      callback(result)
-      callbacks.delete(callbackId)
-    }
+InnerJSBridge.subscribe<{ callbackId: number; result: any }>(Events.CALLBACL_WEB_VIEW, message => {
+  const { callbackId, result } = message
+  const callback = callbacks.get(callbackId)
+  if (callback) {
+    callback(result)
+    callbacks.delete(callbackId)
   }
-)
+})
 
 const methods: Record<string, Function> = {
   navigateTo,

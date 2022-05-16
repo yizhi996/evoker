@@ -12,33 +12,45 @@ import { getImageModeStyleCssText } from "../utils/style"
 
 const emit = defineEmits(["load", "error"])
 
-const props = withDefaults(defineProps<{
-  src: string,
-  lazyLoad?: boolean
-  mode?: ImageMode
-  webp?: boolean
-}>(), {
-  lazyLoad: false,
-  mode: "scaleToFill",
-  webp: false
-})
+const props = withDefaults(
+  defineProps<{
+    src: string
+    lazyLoad?: boolean
+    mode?: ImageMode
+    webp?: boolean
+  }>(),
+  {
+    lazyLoad: false,
+    mode: "scaleToFill",
+    webp: false
+  }
+)
 
 const containerRef = ref<HTMLElement>()
 const imageRef = ref<HTMLElement>()
 
 let imageSize = { width: 0, height: 0 }
 
-watch(() => props.mode, () => {
-  updateSize()
-})
+watch(
+  () => props.mode,
+  () => {
+    updateSize()
+  }
+)
 
-watch(() => props.src, () => {
-  tryLoadImage()
-})
+watch(
+  () => props.src,
+  () => {
+    tryLoadImage()
+  }
+)
 
-watch(() => props.webp, () => {
-  tryLoadImage()
-})
+watch(
+  () => props.webp,
+  () => {
+    tryLoadImage()
+  }
+)
 
 const getSrc = () => {
   if (props.webp) {
@@ -131,7 +143,6 @@ const onLoad = (result: ImageLoadResult) => {
 const onError = (error: Error) => {
   emit("error", { errMsg: error })
 }
-
 </script>
 
 <style lang="less">

@@ -57,9 +57,9 @@ export default function vitePluginNZothRouter(): Plugin {
         console.log()
         for (const page of addPages) {
           console.log(
-            `loaded page: ${color.cyan(
-              page.component.padEnd(longest + 2)
-            )} ${color.white(page.path)}`
+            `loaded page: ${color.cyan(page.component.padEnd(longest + 2))} ${color.white(
+              page.path
+            )}`
           )
         }
 
@@ -67,9 +67,9 @@ export default function vitePluginNZothRouter(): Plugin {
 
         for (const page of delPages) {
           console.log(
-            `remove page: ${color.cyan(
-              page.component.padEnd(longest + 2)
-            )} ${color.white(page.path)}`
+            `remove page: ${color.cyan(page.component.padEnd(longest + 2))} ${color.white(
+              page.path
+            )}`
           )
           const i = prevPages.findIndex(y => y.path === page.path)
           if (i > -1) {

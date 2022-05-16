@@ -1,9 +1,4 @@
-import {
-  AsyncReturn,
-  GeneralCallbackResult,
-  invokeSuccess,
-  wrapperAsyncAPI
-} from "@nzoth/bridge"
+import { AsyncReturn, GeneralCallbackResult, invokeSuccess, wrapperAsyncAPI } from "@nzoth/bridge"
 import { extend } from "@nzoth/shared"
 
 export function getSystemSetting() {
@@ -23,12 +18,7 @@ export function getAppBaseInfo() {
 }
 
 export function getSystemInfoSync() {
-  return extend(
-    getSystemSetting(),
-    getDeviceInfo(),
-    getWindowInfo(),
-    getAppBaseInfo()
-  )
+  return extend(getSystemSetting(), getDeviceInfo(), getWindowInfo(), getAppBaseInfo())
 }
 
 interface GetSystemInfoOptions {
@@ -37,26 +27,24 @@ interface GetSystemInfoOptions {
   complete?: GetSystemInfoCompleteCallback
 }
 
-type GetSystemInfoSuccessCallback = (
-  res: ReturnType<typeof getSystemInfoSync>
-) => void
+type GetSystemInfoSuccessCallback = (res: ReturnType<typeof getSystemInfoSync>) => void
 
 type GetSystemInfoFailCallback = (res: GeneralCallbackResult) => void
 
 type GetSystemInfoCompleteCallback = (res: GeneralCallbackResult) => void
 
-export function getSystemInfoAsync<
-  T extends GetSystemInfoOptions = GetSystemInfoOptions
->(options: T): AsyncReturn<T, GetSystemInfoOptions> {
+export function getSystemInfoAsync<T extends GetSystemInfoOptions = GetSystemInfoOptions>(
+  options: T
+): AsyncReturn<T, GetSystemInfoOptions> {
   return wrapperAsyncAPI<T>(options => {
     const result = getSystemInfoSync()
     invokeSuccess("getSystemInfoAsync", options, result)
   }, options)
 }
 
-export function getSystemInfo<
-  T extends GetSystemInfoOptions = GetSystemInfoOptions
->(options: T): AsyncReturn<T, GetSystemInfoOptions> {
+export function getSystemInfo<T extends GetSystemInfoOptions = GetSystemInfoOptions>(
+  options: T
+): AsyncReturn<T, GetSystemInfoOptions> {
   return wrapperAsyncAPI<T>(options => {
     const result = getSystemInfoSync()
     invokeSuccess("getSystemInfo", options, result)

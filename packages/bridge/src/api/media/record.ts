@@ -5,16 +5,7 @@ import { requestAuthorization } from "../auth"
 
 interface RecorderManagerStartOptions {
   duration?: number
-  sampleRate?:
-    | 8000
-    | 11025
-    | 12000
-    | 16000
-    | 22050
-    | 24000
-    | 32000
-    | 44100
-    | 48000
+  sampleRate?: 8000 | 11025 | 12000 | 16000 | 22050 | 24000 | 32000 | 44100 | 48000
   numberOfChannels?: 1 | 2
   encodeBitRate?: number
   format?: "aac" | "wav"
@@ -67,12 +58,9 @@ class RecorderManager {
       this.onStartCallback && this.onStartCallback()
     })
 
-    subscribe<RecorderManagerStopCallbackResult>(
-      eventName(Events.ON_STOP),
-      data => {
-        this.onStopCallback && this.onStopCallback(data)
-      }
-    )
+    subscribe<RecorderManagerStopCallbackResult>(eventName(Events.ON_STOP), data => {
+      this.onStopCallback && this.onStopCallback(data)
+    })
 
     subscribe(eventName(Events.ON_PAUSE), _ => {
       this.onPauseCallback && this.onPauseCallback()

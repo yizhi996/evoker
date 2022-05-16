@@ -11,14 +11,7 @@ const props = defineProps<{ for?: string }>()
 
 const labelRef = ref<HTMLElement>()
 
-const validTags = [
-  "NZ-BUTTON",
-  "NZ-INPUT",
-  "NZ-TEXTAREA",
-  "NZ-SWITCH",
-  "NZ-RADIO",
-  "NZ-CHECKBOX"
-]
+const validTags = ["NZ-BUTTON", "NZ-INPUT", "NZ-TEXTAREA", "NZ-SWITCH", "NZ-RADIO", "NZ-CHECKBOX"]
 
 const onTap = () => {
   if (props.for) {
@@ -44,5 +37,4 @@ const dfsTapLabelTarget = (el: HTMLElement) => {
     }
   }
 }
-
 </script>

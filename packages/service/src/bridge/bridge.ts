@@ -1,10 +1,4 @@
-import {
-  invoke,
-  invokeCallbackHandler,
-  publish,
-  subscribe,
-  subscribeHandler
-} from "@nzoth/bridge"
+import { invoke, invokeCallbackHandler, publish, subscribe, subscribeHandler } from "@nzoth/bridge"
 
 export const InnerJSBridge = {
   invoke,

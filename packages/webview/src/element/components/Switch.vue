@@ -28,18 +28,21 @@ const instance = getCurrentInstance()!
 
 const emit = defineEmits(["update:checked", "change"])
 
-const props = withDefaults(defineProps<{
-  type?: "switch" | "checkbox"
-  checked?: boolean
-  disabled?: boolean
-  color?: string
-  name?: string
-}>(), {
-  type: "switch",
-  checked: false,
-  disabled: false,
-  color: "#1989fa"
-})
+const props = withDefaults(
+  defineProps<{
+    type?: "switch" | "checkbox"
+    checked?: boolean
+    disabled?: boolean
+    color?: string
+    name?: string
+  }>(),
+  {
+    type: "switch",
+    checked: false,
+    disabled: false,
+    color: "#1989fa"
+  }
+)
 
 const onClick = () => {
   if (props.disabled) {
@@ -70,7 +73,6 @@ defineExpose({
     onClick()
   }
 })
-
 </script>
 
 <style lang="less">

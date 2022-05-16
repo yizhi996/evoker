@@ -7,12 +7,7 @@ import router from "./vite-plugin-nzoth-router"
 import assets from "./vite-plugin-nzoth-assets"
 import buildConfig from "./vite-plugin-nzoth-config"
 import { isHTMLTag, isSVGTag } from "@nzoth/shared"
-import compiler, {
-  baseParse,
-  transformModel,
-  RootNode,
-  CompilerOptions
-} from "@vue/compiler-core"
+import compiler, { baseParse, transformModel, RootNode, CompilerOptions } from "@vue/compiler-core"
 import copy from "rollup-plugin-copy"
 import { resolve } from "path"
 import { isBuiltInComponent } from "@nzoth/shared"
@@ -48,10 +43,7 @@ export default function plugins(options: Options = {}) {
       },
       transformAssetUrls: { image: ["src"] },
       compiler: {
-        compile: (
-          template: string | RootNode,
-          options?: CompilerOptions | undefined
-        ) => {
+        compile: (template: string | RootNode, options?: CompilerOptions | undefined) => {
           // disabled createStaticVNode
           options && (options.transformHoist = null)
           return compiler.baseCompile(template, options)

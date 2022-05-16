@@ -14,16 +14,19 @@ import { vTap } from "../../directive/tap"
 import { useParent, ParentProvide } from "../../use/useRelation"
 import { CHECKBOX_GROUP_KEY, CheckboxProvide } from "./constant"
 
-const props = withDefaults(defineProps<{
-  value?: string
-  checked?: boolean
-  disabled?: boolean
-  color?: string
-}>(), {
-  checked: false,
-  disabled: false,
-  color: "#1989fa"
-})
+const props = withDefaults(
+  defineProps<{
+    value?: string
+    checked?: boolean
+    disabled?: boolean
+    color?: string
+  }>(),
+  {
+    checked: false,
+    disabled: false,
+    color: "#1989fa"
+  }
+)
 
 const instance = getCurrentInstance()!
 
@@ -36,9 +39,12 @@ onMounted(() => {
   })
 })
 
-watch(() => props.checked, () => {
-  onChecked(false)
-})
+watch(
+  () => props.checked,
+  () => {
+    onChecked(false)
+  }
+)
 
 const onClick = () => {
   if (props.disabled) {
@@ -64,7 +70,6 @@ defineExpose({
     onClick()
   }
 })
-
 </script>
 
 <style lang="less">

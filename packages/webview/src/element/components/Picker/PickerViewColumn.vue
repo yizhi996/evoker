@@ -14,7 +14,10 @@
       <div
         ref="contentRef"
         class="nz-picker-view-column__content"
-        :style="{ transform: `translate3d(0, ${translateY}px, 0)`, padding: `${indicatorTop}px 0px` }"
+        :style="{
+          transform: `translate3d(0, ${translateY}px, 0)`,
+          padding: `${indicatorTop}px 0px`
+        }"
       ></div>
     </div>
   </nz-picker-view-column>
@@ -129,7 +132,6 @@ const addTouchEvent = () => {
 const { startAnimation, stopAnimation } = useJSAnimation<{ y: number }>()
 
 const animationTranslate = (y: number, duration: number, animation: boolean) => {
-
   if (animation) {
     startAnimation({
       begin: { y: offsetY },
@@ -219,7 +221,6 @@ defineExpose({
     return currentIndex
   }
 })
-
 </script>
 
 <style lang="less">
@@ -237,11 +238,7 @@ nz-picker-view-column {
   }
 
   &__mask {
-    background: linear-gradient(
-        180deg,
-        hsla(0, 0%, 100%, 0.95),
-        hsla(0, 0%, 100%, 0.6)
-      ),
+    background: linear-gradient(180deg, hsla(0, 0%, 100%, 0.95), hsla(0, 0%, 100%, 0.6)),
       linear-gradient(0deg, hsla(0, 0%, 100%, 0.95), hsla(0, 0%, 100%, 0.6));
     background-position: top, bottom;
     background-repeat: no-repeat;

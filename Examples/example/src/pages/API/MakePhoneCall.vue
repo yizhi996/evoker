@@ -20,5 +20,4 @@ const phoneNumber = ref("")
 const onCall = () => {
   nz.makePhoneCall({ phoneNumber: phoneNumber.value })
 }
-
 </script>

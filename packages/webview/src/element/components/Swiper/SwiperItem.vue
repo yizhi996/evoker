@@ -23,7 +23,7 @@ onUnmounted(() => {
   parent && parent.unlink(instance)
 })
 
-let style = reactive<{ width?: string, height?: string, transform?: string }>({})
+let style = reactive<{ width?: string; height?: string; transform?: string }>({})
 
 defineExpose({
   setStyle: (width: string, height: string, transform: string) => {
@@ -37,9 +37,8 @@ defineExpose({
   },
   setTransform: (transform: string) => {
     style.transform = transform
-  },
+  }
 })
-
 </script>
 
 <style>

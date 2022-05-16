@@ -13,5 +13,5 @@ const title = ref("")
 
 const onSetTitle = () => {
   nz.setNavigationBarTitle({ title: title.value })
-} 
+}
 </script>

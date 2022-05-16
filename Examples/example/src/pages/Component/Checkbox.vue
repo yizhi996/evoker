@@ -4,11 +4,9 @@
     <checkbox-group class="mt-2.5" @change="onChange">
       <n-cell-group>
         <n-cell v-for="fruit of fruits" :key="fruit.value">
-          <checkbox
-            class="w-full h-full"
-            :value="fruit.value"
-            :checked="fruit.checked"
-          >{{ fruit.name }}</checkbox>
+          <checkbox class="w-full h-full" :value="fruit.value" :checked="fruit.checked">{{
+            fruit.name
+          }}</checkbox>
         </n-cell>
       </n-cell-group>
     </checkbox-group>
@@ -28,7 +26,7 @@ const fruits = reactive([
 
 const checked = ref("菠萝")
 
-const onChange = (e) => {
+const onChange = e => {
   const value = e.detail.value
   let res: string[] = []
   value.forEach(x => {
