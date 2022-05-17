@@ -26,7 +26,11 @@ enum NZVolumeAPI: String, NZBuiltInAPI {
     }
     
     private func getVolume(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
-        bridge.invokeCallbackSuccess(args: args, result: ["volume": NZEngine.shared.volumeSlider.value])
+        var volume = NZEngine.shared.volumeSlider.value
+        if volume == 0 {
+            volume = AVAudioSession.sharedInstance().outputVolume
+        }
+        bridge.invokeCallbackSuccess(args: args, result: ["volume": volume])
     }
     
     private func setVolume(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
