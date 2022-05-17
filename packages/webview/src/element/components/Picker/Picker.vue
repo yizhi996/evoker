@@ -1,5 +1,5 @@
 <template>
-  <nz-picker v-tap.stop="onClick"></nz-picker>
+  <nz-picker v-tap="onClick"></nz-picker>
 </template>
 
 <script setup lang="ts">
@@ -24,8 +24,6 @@ const props = withDefaults(
     start?: string
     // for time | date
     end?: string
-    // for date
-    fields?: "year" | "month" | "day"
     disabled?: boolean
     name?: string
   }>(),
@@ -33,8 +31,7 @@ const props = withDefaults(
     mode: "selector",
     disabled: false,
     range: () => [],
-    value: 0,
-    fields: "day"
+    value: 0
   }
 )
 
@@ -90,6 +87,9 @@ const formatData = computed(() => {
 })
 
 const onClick = () => {
+  if (props.disabled) {
+    return
+  }
   if (props.mode === "time" || props.mode === "date") {
     isShow = true
     NZJSBridge.invoke<{ value: string }>(
@@ -109,8 +109,7 @@ const onClick = () => {
         }
       }
     )
-  }
-  if (props.mode === "selector") {
+  } else if (props.mode === "selector") {
     isShow = true
     NZJSBridge.invoke<{ value: number }>(
       "showPickerView",

@@ -1,10 +1,7 @@
 <template>
   <nz-picker-view-column>
     <div ref="groupRef" class="nz-picker-view-column__group">
-      <div
-        class="nz-picker-view-column__mask"
-        :style="{ 'background-size': `100% ${indicatorTop}px` }"
-      ></div>
+      <div class="nz-picker-view-column__mask" :class="maskClass" :style="combineMaskStyle"></div>
       <div
         ref="indicatorRef"
         class="nz-picker-view-column__indicator"
@@ -24,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, getCurrentInstance, onMounted, nextTick } from "vue"
+import { ref, computed, getCurrentInstance, onMounted, nextTick } from "vue"
 import useTouch from "../../use/useTouch"
 import { useParent, ParentProvide } from "../../use/useRelation"
 import { PICKER_VIEW_KEY, PickerViewProvide } from "./define"
@@ -192,6 +189,14 @@ const indicatorClass = ref<string>()
 const maskStyle = ref<string>()
 
 const maskClass = ref<string>()
+
+const combineMaskStyle = computed(() => {
+  const top = `background-size: 100% ${indicatorTop.value}px;`
+  if (maskStyle.value) {
+    return !maskStyle.value.endsWith(";") ? `${maskStyle.value};${top}` : maskStyle.value + top
+  }
+  return top
+})
 
 const setValue = (value: number) => {
   nextTick(() => {
