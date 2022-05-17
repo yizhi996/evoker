@@ -19,6 +19,6 @@
   ],
   "dependencies": {
     "@nzoth/shared": "workspace:^0.1.0",
-    "vue": "^3.2.32"
+    "vue": "^3.2.33"
   }
 }

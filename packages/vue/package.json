@@ -5,8 +5,8 @@
   "types": "dist/vue.d.ts",
   "description": "fork vue",
   "dependencies": {
-    "@vue/compiler-dom": "^3.2.32",
-    "@vue/runtime-dom": "^3.2.32"
+    "@vue/compiler-dom": "^3.2.33",
+    "@vue/runtime-dom": "^3.2.33"
   },
   "files": [
     "dist"
