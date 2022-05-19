@@ -29,26 +29,6 @@ export default function useKeyboard(inputId: number) {
     return id
   }
 
-  function onKeyboardSetValue(callback: (data: { value: string }) => void) {
-    return createListener(SubscribeKeys.SET_VALUE, callback)
-  }
-
-  function onKeyboardShow(callback: () => void) {
-    return createListener(SubscribeKeys.ON_SHOW, callback)
-  }
-
-  function onKeyboardHide(callback: () => void) {
-    return createListener(SubscribeKeys.ON_HIDE, callback)
-  }
-
-  function onKeyboardConfirm(callback: () => void) {
-    return createListener(SubscribeKeys.ON_CONFIRM, callback)
-  }
-
-  function onKeyboardHeightChange(callback: (data: { height: number; duration: number }) => void) {
-    return createListener(SubscribeKeys.HEIGHT_CHANGE, callback)
-  }
-
   function removaAllListener() {
     ids.forEach((id, event) => removeEvent(event, id))
   }
@@ -58,11 +38,21 @@ export default function useKeyboard(inputId: number) {
   })
 
   return {
-    onKeyboardSetValue,
-    onKeyboardShow,
-    onKeyboardHide,
-    onKeyboardConfirm,
-    onKeyboardHeightChange,
+    onKeyboardSetValue: (callback: (data: { value: string }) => void) => {
+      return createListener(SubscribeKeys.SET_VALUE, callback)
+    },
+    onKeyboardShow: (callback: () => void) => {
+      return createListener(SubscribeKeys.ON_SHOW, callback)
+    },
+    onKeyboardHide: (callback: () => void) => {
+      return createListener(SubscribeKeys.ON_HIDE, callback)
+    },
+    onKeyboardConfirm: (callback: () => void) => {
+      return createListener(SubscribeKeys.ON_CONFIRM, callback)
+    },
+    onKeyboardHeightChange: (callback: (data: { height: number; duration: number }) => void) => {
+      return createListener(SubscribeKeys.HEIGHT_CHANGE, callback)
+    },
     removaAllListener
   }
 }

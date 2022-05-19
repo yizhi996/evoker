@@ -1,7 +1,7 @@
 <template>
   <nz-textarea ref="rootRef">
-    <div ref="containerRef" class="nz-native__container" :id="tongcengKey">
-      <div ref="innerRef" style="width: 100%" :style="height"></div>
+    <div ref="tongcengRef" class="nz-native__tongceng" :id="tongcengKey">
+      <div style="width: 100%" :style="height"></div>
     </div>
     <p
       ref="placeholderRef"
@@ -27,7 +27,7 @@ const emit = defineEmits([
   "blur",
   "input",
   "confirm",
-  "linechenge",
+  "linechange",
   "keyboardheightchange",
   "update:value"
 ])
@@ -81,8 +81,7 @@ const props = withDefaults(
 const {
   tongcengKey,
   nativeId: inputId,
-  containerRef,
-  innerRef,
+  tongcengRef,
   height,
   insertContainer,
   updateContainer,
@@ -97,8 +96,13 @@ const onInput = (value: string) => {
   emit("input", { value })
 }
 
-const { onKeyboardSetValue, onKeyboardShow, onKeyboardHide, onKeyboardConfirm } =
-  useKeyboard(inputId)
+const {
+  onKeyboardSetValue,
+  onKeyboardShow,
+  onKeyboardHide,
+  onKeyboardConfirm,
+  onKeyboardHeightChange
+} = useKeyboard(inputId)
 
 onKeyboardSetValue(data => {
   instance.props.value = data.value
@@ -106,21 +110,26 @@ onKeyboardSetValue(data => {
 })
 
 onKeyboardShow(() => {
-  emit("focus")
+  emit("focus", { value: props.value })
 })
 
 onKeyboardHide(() => {
-  emit("blur")
+  emit("blur", { value: props.value })
 })
 
 onKeyboardConfirm(() => {
-  emit("confirm")
+  emit("confirm", { value: props.value })
+})
+
+onKeyboardHeightChange(data => {
+  emit("keyboardheightchange", { height: data.height, duration: data.duration })
 })
 
 const { onTextAreaHeightChange } = useTextArea(inputId)
 
 onTextAreaHeightChange(data => {
   rootRef.value!.style.height = data.height + "px"
+  emit("linechange", { height: data.height, lineCount: data.lineCount })
   updateContainer()
 })
 
