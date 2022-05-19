@@ -49,6 +49,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
             let autoHeight: Bool
             let disableDefaultPadding: Bool
             let confirmType: NZTextView.ConfirmType
+            let showConfirmBar: Bool
         }
         
         guard let inputModule: NZInputModule = appService.getModule() else {
@@ -100,6 +101,13 @@ enum NZInputAPI: String, NZBuiltInAPI {
         input.textView.textColor = params.style.color.hexColor()
         input.textView.textAlignment = params.style.textAlign.toNatively()
         input.textView.returnKeyType = params.confirmType.toNatively()
+        if params.showConfirmBar {
+            let accessoryView = NZTextInputCompleteView()
+            accessoryView.onClick = { [unowned input] in
+                input.endEdit()
+            }
+            input.textView.inputAccessoryView = accessoryView
+        }
         if params.disableDefaultPadding {
             input.textView.textContainerInset = .zero
         }
@@ -359,6 +367,15 @@ enum NZInputAPI: String, NZBuiltInAPI {
                     input.textView.isEditable = !params.disabled
                     input.placeholderLabel.text = params.placeholder
                     input.textView.returnKeyType = params.confirmType.toNatively()
+                    if params.showConfirmBar {
+                        let accessoryView = NZTextInputCompleteView()
+                        accessoryView.onClick = { [unowned input] in
+                            input.endEdit()
+                        }
+                        input.textView.inputAccessoryView = accessoryView
+                    } else {
+                        input.textView.inputAccessoryView = nil
+                    }
                 }
             } else if let input = input as? NZTextFieldView {
                 struct Params: Decodable {

@@ -41,6 +41,8 @@ open class NZTextView: UIView, NZTextInput {
     
     public var needFocus = false
     
+    public var showConfirmBar = true
+    
     public var field: UITextInput {
         return textView
     }
