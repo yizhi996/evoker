@@ -10,7 +10,9 @@ import { SWIPE_KEY, SwipeProvide } from "./constant"
 import { useParent, ParentProvide } from "../../use/useRelation"
 
 const instance = getCurrentInstance()!
+
 const containerRef = ref<HTMLElement>()
+
 let parent: ParentProvide<SwipeProvide> | undefined
 
 onMounted(() => {

@@ -51,7 +51,6 @@ const props = withDefaults(
     vertical?: boolean
     previousMargin?: string
     nextMargin?: string
-    snapToEdge?: boolean
     displayMultipleItems?: number
     easingFunction?: "default" | "linear" | "easeInCubic" | "easeOutCubic" | "easeInOutCubic"
   }>(),
@@ -67,7 +66,6 @@ const props = withDefaults(
     vertical: false,
     previousMargin: "0px",
     nextMargin: "0px",
-    snapToEdge: false,
     displayMultipleItems: 1,
     easingFunction: "default"
   }

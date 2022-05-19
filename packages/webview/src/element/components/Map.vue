@@ -1,12 +1,7 @@
 <template>
   <nz-map>
-    <div
-      ref="containerRef"
-      class="nz-native__container"
-      style="position: absolute"
-      :id="tongcengKey"
-    >
-      <div ref="innerRef" style="width: 100%" :style="height"></div>
+    <div ref="tongcengRef" class="nz-native__tongceng" style="position: absolute" :id="tongcengKey">
+      <div style="width: 100%" :style="height"></div>
     </div>
   </nz-map>
 </template>
@@ -52,14 +47,7 @@ const props = withDefaults(
   }
 )
 
-const {
-  tongcengKey,
-  nativeId: mapId,
-  containerRef,
-  innerRef,
-  height,
-  insertContainer
-} = useNative()
+const { tongcengKey, nativeId: mapId, tongcengRef, height, insertContainer } = useNative()
 
 const {} = useMap(mapId)
 

@@ -1,7 +1,7 @@
 <template>
   <nz-canvas>
-    <div ref="containerRef" class="nz-native__container nz-canvas-tongceng" :id="tongcengKey">
-      <div ref="innerRef" style="width: 100%" :style="height"></div>
+    <div ref="tongcengRef" class="nz-native__tongceng nz-canvas-tongceng" :id="tongcengKey">
+      <div style="width: 100%" :style="height"></div>
     </div>
     <canvas></canvas>
   </nz-canvas>
@@ -25,8 +25,7 @@ const props = withDefaults(
 const {
   tongcengKey,
   nativeId: canvasId,
-  containerRef,
-  innerRef,
+  tongcengRef,
   height,
   insertContainer
 } = useNative()

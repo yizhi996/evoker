@@ -1,10 +1,6 @@
 <template>
   <nz-camera>
-    <div
-      ref="containerRef"
-      :id="tongcengKey"
-      style="width: 100%; height: 100%; overflow: scroll; -webkit-overflow-scrolling: touch"
-    >
+    <div ref="tongcengRef" class="nz-native__tongceng" :id="tongcengKey">
       <div style="width: 100%" :style="height"></div>
     </div>
   </nz-camera>
@@ -34,7 +30,7 @@ const props = withDefaults(
   }
 )
 
-const { tongcengKey, nativeId: cameraId, containerRef, height, insertContainer } = useNative()
+const { tongcengKey, nativeId: cameraId, tongcengRef, height, insertContainer } = useNative()
 
 const { onInit, onScanCode, onError, authorize } = useCamera(cameraId)
 

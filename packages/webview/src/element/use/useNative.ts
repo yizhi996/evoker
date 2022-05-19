@@ -13,8 +13,7 @@ const enum NativeInvokeKeys {
 export default function useNative(options: { scrollEnabled?: boolean } = { scrollEnabled: false }) {
   const tongcengId = incTongcengId++
   const tongcengKey = "__nzoth_tongceng_id_" + tongcengId
-  const containerRef = ref<HTMLElement>()
-  const innerRef = ref<HTMLElement>()
+  const tongcengRef = ref<HTMLElement>()
   const height = "height:" + `${418094 + tongcengId}px`
 
   let retryLimit = 5
@@ -22,11 +21,11 @@ export default function useNative(options: { scrollEnabled?: boolean } = { scrol
   let containerInserted = false
 
   onMounted(() => {
-    containerRef.value && containerRef.value.addEventListener("resize", onResize)
+    tongcengRef.value && tongcengRef.value.addEventListener("resize", onResize)
   })
 
   onUnmounted(() => {
-    containerRef.value && containerRef.value.removeEventListener("resize", onResize)
+    tongcengRef.value && tongcengRef.value.removeEventListener("resize", onResize)
     removeContainer()
   })
 
@@ -49,14 +48,14 @@ export default function useNative(options: { scrollEnabled?: boolean } = { scrol
   }
 
   const getContainerBox = () => {
-    if (containerRef.value) {
-      const rect = containerRef.value.getBoundingClientRect()
+    if (tongcengRef.value) {
+      const rect = tongcengRef.value.getBoundingClientRect()
       return {
         left: rect.left + window.scrollX,
         top: rect.top + window.scrollY,
         width: Math.round(rect.width),
         height: Math.round(rect.height),
-        scrollHeight: containerRef.value.scrollHeight
+        scrollHeight: tongcengRef.value.scrollHeight
       }
     }
     return {
@@ -143,8 +142,7 @@ export default function useNative(options: { scrollEnabled?: boolean } = { scrol
     tongcengId,
     tongcengKey,
     nativeId: getRandomInt(10000, 10000000),
-    containerRef,
-    innerRef,
+    tongcengRef: tongcengRef,
     height,
     getContainerBox,
     insertContainer,

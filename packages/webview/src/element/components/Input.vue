@@ -1,7 +1,7 @@
 <template>
   <nz-input ref="rootRef">
-    <div ref="containerRef" class="nz-native__container" :id="tongcengKey">
-      <div ref="innerRef" style="width: 100%" :style="height"></div>
+    <div ref="tongcengRef" class="nz-native__tongceng" :id="tongcengKey">
+      <div style="width: 100%" :style="height"></div>
     </div>
     <p
       ref="placeholderRef"
@@ -74,8 +74,7 @@ const props = withDefaults(
 const {
   tongcengKey,
   nativeId: inputId,
-  containerRef,
-  innerRef,
+  tongcengRef,
   height,
   insertContainer,
   onUpdatedContainer
