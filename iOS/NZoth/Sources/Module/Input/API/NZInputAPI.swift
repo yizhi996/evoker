@@ -104,6 +104,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
         if params.showConfirmBar {
             let accessoryView = NZTextInputCompleteView()
             accessoryView.onClick = { [unowned input] in
+                input.onKeyboardReturn?()
                 input.endEdit()
             }
             input.textView.inputAccessoryView = accessoryView
@@ -370,6 +371,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
                     if params.showConfirmBar {
                         let accessoryView = NZTextInputCompleteView()
                         accessoryView.onClick = { [unowned input] in
+                            input.onKeyboardReturn?()
                             input.endEdit()
                         }
                         input.textView.inputAccessoryView = accessoryView
