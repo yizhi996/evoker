@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import ZLPhotoBrowser
 
 class NZScanCodeViewController: UIViewController {
     
@@ -18,6 +17,10 @@ class NZScanCodeViewController: UIViewController {
     init(viewModel: NZScanCodeViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
     }
     
     override func viewDidLoad() {
@@ -47,7 +50,7 @@ class NZScanCodeViewController: UIViewController {
         
         viewModel.checkCameraAuth { [unowned self] auth in
             if !auth {
-                self.showCameraNotAuthAlert()
+                self.viewModel.showCameraNotAuthAlert(to: self.view)
             } else {
                 self.scanView.scanEffectView.isHidden = false
             }
@@ -66,61 +69,11 @@ class NZScanCodeViewController: UIViewController {
         NZEngine.shared.currentApp?.uiControl.showCapsule()
     }
     
-    func showCameraNotAuthAlert() {
-        let appName = Constant.hostName
-        let params = NZAlertView.Params(title: "相机权限未开启",
-                                        content: "请在 iPhone 的“设置-隐私-\(appName)”选项中，允许\(appName)访问你的摄像头。",
-                                        showCancel: true,
-                                        cancelText: "我知道了",
-                                        cancelColor: "#000000",
-                                        confirmText: "前往设置",
-                                        confirmColor: "#576B95",
-                                        editable: false,
-                                        placeholderText: nil)
-        let alert = NZAlertView(params: params)
-        alert.cancelHandler = {
-            alert.hide()
-        }
-        alert.confirmHandler = { _ in
-            guard let settingsUrl = URL(string: UIApplication.openSettingsURLString),
-                  UIApplication.shared.canOpenURL(settingsUrl) else { return }
-            UIApplication.shared.open(settingsUrl)
-        }
-        alert.show(to: view)
-    }
-    
     @objc func onBack() {
         navigationController?.popViewController(animated: true)
     }
     
     @objc func chooseImage() {
-        let ps = ZLPhotoPreviewSheet()
-        let config = ZLPhotoConfiguration.default()
-        config.allowSelectOriginal = false
-        config.allowTakePhotoInLibrary = false
-        config.allowSelectVideo = false
-        config.allowEditImage = false
-        config.maxSelectCount = 1
-        ps.selectImageBlock = { [unowned self] images, _, _ in
-            guard let image = images.first,
-                  let ciImage = CIImage(image: image) else { return }
-            let detector = CIDetector(ofType: CIDetectorTypeQRCode,
-                                      context: nil,
-                                      options: [CIDetectorAccuracy: CIDetectorAccuracyLow])
-            let features = detector?.features(in: ciImage) ?? []
-            if let result = features.first as? CIQRCodeFeature, let value = result.messageString {
-                self.viewModel.playSound()
-                self.viewModel.scanCompletionHandler?(value, "QR_CODE")
-                let viewController = self.navigationController!.viewControllers[self.navigationController!.viewControllers.count - 2]
-                self.navigationController!.popToViewController(viewController, animated: true)
-            } else {
-                NZToast(params: NZToast.Params(title: "未发现 二维码 / 条码",
-                                               icon: .none,
-                                               image: nil,
-                                               duration: 1000,
-                                               mask: true)).show(to: self.view)
-            }
-        }
-        ps.showPhotoLibrary(sender: self)
+        viewModel.showChooseImage(to: self)
     }
 }
