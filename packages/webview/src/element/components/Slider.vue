@@ -94,6 +94,9 @@ onMounted(() => {
       const { onTouchMove, onTouchEnd } = useTouch(handleRef.value)
 
       onTouchMove((ev, touch) => {
+        if (props.disabled) {
+          return
+        }
         ev.preventDefault()
 
         const x = touch.deltaX.value + touch.startX.value - barRect.left
@@ -107,6 +110,9 @@ onMounted(() => {
       })
 
       onTouchEnd(() => {
+        if (props.disabled) {
+          return
+        }
         emit("update:value", props.value)
         emit("change", { value: props.value })
       })
