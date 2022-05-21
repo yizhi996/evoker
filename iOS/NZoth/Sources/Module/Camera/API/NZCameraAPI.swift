@@ -285,7 +285,7 @@ enum NZCameraAPI: String, NZBuiltInAPI {
                         let error = NZError.bridgeFailed(reason: .custom(error.localizedDescription))
                         bridge.invokeCallbackFail(args: args, error: error)
                     } else {
-                        bridge.invokeCallbackSuccess(args: args)
+                        bridge.invokeCallbackSuccess(args: args, result: ["zoom": cameraEngine.zoom])
                     }
                 }
             }

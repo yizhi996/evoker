@@ -27,6 +27,10 @@ public class NZCameraEngine: NSObject {
         }
     }
     
+    public var zoom: CGFloat {
+        return capture.cameraZoom
+    }
+    
     public var initDoneHandler: NZCGFloatBlock?
     
     public var errorHandler: NZStringBlock?
@@ -130,6 +134,7 @@ public class NZCameraEngine: NSObject {
     
     public func setZoom(_ zoom: CGFloat, completionHandler handler: @escaping (NZCameraCaptureError?) -> Void) {
         setZoomCompletionHandler = handler
+        let zoom = zoom.clampe(to: 1...capture.cameraMaxZoom)
         capture.cameraZoom = zoom
         zoomFactor = zoom
     }

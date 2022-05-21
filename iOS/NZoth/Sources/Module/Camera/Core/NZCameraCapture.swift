@@ -32,8 +32,10 @@ class NZCameraCapture: NSObject {
     
     var cameraMaxZoom: CGFloat = 10.0
     
-    var cameraZoom: CGFloat = 1.0 {
-        willSet {
+    var cameraZoom: CGFloat {
+        get {
+            return videoInput?.device.videoZoomFactor ?? 1.0
+        } set {
             sessionQueue.async {
                 guard let videoDevice = self.videoInput?.device else { return }
                 do {
