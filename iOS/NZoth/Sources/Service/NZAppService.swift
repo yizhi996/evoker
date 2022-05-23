@@ -92,6 +92,8 @@ final public class NZAppService {
         self.config = config
         
         context.name = "\(self.appInfo.appName) - app-service"
+        context.nativeSDK.appId = appId
+        context.nativeSDK.envVersion = launchOptions.envVersion
         
         bridge = NZJSBridge(appService: self, container: context)
 

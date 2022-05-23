@@ -25,27 +25,43 @@ import CoreLocation
 
 @objc public class NZSystemAPI: NSObject, NZSystemAPIExport {
     
+    var appId = ""
+    
+    var envVersion = NZAppEnvVersion.develop
+    
     override public required init() {
         super.init()
     }
     
     public func getWindowInfo() -> [String: Any] {
+        let screenWidth = Constant.screenWidth
+        let screenHeight = Constant.screenHeight
+        var windowWidth = screenWidth
+        var windowHeight = screenHeight
+        var screenTop = Constant.statusBarHeight + Constant.navigationBarHeight
+        if let appService = NZEngine.shared.getAppService(appId: appId, envVersion: envVersion) {
+            let webPage = (appService.currentPage as! NZWebPage)
+            let webView = webPage.webView
+            windowWidth = webView.frame.width
+            windowHeight = webView.frame.height
+            screenTop = webView.frame.minY
+        }
         let safeArea = Constant.safeAreaInsets
         return [
             "pixelRatio": Constant.scale,
-            "screenWidth": Constant.screenWidth,
-            "screenHeight": Constant.screenHeight,
-            "windowWidth": Constant.windowWidth,
-            "windowHeight": Constant.windowHeight,
+            "screenWidth": screenWidth,
+            "screenHeight": screenHeight,
+            "windowWidth": windowWidth,
+            "windowHeight": windowHeight,
             "statusBarHeight": Constant.statusBarHeight,
-            "screenTop": Constant.statusBarHeight,
+            "screenTop": screenTop,
             "safeArea": [
                 "top": safeArea.top,
                 "left": safeArea.left,
-                "right": safeArea.right,
-                "bottom": safeArea.bottom,
-                "width": 0,
-                "height": 0
+                "right": screenWidth - safeArea.right,
+                "bottom": screenHeight - safeArea.bottom,
+                "width": screenWidth - safeArea.left - safeArea.right,
+                "height": screenHeight - safeArea.top - safeArea.bottom
             ]
         ]
     }

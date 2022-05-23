@@ -23,6 +23,18 @@ import JavaScriptCore
 
 @objc public class NZAppServiceNativeSDK: NSObject, NZAppServiceNativeSDKExport {
     
+    public var appId = "" {
+        didSet {
+            system.appId = appId
+        }
+    }
+    
+    public var envVersion = NZAppEnvVersion.develop {
+        didSet {
+            system.envVersion = envVersion
+        }
+    }
+    
     public var system = NZSystemAPI()
     
     public var timer = NZNativeTimer()
