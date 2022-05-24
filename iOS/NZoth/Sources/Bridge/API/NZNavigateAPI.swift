@@ -50,16 +50,29 @@ enum NZNavigateAPI: String, NZBuiltInAPI {
         if appService.envVersion == .develop || appService.envVersion == .trail {
             envVersion = NZAppEnvVersion(rawValue: params.envVersion.rawValue) ?? .release
         }
-        var options = NZAppLaunchOptions()
-        options.path = params.path ?? ""
-        options.envVersion = envVersion
-        options.referrerInfo = NZAppLaunchOptions.ReferrerInfo(appId: appService.appId,
-                                                               extraDataString: params.extraDataString)
-        NZEngine.shared.openApp(appId: params.appId, launchOptions: options) { error in
+        
+        NZEngine.shared.getAppInfo(appId: params.appId, envVersion: envVersion) { appInfo, error in
             if let error = error {
                 bridge.invokeCallbackFail(args: args, error: error)
-            } else {
-                bridge.invokeCallbackSuccess(args: args)
+                return
+            }
+            let targetView = appService.rootViewController!.view!
+            NZAlertView.show(title: "即将打开“\(appInfo!.appName)”小程序", confirm: "允许", mask: true, to: targetView, cancelHandler: {
+                let error = NZError.bridgeFailed(reason: .cancel)
+                bridge.invokeCallbackFail(args: args, error: error)
+            }) { _ in
+                var options = NZAppLaunchOptions()
+                options.path = params.path ?? ""
+                options.envVersion = envVersion
+                options.referrerInfo = NZAppLaunchOptions.ReferrerInfo(appId: appService.appId,
+                                                                       extraDataString: params.extraDataString)
+                NZEngine.shared.openApp(appId: params.appId, launchOptions: options) { error in
+                    if let error = error {
+                        bridge.invokeCallbackFail(args: args, error: error)
+                    } else {
+                        bridge.invokeCallbackSuccess(args: args)
+                    }
+                }
             }
         }
     }

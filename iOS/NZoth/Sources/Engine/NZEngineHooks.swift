@@ -28,7 +28,7 @@ public class NZEngineHooks {
     
     public class App {
         
-        public typealias GetAppInfoCompletionHandler = (NZAppInfo) -> Void
+        public typealias GetAppInfoCompletionHandler = (NZAppInfo?, NZError?) -> Void
         /// App 在启动时需要获取 App Info
         public var getAppInfo: ((String, NZAppEnvVersion, GetAppInfoCompletionHandler) -> Void)?
         

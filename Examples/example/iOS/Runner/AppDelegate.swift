@@ -43,9 +43,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         NZEngineHooks.shared.app.getAppInfo = { appId, envVersion, completionHandler in
             if let app = LaunchpadViewController.apps.first(where: { $0.appId == appId }) {
-                completionHandler(NZAppInfo(appName: app.appName, appIconURL: app.appIcon))
+                completionHandler(NZAppInfo(appName: app.appName, appIconURL: app.appIcon), nil)
             } else {
-                completionHandler(NZAppInfo(appName: appId, appIconURL: ""))
+                completionHandler(nil, NZError.custom("appId is invalid"))
             }
         }
         
@@ -76,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var config = NZEngineConfig()
         config.devServer.useDevJSSDK = true
         config.devServer.useDevServer = true
-        config.devServer.host = "172.17.205.38"
+        config.devServer.host = "172.17.205.138"
         NZEngine.shared.launch(config)
         
         NZVersionManager.shared.updateJSSDK { _ in

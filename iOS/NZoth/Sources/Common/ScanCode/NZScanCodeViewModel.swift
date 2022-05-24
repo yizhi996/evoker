@@ -66,25 +66,15 @@ class NZScanCodeViewModel {
     
     func showCameraNotAuthAlert(to view: UIView) {
         let appName = Constant.hostName
-        let params = NZAlertView.Params(title: "相机权限未开启",
-                                        content: "请在 iPhone 的“设置-隐私-\(appName)”选项中，允许\(appName)访问你的摄像头。",
-                                        showCancel: true,
-                                        cancelText: "我知道了",
-                                        cancelColor: "#000000",
-                                        confirmText: "前往设置",
-                                        confirmColor: "#576B95",
-                                        editable: false,
-                                        placeholderText: nil)
-        let alert = NZAlertView(params: params)
-        alert.cancelHandler = {
-            alert.hide()
-        }
-        alert.confirmHandler = { _ in
+        NZAlertView.show(title: "相机权限未开启",
+                         content: "请在 iPhone 的“设置-隐私-\(appName)”选项中，允许\(appName)访问你的摄像头。",
+                         confirm: "前往设置",
+                         cancel: "我知道了",
+                         to: view, cancelHandler: nil) { _ in
             guard let settingsUrl = URL(string: UIApplication.openSettingsURLString),
                   UIApplication.shared.canOpenURL(settingsUrl) else { return }
             UIApplication.shared.open(settingsUrl)
         }
-        alert.show(to: view)
     }
     
     func converScanType(_ type: AVMetadataObject.ObjectType) -> String {

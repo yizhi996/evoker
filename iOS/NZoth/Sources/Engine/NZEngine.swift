@@ -358,8 +358,12 @@ extension NZEngine {
                    presentTo viewController: UIViewController? = nil,
                    completionHandler handler: @escaping NZErrorBlock) {
         assert(!appId.isEmpty, "appId cannot be empty")
-        let getAppInfo: (NZAppInfo) -> Void = { appInfo in
-            guard let appService = NZAppService(appId: appId, appInfo: appInfo, launchOptions: launchOptions) else {
+        getAppInfo(appId: appId, envVersion: launchOptions.envVersion) { appInfo, error in
+            if let error = error {
+                handler(error)
+                return
+            }
+            guard let appService = NZAppService(appId: appId, appInfo: appInfo!, launchOptions: launchOptions) else {
                 handler(.loadAppConfigFailed)
                 return
             }
@@ -371,13 +375,15 @@ extension NZEngine {
                 handler(nil)
             }
         }
+    }
+    
+    public func getAppInfo(appId: String, envVersion: NZAppEnvVersion, completion: (NZAppInfo?, NZError?) -> Void) {
         if let getAppInfoHandler = NZEngineHooks.shared.app.getAppInfo {
-            getAppInfoHandler(appId, launchOptions.envVersion, getAppInfo)
+            getAppInfoHandler(appId, envVersion, completion)
         } else {
-            getAppInfo(NZAppInfo(appName: appId, appIconURL: ""))
+            completion(NZAppInfo(appName: appId, appIconURL: ""), nil)
         }
     }
-
 }
 
 extension NZEngine {
@@ -483,8 +489,6 @@ public struct NZAppLaunchOptions {
     }
         
     public var path: String = ""
-    
-    public var scene: Int = 0
     
     public var query: String = ""
     

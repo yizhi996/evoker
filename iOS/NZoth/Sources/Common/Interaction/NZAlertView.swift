@@ -145,3 +145,39 @@ class NZAlertView: UIView, NZTransitionView {
         }
     }
 }
+
+extension NZAlertView {
+    
+    class func show(title: String? = nil,
+                    content: String? = nil,
+                    confirm: String = "确认",
+                    cancel: String = "取消",
+                    mask: Bool = false,
+                    to view: UIView,
+                    cancelHandler: NZEmptyBlock? = nil,
+                    confirmHandler: NZStringBlock? = nil) {
+        let params = NZAlertView.Params(title: title,
+                                        content: content,
+                                        showCancel: !cancel.isEmpty,
+                                        cancelText: cancel,
+                                        cancelColor: "#000000",
+                                        confirmText: confirm,
+                                        confirmColor: "#576B95",
+                                        editable: false,
+                                        placeholderText: nil)
+        let alert = NZAlertView(params: params)
+        var subView: NZTransitionView = alert
+        if mask {
+            subView = NZCoverView(contentView: alert)
+        }
+        alert.confirmHandler = { text in
+            subView.hide()
+            confirmHandler?(text)
+        }
+        alert.cancelHandler = {
+            subView.hide()
+            cancelHandler?()
+        }
+        subView.show(to: view)
+    }
+}
