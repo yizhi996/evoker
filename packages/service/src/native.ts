@@ -1,8 +1,12 @@
 import { isFunction } from "@nzoth/shared"
+import { invokeAppOnError } from "./lifecycle/global"
 
 const nativeTimer = globalThis.__NZAppServiceNativeSDK.timer
 
 if (nativeTimer) {
+  /** @ts-ignore */
+  globalThis.invokeAppOnError = invokeAppOnError
+
   /** @ts-ignore */
   globalThis.setTimeout = (callback: (args: void) => void, ms?: number): NodeJS.Timer => {
     if (!isFunction(callback)) {
@@ -11,6 +15,7 @@ if (nativeTimer) {
     return nativeTimer.setTimeout(callback, ms)
   }
 
+  /** @ts-ignore */
   globalThis.clearTimeout = (timeoutId: NodeJS.Timer) => {
     nativeTimer.clearTimeout(timeoutId)
   }
@@ -23,6 +28,7 @@ if (nativeTimer) {
     return nativeTimer.setInterval(callback, ms)
   }
 
+  /** @ts-ignore */
   globalThis.clearInterval = (timeoutId: NodeJS.Timer) => {
     nativeTimer.clearInterval(timeoutId)
   }

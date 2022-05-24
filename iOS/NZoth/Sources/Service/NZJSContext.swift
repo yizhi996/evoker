@@ -12,8 +12,9 @@ import JavaScriptCore
 public class NZJSContext {
     
     public var invokeHandler: (([String: Any]) -> Void)?
-    public var publishHandler: (([String: Any]) -> Void)?
     
+    public var publishHandler: (([String: Any]) -> Void)?
+     
     public var name: String = "NZoth - preload - app service" {
         didSet {
             context?.name = name
@@ -22,7 +23,7 @@ public class NZJSContext {
     
     private var context: JSContext!
     
-    private let nativeSDK = NZAppServiceNativeSDK()
+    let nativeSDK = NZAppServiceNativeSDK()
     
     private let jsThread = DispatchQueue(label: "com.nozthdev.javascript.thread", qos: .userInteractive)
     
@@ -43,6 +44,11 @@ public class NZJSContext {
             let jsvm = JSVirtualMachine()
             self.context = JSContext(virtualMachine: jsvm)
             self.context.name = self.name
+            self.context.exceptionHandler = { ctx, error in
+                if let globalThis = ctx?.globalObject, let error = error {
+                    globalThis.invokeMethod("invokeAppOnError", withArguments: [error])
+                }
+            }
             self.loadSDK()
         }
     }
@@ -80,10 +86,8 @@ public class NZJSContext {
         
         let version = NZVersionManager.shared.localJSSDKVersion
         let jsSDKDir = FilePath.jsSDK(version: version)
-        var vueFilename = "vue.runtime.global.prod.js"
-        if NZEngine.shared.config.devServer.useDevJSSDK {
-            vueFilename = "vue.runtime.global.js"
-        }
+        var vueFilename = "vue.runtime.global"
+        vueFilename += NZEngine.shared.config.devServer.useDevJSSDK ? ".js" : ".prod.js"
         loadSDKFile(url: jsSDKDir.appendingPathComponent(vueFilename), name: "Vue.js")
         loadSDKFile(url: jsSDKDir.appendingPathComponent("nzoth.global.js"), name: "NZoth.js")
         

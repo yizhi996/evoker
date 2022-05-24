@@ -1,11 +1,13 @@
 import { InnerJSBridge } from "../bridge/bridge"
-import { isFunction } from "@nzoth/shared"
+import { dispatchEvent, isFunction } from "@nzoth/shared"
 import { unmountPage } from "../app"
 
 export const enum LifecycleHooks {
   APP_ON_LAUNCH = "APP_ON_LAUNCH",
   APP_ON_SHOW = "APP_ON_SHOW",
   APP_ON_HIDE = "APP_ON_HIDE",
+  APP_ON_ERROR = "APP_ON_ERROR",
+  APP_THEME_CHANGE = "APP_THEME_CHANGE",
 
   PAGE_ON_LOAD = "PAGE_ON_LOAD",
   PAGE_ON_SHOW = "PAGE_ON_SHOW",
@@ -86,6 +88,16 @@ InnerJSBridge.subscribe(LifecycleHooks.APP_ON_SHOW, message => {
 
 InnerJSBridge.subscribe(LifecycleHooks.APP_ON_HIDE, () => {
   invokeAppHook(LifecycleHooks.APP_ON_HIDE)
+})
+
+InnerJSBridge.subscribe(LifecycleHooks.APP_ON_ERROR, message => {
+  invokeAppHook(LifecycleHooks.APP_ON_ERROR, message)
+  dispatchEvent(LifecycleHooks.APP_ON_ERROR, message)
+})
+
+InnerJSBridge.subscribe(LifecycleHooks.APP_THEME_CHANGE, message => {
+  invokeAppHook(LifecycleHooks.APP_THEME_CHANGE, message)
+  dispatchEvent(LifecycleHooks.APP_THEME_CHANGE, message)
 })
 
 InnerJSBridge.subscribe<{ pageId: number; query: Record<string, any> }>(

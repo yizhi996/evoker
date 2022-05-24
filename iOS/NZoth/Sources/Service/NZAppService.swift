@@ -55,6 +55,9 @@ final public class NZAppService {
     public internal(set) var rootViewController: NZNavigationController? {
         didSet {
             if let rootViewController = rootViewController {
+                rootViewController.themeChangeHandler = { [unowned self] theme in
+                    self.bridge.subscribeHandler(method: Self.themeChangeSubscribeKey, data: ["theme": theme])
+                }
                 uiControl.addCapsuleView(to: rootViewController.view)
             }
         }
@@ -664,6 +667,8 @@ extension NZAppService {
     public static let onShowSubscribeKey = NZSubscribeKey("APP_ON_SHOW")
     
     public static let onHideSubscribeKey = NZSubscribeKey("APP_ON_HIDE")
+    
+    public static let themeChangeSubscribeKey = NZSubscribeKey("APP_THEME_CHANGE")
     
 }
 

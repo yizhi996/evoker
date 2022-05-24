@@ -9,6 +9,7 @@ import { onSync } from "@nzoth/bridge"
 import { SyncFlags } from "@nzoth/shared"
 import { invokeSelectorQuery } from "./bridge/api/html/selector"
 import { intersectionObserverEntry } from "./bridge/api/html/intersection"
+import { invokeAppOnError } from "./lifecycle/global"
 
 export const enum AppState {
   FORE_GROUND = 0,
@@ -33,11 +34,16 @@ export function createApp(
   rootProps?: Record<string, unknown> | null | undefined
 ): App<Element> {
   const app = renderer.createApp(rootComponent, rootProps)
-  const mount = app.mount
+  const { mount } = app
   app.mount = () => {
     const page = new NZothPage(-999, "hook", 0)
     const root = new NZothHTMLElement("div", page)
     root.id = "app"
+    const { errorHandler } = app.config
+    app.config.errorHandler = (err, instance, info) => {
+      invokeAppOnError(err as string)
+      errorHandler && errorHandler(err, instance, info)
+    }
     return mount(root, false, false)
   }
   vueContext = app._context

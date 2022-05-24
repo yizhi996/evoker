@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useApp } from "nzoth"
 
-const { onLaunch, onShow, onHide } = useApp()
+const { onLaunch, onShow, onHide, onError, onThemeChange } = useApp()
 
 onLaunch(options => {
   console.log("APP onLaunch: ", options)
@@ -13,6 +13,14 @@ onShow(options => {
 
 onHide(() => {
   console.log("APP onHide")
+})
+
+onError(error => {
+  console.log("APP Error: ", error)
+})
+
+onThemeChange(options => {
+  console.log("theme change: ", options.theme)
 })
 </script>
 

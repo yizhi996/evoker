@@ -1,5 +1,5 @@
 import { isFunction, extend } from "@nzoth/shared"
-import type { InvokeCallbackResult } from "./bridge"
+import { InvokeCallbackResult, subscribeHandler } from "./bridge"
 
 export interface GeneralCallbackResult {
   errMsg: string
@@ -70,9 +70,10 @@ export function invokeFailure<T extends CallbackOptions = CallbackOptions>(
   options: T,
   errMsg: string
 ) {
-  const final = `${event}:fail ${errMsg}`
-  isFunction(options.fail) && options.fail({ errMsg: final })
-  isFunction(options.complete) && options.complete({ errMsg: final })
+  const obj = { errMsg: `${event}:fail ${errMsg}` }
+  isFunction(options.fail) && options.fail(obj)
+  isFunction(options.complete) && options.complete(obj)
+  typeof window === "undefined" && subscribeHandler("APP_ON_ERROR", new Error(obj.errMsg))
 }
 
 export function invokeCallback<

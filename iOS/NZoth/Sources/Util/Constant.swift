@@ -74,7 +74,7 @@ struct Constant {
         return "\(platfrom) \(UIDevice.current.systemVersion)"
     }
     
-    static var version: String {
+    static var nativeSDKVersion: String {
         return bundle.infoDictionary!["CFBundleShortVersionString"] as! String
     }
     
