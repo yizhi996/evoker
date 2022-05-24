@@ -71,6 +71,21 @@ interface AppBaseInfo {
   theme: "light" | "dark"
 }
 
+type AuthorizedStatus = "authorized" | "denied" | "not determined"
+
+interface AppAuthorizedSetting {
+  albumAuthorized: AuthorizedStatus
+  bluetoothAuthorized: AuthorizedStatus
+  cameraAuthorized: AuthorizedStatus
+  locationAuthorized: AuthorizedStatus
+  locationReducedAccuracy: boolean
+  microphoneAuthorized: AuthorizedStatus
+  notificationAuthorized: AuthorizedStatus
+  notificationAlertAuthorized: AuthorizedStatus
+  notificationBadgeAuthorized: AuthorizedStatus
+  notificationSoundAuthorized: AuthorizedStatus
+}
+
 interface NativeSystem {
   getSystemSetting(): SystemSetting
 
@@ -79,6 +94,8 @@ interface NativeSystem {
   getWindowInfo(): WindowInfo
 
   getAppBaseInfo(): AppBaseInfo
+
+  getAppAuthorizeSetting(): AppAuthorizedSetting
 }
 
 interface Page {

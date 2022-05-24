@@ -17,8 +17,18 @@ export function getAppBaseInfo() {
   return globalThis.__NZAppServiceNativeSDK.system.getAppBaseInfo()
 }
 
+export function getAppAuthorizeSetting() {
+  return globalThis.__NZAppServiceNativeSDK.system.getAppAuthorizeSetting()
+}
+
 export function getSystemInfoSync() {
-  return extend(getSystemSetting(), getDeviceInfo(), getWindowInfo(), getAppBaseInfo())
+  return extend(
+    getSystemSetting(),
+    getDeviceInfo(),
+    getWindowInfo(),
+    getAppBaseInfo(),
+    getAppAuthorizeSetting()
+  )
 }
 
 interface GetSystemInfoOptions {

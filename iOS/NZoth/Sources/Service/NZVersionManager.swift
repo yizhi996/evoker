@@ -20,10 +20,15 @@ public class NZVersionManager {
         if NZEngine.shared.config.devServer.useDevJSSDK {
             return "dev"
         }
-        if let version = UserDefaults.standard.string(forKey: jsSDKVersionkey), !version.isEmpty {
-            return version
-        }
         let version = Constant.jsSDKVersion
+        if let currentVersion = UserDefaults.standard.string(forKey: jsSDKVersionkey), !version.isEmpty {
+            let orderd = version.compare(currentVersion, options: .numeric)
+            if orderd == .orderedDescending {
+                UserDefaults.standard.set(version, forKey: jsSDKVersionkey)
+                return version
+            }
+            return currentVersion
+        }
         UserDefaults.standard.set(version, forKey: jsSDKVersionkey)
         return version
     }

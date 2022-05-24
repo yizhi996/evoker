@@ -3,6 +3,7 @@ import {
   getAppBaseInfo,
   getDeviceInfo,
   getSystemSetting,
+  getAppAuthorizeSetting,
   getSystemInfo,
   getSystemInfoAsync,
   getSystemInfoSync
@@ -74,6 +75,7 @@ import { openSetting } from "./api/auth"
 import { login, checkSession } from "@nzoth/bridge"
 import { showTabBar, hideTabBar } from "../bridge/api/ui/tabBar"
 import { createIntersectionObserver } from "./api/html/intersection"
+import { onError, offError } from "../lifecycle/global"
 import "./fromWebView"
 
 const env = { USER_DATA_PATH: "nzfile://usr" }
@@ -113,6 +115,7 @@ export {
   vibrateLong,
   rsa,
   getWindowInfo,
+  getAppAuthorizeSetting,
   navigateToMiniProgram,
   createCameraContext,
   createInnerAudioContext,
@@ -159,7 +162,9 @@ export {
   getUserProfile,
   login,
   checkSession,
-  createIntersectionObserver
+  createIntersectionObserver,
+  onError,
+  offError
 }
 
 export default {
@@ -197,6 +202,7 @@ export default {
   vibrateLong,
   rsa,
   getWindowInfo,
+  getAppAuthorizeSetting,
   navigateToMiniProgram,
   createCameraContext,
   createInnerAudioContext,
@@ -243,5 +249,7 @@ export default {
   getUserProfile,
   login,
   checkSession,
-  createIntersectionObserver
+  createIntersectionObserver,
+  onError,
+  offError
 }

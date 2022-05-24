@@ -1,10 +1,6 @@
-import { DefineComponent, Component, onMounted } from "vue"
+import { DefineComponent, onMounted } from "vue"
 import { InnerJSBridge } from "./bridge/bridge"
 import { LifecycleHooks } from "./lifecycle/hooks"
-
-export interface CreateRouterOptions {
-  routes: Component[]
-}
 
 export const routes = new Map<string, DefineComponent>()
 
@@ -33,7 +29,7 @@ export function decodeURL(url: string) {
 }
 
 function wrapper(component: DefineComponent) {
-  const setup = component.setup
+  const { setup } = component
   component.inheritAttrs = false
   component.setup = (props, ctx) => {
     const { __pageId: pageId, __query: query } = ctx.attrs as {

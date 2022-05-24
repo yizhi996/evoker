@@ -21,6 +21,8 @@ import CoreLocation
     func getDeviceInfo() -> [String: Any]
     
     func getAppBaseInfo() -> [String: Any]
+    
+    func getAppAuthorizeSetting() -> [String: Any]
 }
 
 @objc public class NZSystemAPI: NSObject, NZSystemAPIExport {
@@ -96,11 +98,27 @@ import CoreLocation
         }
         return [
             "SDKVersion": NZVersionManager.shared.localJSSDKVersion,
-            "enableDebug": NZEngine.shared.config.devServer.useDevServer,
+            "enableDebug": false,
             "language": Locale.preferredLanguages.first!,
-            "version": Constant.version,
-            "hostVersion": Constant.hostVersion,
+            "version": Constant.hostVersion,
+            "nativeSDKVersion": Constant.nativeSDKVersion,
             "theme": theme
+        ]
+    }
+    
+    public func getAppAuthorizeSetting() -> [String: Any] {
+        let notificationAuthorized = PrivacyPermission.notificationSettings
+        return [
+            "albumAuthorized": PrivacyPermission.album.toString(),
+            "bluetoothAuthorized": PrivacyPermission.bluetooth.toString(),
+            "cameraAuthorized": PrivacyPermission.camera.toString(),
+            "locationAuthorized": PrivacyPermission.location.toString(),
+            "locationReducedAccuracy": PrivacyPermission.isLocationReduced,
+            "microphoneAuthorized": PrivacyPermission.microphone.toString(),
+            "notificationAuthorized": notificationAuthorized.status.toString(),
+            "notificationAlertAuthorized": notificationAuthorized.alert.toString(),
+            "notificationBadgeAuthorized": notificationAuthorized.badge.toString(),
+            "notificationSoundAuthorized": notificationAuthorized.sound.toString(),
         ]
     }
 }

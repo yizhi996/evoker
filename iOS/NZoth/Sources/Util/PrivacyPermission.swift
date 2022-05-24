@@ -9,21 +9,122 @@
 import Foundation
 import AVFoundation
 import CoreBluetooth
+import Photos
 
 class PrivacyPermission {
     
-    enum PermissionStatus: Int {
+    enum Status: Int {
         case authorized
         case denied
         case notDetermined
+        
+        func toString() -> String {
+            switch self {
+            case .authorized:
+                return "authorized"
+            case .denied:
+                return "denied"
+            case .notDetermined:
+                return "not determined"
+            }
+        }
     }
     
+    static let shared = PrivacyPermission()
+    
+    var bluetoothHandler: NZBluetoothHandler?
+    
+    var locationHandler: NZLocationHandler?
+    
+}
+
+//MARK: Album {
+extension PrivacyPermission {
+    
+    class var album: Status {
+        switch PHPhotoLibrary.authorizationStatus() {
+        case .authorized:
+            return .authorized
+        case .denied:
+        return .denied
+        case .notDetermined:
+            return .notDetermined
+        case .restricted:
+            return .denied
+        case .limited:
+            return .authorized
+        @unknown default:
+            return .denied
+        }
+    }
+    
+    class func requestAlbum(completion: @escaping () -> Void) {
+        PHPhotoLibrary.requestAuthorization({ finished in
+            DispatchQueue.main.async {
+                completion()
+            }
+        })
+    }
+}
+
+//MARK: Location
+extension PrivacyPermission {
+    
+    class var location: Status {
+        let locationManager = CLLocationManager()
+        let status: CLAuthorizationStatus
+        if #available(iOS 14.0, *) {
+            status = locationManager.authorizationStatus
+        } else {
+            status = CLLocationManager.authorizationStatus()
+        }
+
+        switch status {
+        case .authorized:
+            return .authorized
+        case .denied:
+            return .denied
+        case .notDetermined:
+            return .notDetermined
+        case .restricted:
+            return .denied
+        case .authorizedAlways:
+            return .authorized
+        case .authorizedWhenInUse:
+            return .authorized
+        @unknown default:
+            return .denied
+        }
+    }
+    
+    class var isLocationReduced: Bool {
+        if #available(iOS 14.0, *) {
+            switch CLLocationManager().accuracyAuthorization {
+            case .fullAccuracy:
+                return false
+            case .reducedAccuracy:
+                return true
+            @unknown default:
+                return false
+            }
+        }
+        return false
+    }
+    
+    class func requestLocation(completion: @escaping () -> Void) {
+        let handler = NZLocationHandler()
+        handler.completionHandler = {
+            shared.locationHandler = nil
+            completion()
+        }
+        shared.locationHandler = handler
+    }
 }
 
 //MARK: Camera
 extension PrivacyPermission {
     
-    class var camera: PermissionStatus {
+    class var camera: Status {
         switch AVCaptureDevice.authorizationStatus(for: AVMediaType.video) {
         case .authorized:
             return .authorized
@@ -50,7 +151,7 @@ extension PrivacyPermission {
 //MARK: Microphone
 extension PrivacyPermission {
     
-    class var microphone: PermissionStatus {
+    class var microphone: Status {
         switch AVAudioSession.sharedInstance().recordPermission {
         case .granted:
             return .authorized
@@ -76,8 +177,8 @@ extension PrivacyPermission {
 //MARK: Bluetooth
 extension PrivacyPermission {
     
-    class var bluetooth: PermissionStatus {
-        if #available(iOS 13.1, tvOS 13.1, *) {
+    class var bluetooth: Status {
+        if #available(iOS 13.1, *) {
             switch CBCentralManager.authorization {
             case .allowedAlways:
                 return .authorized
@@ -90,7 +191,7 @@ extension PrivacyPermission {
             default:
                 return .denied
             }
-        } else if #available(iOS 13.0, tvOS 13.0, *) {
+        } else if #available(iOS 13.0, *) {
             switch CBCentralManager().authorization {
             case .allowedAlways:
                 return .authorized
@@ -120,17 +221,82 @@ extension PrivacyPermission {
     }
 
     class func requestBluetooth(completion: @escaping () -> Void) {
-        NZBluetoothManager.shared.completion = completion
-        NZBluetoothManager.shared.requestAuthorization()
+        let handler = NZBluetoothHandler()
+        handler.completionHandler = {
+            completion()
+            shared.bluetoothHandler = nil
+        }
+        shared.bluetoothHandler = NZBluetoothHandler()
     }
 }
 
-class NZBluetoothManager: NSObject {
+//MARK: Notification
+extension PrivacyPermission {
     
-    var completion: NZEmptyBlock?
+    struct NotificationSettings {
+        let status: Status
+        let alert: Status
+        let badge: Status
+        let sound: Status
+    }
+    
+    class var notificationSettings: NotificationSettings {
+        let center = UNUserNotificationCenter.current()
         
-    static let shared = NZBluetoothManager()
+        let semaphore = DispatchSemaphore(value: 0)
+        var settings: UNNotificationSettings?
+        DispatchQueue.global().async {
+            center.getNotificationSettings { _settings in
+                settings = _settings
+                semaphore.signal()
+            }
+        }
+        semaphore.wait()
+        let notDetermined = NotificationSettings(status: .notDetermined,
+                                                 alert: .notDetermined,
+                                                 badge: .notDetermined,
+                                                 sound: .notDetermined)
+        let denied = NotificationSettings(status: .denied,
+                                          alert: .denied,
+                                          badge: .denied,
+                                          sound: .denied)
+        guard let settings = settings else { return notDetermined }
+        
+        let authorized = NotificationSettings(status: .authorized,
+                                              alert: settings.alertSetting == .enabled ? .authorized : .denied,
+                                              badge: settings.badgeSetting == .enabled ? .authorized : .denied,
+                                              sound: settings.soundSetting == .enabled ? .authorized : .denied)
+        
+        switch settings.authorizationStatus {
+        case .authorized:
+            return authorized
+        case .denied:
+            return denied
+        case .notDetermined:
+            return notDetermined
+        case .provisional:
+            return authorized
+        case .ephemeral:
+            return authorized
+        @unknown default:
+            return denied
+        }
+    }
     
+    class func requestNotification(completion: @escaping () -> Void) {
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options:[.badge, .alert, .sound]) { _,_  in
+                DispatchQueue.main.async {
+                    completion()
+                }
+            }
+        }
+}
+
+class NZBluetoothHandler: NSObject {
+    
+    var completionHandler: NZEmptyBlock?
+        
     var manager: CBCentralManager?
     
     override init() {
@@ -139,29 +305,34 @@ class NZBluetoothManager: NSObject {
         manager = CBCentralManager(delegate: self, queue: nil, options: [:])
     }
     
-    func requestAuthorization() {
-        completion?()
-    }
 }
 
-extension NZBluetoothManager: CBCentralManagerDelegate {
+extension NZBluetoothHandler: CBCentralManagerDelegate {
     
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        if #available(iOS 13.0, tvOS 13, *) {
-            switch central.authorization {
-            case .notDetermined:
-                break
-            default:
-                completion?()
-            }
-        } else {
-            switch CBPeripheralManager.authorizationStatus() {
-            case .notDetermined:
-                break
-            default:
-                completion?()
-            }
-        }
+        completionHandler?()
+    }
+
+}
+
+class NZLocationHandler: NSObject {
+    
+    var completionHandler: NZEmptyBlock?
+    
+    let locationManager = CLLocationManager()
+    
+    override init() {
+        super.init()
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+    }
+    
+}
+
+extension NZLocationHandler: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        completionHandler?()
     }
 
 }

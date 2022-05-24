@@ -294,7 +294,7 @@ extension NZEngine {
                 checkAppUpdateHandler(appId,
                                       launchOptions.envVersion,
                                       localVersion,
-                                      Constant.version,
+                                      Constant.nativeSDKVersion,
                                       updateFinishedHandler)
             } else {
                 updateFinishedHandler(true)
