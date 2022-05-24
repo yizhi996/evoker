@@ -75,7 +75,7 @@ import { openSetting } from "./api/auth"
 import { login, checkSession } from "@nzoth/bridge"
 import { showTabBar, hideTabBar } from "../bridge/api/ui/tabBar"
 import { createIntersectionObserver } from "./api/html/intersection"
-import { onError, offError } from "../lifecycle/global"
+import { onShow, offShow, onHide, offHide, onError, offError } from "../lifecycle/global"
 import "./fromWebView"
 
 const env = { USER_DATA_PATH: "nzfile://usr" }
@@ -163,6 +163,10 @@ export {
   login,
   checkSession,
   createIntersectionObserver,
+  onShow,
+  offShow,
+  onHide,
+  offHide,
   onError,
   offError
 }
@@ -250,6 +254,10 @@ export default {
   login,
   checkSession,
   createIntersectionObserver,
+  onShow,
+  offShow,
+  onHide,
+  offHide,
   onError,
   offError
 }

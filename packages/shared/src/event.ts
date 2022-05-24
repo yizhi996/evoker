@@ -31,7 +31,7 @@ export function removeEvent<T = unknown>(type: string, callback: number | Callba
   }
 }
 
-export function dispatchEvent(type: string, data: any) {
+export function dispatchEvent(type: string, data?: any) {
   if (events[type]) {
     events[type].forEach(ev => {
       ev.callback(data)

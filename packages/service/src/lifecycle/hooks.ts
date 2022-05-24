@@ -1,6 +1,7 @@
 import { InnerJSBridge } from "../bridge/bridge"
-import { dispatchEvent, isFunction } from "@nzoth/shared"
+import { dispatchEvent, extend, isFunction } from "@nzoth/shared"
 import { unmountPage } from "../app"
+import { decodeURL } from "../router"
 
 export const enum LifecycleHooks {
   APP_ON_LAUNCH = "APP_ON_LAUNCH",
@@ -78,16 +79,20 @@ function invokePageHook(lifecycle: LifecycleHooks, pageId: number, data?: any) {
   }
 }
 
-InnerJSBridge.subscribe(LifecycleHooks.APP_ON_LAUNCH, message => {
-  invokeAppHook(LifecycleHooks.APP_ON_LAUNCH, message)
+InnerJSBridge.subscribe<{ path: string }>(LifecycleHooks.APP_ON_LAUNCH, message => {
+  const options = extend(message, decodeURL(message.path))
+  invokeAppHook(LifecycleHooks.APP_ON_LAUNCH, options)
 })
 
-InnerJSBridge.subscribe(LifecycleHooks.APP_ON_SHOW, message => {
-  invokeAppHook(LifecycleHooks.APP_ON_SHOW, message)
+InnerJSBridge.subscribe<{ path: string }>(LifecycleHooks.APP_ON_SHOW, message => {
+  const options = extend(message, decodeURL(message.path))
+  invokeAppHook(LifecycleHooks.APP_ON_SHOW, options)
+  dispatchEvent(LifecycleHooks.APP_ON_SHOW, options)
 })
 
 InnerJSBridge.subscribe(LifecycleHooks.APP_ON_HIDE, () => {
   invokeAppHook(LifecycleHooks.APP_ON_HIDE)
+  dispatchEvent(LifecycleHooks.APP_ON_HIDE)
 })
 
 InnerJSBridge.subscribe(LifecycleHooks.APP_ON_ERROR, message => {

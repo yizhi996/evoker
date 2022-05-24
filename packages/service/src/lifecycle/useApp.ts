@@ -1,15 +1,20 @@
 import { LifecycleHooks, createHook } from "./hooks"
-import { decodeURL } from "../router"
 
-interface AppLaunchOptions {
+export type AppLaunchCallback = (options: AppLaunchOptions) => void
+
+export interface AppLaunchOptions {
   path: string
   query: Record<string, any>
 }
 
-interface AppShowOptions {
+export type AppShowCallback = (options: AppShowOptions) => void
+
+export interface AppShowOptions {
   path: string
   query: Record<string, any>
 }
+
+export type AppHideCallback = () => void
 
 export type AppErrorCallback = (error: string) => void
 
@@ -21,17 +26,13 @@ export interface AppThemeChangeResult {
 
 export default function useApp() {
   return {
-    onLaunch: (hook: (options: AppLaunchOptions) => void) => {
-      return createHook(LifecycleHooks.APP_ON_LAUNCH, (message: { path: string }) => {
-        hook(decodeURL(message.path))
-      })
+    onLaunch: (hook: AppLaunchCallback) => {
+      return createHook(LifecycleHooks.APP_ON_LAUNCH, hook)
     },
-    onShow: (hook: (options: AppShowOptions) => void) => {
-      return createHook(LifecycleHooks.APP_ON_SHOW, (message: { path: string }) => {
-        hook(decodeURL(message.path))
-      })
+    onShow: (hook: AppShowCallback) => {
+      return createHook(LifecycleHooks.APP_ON_SHOW, hook)
     },
-    onHide: (hook: () => void) => {
+    onHide: (hook: AppHideCallback) => {
       return createHook(LifecycleHooks.APP_ON_HIDE, hook)
     },
     onError: (hook: AppErrorCallback) => {
