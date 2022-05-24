@@ -217,6 +217,9 @@ export function showActionSheet<T extends ShowActionSheetOptions = ShowActionShe
       },
       options
     )
+    if (finalOptions.itemList.length > 6) {
+      finalOptions.itemList = finalOptions.itemList.slice(0, 6)
+    }
     invoke<SuccessResult<T>>(event, finalOptions, result => {
       invokeCallback(event, finalOptions, result)
     })

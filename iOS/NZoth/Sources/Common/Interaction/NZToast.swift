@@ -26,6 +26,8 @@ class NZToast: UIView, NZTransitionView {
         case none
     }
     
+    static var global: NZToast?
+    
     let params: Params
     
     let borderView = UIView()
@@ -111,6 +113,11 @@ class NZToast: UIView, NZTransitionView {
     }
     
     func show(to view: UIView) {
+        if let previous = NZToast.global {
+            previous.hide()
+        }
+        NZToast.global = self
+        
         view.addSubview(self)
         frame = view.bounds
         borderView.alpha = 0.0
@@ -119,6 +126,9 @@ class NZToast: UIView, NZTransitionView {
                 let duration = TimeInterval(self.params.duration / 1000)
                 DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
                     self.hide()
+                    if NZToast.global === self {
+                        NZToast.global = nil
+                    }
                 }
             }
         }

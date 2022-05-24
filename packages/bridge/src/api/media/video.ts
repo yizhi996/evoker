@@ -96,9 +96,7 @@ export function chooseVideo<T extends ChooseVideoOptions = ChooseVideoOptions>(
     showActionSheet({ itemList: ["拍摄", "从手机相册选择"] })
       .then(result => {
         const tapIndex = result.tapIndex
-        if (tapIndex === -1) {
-          invokeFailure(event, finalOptions, "cancel")
-        } else if (tapIndex === 0) {
+        if (tapIndex === 0) {
           openCamera()
         } else if (tapIndex === 1) {
           openAlbum()

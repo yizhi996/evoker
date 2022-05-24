@@ -77,7 +77,9 @@ enum NZInteractionAPI: String, NZBuiltInAPI {
     }
     
     private func hideToast(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
-
+        NZToast.global?.hide()
+        NZToast.global = nil
+        bridge.invokeCallbackSuccess(args: args)
     }
     
     private func showActionSheet(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
@@ -97,7 +99,7 @@ enum NZInteractionAPI: String, NZBuiltInAPI {
         let cover = NZCoverView.init(contentView: actionSheet)
         cover.clickHandler = {
             cover.hide()
-            bridge.invokeCallbackSuccess(args: args, result: ["tapIndex": -1])
+            bridge.invokeCallbackFail(args: args, error: NZError.bridgeFailed(reason: .cancel))
         }
         actionSheet.confirmHandler = { selected in
             cover.hide()
@@ -105,7 +107,7 @@ enum NZInteractionAPI: String, NZBuiltInAPI {
         }
         actionSheet.cancelHandler = {
             cover.hide()
-            bridge.invokeCallbackSuccess(args: args, result: ["tapIndex": -1])
+            bridge.invokeCallbackFail(args: args, error: NZError.bridgeFailed(reason: .cancel))
         }
         cover.show(to: viewController.view)
     }

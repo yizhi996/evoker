@@ -14,7 +14,8 @@ import {
 import { extend } from "@nzoth/shared"
 
 const enum Events {
-  PREVIEW_IMAGE = "previewImage"
+  PREVIEW_IMAGE = "previewImage",
+  CHOOSE_IMAGE = "chooseImage"
 }
 
 interface PreviewImageOptions {
@@ -70,6 +71,7 @@ export function chooseImage<T extends ChooseImageOptions = ChooseImageOptions>(
   options: T
 ): AsyncReturn<T, ChooseImageOptions> {
   return wrapperAsyncAPI<T>(options => {
+    const event = Events.CHOOSE_IMAGE
     const finalOptions = extend(
       {
         count: 9,
@@ -85,13 +87,13 @@ export function chooseImage<T extends ChooseImageOptions = ChooseImageOptions>(
     const openCamera = () => {
       openNativelyCameraTakePhoto(finalOptions.sizeType!)
         .then(result => {
-          invokeSuccess("chooseImage", finalOptions, {
+          invokeSuccess(event, finalOptions, {
             tempFilePaths: [result.tempFilePath],
             tempFiles: [result.tempFile]
           })
         })
         .catch(error => {
-          invokeFailure("chooseImage", finalOptions, error)
+          invokeFailure(event, finalOptions, error)
         })
     }
 
@@ -101,10 +103,10 @@ export function chooseImage<T extends ChooseImageOptions = ChooseImageOptions>(
         sizeType: finalOptions.sizeType!
       })
         .then(result => {
-          invokeSuccess("chooseImage", finalOptions, result)
+          invokeSuccess(event, finalOptions, result)
         })
         .catch(error => {
-          invokeFailure("chooseImage", finalOptions, error)
+          invokeFailure(event, finalOptions, error)
         })
     }
 
@@ -121,16 +123,14 @@ export function chooseImage<T extends ChooseImageOptions = ChooseImageOptions>(
     showActionSheet({ itemList: ["拍照", "从手机相册选择"] })
       .then(result => {
         const tapIndex = result.tapIndex
-        if (tapIndex === -1) {
-          invokeFailure("chooseImage", finalOptions, "cancel")
-        } else if (tapIndex === 0) {
+        if (tapIndex === 0) {
           openCamera()
         } else if (tapIndex === 1) {
           openAlbum()
         }
       })
       .catch(error => {
-        invokeFailure("chooseImage", finalOptions, error)
+        invokeFailure(event, finalOptions, error)
       })
   }, options)
 }

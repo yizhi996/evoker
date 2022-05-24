@@ -43,14 +43,9 @@ export function makePhoneCall<T extends MakePhoneCallOptions = MakePhoneCallOpti
 
     showActionSheet({ alertText: phoneNumber, itemList: ["呼叫"] })
       .then(result => {
-        const tapIndex = result.tapIndex
-        if (tapIndex === -1) {
-          invokeFailure(event, options, "error")
-        } else if (tapIndex === 0) {
-          invoke<SuccessResult<T>>(event, { phoneNumber }, result => {
-            invokeCallback(event, options, result)
-          })
-        }
+        invoke<SuccessResult<T>>(event, { phoneNumber }, result => {
+          invokeCallback(event, options, result)
+        })
       })
       .catch(error => {
         invokeFailure(event, options, error)

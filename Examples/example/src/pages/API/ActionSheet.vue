@@ -7,15 +7,15 @@
 <script setup lang="ts">
 const onShow = async () => {
   const items = ["item 1", "item 2", "item 3", "item 4"]
-  const result = await nz.showActionSheet({ itemList: items })
-  if (result.tapIndex == -1) {
-    nz.showToast({
-      title: "cancel",
-      icon: "none"
-    })
-  } else {
+  try {
+    const result = await nz.showActionSheet({ itemList: items })
     nz.showToast({
       title: `选择了 ${items[result.tapIndex]}`,
+      icon: "none"
+    })
+  } catch {
+    nz.showToast({
+      title: "cancel",
       icon: "none"
     })
   }
