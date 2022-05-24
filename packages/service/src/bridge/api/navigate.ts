@@ -1,16 +1,18 @@
-import { invoke } from "../bridge"
+import { InnerJSBridge } from "../bridge"
 import {
-  invokeCallback,
-  invokeFailure,
-  GeneralCallbackResult,
-  AsyncReturn,
   SuccessResult,
-  wrapperAsyncAPI
-} from "../async"
+  GeneralCallbackResult,
+  invokeCallback,
+  wrapperAsyncAPI,
+  AsyncReturn,
+  invokeFailure
+} from "@nzoth/bridge"
 import { extend } from "@nzoth/shared"
+import { innerAppData } from "../../app"
 
 const enum Events {
-  NAVIGATE_TO_MINI_PROGRAM = "navigateToMiniProgram"
+  NAVIGATE_TO_MINI_PROGRAM = "navigateToMiniProgram",
+  EXIT_MINI_PROGRAM = "exitMiniProgram"
 }
 
 interface NavigateToMiniProgramOptions {
@@ -59,8 +61,35 @@ export function navigateToMiniProgram<
       finalOptions.extraData = undefined
     }
 
-    invoke<SuccessResult<T>>(event, finalOptions, result => {
+    InnerJSBridge.invoke<SuccessResult<T>>(event, finalOptions, result => {
       invokeCallback(event, finalOptions, result)
+    })
+  }, options)
+}
+
+interface ExitMiniProgramOptions {
+  success?: ExitMiniProgramSuccessCallback
+  fail?: ExitMiniProgramFailCallback
+  complete?: ExitMiniProgramCompleteCallback
+}
+
+type ExitMiniProgramSuccessCallback = (res: GeneralCallbackResult) => void
+
+type ExitMiniProgramFailCallback = (res: GeneralCallbackResult) => void
+
+type ExitMiniProgramCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function exitMiniProgram<T extends ExitMiniProgramOptions = ExitMiniProgramOptions>(
+  options: T
+): AsyncReturn<T, ExitMiniProgramOptions> {
+  return wrapperAsyncAPI<T>(options => {
+    const event = Events.EXIT_MINI_PROGRAM
+    if (!innerAppData.eventFromUserClick) {
+      invokeFailure(event, options, "can only be invoked by user click gesture.")
+      return
+    }
+    InnerJSBridge.invoke<SuccessResult<T>>(event, options, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

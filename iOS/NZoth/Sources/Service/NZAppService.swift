@@ -265,7 +265,14 @@ final public class NZAppService {
         }
     }
     
-    @objc public func killApp() {
+    public func exit(animated: Bool = true) {
+        dismiss(animated: animated) { [unowned self] in
+            self.killApp()
+        }
+    }
+    
+    @objc
+    private func killApp() {
         cleanKillTimer()
         context.clearAllTimer()
         unloadAllPages()

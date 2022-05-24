@@ -9,7 +9,7 @@ import {
   getSystemInfoSync
 } from "./api/base/system"
 import { navigateTo, navigateBack, redirectTo, reLaunch, switchTab } from "./api/route"
-import { navigateToMiniProgram } from "@nzoth/bridge"
+import { navigateToMiniProgram, exitMiniProgram } from "./api/navigate"
 import { getStorage, setStorage, removeStorage, clearStorage, getStorageInfo } from "@nzoth/bridge"
 import {
   showModal,
@@ -117,6 +117,7 @@ export {
   getWindowInfo,
   getAppAuthorizeSetting,
   navigateToMiniProgram,
+  exitMiniProgram,
   createCameraContext,
   createInnerAudioContext,
   getAppBaseInfo,
@@ -208,6 +209,7 @@ export default {
   getWindowInfo,
   getAppAuthorizeSetting,
   navigateToMiniProgram,
+  exitMiniProgram,
   createCameraContext,
   createInnerAudioContext,
   getAppBaseInfo,

@@ -12,12 +12,15 @@ import UIKit
 enum NZNavigateAPI: String, NZBuiltInAPI {
     
     case navigateToMiniProgram
+    case exitMiniProgram
     
     func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .navigateToMiniProgram:
                 navigateToMiniProgram(appService: appService, bridge: bridge, args: args)
+            case .exitMiniProgram:
+                exitMiniProgram(appService: appService, bridge: bridge, args: args)
             }
         }
     }
@@ -52,7 +55,17 @@ enum NZNavigateAPI: String, NZBuiltInAPI {
         options.envVersion = envVersion
         options.referrerInfo = NZAppLaunchOptions.ReferrerInfo(appId: appService.appId,
                                                                extraDataString: params.extraDataString)
-        NZEngine.shared.openApp(appId: params.appId, launchOptions: options, completionHandler: nil)
+        NZEngine.shared.openApp(appId: params.appId, launchOptions: options) { error in
+            if let error = error {
+                bridge.invokeCallbackFail(args: args, error: error)
+            } else {
+                bridge.invokeCallbackSuccess(args: args)
+            }
+        }
+    }
+    
+    private func exitMiniProgram(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
+        appService.exit()
         bridge.invokeCallbackSuccess(args: args)
     }
 }

@@ -308,9 +308,9 @@ extension NZEngine {
         return runningApp.first(where: { $0.runningId == runningId })
     }
     
-    public func killAllApp() {
+    public func exitAllApp() {
         currentApp = nil
-        runningApp.forEach { $0.killApp() }
+        runningApp.forEach { $0.exit() }
     }
     
     public struct ClearOptions: OptionSet {
