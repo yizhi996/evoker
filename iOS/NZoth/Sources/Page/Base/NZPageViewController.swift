@@ -19,6 +19,10 @@ open class NZPageViewController: UIViewController {
     
     var loadCompletedHandler: NZEmptyBlock?
     
+    open override var preferredStatusBarStyle: UIStatusBarStyle {
+        return page.navigationBarTextStyle == .black ? .default : .lightContent
+    }
+    
     public init(page: NZPage) {
         self.page = page
         super.init(nibName: nil, bundle: nil)

@@ -57,22 +57,11 @@ public extension NZPage {
     }
     
     var navigationBarTextStyle: UIColor {
-        if let value = style?.navigationBarTextStyle, !value.isEmpty {
-            if value == "black" {
-                return UIColor.black
-            } else if value == "white" {
-                return UIColor.white
-            }
-            return value.hexColor()
+        if let value = style?.navigationBarTextStyle {
+            return value.toColor()
         } else if let appService = appService,
-                  let value = appService.config.window?.navigationBarTextStyle,
-                  !value.isEmpty {
-            if value == "black" {
-                return UIColor.black
-            } else if value == "white" {
-                return UIColor.white
-            }
-            return value.hexColor()
+                  let value = appService.config.window?.navigationBarTextStyle {
+            return value.toColor()
         }
         return .black
     }
@@ -101,5 +90,13 @@ public extension NZPage {
     func setTitle(_ title: String) {
         style?.navigationBarTitleText = title
         viewController?.navigationBar.setTitle(title)
+    }
+    
+    func setNavigationBarTextStyle(_ style: NZPageStyle.NavigationBarTextStyle) {
+        self.style?.navigationBarTextStyle = style
+        viewController?.navigationBar.color = style.toColor()
+        viewController?.navigationBar.setBackIconColor(style)
+        viewController?.setNeedsStatusBarAppearanceUpdate()
+        appService?.uiControl.capsuleView.setColor(style)
     }
 }

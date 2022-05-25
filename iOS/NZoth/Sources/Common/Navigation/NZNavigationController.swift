@@ -11,6 +11,8 @@ import UIKit
 
 open class NZNavigationController: UINavigationController {
     
+    var themeChangeHandler: NZStringBlock?
+    
     open override var shouldAutorotate: Bool {
         return topViewController?.shouldAutorotate ?? false
     }
@@ -29,6 +31,16 @@ open class NZNavigationController: UINavigationController {
        
     open override var childForStatusBarHidden: UIViewController? {
         return self.topViewController
+    }
+    
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if #available(iOS 13.0, *) {
+            if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+                themeChangeHandler?(traitCollection.userInterfaceStyle == .dark ? "dark" : "light")
+            }
+        }
     }
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {

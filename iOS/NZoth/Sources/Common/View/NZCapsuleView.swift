@@ -20,13 +20,15 @@ class NZCapsuleView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let moreIcon = UIImage(builtIn: "mini-program-more-icon")
+        let moreIcon = UIImage.image(light: UIImage(builtIn: "mini-program-more-icon")!,
+                                     dark: UIImage(builtIn: "mini-program-more-icon-dark")!)
         moreButton.setImage(moreIcon, for: .normal)
         addSubview(moreButton)
         moreButton.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .right)
         moreButton.autoSetDimensions(to: CGSize(width: buttonWidth, height: buttonHeight))
         
-        let closeIcon = UIImage(builtIn: "mini-program-close-icon")
+        let closeIcon = UIImage.image(light: UIImage(builtIn: "mini-program-close-icon")!,
+                                      dark: UIImage(builtIn: "mini-program-close-icon-dark")!)
         closeButton.setImage(closeIcon, for: .normal)
         addSubview(closeButton)
         closeButton.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .left)
@@ -38,5 +40,14 @@ class NZCapsuleView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
+    func setColor(_ style: NZPageStyle.NavigationBarTextStyle) {
+        if style == .black {
+            moreButton.setImage(UIImage(builtIn: "mini-program-more-icon"), for: .normal)
+            closeButton.setImage(UIImage(builtIn: "mini-program-close-icon"), for: .normal)
+        } else {
+            moreButton.setImage(UIImage(builtIn: "mini-program-more-icon-dark"), for: .normal)
+            closeButton.setImage(UIImage(builtIn: "mini-program-close-icon-dark"), for: .normal)
+        }
+    }
 }

@@ -80,7 +80,7 @@ enum NZNavigationAPI: String, NZBuiltInAPI {
     private func setNavigationBarColor(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
-            let frontColor: String
+            let _frontColor: NZPageStyle.NavigationBarTextStyle
             let backgroundColor: String
             let animation: Animation
         }
@@ -110,8 +110,14 @@ enum NZNavigationAPI: String, NZBuiltInAPI {
             }
         }
         
-        guard let viewController = appService.currentPage?.viewController else {
+        guard let page = appService.currentPage else {
             let error = NZError.bridgeFailed(reason: .pageNotFound)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let viewController = appService.currentPage?.viewController else {
+            let error = NZError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -122,17 +128,17 @@ enum NZNavigationAPI: String, NZBuiltInAPI {
             return
         }
         
-        UIView.animate(withDuration: params.animation.duration,
+        UIView.animate(withDuration: params.animation.duration / 1000,
                        delay: 0,
                        options: params.animation.timingFunc.toNatively()) {
             viewController.navigationBar.backgroundColor = params.backgroundColor.hexColor()
-            viewController.navigationBar.color = params.frontColor.hexColor()
+            page.setNavigationBarTextStyle(params._frontColor)
         }
         bridge.invokeCallbackSuccess(args: args)
     }
     
     private func hideHomeButton(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
-        appService.pages.last?.viewController?.navigationBar.hideGotoHomeButton()
+        appService.currentPage?.viewController?.navigationBar.hideGotoHomeButton()
         bridge.invokeCallbackSuccess(args: args)
     }
 

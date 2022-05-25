@@ -78,7 +78,8 @@ class NZNavigationBar: UIView {
     func addBackButton(_ handler: @escaping NZEmptyBlock) {
         onBackHandler = handler
         guard backButton == nil else { return }
-        let backIcon = UIImage(builtIn: "back-arrow-icon")
+        let backIcon = UIImage.image(light: UIImage(builtIn: "back-arrow-icon")!,
+                                     dark: UIImage(builtIn: "back-arrow-icon-dark")!)
         backButton = UIButton()
         backButton!.imageView?.tintColor = color
         backButton!.setImage(backIcon, for: .normal)
@@ -92,6 +93,16 @@ class NZNavigationBar: UIView {
     
     func setTitle(_ title: String) {
         titleLabel.text = title
+    }
+    
+    func setBackIconColor(_ style: NZPageStyle.NavigationBarTextStyle) {
+        var icon: UIImage?
+        if style == .white {
+            icon = UIImage(builtIn: "back-arrow-icon-dark")
+        } else {
+            icon = UIImage(builtIn: "back-arrow-icon")
+        }
+        backButton?.setImage(icon, for: .normal)
     }
     
     func showGotoHomeButton() {

@@ -4,7 +4,8 @@ import {
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
-  wrapperAsyncAPI
+  wrapperAsyncAPI,
+  invokeFailure
 } from "../../async"
 import { extend } from "@nzoth/shared"
 
@@ -87,17 +88,35 @@ export function setNavigationBarColor<
 >(options: T): AsyncReturn<T, SetNavigationBarColorOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SET_NAVIGATION_BAR_COLOR
-    const finalOptions = extend(
+    if (!options.frontColor) {
+      invokeFailure(event, options, "required field frontColor")
+      return
+    }
+    if (!["#ffffff", "#000000"].includes(options.frontColor)) {
+      invokeFailure(event, options, "frontColor valid value: #ffffff, #000000")
+      return
+    }
+    if (!options.backgroundColor) {
+      invokeFailure(event, options, "required field backgroundColor")
+      return
+    }
+
+    if (options.frontColor === "#ffffff") {
+      ;(options as any)._frontColor = "white"
+    } else if (options.frontColor === "#000000") {
+      ;(options as any)._frontColor = "black"
+    }
+
+    options.animation = extend(
       {
-        animation: {
-          duration: 0,
-          timingFunc: "linear"
-        }
+        duration: 0,
+        timingFunc: "linear"
       },
-      options
+      options.animation
     )
-    invoke(event, finalOptions, result => {
-      invokeCallback(event, finalOptions, result)
+
+    invoke(event, options, result => {
+      invokeCallback(event, options, result)
     })
   }, options)
 }

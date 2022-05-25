@@ -18,7 +18,7 @@ public class NZAppUIControl {
     
     public var didSelectTabBarIndexHandler: NZIntBlock?
     
-    private let capsuleView = NZCapsuleView()
+    let capsuleView = NZCapsuleView()
     
     public lazy var tabBarView = NZTabBarView()
     

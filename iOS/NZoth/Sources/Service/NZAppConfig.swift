@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 public struct NZAppConfig: Decodable {
     
@@ -29,19 +30,38 @@ public struct NZAppStyle: Decodable {
         case custom = "custom"
     }
     
-    public let navigationBarBackgroundColor: String?
-    public let navigationBarTextStyle: String?
-    public var navigationBarTitleText: String?
-    public let navigationStyle: NavigationStyle?
-    public let backgroundColor: String?
-    
     public enum PageOrientation: String, Codable {
         case auto
         case portrait
         case landspace
     }
     
+    public enum NavigationBarTextStyle: String, Codable {
+        case white
+        case black
+        
+        func toColor() -> UIColor {
+            switch self {
+            case .white:
+                return .white
+            case .black:
+                return .black
+            }
+        }
+    }
+    
     public let pageOrientation: PageOrientation?
+    
+    public let navigationBarBackgroundColor: String?
+    
+    public var navigationBarTextStyle: NavigationBarTextStyle?
+    
+    public var navigationBarTitleText: String?
+    
+    public let navigationStyle: NavigationStyle?
+    
+    public let backgroundColor: String?
+    
 }
 
 public typealias NZPageStyle = NZAppStyle
