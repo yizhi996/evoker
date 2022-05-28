@@ -266,18 +266,35 @@ class Animation {
     return this
   }
 
-  matrix() {
+  matrix(a: number, b: number, c: number, d: number, tx: number, ty: number) {
     this.currentStepAnimates.push({
       type: "matrix",
-      args: [1, 0, 0, 1, 1, 1]
+      args: [a, b, c, d, tx, ty]
     })
     return this
   }
 
-  matrix3d() {
+  matrix3d(
+    a1: number,
+    b1: number,
+    c1: number,
+    d1: number,
+    a2: number,
+    b2: number,
+    c2: number,
+    d2: number,
+    a3: number,
+    b3: number,
+    c3: number,
+    d3: number,
+    a4: number,
+    b4: number,
+    c4: number,
+    d4: number
+  ) {
     this.currentStepAnimates.push({
       type: "matrix3d",
-      args: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+      args: [a1, b1, c1, d1, a2, b2, c2, d2, a3, b3, c3, d3, a4, b4, c4, d4]
     })
     return this
   }

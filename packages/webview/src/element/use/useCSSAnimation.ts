@@ -1,4 +1,5 @@
-import { ref, Ref, watch, nextTick } from "vue"
+import { Ref, watch, nextTick } from "vue"
+import { unitToPx } from "../utils/format"
 
 type AnimationTimingFunction =
   | "linear"
@@ -33,6 +34,8 @@ interface Props {
 }
 
 export default function useCSSAnimation(viewRef: Ref<HTMLElement | undefined>, props: Props) {
+  let animateIdx = 0
+
   watch(
     () => [...props.animation],
     animation => {
@@ -40,8 +43,6 @@ export default function useCSSAnimation(viewRef: Ref<HTMLElement | undefined>, p
       runAnimate(animation[animateIdx])
     }
   )
-
-  let animateIdx = 0
 
   const runAnimate = (anim: AnimationAction) => {
     if (!viewRef.value) {
@@ -56,7 +57,12 @@ export default function useCSSAnimation(viewRef: Ref<HTMLElement | undefined>, p
       const type = action.type
       switch (type) {
         case "style":
-          view.style[action.args[0]] = action.args[1]
+          const key = action.args[0]
+          let value = action.args[1]
+          if (!["background-color", "opacity"].includes(key)) {
+            value = `${unitToPx(value)}px`
+          }
+          view.style[key] = value
           break
         case "rotate":
           transform.push(`${type}(${action.args[0]}deg)`)
@@ -76,7 +82,7 @@ export default function useCSSAnimation(viewRef: Ref<HTMLElement | undefined>, p
           )
           break
         case "scale":
-          transform.push(`${type}(${action.args[0]},${action.args[1]})`)
+          transform.push(`${type}(${action.args.join(", ")})`)
           break
         case "scaleX":
           transform.push(`${type}(${action.args[0]})`)
@@ -88,12 +94,10 @@ export default function useCSSAnimation(viewRef: Ref<HTMLElement | undefined>, p
           transform.push(`${type}(${action.args[0]})`)
           break
         case "scale3d":
-          transform.push(
-            `${type}(${action.args[0]},${action.args[1]},${action.args[2]},${action.args[3]})`
-          )
+          transform.push(`${type}(${action.args.join(", ")})`)
           break
         case "translate":
-          transform.push(`${type}(${action.args[0]},${action.args[1]})`)
+          transform.push(`${type}(${action.args.join(", ")})`)
           break
         case "translateX":
           transform.push(`${type}(${action.args[0]})`)
@@ -105,16 +109,22 @@ export default function useCSSAnimation(viewRef: Ref<HTMLElement | undefined>, p
           transform.push(`${type}(${action.args[0]})`)
           break
         case "translate3d":
-          transform.push(`${type}(${action.args[0]},${action.args[1]},${action.args[2]})`)
+          transform.push(`${type}(${action.args.join(", ")})`)
           break
         case "skew":
-          transform.push(`${type}(${action.args[0]},${action.args[1]})`)
+          transform.push(`${type}(${action.args.join(", ")})`)
           break
         case "skewX":
           transform.push(`${type}(${action.args[0]})`)
           break
         case "skewY":
           transform.push(`${type}(${action.args[0]})`)
+          break
+        case "matrix":
+          transform.push(`${type}(${action.args.join(", ")})`)
+          break
+        case "matrix3d":
+          transform.push(`${type}(${action.args.join(", ")})`)
           break
       }
     })
