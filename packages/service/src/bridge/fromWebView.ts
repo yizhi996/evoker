@@ -56,29 +56,20 @@ InnerJSBridge.subscribe<{ callbackId: number; event: string; params: any[] }>(
   (message, webViewId) => {
     const { callbackId, event, params } = message
     const method = methods[event]
+    const publish = (result: any) => {
+      InnerJSBridge.publish(Events.CALLBACK_APP_SERVICE, { result, callbackId }, webViewId)
+    }
     if (method) {
       method
         .call(null, params || [])
         .then((result: any) => {
-          InnerJSBridge.publish(
-            Events.CALLBACK_APP_SERVICE,
-            {
-              result: { errMsg: "", data: result },
-              callbackId
-            },
-            webViewId
-          )
+          publish({ errMsg: "", data: result })
         })
         .catch((error: string) => {
-          InnerJSBridge.publish(
-            Events.CALLBACK_APP_SERVICE,
-            {
-              result: { errMsg: error, data: {} },
-              callbackId
-            },
-            webViewId
-          )
+          publish({ errMsg: error, data: {} })
         })
+    } else {
+      publish({ errMsg: "this method not defined with service", data: {} })
     }
   }
 )

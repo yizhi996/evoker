@@ -19,14 +19,14 @@ export function loadFontFace(options: LoadFontFaceOptions) {
       .then(
         () => {
           document.fonts.add(font)
-          resolve({ status: "success" })
+          resolve({ status: font.status })
         },
         () => {
-          reject("fail")
+          reject(font.status)
         }
       )
       .catch(() => {
-        reject("fail")
+        reject(font.status)
       })
   })
 }

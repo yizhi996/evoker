@@ -4,7 +4,8 @@ import {
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
-  wrapperAsyncAPI
+  wrapperAsyncAPI,
+  invokeFailure
 } from "../../async"
 
 const enum Events {
@@ -35,6 +36,10 @@ export function setTabBarBadge<T extends SetTabBarBadgeOptions = SetTabBarBadgeO
 ): AsyncReturn<T, SetTabBarBadgeOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SET_TAB_BAR_BADGE
+    if (!options.text) {
+      invokeFailure(event, options, "text cannot be empty")
+      return
+    }
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })

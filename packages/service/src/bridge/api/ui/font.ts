@@ -21,7 +21,11 @@ interface LoadFontFaceOptions {
   complete?: LoadFontFaceCompleteCallback
 }
 
-type LoadFontFaceSuccessCallback = (res: GeneralCallbackResult) => void
+interface LoadFontFaceSuccessCallbackResukt {
+  status: string
+}
+
+type LoadFontFaceSuccessCallback = (res: LoadFontFaceSuccessCallbackResukt) => void
 
 type LoadFontFaceFailCallback = (res: GeneralCallbackResult) => void
 

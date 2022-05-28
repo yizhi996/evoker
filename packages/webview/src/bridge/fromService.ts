@@ -11,7 +11,7 @@ const enum Events {
   INVOKE_APP_SERVICE = "invokeAppServiceMethod",
   CALLBACK_APP_SERVICE = "callbackAppServiceMethod",
   INVOKE_WEB_VIEW = "invokeWebViewMethod",
-  CALLBACL_WEB_VIEW = "callbackWebViewMethod"
+  CALLBACK_WEB_VIEW = "callbackWebViewMethod"
 }
 
 export function invokeAppServiceMethod<T = unknown>(
@@ -53,29 +53,20 @@ NZJSBridge.subscribe<{ callbackId: number; event: string; params: any[] }>(
   message => {
     const { callbackId, event, params } = message
     const method = methods[event]
+    const publish = (result: any) => {
+      NZJSBridge.publish(Events.CALLBACK_WEB_VIEW, { result, callbackId }, window.webViewId)
+    }
     if (method) {
       method
         .call(null, params || [])
         .then((result: any) => {
-          NZJSBridge.publish(
-            Events.CALLBACL_WEB_VIEW,
-            {
-              result: { errMsg: "", data: result },
-              callbackId
-            },
-            window.webViewId
-          )
+          publish({ errMsg: "", data: result })
         })
         .catch((error: string) => {
-          NZJSBridge.publish(
-            Events.CALLBACL_WEB_VIEW,
-            {
-              result: { errMsg: error, data: {} },
-              callbackId
-            },
-            window.webViewId
-          )
+          publish({ errMsg: error, data: {} })
         })
+    } else {
+      publish({ errMsg: "this method not defined with webview", data: {} })
     }
   }
 )
