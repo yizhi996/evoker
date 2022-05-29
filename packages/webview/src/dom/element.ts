@@ -50,34 +50,28 @@ export function createElement(data: any[]): EL | null {
     return has.el
   }
 
+  let el: NZothElement | HTMLElement | SVGElement | Text | Comment | null = null
+
   const node = restoreNode(data)
   if (node.tagName) {
-    let el: NZothElement | HTMLElement | SVGElement
     const component = requireBuiltInComponent(node.tagName)
     if (component) {
       el = createBuiltInComponent(node, component)
     } else {
       el = createNativeElement(node)
     }
-    node.el = el
-    node.el.__nodeId = nodeId
-    nodes.set(node.nodeId, node)
-    return el
   } else if (node.textContent || node.textContent === "") {
-    const el = document.createTextNode(node.textContent)
-    node.el = el
-    node.el.__nodeId = nodeId
-    nodes.set(node.nodeId, node)
-    return el
+    el = document.createTextNode(node.textContent)
   } else if (node.data || node.data === "") {
-    const el = document.createComment(node.data)
+    el = document.createComment(node.data)
+  }
+
+  if (el) {
     node.el = el
     node.el.__nodeId = nodeId
     nodes.set(node.nodeId, node)
-    return el
-  } else {
-    return null
   }
+  return el
 }
 
 function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {

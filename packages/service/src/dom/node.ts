@@ -51,6 +51,7 @@ export class NZothNode extends NZothEventTarget {
       this.childNodes.splice(i, 1)
     }
     this.page.onRemove(this, child)
+    child.isMounted = false
     return child
   }
 

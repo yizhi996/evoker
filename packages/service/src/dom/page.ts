@@ -40,15 +40,18 @@ export class NZothPage {
   }
 
   onInsertBefore(parent: NZothNode, child: NZothNode, anchor?: NZothNode | null) {
-    let message = [SyncFlags.INSERT, minifyNode(child), minifyNode(parent)]
+    const message = [
+      SyncFlags.INSERT,
+      child.isMounted ? [child.nodeId] : minifyNode(child),
+      parent.isMounted ? [parent.nodeId] : minifyNode(parent)
+    ]
     if (anchor) {
-      message.push(minifyNode(anchor))
+      message.push(anchor.isMounted ? [anchor.nodeId] : minifyNode(anchor))
     }
     sync(message, this.pageId)
   }
 
   onRemove(parent: NZothNode, child: NZothNode) {
-    child.isMounted = false
     this.nodes.delete(child.nodeId)
     const message = [SyncFlags.REMOVE, parent.nodeId, child.nodeId]
     sync(message, this.pageId)
