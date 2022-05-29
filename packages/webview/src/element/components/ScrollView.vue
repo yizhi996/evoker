@@ -5,7 +5,7 @@
       :class="scrollX ? 'nz-scroll-view__wrapper--horizontal' : 'nz-scroll-view__wrapper--vertical'"
     >
       <div
-        ref="mainRef"
+        ref="tongcengRef"
         class="nz-scroll-view__wrapper"
         :id="tongcengKey"
         :style="scrollX ? 'overflow: auto hidden' : 'overflow: hidden auto;'"
@@ -77,7 +77,7 @@ const props = withDefaults(
 const {
   tongcengKey,
   nativeId: scrollViewId,
-  containerRef: mainRef,
+  tongcengRef,
   insertContainer
 } = useNative({ scrollEnabled: true })
 
@@ -111,7 +111,7 @@ watch(
   () => props.scrollIntoView,
   scrollIntoView => {
     if (scrollIntoView && /^[_a-zA-Z][-_a-zA-Z0-9:]*$/.test(scrollIntoView)) {
-      const view = mainRef.value && mainRef.value.querySelector("#" + scrollIntoView)
+      const view = tongcengRef.value && tongcengRef.value.querySelector("#" + scrollIntoView)
       view && scrollToElement(view)
     }
   }
@@ -133,7 +133,7 @@ const onTouchEnd = (ev: TouchEvent) => {
 }
 
 const addDragEvent = () => {
-  const el = mainRef.value!
+  const el = tongcengRef.value!
   el.addEventListener("touchstart", onTouchStart)
   el.addEventListener("touchmove", onTouchMove)
   el.addEventListener("touchend", onTouchEnd)
@@ -141,7 +141,7 @@ const addDragEvent = () => {
 }
 
 const removeDragEvent = () => {
-  const el = mainRef.value!
+  const el = tongcengRef.value!
   el.removeEventListener("touchstart", onTouchStart)
   el.removeEventListener("touchmove", onTouchMove)
   el.removeEventListener("touchend", onTouchEnd)
@@ -163,8 +163,8 @@ watch(
 )
 
 onMounted(() => {
-  if (mainRef.value) {
-    mainRef.value.addEventListener("scroll", onScroll)
+  if (tongcengRef.value) {
+    tongcengRef.value.addEventListener("scroll", onScroll)
     if (props.enhanced) {
       setTimeout(() => {
         insertContainer(success => {
@@ -178,8 +178,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (mainRef.value) {
-    mainRef.value.removeEventListener("scroll", onScroll)
+  if (tongcengRef.value) {
+    tongcengRef.value.removeEventListener("scroll", onScroll)
   }
 })
 
@@ -274,16 +274,16 @@ const onScroll = (ev: Event) => {
 }
 
 const scrollToElement = (el: Element) => {
-  const mainRect = mainRef.value!.getBoundingClientRect()
+  const mainRect = tongcengRef.value!.getBoundingClientRect()
   const elRect = el.getBoundingClientRect()
   if (props.scrollX) {
     const offsetX = elRect.left - mainRect.left
-    const target = mainRef.value!.scrollLeft + offsetX
+    const target = tongcengRef.value!.scrollLeft + offsetX
     scrollTo(target, Axis.HORIZONTAL)
   }
   if (props.scrollY) {
     const offsetY = elRect.top - mainRect.top
-    const target = mainRef.value!.scrollTop + offsetY
+    const target = tongcengRef.value!.scrollTop + offsetY
     scrollTo(target, Axis.VETRICAL)
   }
 }
@@ -296,7 +296,7 @@ const enum Axis {
 }
 
 const scrollTo = (target: number, axis: Axis) => {
-  const el = mainRef.value!
+  const el = tongcengRef.value!
   function update(target: number) {
     if (axis === Axis.HORIZONTAL) {
       el.scrollLeft = target
