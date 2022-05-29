@@ -1,11 +1,11 @@
 import { InnerJSBridge } from "../../bridge"
 import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@nzoth/bridge"
-import { isString, isNumber } from "@nzoth/shared"
+import { isString } from "@nzoth/shared"
 import { Events, MAX_TIMEOUT, headerValueToString } from "./util"
-import { env } from "../../index"
+import { env } from "../env"
+import { Task } from "./task"
 
-let requestId = 0
-const downloadTasks: Map<number, DownloadTask> = new Map()
+const downloadTasks: Map<string, DownloadTask> = new Map()
 
 interface DownloadProgressResult {
   progress: number
@@ -15,18 +15,12 @@ interface DownloadProgressResult {
 
 type DownloadProgressCallback = (result: DownloadProgressResult) => void
 
-class DownloadTask {
-  taskId: number
-
+class DownloadTask extends Task {
   private progressCallbacks: DownloadProgressCallback[] = []
 
   constructor() {
-    this.taskId = requestId += 1
+    super("down")
     downloadTasks.set(this.taskId, this)
-  }
-
-  abort() {
-    InnerJSBridge.invoke("cancelRequest", { taskId: this.taskId })
   }
 
   onProgressUpdate(callback: DownloadProgressCallback) {
@@ -44,18 +38,23 @@ class DownloadTask {
 
   /** @internal */
   dispatchProgressCallback(result: DownloadProgressResult) {
-    this.progressCallbacks.forEach(cb => {
-      cb(result)
-    })
+    if (this.isCancel) {
+      this.destroy()
+    } else {
+      this.progressCallbacks.forEach(cb => {
+        cb(result)
+      })
+    }
   }
 
   /** @internal */
   destroy() {
     this.progressCallbacks = []
+    downloadTasks.delete(this.taskId)
   }
 }
 
-InnerJSBridge.subscribe<DownloadProgressResult & { taskId: number }>(
+InnerJSBridge.subscribe<DownloadProgressResult & { taskId: string }>(
   "APP_DOWNLOAD_FILE_PROGRESS",
   result => {
     const task = downloadTasks.get(result.taskId)
@@ -91,53 +90,51 @@ export function downloadFile<T extends DownloadFileOptions = DownloadFileOptions
   options: T
 ): DownloadTask | undefined {
   const event = Events.DOWNLOAD_FILE
-  if (!options.url || !isString(options.url)) {
+  let { url, filePath = "", header = {}, timeout = MAX_TIMEOUT } = options
+  if (!url || !isString(url)) {
     invokeFailure(event, options, "download url cannot be empty")
     return
   }
 
-  if (!/^https?:\/\//.test(options.url)) {
+  if (!/^https?:\/\//.test(url)) {
     invokeFailure(event, options, "download url scheme invalid")
     return
   }
 
-  let filePath = ""
-  if (options.filePath) {
-    if (!isString(options.filePath) || !options.filePath.startsWith(env.USER_DATA_PATH + "/")) {
+  if (filePath) {
+    if (!isString(filePath) || !filePath.startsWith(env.USER_DATA_PATH + "/")) {
       invokeFailure(event, options, "download filePath invalid")
       return
     }
-    filePath = options.filePath.substring(env.USER_DATA_PATH.length + 1)
+    filePath = filePath.substring(env.USER_DATA_PATH.length + 1)
   }
 
-  let header = options.header || {}
   header = headerValueToString(header)
 
-  let timeout = isNumber(options.timeout) ? options.timeout : MAX_TIMEOUT
   if (timeout > MAX_TIMEOUT) {
     timeout = MAX_TIMEOUT
   }
 
-  let url = options.url
+  const task = new DownloadTask()
 
   const request = {
     url,
     header,
-    timeout: timeout,
+    timeout,
     filePath,
-    taskId: 0
+    taskId: task.taskId
   }
-
-  const task = new DownloadTask()
-  request.taskId = task.taskId
 
   InnerJSBridge.invoke<SuccessResult<T>>(event, request, result => {
     task.destroy()
-    downloadTasks.delete(task.taskId)
     if (result.errMsg) {
       invokeFailure(event, options, result.errMsg)
       return
     } else {
+      if (task.isCancel) {
+        invokeFailure(event, options, "abort")
+        return
+      }
       if (filePath) {
         result.data!.filePath = options.filePath!
       }

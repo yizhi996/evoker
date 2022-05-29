@@ -65,7 +65,7 @@ final public class NZAppService {
     
     public lazy var tabBarPages: [NZPage] = []
     
-    public lazy var requests: [Int: Request] = [:]
+    public lazy var requests: [String: Request] = [:]
     
     public internal(set) var modules: [String: NZModule] = [:]
     

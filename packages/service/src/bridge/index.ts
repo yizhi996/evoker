@@ -1,3 +1,4 @@
+import { env } from "./api/env"
 import {
   getWindowInfo,
   getAppBaseInfo,
@@ -77,8 +78,6 @@ import { showTabBar, hideTabBar } from "../bridge/api/ui/tabBar"
 import { createIntersectionObserver } from "./api/html/intersection"
 import { onShow, offShow, onHide, offHide, onError, offError } from "../lifecycle/global"
 import "./fromWebView"
-
-const env = { USER_DATA_PATH: "nzfile://usr" }
 
 export {
   env,

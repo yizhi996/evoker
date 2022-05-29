@@ -1,6 +1,7 @@
 import { InnerJSBridge } from "../../bridge"
 import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@nzoth/bridge"
-import { isString, isNumber, isObject, isArrayBuffer, extend } from "@nzoth/shared"
+import { isString, isObject, isArrayBuffer, extend } from "@nzoth/shared"
+import { Task } from "./task"
 import {
   Events,
   CONTENT_TYPE,
@@ -11,30 +12,20 @@ import {
   objectToQueryString
 } from "./util"
 
-let requestId = 0
-
-class RequestTask {
-  taskId: number
-
+class RequestTask extends Task {
   constructor() {
-    this.taskId = requestId += 1
-  }
-
-  abort() {
-    InnerJSBridge.invoke("cancelRequest", { taskId: this.taskId })
-  }
-
-  toJSON() {
-    return this.taskId
+    super("req")
   }
 }
+
+type RequestMethod = "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT"
 
 interface RequestOptions {
   url: string
   data?: string | Record<any, any> | ArrayBuffer
   header?: Record<string, string>
   timeout?: number
-  method?: "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT"
+  method?: RequestMethod
   dataType?: "json" | string
   responseType?: "text" | "arraybuffer"
   success?: RequestSuccessCallback
@@ -59,28 +50,32 @@ export function request<T extends RequestOptions = RequestOptions>(
   options: T
 ): RequestTask | undefined {
   const event = Events.REQUEST
-  if (!options.url || !isString(options.url)) {
+  let {
+    url,
+    header = {},
+    data = "",
+    method = "GET",
+    responseType = "text",
+    timeout = MAX_TIMEOUT
+  } = options
+
+  if (!url || !isString(url)) {
     invokeFailure(event, options, "request url cannot be empty")
     return
   }
 
-  if (!/^https?:\/\//.test(options.url)) {
-    invokeFailure(event, options, "request url scheme wrong")
+  if (!/^https?:\/\//.test(url)) {
+    invokeFailure(event, options, "request url scheme wrong, need http / https")
     return
   }
 
-  let header = options.header || {}
   header = headerValueToString(header)
   header = headerContentTypeKeyToLowerCase(header)
   header[CONTENT_TYPE] = header[CONTENT_TYPE] || "application/json"
 
   const contentType = header[CONTENT_TYPE]
 
-  let url = options.url
-  let data = options.data || ""
-
-  let method: string = options.method || "GET"
-  method = method.toUpperCase()
+  method = method.toUpperCase() as RequestMethod
   if (method === "GET") {
     if (isObject(data) && Object.keys(data).length > 0) {
       const [ogURL, ogQuery] = url.split("?")
@@ -92,6 +87,8 @@ export function request<T extends RequestOptions = RequestOptions>(
       url = ogURL + "?" + objectToQueryString(query)
       data = ""
     }
+  } else if (method === "HEAD") {
+    data = ""
   } else if (!isString(data) && !isArrayBuffer(data)) {
     if (contentType.includes("application/x-www-form-urlencoded")) {
       data = objectToQueryString(data)
@@ -100,15 +97,15 @@ export function request<T extends RequestOptions = RequestOptions>(
     }
   }
 
-  let responseType = options.responseType || "text"
   if (!["text", "arraybuffer"].includes(responseType)) {
     responseType = "text"
   }
 
-  let timeout = isNumber(options.timeout) ? options.timeout : MAX_TIMEOUT
   if (timeout > MAX_TIMEOUT) {
     timeout = MAX_TIMEOUT
   }
+
+  const task = new RequestTask()
 
   const request = {
     url,
@@ -117,18 +114,19 @@ export function request<T extends RequestOptions = RequestOptions>(
     data,
     dataType: options.dataType || "json",
     responseType,
-    timeout: timeout,
-    taskId: 0
+    timeout,
+    taskId: task.taskId
   }
-
-  const task = new RequestTask()
-  request.taskId = task.taskId
 
   InnerJSBridge.invoke<SuccessResult<T>>(event, request, result => {
     if (result.errMsg) {
       invokeFailure(event, options, result.errMsg)
       return
     } else {
+      if (task.isCancel) {
+        invokeFailure(event, options, "abort")
+        return
+      }
       let { data } = result.data as { data: string | number[] | ArrayBuffer }
       if (request.responseType === "arraybuffer") {
         data = Uint8Array.from(data as number[]).buffer

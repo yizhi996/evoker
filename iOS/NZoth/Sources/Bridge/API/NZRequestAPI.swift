@@ -33,7 +33,7 @@ enum NZRequestAPI: String, NZBuiltInAPI {
     private func request(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
-            let taskId: Int
+            let taskId: String
             let url: String
             let method: String
             let header: [String: String]
@@ -128,8 +128,8 @@ enum NZRequestAPI: String, NZBuiltInAPI {
     
     private func cancelRequest(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict(),
-              let taskId = params["taskId"] as? Int else {
-                  let error = NZError.bridgeFailed(reason: .fieldRequired("id"))
+              let taskId = params["taskId"] as? String else {
+                  let error = NZError.bridgeFailed(reason: .fieldRequired("taskId"))
                   bridge.invokeCallbackFail(args: args, error: error)
                   return
               }
@@ -143,7 +143,7 @@ enum NZRequestAPI: String, NZBuiltInAPI {
     private func downloadFile(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
-            let taskId: Int
+            let taskId: String
             let url: String
             let header: [String: String]
             let filePath: String
@@ -211,7 +211,7 @@ enum NZRequestAPI: String, NZBuiltInAPI {
     private func uploadFile(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         
         struct Params: Decodable {
-            let taskId: Int
+            let taskId: String
             let url: String
             let filePath: String
             let name: String

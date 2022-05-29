@@ -1,11 +1,11 @@
 import { InnerJSBridge } from "../../bridge"
 import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@nzoth/bridge"
-import { isString, isNumber } from "@nzoth/shared"
+import { isString } from "@nzoth/shared"
 import { Events, MAX_TIMEOUT, headerValueToString } from "./util"
-import { env } from "../../index"
+import { Task } from "./task"
+import { nzfile } from "../env"
 
-let requestId = 0
-const uploadTasks: Map<number, UploadTask> = new Map()
+const uploadTasks: Map<string, UploadTask> = new Map()
 
 interface UploadProgressResult {
   progress: number
@@ -15,18 +15,12 @@ interface UploadProgressResult {
 
 type UploadProgressCallback = (result: UploadProgressResult) => void
 
-class UploadTask {
-  taskId: number
-
+class UploadTask extends Task {
   private progressCallbacks: UploadProgressCallback[] = []
 
   constructor() {
-    this.taskId = requestId += 1
+    super("up")
     uploadTasks.set(this.taskId, this)
-  }
-
-  abort() {
-    InnerJSBridge.invoke("cancelRequest", { taskId: this.taskId })
   }
 
   onProgressUpdate(callback: UploadProgressCallback) {
@@ -44,18 +38,23 @@ class UploadTask {
 
   /** @internal */
   dispatchProgressCallback(result: UploadProgressResult) {
-    this.progressCallbacks.forEach(cb => {
-      cb(result)
-    })
+    if (this.isCancel) {
+      this.destroy()
+    } else {
+      this.progressCallbacks.forEach(cb => {
+        cb(result)
+      })
+    }
   }
 
   /** @internal */
   destroy() {
     this.progressCallbacks = []
+    uploadTasks.delete(this.taskId)
   }
 }
 
-InnerJSBridge.subscribe<UploadProgressResult & { taskId: number }>(
+InnerJSBridge.subscribe<UploadProgressResult & { taskId: string }>(
   "APP_UPLOAD_FILE_PROGRESS",
   result => {
     const task = uploadTasks.get(result.taskId)
@@ -93,63 +92,57 @@ export function uploadFile<T extends UploadFileOptions = UploadFileOptions>(
   options: T
 ): UploadTask | undefined {
   const event = Events.UPLOAD_FILE
-  if (!options.url || !isString(options.url)) {
+  let { url, name, filePath, header = {}, formData = {}, timeout = MAX_TIMEOUT } = options
+  if (!url || !isString(url)) {
     invokeFailure(event, options, "upload url cannot be empty")
     return
   }
 
-  if (!/^https?:\/\//.test(options.url)) {
+  if (!/^https?:\/\//.test(url)) {
     invokeFailure(event, options, "upload url scheme invalid")
     return
   }
 
-  if (!options.name || !isString(options.name)) {
+  if (!name || !isString(name)) {
     invokeFailure(event, options, "upload name invalid")
     return
   }
 
-  if (
-    !options.filePath ||
-    !isString(options.filePath) ||
-    !options.filePath.startsWith("nzfile://")
-  ) {
+  if (!filePath || !isString(filePath) || !filePath.startsWith(nzfile)) {
     invokeFailure(event, options, "upload filePath invalid")
     return
   }
 
-  let header = options.header || {}
   header = headerValueToString(header)
 
-  let timeout = isNumber(options.timeout) ? options.timeout : MAX_TIMEOUT
   if (timeout > MAX_TIMEOUT) {
     timeout = MAX_TIMEOUT
   }
 
-  let url = options.url
-
-  let formData = options.formData || {}
   formData = headerValueToString(formData)
+
+  const task = new UploadTask()
 
   const request = {
     url,
     header,
-    name: options.name,
-    timeout: timeout,
-    filePath: options.filePath,
+    name,
+    timeout,
+    filePath,
     formData,
-    taskId: 0
+    taskId: task.taskId
   }
-
-  const task = new UploadTask()
-  request.taskId = task.taskId
 
   InnerJSBridge.invoke<SuccessResult<T>>(event, request, result => {
     task.destroy()
-    uploadTasks.delete(task.taskId)
     if (result.errMsg) {
       invokeFailure(event, options, result.errMsg)
       return
     } else {
+      if (task.isCancel) {
+        invokeFailure(event, options, "abort")
+        return
+      }
       invokeSuccess(event, options, result.data)
     }
   })
