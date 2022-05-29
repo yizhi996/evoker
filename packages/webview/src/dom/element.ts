@@ -51,14 +51,7 @@ export function createElement(data: any[]): EL | null {
   }
 
   const node = restoreNode(data)
-  if (node.innerHTML) {
-    const el = document.createElement("template")
-    el.innerHTML = node.innerHTML
-    node.el = el.content
-    node.el.__nodeId = nodeId
-    nodes.set(nodeId, node)
-    return node.el
-  } else if (node.tagName) {
+  if (node.tagName) {
     let el: NZothElement | HTMLElement | SVGElement
     const component = requireBuiltInComponent(node.tagName)
     if (component) {

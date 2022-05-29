@@ -14,8 +14,7 @@ const enum Index {
   TEXT = 6,
   STYLE = 7,
   COMMENT = 8,
-  SVG = 9,
-  HTML = 10
+  SVG = 9
 }
 
 export function minifyNode(
@@ -42,10 +41,6 @@ export function minifyNode(
 
     if (node.attributes) {
       miniNode[Index.ATTR] = node.attributes
-    }
-
-    if (node.innerHTML) {
-      miniNode[Index.HTML] = node.innerHTML
     }
 
     if (node.textContent || node.textContent === "") {

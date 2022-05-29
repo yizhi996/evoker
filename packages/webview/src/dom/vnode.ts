@@ -16,7 +16,6 @@ export interface NZVNode {
   style: string
   data: string
   isSVG: boolean
-  innerHTML: string
   vnode?: VNode
   el?: any
   props?: Record<string, any>
@@ -33,8 +32,7 @@ export function restoreNode(data: any[]): NZVNode {
     textContent: data[6],
     style: data[7],
     data: data[8],
-    isSVG: data[9],
-    innerHTML: data[10]
+    isSVG: data[9]
   }
   return node
 }

@@ -26,11 +26,7 @@ export const patchProp: DOMRendererOptions["patchProp"] = (
   } else if (key === "style") {
     patchStyle(el, prevValue, nextValue)
   } else if (isOn(key)) {
-    // ignore v-model listeners
-    // if (!isModelListener(key)) {
-    // TODO 内置组件实现 v-model
     patchEvent(el, key, prevValue, nextValue, parentComponent)
-    // }
   } else if (
     key[0] === "."
       ? ((key = key.slice(1)), true)
@@ -40,15 +36,6 @@ export const patchProp: DOMRendererOptions["patchProp"] = (
   ) {
     patchDOMProp(el, key, nextValue, prevChildren, parentComponent, parentSuspense, unmountChildren)
   } else {
-    // special case for <input v-model type="checkbox"> with
-    // :true-value & :false-value
-    // store value as dom properties since non-string values will be
-    // stringified.
-    if (key === "true-value") {
-      ;(el as any)._trueValue = nextValue
-    } else if (key === "false-value") {
-      ;(el as any)._falseValue = nextValue
-    }
     patchAttr(el, key, nextValue, isSVG, parentComponent)
   }
 }
@@ -59,7 +46,7 @@ function shouldSetAsProp(el: NZothElement, key: string, value: unknown, isSVG: b
   if (isSVG) {
     // most keys must be set as attribute on svg elements to work
     // ...except innerHTML & textContent
-    if (key === "innerHTML" || key === "textContent") {
+    if (key === "textContent") {
       return true
     }
     // or native onclick with function values

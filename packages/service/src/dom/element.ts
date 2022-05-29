@@ -8,8 +8,6 @@ export class NZothElement extends NZothNode {
 
   className = ""
 
-  innerHTML = ""
-
   attributes: Record<string, unknown> = Object.create(null)
 
   constructor(tagName: string, page: NZothPage) {
