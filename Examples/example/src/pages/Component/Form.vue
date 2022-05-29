@@ -43,7 +43,7 @@
       <button class="w-full" form-type="reset">Reset</button>
     </form>
 
-    <div>{{ form }}</div>
+    <n-object class="mt-2.5" :object="form" placeholder="Form Data"></n-object>
   </div>
 </template>
 

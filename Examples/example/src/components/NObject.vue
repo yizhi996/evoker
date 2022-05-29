@@ -1,10 +1,10 @@
 <template>
   <div class="w-full bg-white p-2">
     <template v-if="Object.keys(object).length">
-      <template v-for="(value, name) of object" :key="name">
+      <template v-for="item of sorted" :key="item.key">
         <div class="text-blue-400">
-          {{ name }}:
-          <span class="text-orange-400 ml-1">{{ value }}</span>
+          {{ item.key }}:
+          <span class="text-orange-400 ml-1">{{ item.value }}</span>
         </div>
       </template>
     </template>
@@ -13,5 +13,21 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ object: Record<string, any>; placeholder?: string }>()
+import { computed } from "vue"
+
+const props = defineProps<{ object: Record<string, any>; placeholder?: string }>()
+
+const sorted = computed(() => {
+  let res = []
+  const obj = props.object
+  for (let key in obj) {
+    res.push({ key, value: obj[key] })
+  }
+
+  res.sort(function (a, b) {
+    return a.key < b.key ? -1 : 1
+  })
+
+  return res
+})
 </script>

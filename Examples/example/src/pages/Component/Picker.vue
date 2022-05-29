@@ -84,8 +84,7 @@ const weeks = reactive({
     ["周一", "周二", "周三", "周四", "周五"],
     ["上午", "下午", "晚上"]
   ],
-  value: [0, 0],
-  column: 0
+  value: [0, 0]
 })
 
 const onChangeWeeks = e => {
