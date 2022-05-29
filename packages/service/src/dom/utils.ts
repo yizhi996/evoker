@@ -43,7 +43,7 @@ export function minifyNode(
       miniNode[Index.ATTR] = node.attributes
     }
 
-    if (node.textContent || node.textContent === "") {
+    if (node.textContent != null) {
       miniNode[Index.TEXT] = node.textContent
     }
   }
