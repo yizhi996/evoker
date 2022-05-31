@@ -17,6 +17,8 @@ import JavaScriptCore
     
     var messageChannel: NZMessageChannel { get }
     
+    var storage: NZStorageSyncAPI { get }
+    
     init()
 
 }
@@ -26,12 +28,14 @@ import JavaScriptCore
     public var appId = "" {
         didSet {
             system.appId = appId
+            storage.appId = appId
         }
     }
     
     public var envVersion = NZAppEnvVersion.develop {
         didSet {
             system.envVersion = envVersion
+            storage.envVersion = envVersion
         }
     }
     
@@ -40,6 +44,8 @@ import JavaScriptCore
     public var timer = NZNativeTimer()
     
     public var messageChannel = NZMessageChannel()
+    
+    public var storage = NZStorageSyncAPI()
     
     override public required init() {
         super.init()
