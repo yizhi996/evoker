@@ -1,9 +1,13 @@
+import { DataType, GetStorageInfoSuccessCallbackResult } from "./src/api/storage"
+
 interface NZAppServiceNativeSDK {
   timer: NativeTimer
 
   messageChannel: MessageChannel
 
   system: NativeSystem
+
+  storage: Storage
 }
 
 interface NativeTimer {
@@ -96,6 +100,23 @@ interface NativeSystem {
   getAppBaseInfo(): AppBaseInfo
 
   getAppAuthorizeSetting(): AppAuthorizedSetting
+}
+
+interface GetStorageSyncResult {
+  data: string
+  dataType: DataType
+}
+
+interface Storage {
+  getStorageSync(key: string): { errMsg: string; result: GetStorageSyncResult }
+
+  setStorageSync(key: string, data: string, dataType: DataType): { errMsg: string }
+
+  getStorageInfoSync(): { errMsg: string; result: GetStorageInfoSuccessCallbackResult }
+
+  removeStorageSync(key: string): { errMsg: string }
+
+  clearStorageSync(): { errMsg: string }
 }
 
 interface Page {
