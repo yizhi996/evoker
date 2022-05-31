@@ -16,12 +16,8 @@ enum NZStorageAPI: String, NZBuiltInAPI {
     case clearStorage
     case getStorageInfo
     
-    var runInThread: DispatchQueue {
-        return DispatchQueue.global()
-    }
-    
     func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
-        runInThread.async {
+        DispatchQueue.global().async {
             switch self {
             case .getStorage:
                 getStorage(appService: appService, bridge: bridge, args: args)
@@ -50,10 +46,10 @@ enum NZStorageAPI: String, NZBuiltInAPI {
             return
         }
         
-        let result = appService.storage.get(key: key)
-        if let data = result.0 {
-            bridge.invokeCallbackSuccess(args: args, result: ["data": data.0, "dataType": data.1])
-        } else if let error = result.1 {
+        let (result, error) = appService.storage.get(key: key)
+        if let result = result {
+            bridge.invokeCallbackSuccess(args: args, result: ["data": result.0, "dataType": result.1])
+        } else if let error = error {
             bridge.invokeCallbackFail(args: args, error: error)
         }
     }

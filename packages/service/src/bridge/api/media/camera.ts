@@ -66,7 +66,11 @@ interface CameraContextSetZoomOptions {
   complete?: CameraContextSetZoomCompleteCallback
 }
 
-type CameraContextSetZoomSuccessCallback = (res: GeneralCallbackResult) => void
+interface CameraContextSetZoomSuccessCallbackResult {
+  zoom: number
+}
+
+type CameraContextSetZoomSuccessCallback = (res: CameraContextSetZoomSuccessCallbackResult) => void
 
 type CameraContextSetZoomFailCallback = (res: GeneralCallbackResult) => void
 

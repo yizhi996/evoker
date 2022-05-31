@@ -12,13 +12,18 @@ import {
 
 const enum Events {
   GET = "getStorage",
+  GET_SYNC = "getStorageSync",
   SET = "setStorage",
+  SET_SYNC = "setStorageSync",
   REMOVE = "removeStorage",
+  REMOVE_SYNC = "removeStorageSync",
   CLEAR = "clearStorage",
-  INFO = "getStorageInfo"
+  CLEAR_SYNC = "clearStorageSync",
+  INFO = "getStorageInfo",
+  INFO_SYNC = "getStorageInfoSync"
 }
 
-const enum DataType {
+export const enum DataType {
   STRING = "String",
   NUMBER = "Number",
   BOOLEAN = "Boolean",
@@ -28,6 +33,81 @@ const enum DataType {
   DATE = "Date",
   UNDEFINED = "Undefined",
   NULL = "Null"
+}
+
+function getReallyDataByDataType(data: string, dataType: DataType) {
+  let reallyData: unknown
+  switch (dataType) {
+    case DataType.STRING:
+      reallyData = data
+      break
+    case DataType.NUMBER:
+      reallyData = Number(data)
+      break
+    case DataType.BOOLEAN:
+      reallyData = data === "true"
+      break
+    case DataType.BIGINT:
+      reallyData = BigInt(data as string)
+      break
+    case DataType.ARRAY:
+      reallyData = JSON.parse(data)
+      break
+    case DataType.OBJECT:
+      reallyData = JSON.parse(data)
+      break
+    case DataType.DATE:
+      reallyData = new Date(parseInt(data))
+      break
+    case DataType.UNDEFINED:
+      reallyData = undefined
+      break
+    case DataType.NULL:
+      reallyData = null
+      break
+    default:
+      throw new Error(
+        "data type illegal, supports string, number, boolean, bigint, array, object, date, undefined or null."
+      )
+  }
+  return reallyData
+}
+
+function dataToDataType(data: unknown) {
+  let dataString = data
+  let type = DataType.STRING
+  if (isString(data)) {
+    type = DataType.STRING
+  } else if (isNumber(data)) {
+    dataString = data.toString()
+    type = DataType.NUMBER
+  } else if (isBoolean(data)) {
+    dataString = data ? "true" : "false"
+    type = DataType.OBJECT
+  } else if (isObject(data)) {
+    dataString = JSON.stringify(data)
+    type = DataType.OBJECT
+  } else if (Array.isArray(data)) {
+    dataString = JSON.stringify(data)
+    type = DataType.ARRAY
+  } else if (data instanceof Date) {
+    dataString = data + ""
+    type = DataType.DATE
+  } else if (data === undefined) {
+    dataString = "undefined"
+    type = DataType.UNDEFINED
+  } else if (data === null) {
+    dataString = "null"
+    type = DataType.NULL
+  } else if (typeof data === "bigint") {
+    dataString = data.toString()
+    type = DataType.BIGINT
+  } else {
+    throw new Error(
+      "data type illegal, supports string, number, boolean, bigint, array, object, date, undefined or null."
+    )
+  }
+  return { data: dataString as string, dataType: type }
 }
 
 interface GetStorageOptions<T> {
@@ -61,47 +141,33 @@ export function getStorage<T = any, U extends GetStorageOptions<T> = GetStorageO
         invokeFailure(event, options, result.errMsg)
       } else {
         const { data, dataType } = result.data as any
-        let finalData: unknown
-        switch (dataType) {
-          case DataType.STRING:
-            finalData = data
-            break
-          case DataType.NUMBER:
-            finalData = Number(data)
-            break
-          case DataType.BOOLEAN:
-            finalData = data === "true"
-            break
-          case DataType.BIGINT:
-            finalData = BigInt(data as string)
-            break
-          case DataType.ARRAY:
-            finalData = JSON.parse(data)
-            break
-          case DataType.OBJECT:
-            finalData = JSON.parse(data)
-            break
-          case DataType.DATE:
-            finalData = new Date(parseInt(data))
-            break
-          case DataType.UNDEFINED:
-            finalData = undefined
-            break
-          case DataType.NULL:
-            finalData = null
-            break
-          default:
-            invokeFailure(
-              event,
-              options,
-              "data type illegal, supports string, number, boolean, bigint, array, object, date, undefined or null."
-            )
-            return
+        try {
+          const reallyData = getReallyDataByDataType(data, dataType)
+          invokeSuccess(event, options, { data: reallyData })
+        } catch (error) {
+          invokeFailure(event, options, (error as Error).message)
         }
-        invokeSuccess(event, options, { data: finalData })
       }
     })
   }, options)
+}
+
+export function getStorageSync(key: string): any {
+  const event = Events.GET_SYNC
+  if (!isString(key)) {
+    return
+  }
+  const { errMsg, result } = globalThis.__NZAppServiceNativeSDK.storage.getStorageSync(key)
+  if (errMsg) {
+    return ""
+  } else {
+    const { data, dataType } = result
+    try {
+      return getReallyDataByDataType(data, dataType)
+    } catch (error) {
+      throw new Error(`${event}:fail ${(error as Error).message}`)
+    }
+  }
 }
 
 interface SetStorageOptions<T> {
@@ -128,47 +194,35 @@ export function setStorage<T = any, U extends SetStorageOptions<T> = SetStorageO
       return
     }
 
-    let data = options.data as unknown
-    let type = ""
-    if (isString(data)) {
-      type = "String"
-    } else if (isNumber(data)) {
-      data = data.toString()
-      type = DataType.NUMBER
-    } else if (isBoolean(data)) {
-      data = data ? "true" : "false"
-      type = DataType.OBJECT
-    } else if (isObject(data)) {
-      data = JSON.stringify(data)
-      type = DataType.OBJECT
-    } else if (Array.isArray(data)) {
-      data = JSON.stringify(data)
-      type = DataType.ARRAY
-    } else if (data instanceof Date) {
-      data = data + ""
-      type = DataType.DATE
-    } else if (data === undefined) {
-      data = "undefined"
-      type = DataType.UNDEFINED
-    } else if (data === null) {
-      data = "null"
-      type = DataType.NULL
-    } else if (typeof data === "bigint") {
-      data = data.toString()
-      type = DataType.BIGINT
-    } else {
-      invokeFailure(
-        event,
-        options,
-        "data type illegal, supports string, number, boolean, bigint, array, object, date, undefined or null."
-      )
+    try {
+      const { data, dataType } = dataToDataType(options.data)
+      invoke<SuccessResult<U>>(event, { key: options.key, data, dataType }, result => {
+        invokeCallback(event, options, result)
+      })
+    } catch (error) {
+      invokeFailure(event, options, (error as Error).message)
+    }
+  }, options)
+}
+
+export function setStorageSync<T = any>(key: string, data: T) {
+  const event = Events.SET_SYNC
+  if (!isString(key)) {
+    return
+  }
+  try {
+    const { data: dataString, dataType } = dataToDataType(data)
+    const { errMsg } = globalThis.__NZAppServiceNativeSDK.storage.setStorageSync(
+      key,
+      dataString,
+      dataType
+    )
+    if (errMsg) {
       return
     }
-
-    invoke<SuccessResult<U>>(event, { key: options.key, data, dataType: type }, result => {
-      invokeCallback(event, options, result)
-    })
-  }, options)
+  } catch (error) {
+    throw new Error(`${event}:fail ${(error as Error).message}`)
+  }
 }
 
 interface RemoveStorageOptions {
@@ -200,6 +254,17 @@ export function removeStorage<T extends RemoveStorageOptions = RemoveStorageOpti
   }, options)
 }
 
+export function removeStorageSync(key: string) {
+  const event = Events.REMOVE_SYNC
+  if (!isString(key)) {
+    return
+  }
+  const { errMsg } = globalThis.__NZAppServiceNativeSDK.storage.removeStorageSync(key)
+  if (errMsg) {
+    throw new Error(`${event}:fail ${errMsg}`)
+  }
+}
+
 interface ClearStorageOptions {
   success?: ClearStorageSuccessCallback
   fail?: ClearStorageFailCallback
@@ -223,13 +288,21 @@ export function clearStorage<T extends ClearStorageOptions = ClearStorageOptions
   }, options)
 }
 
+export function clearStorageSync() {
+  const event = Events.CLEAR_SYNC
+  const { errMsg } = globalThis.__NZAppServiceNativeSDK.storage.clearStorageSync()
+  if (errMsg) {
+    throw new Error(`${event}:fail ${errMsg}`)
+  }
+}
+
 interface GetStorageInfoOptions {
   success?: GetStorageInfoSuccessCallback
   fail?: GetStorageInfoFailCallback
   complete?: GetStorageInfoCompleteCallback
 }
 
-interface GetStorageInfoSuccessCallbackResult {
+export interface GetStorageInfoSuccessCallbackResult {
   keys: string[]
   currentSize: number
   limitSize: number
@@ -251,4 +324,13 @@ export function getStorageInfo<T extends GetStorageInfoOptions = GetStorageInfoO
       invokeCallback(event, options, result)
     })
   }, options)
+}
+
+export function getStorageInfoSync(): GetStorageInfoSuccessCallbackResult {
+  const event = Events.INFO_SYNC
+  const { errMsg, result } = globalThis.__NZAppServiceNativeSDK.storage.getStorageInfoSync()
+  if (errMsg) {
+    throw new Error(`${event}:fail ${errMsg}`)
+  }
+  return result
 }

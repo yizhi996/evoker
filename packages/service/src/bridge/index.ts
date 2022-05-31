@@ -11,7 +11,18 @@ import {
 } from "./api/base/system"
 import { navigateTo, navigateBack, redirectTo, reLaunch, switchTab } from "./api/route"
 import { navigateToMiniProgram, exitMiniProgram } from "./api/navigate"
-import { getStorage, setStorage, removeStorage, clearStorage, getStorageInfo } from "@nzoth/bridge"
+import {
+  getStorage,
+  getStorageSync,
+  setStorage,
+  setStorageSync,
+  removeStorage,
+  removeStorageSync,
+  clearStorage,
+  clearStorageSync,
+  getStorageInfo,
+  getStorageInfoSync
+} from "@nzoth/bridge"
 import {
   showModal,
   showToast,
@@ -87,10 +98,15 @@ export {
   switchTab,
   reLaunch,
   getStorage,
+  getStorageSync,
   setStorage,
+  setStorageSync,
   removeStorage,
+  removeStorageSync,
   clearStorage,
+  clearStorageSync,
   getStorageInfo,
+  getStorageInfoSync,
   showModal,
   setNavigationBarTitle,
   showNavigationBarLoading,
@@ -179,10 +195,15 @@ export default {
   switchTab,
   reLaunch,
   getStorage,
+  getStorageSync,
   setStorage,
+  setStorageSync,
   removeStorage,
+  removeStorageSync,
   clearStorage,
+  clearStorageSync,
   getStorageInfo,
+  getStorageInfoSync,
   showModal,
   setNavigationBarTitle,
   showNavigationBarLoading,
