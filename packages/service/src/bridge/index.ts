@@ -39,7 +39,13 @@ import {
   hideHomeButton
 } from "@nzoth/bridge"
 import { startPullDownRefresh, stopPullDownRefresh } from "@nzoth/bridge"
-import { previewImage, chooseImage,saveImageToPhotosAlbum, chooseVideo } from "@nzoth/bridge"
+import {
+  previewImage,
+  chooseImage,
+  saveImageToPhotosAlbum,
+  getImageInfo,
+  chooseVideo
+} from "@nzoth/bridge"
 import { createCameraContext } from "./api/media/camera"
 import { createInnerAudioContext } from "@nzoth/bridge"
 import { vibrateShort, vibrateLong } from "@nzoth/bridge"
@@ -115,6 +121,7 @@ export {
   hideHomeButton,
   previewImage,
   saveImageToPhotosAlbum,
+  getImageInfo,
   chooseImage,
   chooseVideo,
   request,
@@ -213,6 +220,7 @@ export default {
   hideHomeButton,
   previewImage,
   saveImageToPhotosAlbum,
+  getImageInfo,
   chooseImage,
   chooseVideo,
   request,

@@ -21,10 +21,11 @@ enum NZMediaAPI: String, NZBuiltInAPI {
     case previewImage
     case openNativelyAlbum
     case saveImageToPhotosAlbum
+    case getImageInfo
     
     var runInThread: DispatchQueue {
         switch self {
-        case .getLocalImage:
+        case .getLocalImage, .getImageInfo:
             return DispatchQueue.global(qos: .userInteractive)
         default:
             return DispatchQueue.main
@@ -42,6 +43,8 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 openNativelyAlbum(appService: appService, bridge: bridge, args: args)
             case .saveImageToPhotosAlbum:
                 saveImageToPhotosAlbum(appService: appService, bridge: bridge, args: args)
+            case .getImageInfo:
+                getImageInfo(appService: appService, bridge: bridge, args: args)
             }
         }
     }
@@ -345,6 +348,118 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 }
             }
         }
+    }
+    
+    private func getImageInfo(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
+        guard let dict = args.paramsString.toDict(), let src = dict["src"] as? String else {
+            let error = NZError.bridgeFailed(reason: .fieldRequired("src"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
         
+        func imageOrientationToString(_ orientation: UIImage.Orientation) -> String {
+            switch orientation {
+            case .up:
+                return "up"
+            case .upMirrored:
+                return "up-mirrored"
+            case .down:
+                return "down"
+            case .downMirrored:
+                return "down-mirrored"
+            case .left:
+                return "left"
+            case .leftMirrored:
+                return "left-mirrored"
+            case .right:
+                return "right"
+            case .rightMirrored:
+                return "right-mirrored"
+            @unknown default:
+                return "up"
+            }
+        }
+        
+        func imageForamtToString(_ format: SDImageFormat) -> String {
+            switch format {
+            case .JPEG:
+                return "jpeg"
+            case .PNG:
+                return "png"
+            case .GIF:
+                return "gif"
+            case .TIFF:
+                return "tiff"
+            default:
+                return "unknown"
+            }
+        }
+        
+        func result(width: CGFloat, height: CGFloat, orientation: String, type: String, path: String) -> [String: Any] {
+            return [
+                "width": width,
+                "height": height,
+                "orientation": orientation,
+                "path": path,
+                "type": type
+            ]
+        }
+        
+        if let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: src) {
+            if let image = UIImage(contentsOfFile: url.path) {
+                let result = result(width: image.size.width,
+                                    height: image.size.height,
+                                    orientation: imageOrientationToString(image.imageOrientation),
+                                    type: imageForamtToString(image.sd_imageFormat),
+                                    path: src)
+                bridge.invokeCallbackSuccess(args: args, result: result)
+            } else {
+                let error = NZError.bridgeFailed(reason: .filePathNotExist(src))
+                bridge.invokeCallbackFail(args: args, error: error)
+            }
+        } else if let url = URL(string: src), (url.scheme == "http" || url.scheme == "https") {
+            SDWebImageManager.shared.loadImage(with: url, options: [], progress: nil) { image, data, error, _, _, _ in
+                if let error = error {
+                    bridge.invokeCallbackFail(args: args, error: NZError.custom(error.localizedDescription))
+                } else if let image = image {
+                    let type = imageForamtToString(image.sd_imageFormat)
+                    let ext = type == "jpeg" ? "jpg" : type
+                    let (nzfile, destination) = FilePath.generateTmpNZFilePath(ext: ext)
+                    let success = FileManager.default.createFile(atPath: destination.path, contents: data)
+                    if success {
+                        let result = result(width: image.size.width,
+                                            height: image.size.height,
+                                            orientation: imageOrientationToString(image.imageOrientation),
+                                            type: type,
+                                            path: nzfile)
+                        bridge.invokeCallbackSuccess(args: args, result: result)
+                    } else {
+                        bridge.invokeCallbackFail(args: args, error: NZError.custom("create file failed"))
+                    }
+                }
+            }
+        } else {
+            let url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: src)
+            if let image = UIImage(contentsOfFile: url.path) {
+                let type = imageForamtToString(image.sd_imageFormat)
+                let ext = type == "jpeg" ? "jpg" : type
+                let (nzfile, destination) = FilePath.generateTmpNZFilePath(ext: ext)
+                let success = FileManager.default.createFile(atPath: destination.path,
+                                                             contents: image.sd_imageData())
+                if success {
+                    let result = result(width: image.size.width,
+                                        height: image.size.height,
+                                        orientation: imageOrientationToString(image.imageOrientation),
+                                        type: type,
+                                        path: nzfile)
+                    bridge.invokeCallbackSuccess(args: args, result: result)
+                } else {
+                    bridge.invokeCallbackFail(args: args, error: NZError.custom("create file failed"))
+                }
+            } else {
+                let error = NZError.bridgeFailed(reason: .filePathNotExist(src))
+                bridge.invokeCallbackFail(args: args, error: error)
+            }
+        }
     }
 }

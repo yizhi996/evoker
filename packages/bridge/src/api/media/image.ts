@@ -18,7 +18,8 @@ import { ErrorCodes, errorMessage } from "../../errors"
 const enum Events {
   PREVIEW_IMAGE = "previewImage",
   CHOOSE_IMAGE = "chooseImage",
-  SAVE_IMAGE_TO_PHOTOS_ALBUM = "saveImageToPhotosAlbum"
+  SAVE_IMAGE_TO_PHOTOS_ALBUM = "saveImageToPhotosAlbum",
+  GET_IMAGE_INFO = "getImageInfo"
 }
 
 interface PreviewImageOptions {
@@ -40,8 +41,8 @@ export function previewImage<T extends PreviewImageOptions = PreviewImageOptions
 ): AsyncReturn<T, PreviewImageOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.PREVIEW_IMAGE
-    if (!options.urls) {
-      invokeFailure(Events.PREVIEW_IMAGE, options, "options urls cannot be empty")
+    if (!options.urls || options.urls.length === 0) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "urls"))
       return
     }
     invoke<SuccessResult<T>>(event, options, result => {
@@ -172,5 +173,49 @@ export function saveImageToPhotosAlbum<
       .catch(error => {
         invokeFailure(event, options, error)
       })
+  }, options)
+}
+
+interface GetImageInfoOptions {
+  src: string
+  success?: GetImageInfoSuccessCallback
+  fail?: GetImageInfoFailCallback
+  complete?: GetImageInfoCompleteCallback
+}
+
+interface GetImageInfoSuccessCallbackResult {
+  width: number
+  height: number
+  path: string
+  orientation:
+    | "up"
+    | "up-mirrored"
+    | "down"
+    | "down-mirrored"
+    | "right"
+    | "right-mirrored"
+    | "left"
+    | "left-mirrored"
+  type: "unknown" | "jpeg" | "png" | "gif" | "tiff"
+}
+
+type GetImageInfoSuccessCallback = (res: GetImageInfoSuccessCallbackResult) => void
+
+type GetImageInfoFailCallback = (res: GeneralCallbackResult) => void
+
+type GetImageInfoCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function getImageInfo<T extends GetImageInfoOptions = GetImageInfoOptions>(
+  options: T
+): AsyncReturn<T, GetImageInfoOptions> {
+  return wrapperAsyncAPI<T>(options => {
+    const event = Events.GET_IMAGE_INFO
+    if (!options.src) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "src"))
+      return
+    }
+    invoke<SuccessResult<T>>(event, options, result => {
+      invokeCallback(event, options, result)
+    })
   }, options)
 }
