@@ -111,9 +111,7 @@ enum NZAudioAPI: String, NZBuiltInAPI {
         case .play:
             if case .play(var data) = params.data {
                 let src = data.src
-                data._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
-                                                              userId: NZEngine.shared.userId,
-                                                              filePath: src) ?? URL(string: src)
+                data._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: src) ?? URL(string: src)
                 if let player = module.players.get(page.pageId, params.audioId) {
                     player.params = data
                     player.play()
@@ -149,9 +147,7 @@ enum NZAudioAPI: String, NZBuiltInAPI {
             guard let player = module.players.get(page.pageId, params.audioId) else { break }
             if case .setSrc(let data) = params.data {
                 let src = data.src
-                let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
-                                                            userId: NZEngine.shared.userId,
-                                                            filePath: src) ?? URL(string: src)
+                let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: src) ?? URL(string: src)
                 player.params?._url = url
             }
         case .setPlaybackRate:

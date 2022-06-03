@@ -59,31 +59,31 @@ public extension FilePath {
     typealias NZFile = String
     
     /// Document/com.nzothdev/sandbox/{userId}
-    static func sandbox(userId: String) -> URL {
+    static func sandbox(userId: String = NZEngine.shared.userId) -> URL {
         return documentDirectory().appendingPathComponent("sandbox").appendingPathComponent(userId)
     }
     
     /// Document/com.nzothdev/sandbox/{userId}/{appId}/usr
-    static func usr(appId: String, userId: String) -> URL {
+    static func usr(appId: String, userId: String = NZEngine.shared.userId) -> URL {
         return sandbox(userId: userId)
             .appendingPathComponent(appId)
             .appendingPathComponent("usr")
     }
     
     /// Document/com.nzothdev/sandbox/{userId}/{appId}/usr/{path}
-    static func usr(appId: String, userId: String, path: String) -> URL {
+    static func usr(appId: String, userId: String = NZEngine.shared.userId, path: String) -> URL {
         return usr(appId: appId, userId: userId).appendingPathComponent(path)
     }
     
     /// Document/com.nzothdev/sandbox/{userId}/{appId}/store
-    static func store(appId: String, userId: String) -> URL {
+    static func store(appId: String, userId: String = NZEngine.shared.userId) -> URL {
         return sandbox(userId: userId)
             .appendingPathComponent(appId)
             .appendingPathComponent("store")
     }
     
     /// Document/com.nzothdev/sandbox/{userId}/{appId}/store/{filename}
-    static func store(appId: String, userId: String, filename: String) -> URL {
+    static func store(appId: String, userId: String = NZEngine.shared.userId, filename: String) -> URL {
         return store(appId: appId, userId: userId).appendingPathComponent(filename)
     }
     
@@ -93,14 +93,14 @@ public extension FilePath {
     }
     
     /// Document/com.nzothdev/sandbox/{userId}/{appId}/db/storage.db
-    static func storageDatabase(appId: String, userId: String) -> URL {
+    static func storageDatabase(appId: String, userId: String = NZEngine.shared.userId) -> URL {
         return sandbox(userId: userId)
             .appendingPathComponent(appId)
             .appendingPathComponent("db")
             .appendingPathComponent("storage.db")
     }
     
-    static func generateStoreNZFilePath(appId: String, userId: String, ext: String) -> (NZFile, URL) {
+    static func generateStoreNZFilePath(appId: String, userId: String = NZEngine.shared.userId, ext: String) -> (NZFile, URL) {
         let id = UUID().uuidString.md5()
         let filename = "store_\(id).\(ext)"
         return ("nzfile://\(filename)", FilePath.store(appId: appId, userId: userId, filename: filename))
@@ -112,7 +112,7 @@ public extension FilePath {
         return ("nzfile://\(filename)", FilePath.tmp(filename: filename))
     }
     
-    static func nzFilePathToRealFilePath(appId: String, userId: String, filePath: String) -> URL? {
+    static func nzFilePathToRealFilePath(appId: String, userId: String = NZEngine.shared.userId, filePath: String) -> URL? {
         let scheme = "nzfile://"
         let usr = scheme + "usr"
         let store = scheme + "store_"

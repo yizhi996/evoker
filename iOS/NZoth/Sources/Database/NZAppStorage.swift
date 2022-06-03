@@ -37,7 +37,7 @@ public class NZAppStorage {
     private let authorizationTable = AuthorizationTable()
     
     public init(appId: String) {
-        let dest = FilePath.storageDatabase(appId: appId, userId: NZEngine.shared.userId)
+        let dest = FilePath.storageDatabase(appId: appId)
         do {
             try FilePath.createDirectory(at: dest.deletingLastPathComponent())
             database = try Connection(dest.path)

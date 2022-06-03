@@ -241,9 +241,7 @@ enum NZTabBarAPI: String, NZBuiltInAPI {
         }
         
         func setImage(iconPath: String, state: UIControl.State) {
-            if let nzfile = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
-                                                              userId: NZEngine.shared.userId,
-                                                              filePath: iconPath) {
+            if let nzfile = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: iconPath) {
                 let image = UIImage(contentsOfFile: nzfile.path)
                 item.setImage(image, for: state)
             } else if let url = URL(string: iconPath), (url.scheme == "http" || url.scheme == "https") {

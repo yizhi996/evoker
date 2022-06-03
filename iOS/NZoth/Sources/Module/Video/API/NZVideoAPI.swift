@@ -56,9 +56,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
         }
         
         if !params.url.isEmpty {
-            params._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
-                                                            userId: NZEngine.shared.userId,
-                                                            filePath: params.url) ?? URL(string: params.url)
+            params._url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: params.url) ?? URL(string: params.url)
         }
         
         let playerView = NZVideoPlayerView(params: params)
@@ -251,9 +249,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                 playerView.params.objectFit = data.objectFit
                 playerView.params.muted = data.muted
                 if !src.isEmpty {
-                    if let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
-                                                                   userId: NZEngine.shared.userId,
-                                                                   filePath: src) ?? URL(string: src) {
+                    if let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: src) ?? URL(string: src) {
                         playerView.setURL(url)
                     }
                 } else {

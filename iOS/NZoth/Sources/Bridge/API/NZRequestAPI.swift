@@ -166,7 +166,7 @@ enum NZRequestAPI: String, NZBuiltInAPI {
             
             let dest: URL
             if !params.filePath.isEmpty {
-                dest = FilePath.usr(appId: appService.appId, userId: NZEngine.shared.userId, path: params.filePath)
+                dest = FilePath.usr(appId: appService.appId, path: params.filePath)
             } else {
                 let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
                 destinationNZFilePath = nzfile
@@ -226,9 +226,7 @@ enum NZRequestAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let filePath = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
-                                                               userId: NZEngine.shared.userId,
-                                                               filePath: params.filePath) else {
+        guard let filePath = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: params.filePath) else {
             let error = NZError.bridgeFailed(reason: .filePathNotExist(params.filePath))
             bridge.invokeCallbackFail(args: args, error: error)
             return
