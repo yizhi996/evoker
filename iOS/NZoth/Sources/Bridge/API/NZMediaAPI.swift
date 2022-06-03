@@ -20,6 +20,7 @@ enum NZMediaAPI: String, NZBuiltInAPI {
     case getLocalImage
     case previewImage
     case openNativelyAlbum
+    case saveImageToPhotosAlbum
     
     var runInThread: DispatchQueue {
         switch self {
@@ -39,6 +40,8 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 previewImage(appService: appService, bridge: bridge, args: args)
             case .openNativelyAlbum:
                 openNativelyAlbum(appService: appService, bridge: bridge, args: args)
+            case .saveImageToPhotosAlbum:
+                saveImageToPhotosAlbum(appService: appService, bridge: bridge, args: args)
             }
         }
     }
@@ -56,9 +59,7 @@ enum NZMediaAPI: String, NZBuiltInAPI {
             return
         }
         
-        var filePath = FilePath.nzFilePathToRealFilePath(appId: appService.appId,
-                                                         userId: NZEngine.shared.userId,
-                                                         filePath: path)
+        var filePath = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: path)
         let isNZFile = filePath != nil
         if !isNZFile {
             filePath = FilePath.appStaticFilePath(appId: appService.appId,
@@ -131,9 +132,7 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         }
         
         let urls = params.urls.compactMap { url in
-            return FilePath.nzFilePathToRealFilePath(appId: appSerivce.appId,
-                                                     userId: NZEngine.shared.userId,
-                                                     filePath: url) ?? URL(string: url)
+            return FilePath.nzFilePathToRealFilePath(appId: appSerivce.appId, filePath: url) ?? URL(string: url)
         }
         
         NZImagePreview.show(urls: urls, current: params.current)
@@ -300,5 +299,52 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         }
         return fmt
     }
-
+    
+    private func saveImageToPhotosAlbum(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
+        guard let dict = args.paramsString.toDict(), let filePath = dict["filePath"] as? String else {
+            let error = NZError.bridgeFailed(reason: .fieldRequired("filePath"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: filePath),
+              let image = UIImage.init(contentsOfFile: url.path) else {
+            let error = NZError.bridgeFailed(reason: .filePathNotExist(filePath))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        func save() {
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAsset(from: image)
+            }) { success, error in
+                if success {
+                    bridge.invokeCallbackSuccess(args: args)
+                } else {
+                    bridge.invokeCallbackFail(args: args, error: NZError.custom(error!.localizedDescription))
+                }
+            }
+        }
+        
+        func denied() {
+            let error = NZError.bridgeFailed(reason: .custom("auth denied"))
+            bridge.invokeCallbackFail(args: args, error: error)
+        }
+        
+        switch PrivacyPermission.album {
+        case .authorized:
+            save()
+        case .denied:
+            denied()
+        case .notDetermined:
+            PrivacyPermission.requestAlbum {
+                if PrivacyPermission.album == .authorized {
+                    save()
+                } else {
+                    denied()
+                }
+            }
+        }
+        
+    }
 }

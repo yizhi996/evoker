@@ -99,6 +99,9 @@ export function openAuthorizationView(scope: string): Promise<boolean> {
     case "scope.camera":
       title = "使用你的摄像头"
       break
+    case "writePhotosAlbum":
+      title = "保存图片或视频到你的相册"
+      break
   }
 
   if (title === "") {

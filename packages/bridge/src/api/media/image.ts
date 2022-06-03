@@ -12,10 +12,13 @@ import {
   wrapperAsyncAPI
 } from "../../async"
 import { extend } from "@nzoth/shared"
+import { requestAuthorization } from "../auth"
+import { ErrorCodes, errorMessage } from "../../errors"
 
 const enum Events {
   PREVIEW_IMAGE = "previewImage",
-  CHOOSE_IMAGE = "chooseImage"
+  CHOOSE_IMAGE = "chooseImage",
+  SAVE_IMAGE_TO_PHOTOS_ALBUM = "saveImageToPhotosAlbum"
 }
 
 interface PreviewImageOptions {
@@ -131,6 +134,43 @@ export function chooseImage<T extends ChooseImageOptions = ChooseImageOptions>(
       })
       .catch(error => {
         invokeFailure(event, finalOptions, error)
+      })
+  }, options)
+}
+
+interface SaveImageToPhotosAlbumOptions {
+  filePath: string
+  success?: SaveImageToPhotosAlbumSuccessCallback
+  fail?: SaveImageToPhotosAlbumFailCallback
+  complete?: SaveImageToPhotosAlbumCompleteCallback
+}
+
+type SaveImageToPhotosAlbumSuccessCallback = (res: GeneralCallbackResult) => void
+
+type SaveImageToPhotosAlbumFailCallback = (res: GeneralCallbackResult) => void
+
+type SaveImageToPhotosAlbumCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function saveImageToPhotosAlbum<
+  T extends SaveImageToPhotosAlbumOptions = SaveImageToPhotosAlbumOptions
+>(options: T): AsyncReturn<T, SaveImageToPhotosAlbumOptions> {
+  return wrapperAsyncAPI<T>(options => {
+    const event = Events.SAVE_IMAGE_TO_PHOTOS_ALBUM
+
+    if (!options.filePath) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "filePath"))
+      return
+    }
+
+    const scope = "scope.writePhotosAlbum"
+    requestAuthorization(scope)
+      .then(() => {
+        invoke<SuccessResult<T>>(event, options, result => {
+          invokeCallback(event, options, result)
+        })
+      })
+      .catch(error => {
+        invokeFailure(event, options, error)
       })
   }, options)
 }
