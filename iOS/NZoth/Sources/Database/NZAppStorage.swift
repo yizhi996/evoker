@@ -192,6 +192,9 @@ extension NZAppStorage {
         }
         do {
             let length = key.lengthOfBytes(using: .utf8) + data.lengthOfBytes(using: .utf8)
+            if length > 1024 * 1024 {
+                return NZError.storageFailed(reason: .singleKeySizeLimit)
+            }
             let size = try database.scalar(localStorageTable.table.select(localStorageTable.length.sum)) ?? 0
             if size + length > 1024 * 1024 * 10 {
                 return NZError.storageFailed(reason: .sizeLimited)
