@@ -30,7 +30,7 @@ export function vibrateShort<T extends VibrateShortOptions = VibrateShortOptions
 ): AsyncReturn<T, VibrateShortOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SHORT
-    invoke<SuccessResult<T>>(event, { type: options.type }, result => {
+    invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
   }, options)

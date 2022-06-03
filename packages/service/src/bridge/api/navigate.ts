@@ -5,7 +5,9 @@ import {
   invokeCallback,
   wrapperAsyncAPI,
   AsyncReturn,
-  invokeFailure
+  invokeFailure,
+  ErrorCodes,
+  errorMessage
 } from "@nzoth/bridge"
 import { extend } from "@nzoth/shared"
 import { innerAppData } from "../../app"
@@ -45,7 +47,7 @@ export function navigateToMiniProgram<
     )
 
     if (!finalOptions.appId) {
-      invokeFailure(event, finalOptions, "options required appId")
+      invokeFailure(event, finalOptions, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "appId"))
       return
     }
 

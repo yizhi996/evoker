@@ -8,6 +8,7 @@ import {
   invokeFailure
 } from "../../async"
 import { extend } from "@nzoth/shared"
+import { errorMessage, ErrorCodes } from "../../errors"
 
 const enum Events {
   SET_NAVIGATION_BAR_TITLE = "setNavigationBarTitle",
@@ -89,7 +90,7 @@ export function setNavigationBarColor<
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SET_NAVIGATION_BAR_COLOR
     if (!options.frontColor) {
-      invokeFailure(event, options, "required field frontColor")
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "frontColor"))
       return
     }
     if (!["#ffffff", "#000000"].includes(options.frontColor)) {
@@ -97,7 +98,11 @@ export function setNavigationBarColor<
       return
     }
     if (!options.backgroundColor) {
-      invokeFailure(event, options, "required field backgroundColor")
+      invokeFailure(
+        event,
+        options,
+        errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "backgroundColor")
+      )
       return
     }
 

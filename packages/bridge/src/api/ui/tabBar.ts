@@ -7,6 +7,7 @@ import {
   wrapperAsyncAPI,
   invokeFailure
 } from "../../async"
+import { ErrorCodes, errorMessage } from "../../errors"
 
 const enum Events {
   SET_TAB_BAR_BADGE = "setTabBarBadge",
@@ -36,6 +37,10 @@ export function setTabBarBadge<T extends SetTabBarBadgeOptions = SetTabBarBadgeO
 ): AsyncReturn<T, SetTabBarBadgeOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SET_TAB_BAR_BADGE
+    if (options.index == null) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
+      return
+    }
     if (!options.text) {
       invokeFailure(event, options, "text cannot be empty")
       return
@@ -64,6 +69,10 @@ export function removeTabBarBadge<T extends RemoveTabBarBadgeOptions = RemoveTab
 ): AsyncReturn<T, RemoveTabBarBadgeOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.REMOVE_TAB_BAR_BADGE
+    if (options.index == null) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
+      return
+    }
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -88,6 +97,10 @@ export function showTabBarRedDot<T extends ShowTabBarRedDotOptions = ShowTabBarR
 ): AsyncReturn<T, ShowTabBarRedDotOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SHOW_TAB_BAR_RED_DOT
+    if (options.index == null) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
+      return
+    }
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -112,6 +125,10 @@ export function hideTabBarRedDot<T extends HideTabBarRedDotOptions = HideTabBarR
 ): AsyncReturn<T, HideTabBarRedDotOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.HIDE_TAB_BAR_RED_DOT
+    if (options.index == null) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
+      return
+    }
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -139,6 +156,10 @@ export function setTabBarItem<T extends SetTabBarItemOptions = SetTabBarItemOpti
 ): AsyncReturn<T, SetTabBarItemOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.SET_TAB_BAR_ITEM
+    if (options.index == null) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
+      return
+    }
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })

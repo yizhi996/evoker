@@ -8,6 +8,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../async"
+import { ErrorCodes, errorMessage } from "../errors"
 
 const enum Events {
   RSA = "rsa",
@@ -36,6 +37,13 @@ type RSACompleteCallback = (res: GeneralCallbackResult) => void
 export function rsa<T extends RSAOptions = RSAOptions>(options: T): AsyncReturn<T, RSAOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.RSA
+    if (!["encrypt", "decrypt"].includes(options.action)) {
+      invokeFailure(
+        event,
+        options,
+        errorMessage(ErrorCodes.ILLEGAL_VALUE, "action, this valid values are encrypt or decrypt")
+      )
+    }
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -64,7 +72,6 @@ export function getRandomValues<T extends GetRandomValuesOptions = GetRandomValu
       invokeFailure(event, options, "invalid length")
       return
     }
-
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })

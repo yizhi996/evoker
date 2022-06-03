@@ -9,6 +9,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../async"
+import { ErrorCodes, errorMessage } from "../errors"
 
 const enum Events {
   GET = "getStorage",
@@ -133,7 +134,7 @@ export function getStorage<T = any, U extends GetStorageOptions<T> = GetStorageO
   return wrapperAsyncAPI<U>(options => {
     const event = Events.GET
     if (!isString(options.key)) {
-      invokeFailure(event, options, "key type required string")
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
       return
     }
     invoke<SuccessResult<U>>(event, { key: options.key }, result => {
@@ -190,7 +191,7 @@ export function setStorage<T = any, U extends SetStorageOptions<T> = SetStorageO
   return wrapperAsyncAPI<U>(options => {
     const event = Events.SET
     if (!isString(options.key)) {
-      invokeFailure(event, options, "key type required string")
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
       return
     }
 
@@ -244,7 +245,7 @@ export function removeStorage<T extends RemoveStorageOptions = RemoveStorageOpti
   return wrapperAsyncAPI<T>(options => {
     const event = Events.REMOVE
     if (!isString(options.key)) {
-      invokeFailure(event, options, "key type required string")
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
       return
     }
 

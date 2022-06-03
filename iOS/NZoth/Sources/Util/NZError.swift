@@ -34,6 +34,8 @@ public enum NZError: Error {
         
         case sizeLimited
         
+        case singleKeySizeLimit
+        
         case getFailed
         
         case setFailed
@@ -95,8 +97,10 @@ extension NZError.StorageFailureReason {
         switch self {
         case .connectFailed:
             return "storage connect failed"
+        case .singleKeySizeLimit:
+            return "a single key can not be large than 1MB"
         case .sizeLimited:
-            return "storage size limited"
+            return "storage all keys can not be large than 10MB"
         case .getFailed:
             return "storage set failed"
         case .setFailed:

@@ -9,6 +9,7 @@ import {
   invokeFailure
 } from "../../async"
 import { showActionSheet } from "../ui/interaction"
+import { ErrorCodes, errorMessage } from "../../errors"
 
 const enum Events {
   MAKE_PHONE_CALL = "makePhoneCall"
@@ -32,8 +33,12 @@ export function makePhoneCall<T extends MakePhoneCallOptions = MakePhoneCallOpti
 ): AsyncReturn<T, MakePhoneCallOptions> {
   return wrapperAsyncAPI<T>(options => {
     const event = Events.MAKE_PHONE_CALL
+    if (options.phoneNumber == null) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "phoneNumber"))
+      return
+    }
     if (!options.phoneNumber) {
-      invokeFailure(event, options, "phoneNumber cannot be empty")
+      invokeFailure(event, options, errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "phoneNumber"))
       return
     }
     let phoneNumber = options.phoneNumber
@@ -42,7 +47,7 @@ export function makePhoneCall<T extends MakePhoneCallOptions = MakePhoneCallOpti
     }
 
     showActionSheet({ alertText: phoneNumber, itemList: ["呼叫"] })
-      .then(result => {
+      .then(() => {
         invoke<SuccessResult<T>>(event, { phoneNumber }, result => {
           invokeCallback(event, options, result)
         })
