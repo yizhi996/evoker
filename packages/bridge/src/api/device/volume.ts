@@ -4,8 +4,10 @@ import {
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
-  wrapperAsyncAPI
+  wrapperAsyncAPI,
+  invokeFailure
 } from "../../async"
+import { ErrorCodes, errorMessage } from "../../errors"
 
 const enum Events {
   SET = "setVolume",
@@ -28,8 +30,12 @@ type SetVolumeCompleteCallback = (res: GeneralCallbackResult) => void
 export function setVolume<T extends SetVolumeOptions = SetVolumeOptions>(
   options: T
 ): AsyncReturn<T, SetVolumeOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SET
+    if (options.volume == null) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "volume"))
+      return
+    }
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -55,7 +61,7 @@ type GetVolumeCompleteCallback = (res: GeneralCallbackResult) => void
 export function getVolume<T extends GetVolumeOptions = GetVolumeOptions>(
   options: T
 ): AsyncReturn<T, GetVolumeOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.GET
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)

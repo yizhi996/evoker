@@ -25,9 +25,13 @@ type PageScrollToCompleteCallback = (res: GeneralCallbackResult) => void
 export function pageScrollTo<T extends PageScrollToOptions = PageScrollToOptions>(
   options: T
 ): AsyncReturn<T, PageScrollToOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.PAGE_SCROLL_TO
-    invokeWebViewMethod(event, extend({ duration: 300 }, options))
-    invokeSuccess(event, options, {})
-  }, options)
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.PAGE_SCROLL_TO
+      invokeWebViewMethod(event, options)
+      invokeSuccess(event, options, {})
+    },
+    options,
+    { duration: 300 }
+  )
 }

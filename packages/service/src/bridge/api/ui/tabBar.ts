@@ -31,23 +31,23 @@ type ShowTabBarCompleteCallback = (res: GeneralCallbackResult) => void
 export function showTabBar<T extends ShowTabBarOptions = ShowTabBarOptions>(
   options: T
 ): AsyncReturn<T, ShowTabBarOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.SHOW_TAB_BAR
-    const pageId = getCurrentWebViewId()
-    const page = innerAppData.pages.get(pageId)!
-    if (!pathIsTabBar(page.route)) {
-      invokeFailure(event, options, "current page not TabBar page")
-      return
-    }
-
-    InnerJSBridge.invoke<SuccessResult<T>>(
-      event,
-      { animation: options.animation ?? false },
-      result => {
-        invokeCallback(event, options, result)
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.SHOW_TAB_BAR
+      const pageId = getCurrentWebViewId()
+      const page = innerAppData.pages.get(pageId)!
+      if (!pathIsTabBar(page.route)) {
+        invokeFailure(event, options, "current page not TabBar page")
+        return
       }
-    )
-  }, options)
+
+      InnerJSBridge.invoke<SuccessResult<T>>(event, options, result => {
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    { animation: false }
+  )
 }
 
 interface HideTabBarOptions {
@@ -66,20 +66,20 @@ type HideTabBarCompleteCallback = (res: GeneralCallbackResult) => void
 export function hideTabBar<T extends HideTabBarOptions = HideTabBarOptions>(
   options: T
 ): AsyncReturn<T, HideTabBarOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.HIDE_TAB_BAR
-    const pageId = getCurrentWebViewId()
-    const page = innerAppData.pages.get(pageId)!
-    if (!pathIsTabBar(page.route)) {
-      invokeFailure(event, options, "current page not TabBar page")
-      return
-    }
-    InnerJSBridge.invoke<SuccessResult<T>>(
-      event,
-      { animation: options.animation ?? false },
-      result => {
-        invokeCallback(event, options, result)
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.HIDE_TAB_BAR
+      const pageId = getCurrentWebViewId()
+      const page = innerAppData.pages.get(pageId)!
+      if (!pathIsTabBar(page.route)) {
+        invokeFailure(event, options, "current page not TabBar page")
+        return
       }
-    )
-  }, options)
+      InnerJSBridge.invoke<SuccessResult<T>>(event, options, result => {
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    { animation: false }
+  )
 }

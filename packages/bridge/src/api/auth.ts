@@ -45,7 +45,7 @@ type GetSettingCompleteCallback = (res: GeneralCallbackResult) => void
 export function getSetting<T extends GetSettingOptions = GetSettingOptions>(
   options: T
 ): AsyncReturn<T, GetSettingOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.GET_SETTING
     invoke<SuccessResult<T>>(event, {}, result => {
       invokeCallback(event, options, result)
@@ -69,7 +69,7 @@ type AuthorizeCompleteCallback = (res: GeneralCallbackResult) => void
 export function authorize<T extends AuthorizeOptions = AuthorizeOptions>(
   options: T
 ): AsyncReturn<T, AuthorizeOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.AUTHORIZE
     requestAuthorization(options.scope)
       .then(() => {

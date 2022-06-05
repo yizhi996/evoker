@@ -93,32 +93,35 @@ class CameraContext {
   takePhoto<T extends CameraContextTakePhotoOptions = CameraContextTakePhotoOptions>(
     options: T
   ): AsyncReturn<T, CameraContextTakePhotoOptions> {
-    return wrapperAsyncAPI<T>(options => {
-      let quality = options.quality || "normal"
-      if (!["low", "normal", "high"].includes(quality)) {
-        quality = "normal"
-      }
-      InnerJSBridge.invoke<SuccessResult<T>>(
-        "operateCamera",
-        {
-          cameraId: this.cameraId,
-          method: Methods.TAKE_PHOTO,
-          data: { quality }
-        },
-        result => {
-          invokeCallback(Methods.TAKE_PHOTO, options, result)
+    return wrapperAsyncAPI(
+      options => {
+        if (!["low", "normal", "high"].includes(options.quality)) {
+          options.quality = "normal"
         }
-      )
-    }, options)
+        InnerJSBridge.invoke<SuccessResult<T>>(
+          "operateCamera",
+          {
+            cameraId: this.cameraId,
+            method: Methods.TAKE_PHOTO,
+            data: options
+          },
+          result => {
+            invokeCallback(Methods.TAKE_PHOTO, options, result)
+          }
+        )
+      },
+      options,
+      { quality: "normal" }
+    )
   }
 
   startRecord<T extends CameraContextStartRecordOptions = CameraContextStartRecordOptions>(
     options: T
   ): AsyncReturn<T, CameraContextStartRecordOptions> {
-    return wrapperAsyncAPI<T>(options => {
+    return wrapperAsyncAPI(options => {
       InnerJSBridge.invoke<SuccessResult<T>>(
         "operateCamera",
-        { cameraId: this.cameraId, method: Methods.START_RECORD, data: {} },
+        { cameraId: this.cameraId, method: Methods.START_RECORD, data: options },
         result => {
           invokeCallback(Methods.START_RECORD, options, result)
         }
@@ -129,31 +132,35 @@ class CameraContext {
   stopRecord<T extends CameraContextStopRecordOptions = CameraContextStopRecordOptions>(
     options: T
   ): AsyncReturn<T, CameraContextStopRecordOptions> {
-    return wrapperAsyncAPI<T>(options => {
-      InnerJSBridge.invoke<SuccessResult<T>>(
-        "operateCamera",
-        {
-          cameraId: this.cameraId,
-          method: Methods.STOP_RECORD,
-          data: { compressed: options.compressed ?? false }
-        },
-        result => {
-          invokeCallback(Methods.STOP_RECORD, options, result)
-        }
-      )
-    }, options)
+    return wrapperAsyncAPI(
+      options => {
+        InnerJSBridge.invoke<SuccessResult<T>>(
+          "operateCamera",
+          {
+            cameraId: this.cameraId,
+            method: Methods.STOP_RECORD,
+            data: options
+          },
+          result => {
+            invokeCallback(Methods.STOP_RECORD, options, result)
+          }
+        )
+      },
+      options,
+      { compressed: false }
+    )
   }
 
   setZoom<T extends CameraContextSetZoomOptions = CameraContextSetZoomOptions>(
     options: T
   ): AsyncReturn<T, CameraContextSetZoomOptions> {
-    return wrapperAsyncAPI<T>(options => {
+    return wrapperAsyncAPI(options => {
       InnerJSBridge.invoke<SuccessResult<T>>(
         "operateCamera",
         {
           cameraId: this.cameraId,
           method: Methods.SET_ZOOM,
-          data: { zoom: options.zoom }
+          data: options
         },
         result => {
           invokeCallback(Methods.SET_ZOOM, options, result)

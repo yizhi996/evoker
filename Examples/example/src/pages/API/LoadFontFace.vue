@@ -16,7 +16,7 @@ const loaded = ref(false)
 const onLoad = async () => {
   await nz.loadFontFace({
     family: fontFamily,
-    source: 'url("https://sungd.github.io/Pacifico.ttf")'
+    source: 'url("https://file.lilithvue.com/lilith-test-assets/Pacifico-Regular.ttf")'
   })
   loaded.value = true
 }

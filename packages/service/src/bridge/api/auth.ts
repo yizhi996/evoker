@@ -33,7 +33,7 @@ type OpenSettingCompleteCallback = (res: GeneralCallbackResult) => void
 export function openSetting<T extends OpenSettingOptions = OpenSettingOptions>(
   options: T
 ): AsyncReturn<T, OpenSettingOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.OPEN_SETTING
     if (!innerAppData.eventFromUserClick) {
       invokeFailure(event, options, "can only be invoked by user click gesture.")

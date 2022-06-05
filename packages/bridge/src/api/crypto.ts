@@ -35,14 +35,23 @@ type RSAFailCallback = (res: GeneralCallbackResult) => void
 type RSACompleteCallback = (res: GeneralCallbackResult) => void
 
 export function rsa<T extends RSAOptions = RSAOptions>(options: T): AsyncReturn<T, RSAOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.RSA
+    if (!options.key) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
+      return
+    }
+    if (!options.text) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "text"))
+      return
+    }
     if (!["encrypt", "decrypt"].includes(options.action)) {
       invokeFailure(
         event,
         options,
         errorMessage(ErrorCodes.ILLEGAL_VALUE, "action, this valid values are encrypt or decrypt")
       )
+      return
     }
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
@@ -66,7 +75,7 @@ type GetRandomValuesCompleteCallback = (res: GeneralCallbackResult) => void
 export function getRandomValues<T extends GetRandomValuesOptions = GetRandomValuesOptions>(
   options: T
 ): AsyncReturn<T, GetRandomValuesOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.GET_RANDOM_VALUES
     if (!isNumber(options.length) || options.length <= 0 || options.length > 1048576) {
       invokeFailure(event, options, "invalid length")

@@ -31,7 +31,7 @@ type MakePhoneCallCompleteCallback = (res: GeneralCallbackResult) => void
 export function makePhoneCall<T extends MakePhoneCallOptions = MakePhoneCallOptions>(
   options: T
 ): AsyncReturn<T, MakePhoneCallOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.MAKE_PHONE_CALL
     if (options.phoneNumber == null) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "phoneNumber"))

@@ -9,6 +9,7 @@ import {
   wrapperAsyncAPI
 } from "../../async"
 import { showToast } from "../ui/interaction"
+import { ErrorCodes, errorMessage } from "../../errors"
 
 const enum Events {
   GET_CLIPBOARD_DATA = "getClipboardData",
@@ -34,9 +35,9 @@ type GetClipboardDataCompleteCallback = (res: GeneralCallbackResult) => void
 export function getClipboardData<T extends GetClipboardDataOptions = GetClipboardDataOptions>(
   options: T
 ): AsyncReturn<T, GetClipboardDataOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.GET_CLIPBOARD_DATA
-    invoke<SuccessResult<T>>(event, {}, result => {
+    invoke<SuccessResult<T>>(event, options, result => {
       if (result.errMsg) {
         invokeFailure(event, options, result.errMsg)
         return
@@ -68,10 +69,11 @@ type SetClipboardDataCompleteCallback = (res: GeneralCallbackResult) => void
 export function setClipboardData<T extends SetClipboardDataOptions = SetClipboardDataOptions>(
   options: T
 ): AsyncReturn<T, SetClipboardDataOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SET_CLIPBOARD_DATA
     if (!isString(options.data)) {
-      invokeFailure(event, options, "data type require string")
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "data"))
+      return
     }
     invoke<SuccessResult<T>>(event, options, result => {
       if (result.errMsg) {

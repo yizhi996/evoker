@@ -33,7 +33,7 @@ type ShowNavigationBarLoadingCompleteCallback = (res: GeneralCallbackResult) => 
 export function showNavigationBarLoading<
   T extends ShowNavigationBarLoadingOptions = ShowNavigationBarLoadingOptions
 >(options: T): AsyncReturn<T, ShowNavigationBarLoadingOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SHOW_NAVIGATION_BAR_LOADING
     invoke<SuccessResult<T>>(event, {}, result => {
       invokeCallback(event, options, result)
@@ -56,7 +56,7 @@ type HideNavigationBarLoadingCompleteCallback = (res: GeneralCallbackResult) => 
 export function hideNavigationBarLoading<
   T extends HideNavigationBarLoadingOptions = HideNavigationBarLoadingOptions
 >(options: T): AsyncReturn<T, HideNavigationBarLoadingOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.HIDE_NAVIGATION_BAR_LOADING
     invoke<SuccessResult<T>>(event, {}, result => {
       invokeCallback(event, options, result)
@@ -87,7 +87,7 @@ type SetNavigationBarColorCompleteCallback = (res: GeneralCallbackResult) => voi
 export function setNavigationBarColor<
   T extends SetNavigationBarColorOptions = SetNavigationBarColorOptions
 >(options: T): AsyncReturn<T, SetNavigationBarColorOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SET_NAVIGATION_BAR_COLOR
     if (!options.frontColor) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "frontColor"))
@@ -142,12 +142,16 @@ type SetNavigationBarTitleCompleteCallback = (res: GeneralCallbackResult) => voi
 export function setNavigationBarTitle<
   T extends SetNavigationBarTitleOptions = SetNavigationBarTitleOptions
 >(options: T): AsyncReturn<T, SetNavigationBarTitleOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.SET_NAVIGATION_BAR_TITLE
-    invoke<SuccessResult<T>>(event, { title: options.title ?? "" }, result => {
-      invokeCallback(event, options, result)
-    })
-  }, options)
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.SET_NAVIGATION_BAR_TITLE
+      invoke<SuccessResult<T>>(event, options, result => {
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    { title: "" }
+  )
 }
 
 interface HideHomeButtonOptions {
@@ -165,9 +169,9 @@ type HideHomeButtonCompleteCallback = (res: GeneralCallbackResult) => void
 export function hideHomeButton<T extends HideHomeButtonOptions = HideHomeButtonOptions>(
   options: T
 ): AsyncReturn<T, HideHomeButtonOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.HIDE_HOMM_BUTTON
-    invoke<SuccessResult<T>>(event, {}, result => {
+    invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
   }, options)

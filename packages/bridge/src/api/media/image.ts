@@ -11,7 +11,6 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
-import { extend } from "@nzoth/shared"
 import { requestAuthorization } from "../auth"
 import { ErrorCodes, errorMessage } from "../../errors"
 
@@ -19,7 +18,8 @@ const enum Events {
   PREVIEW_IMAGE = "previewImage",
   CHOOSE_IMAGE = "chooseImage",
   SAVE_IMAGE_TO_PHOTOS_ALBUM = "saveImageToPhotosAlbum",
-  GET_IMAGE_INFO = "getImageInfo"
+  GET_IMAGE_INFO = "getImageInfo",
+  COMPRESS_IMAGE = "compressImage"
 }
 
 interface PreviewImageOptions {
@@ -39,7 +39,7 @@ type PreviewImageCompleteCallback = (res: GeneralCallbackResult) => void
 export function previewImage<T extends PreviewImageOptions = PreviewImageOptions>(
   options: T
 ): AsyncReturn<T, PreviewImageOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.PREVIEW_IMAGE
     if (!options.urls || options.urls.length === 0) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "urls"))
@@ -74,69 +74,69 @@ type ChooseImageCompleteCallback = (res: GeneralCallbackResult) => void
 export function chooseImage<T extends ChooseImageOptions = ChooseImageOptions>(
   options: T
 ): AsyncReturn<T, ChooseImageOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.CHOOSE_IMAGE
-    const finalOptions = extend(
-      {
-        count: 9,
-        sizeType: ["original", "compressed"],
-        sourceType: ["album", "camera"]
-      },
-      options
-    )
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.CHOOSE_IMAGE
 
-    const haveCamera = finalOptions.sourceType!.includes("camera")
-    const haveAlbum = finalOptions.sourceType!.includes("album")
+      const haveCamera = options.sourceType.includes("camera")
+      const haveAlbum = options.sourceType.includes("album")
 
-    const openCamera = () => {
-      openNativelyCameraTakePhoto(finalOptions.sizeType!)
-        .then(result => {
-          invokeSuccess(event, finalOptions, {
-            tempFilePaths: [result.tempFilePath],
-            tempFiles: [result.tempFile]
+      const openCamera = () => {
+        openNativelyCameraTakePhoto(options.sizeType!)
+          .then(result => {
+            invokeSuccess(event, options, {
+              tempFilePaths: [result.tempFilePath],
+              tempFiles: [result.tempFile]
+            })
           })
-        })
-        .catch(error => {
-          invokeFailure(event, finalOptions, error)
-        })
-    }
+          .catch(error => {
+            invokeFailure(event, options, error)
+          })
+      }
 
-    const openAlbum = () => {
-      openNativelyAlbumChoosePhoto({
-        count: finalOptions.count!,
-        sizeType: finalOptions.sizeType!
-      })
+      const openAlbum = () => {
+        openNativelyAlbumChoosePhoto({
+          count: options.count,
+          sizeType: options.sizeType
+        })
+          .then(result => {
+            invokeSuccess(event, options, result)
+          })
+          .catch(error => {
+            invokeFailure(event, options, error)
+          })
+      }
+
+      if (haveCamera && !haveAlbum) {
+        openCamera()
+        return
+      }
+
+      if (haveAlbum && !haveCamera) {
+        openAlbum()
+        return
+      }
+
+      showActionSheet({ itemList: ["拍照", "从手机相册选择"] })
         .then(result => {
-          invokeSuccess(event, finalOptions, result)
+          const tapIndex = result.tapIndex
+          if (tapIndex === 0) {
+            openCamera()
+          } else if (tapIndex === 1) {
+            openAlbum()
+          }
         })
         .catch(error => {
-          invokeFailure(event, finalOptions, error)
+          invokeFailure(event, options, error)
         })
+    },
+    options,
+    {
+      count: 9,
+      sizeType: ["original", "compressed"],
+      sourceType: ["album", "camera"]
     }
-
-    if (haveCamera && !haveAlbum) {
-      openCamera()
-      return
-    }
-
-    if (haveAlbum && !haveCamera) {
-      openAlbum()
-      return
-    }
-
-    showActionSheet({ itemList: ["拍照", "从手机相册选择"] })
-      .then(result => {
-        const tapIndex = result.tapIndex
-        if (tapIndex === 0) {
-          openCamera()
-        } else if (tapIndex === 1) {
-          openAlbum()
-        }
-      })
-      .catch(error => {
-        invokeFailure(event, finalOptions, error)
-      })
-  }, options)
+  )
 }
 
 interface SaveImageToPhotosAlbumOptions {
@@ -155,7 +155,7 @@ type SaveImageToPhotosAlbumCompleteCallback = (res: GeneralCallbackResult) => vo
 export function saveImageToPhotosAlbum<
   T extends SaveImageToPhotosAlbumOptions = SaveImageToPhotosAlbumOptions
 >(options: T): AsyncReturn<T, SaveImageToPhotosAlbumOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SAVE_IMAGE_TO_PHOTOS_ALBUM
 
     if (!options.filePath) {
@@ -208,7 +208,7 @@ type GetImageInfoCompleteCallback = (res: GeneralCallbackResult) => void
 export function getImageInfo<T extends GetImageInfoOptions = GetImageInfoOptions>(
   options: T
 ): AsyncReturn<T, GetImageInfoOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.GET_IMAGE_INFO
     if (!options.src) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "src"))

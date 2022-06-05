@@ -35,7 +35,7 @@ type GetScreenBrightnessCompleteCallback = (res: GeneralCallbackResult) => void
 export function getScreenBrightness<
   T extends GetScreenBrightnessOptions = GetScreenBrightnessOptions
 >(options: T): AsyncReturn<T, GetScreenBrightnessOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.GET_SCREEN_BRIGHTNESS
     invoke<SuccessResult<T>>(event, {}, result => {
       invokeCallback(event, options, result)
@@ -59,7 +59,7 @@ type SetScreenBrightnessCompleteCallback = (res: GeneralCallbackResult) => void
 export function setScreenBrightness<
   T extends SetScreenBrightnessOptions = SetScreenBrightnessOptions
 >(options: T): AsyncReturn<T, SetScreenBrightnessOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SET_SCREEN_BRIGHTNESS
     let value = options.value
     if (isString(value)) {
@@ -92,9 +92,9 @@ type SetKeepScreenOnCompleteCallback = (res: GeneralCallbackResult) => void
 export function setKeepScreenOn<T extends SetKeepScreenOnOptions = SetKeepScreenOnOptions>(
   options: T
 ): AsyncReturn<T, SetKeepScreenOnOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SET_KEEP_SCREEN_ON
-    invoke<SuccessResult<T>>(event, { keepScreenOn: options.keepScreenOn }, result => {
+    invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
   }, options)

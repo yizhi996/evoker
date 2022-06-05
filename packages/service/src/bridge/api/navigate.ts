@@ -9,7 +9,6 @@ import {
   ErrorCodes,
   errorMessage
 } from "@nzoth/bridge"
-import { extend } from "@nzoth/shared"
 import { innerAppData } from "../../app"
 
 const enum Events {
@@ -36,37 +35,34 @@ type NavigateToMiniProgramCompleteCallback = (res: GeneralCallbackResult) => voi
 export function navigateToMiniProgram<
   T extends NavigateToMiniProgramOptions = NavigateToMiniProgramOptions
 >(options: T): AsyncReturn<T, NavigateToMiniProgramOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.NAVIGATE_TO_MINI_PROGRAM
-    const finalOptions = extend(
-      {
-        appId: "",
-        envVersion: "release"
-      },
-      options
-    )
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.NAVIGATE_TO_MINI_PROGRAM
 
-    if (!finalOptions.appId) {
-      invokeFailure(event, finalOptions, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "appId"))
-      return
-    }
+      if (!options.appId) {
+        invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "appId"))
+        return
+      }
 
-    if (!["release", "trial", "develop"].includes(finalOptions.envVersion!)) {
-      invokeFailure(event, finalOptions, "options envVersion required release, trial or develop")
-      return
-    }
+      if (!["release", "trial", "develop"].includes(options.envVersion!)) {
+        invokeFailure(event, options, "options envVersion required release, trial or develop")
+        return
+      }
 
-    if (finalOptions.extraData) {
-      ;(finalOptions as T & { extraDataString: string }).extraDataString = JSON.stringify(
-        finalOptions.extraData
-      )
-      finalOptions.extraData = undefined
-    }
+      if (options.extraData) {
+        ;(options as T & { extraDataString: string }).extraDataString = JSON.stringify(
+          options.extraData
+        )
+        options.extraData = undefined
+      }
 
-    InnerJSBridge.invoke<SuccessResult<T>>(event, finalOptions, result => {
-      invokeCallback(event, finalOptions, result)
-    })
-  }, options)
+      InnerJSBridge.invoke<SuccessResult<T>>(event, options, result => {
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    { envVersion: "release" }
+  )
 }
 
 interface ExitMiniProgramOptions {
@@ -84,7 +80,7 @@ type ExitMiniProgramCompleteCallback = (res: GeneralCallbackResult) => void
 export function exitMiniProgram<T extends ExitMiniProgramOptions = ExitMiniProgramOptions>(
   options: T
 ): AsyncReturn<T, ExitMiniProgramOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.EXIT_MINI_PROGRAM
     if (!innerAppData.eventFromUserClick) {
       invokeFailure(event, options, "can only be invoked by user click gesture.")

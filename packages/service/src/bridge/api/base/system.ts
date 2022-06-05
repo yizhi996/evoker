@@ -46,7 +46,7 @@ type GetSystemInfoCompleteCallback = (res: GeneralCallbackResult) => void
 export function getSystemInfoAsync<T extends GetSystemInfoOptions = GetSystemInfoOptions>(
   options: T
 ): AsyncReturn<T, GetSystemInfoOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const result = getSystemInfoSync()
     invokeSuccess("getSystemInfoAsync", options, result)
   }, options)
@@ -55,7 +55,7 @@ export function getSystemInfoAsync<T extends GetSystemInfoOptions = GetSystemInf
 export function getSystemInfo<T extends GetSystemInfoOptions = GetSystemInfoOptions>(
   options: T
 ): AsyncReturn<T, GetSystemInfoOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const result = getSystemInfoSync()
     invokeSuccess("getSystemInfo", options, result)
   }, options)

@@ -6,7 +6,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
-import { extend, isString } from "@nzoth/shared"
+import { isString } from "@nzoth/shared"
 
 const enum Events {
   SHOW_TOAST = "showToast",
@@ -37,21 +37,21 @@ type ShowToastCompleteCallback = (res: GeneralCallbackResult) => void
 export function showToast<T extends ShowToastOptions = ShowToastOptions>(
   options: T
 ): AsyncReturn<T, ShowToastOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.SHOW_TOAST
-    const finalOptions = extend(
-      {
-        title: "",
-        icon: "success",
-        duration: 1500,
-        mask: false
-      },
-      options
-    )
-    invoke<SuccessResult<T>>(event, finalOptions, result => {
-      invokeCallback(event, finalOptions, result)
-    })
-  }, options)
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.SHOW_TOAST
+      invoke<SuccessResult<T>>(event, options, result => {
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    {
+      title: "",
+      icon: "success",
+      duration: 1500,
+      mask: false
+    }
+  )
 }
 
 interface HideToastOptions {
@@ -69,7 +69,7 @@ type HideToastCompleteCallback = (res: GeneralCallbackResult) => void
 export function hideToast<T extends HideToastOptions = HideToastOptions>(
   options: T
 ): AsyncReturn<T, HideToastOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.HIDE_TOASE
     invoke<SuccessResult<T>>(event, {}, result => {
       invokeCallback(event, options, result)
@@ -107,29 +107,29 @@ type ShowModalCompleteCallback = (res: GeneralCallbackResult) => void
 export function showModal<T extends ShowModalOptions = ShowModalOptions>(
   options: T
 ): AsyncReturn<T, ShowModalOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.SHOW_MODAL
-    const finalOptions = extend(
-      {
-        showCancel: true,
-        cancelText: "取消",
-        cancelColor: "#000000",
-        confirmText: "确定",
-        confirmColor: "#576B95",
-        editable: false
-      },
-      options
-    )
-    if (finalOptions.title && !isString(finalOptions.title)) {
-      finalOptions.title = finalOptions.title + ""
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.SHOW_MODAL
+      if (options.title && !isString(options.title)) {
+        options.title = options.title + ""
+      }
+      if (options.content && !isString(options.content)) {
+        options.content = options.content + ""
+      }
+      invoke<SuccessResult<T>>(event, options, result => {
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    {
+      showCancel: true,
+      cancelText: "取消",
+      cancelColor: "#000000",
+      confirmText: "确定",
+      confirmColor: "#576B95",
+      editable: false
     }
-    if (finalOptions.content && !isString(finalOptions.content)) {
-      finalOptions.content = finalOptions.content + ""
-    }
-    invoke<SuccessResult<T>>(event, finalOptions, result => {
-      invokeCallback(event, finalOptions, result)
-    })
-  }, options)
+  )
 }
 
 interface ShowLoadingOptions {
@@ -149,20 +149,15 @@ type ShowLoadingCompleteCallback = (res: GeneralCallbackResult) => void
 export function showLoading<T extends ShowLoadingOptions = ShowLoadingOptions>(
   options: T
 ): AsyncReturn<T, ShowLoadingOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const finalOptions = extend(
-      {
-        title: "",
-        icon: "loading",
-        duration: -1,
-        mask: false
-      },
-      options
-    )
-    invoke<SuccessResult<T>>(Events.SHOW_TOAST, finalOptions, result => {
-      invokeCallback(Events.SHOW_LOADING, finalOptions, result)
-    })
-  }, options)
+  return wrapperAsyncAPI(
+    options => {
+      invoke<SuccessResult<T>>(Events.SHOW_TOAST, options, result => {
+        invokeCallback(Events.SHOW_LOADING, options, result)
+      })
+    },
+    options,
+    { title: "", icon: "loading", duration: -1, mask: false }
+  )
 }
 
 interface HideLoadingOptions {
@@ -180,8 +175,8 @@ type HideLoadingCompleteCallback = (res: GeneralCallbackResult) => void
 export function hideLoading<T extends HideLoadingOptions = HideLoadingOptions>(
   options: T
 ): AsyncReturn<T, HideLoadingOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    invoke<SuccessResult<T>>(Events.HIDE_TOASE, {}, result => {
+  return wrapperAsyncAPI(options => {
+    invoke<SuccessResult<T>>(Events.HIDE_TOASE, options, result => {
       invokeCallback(Events.HIDE_LOADING, options, result)
     })
   }, options)
@@ -209,19 +204,19 @@ type ShowActionSheetCompleteCallback = (res: GeneralCallbackResult) => void
 export function showActionSheet<T extends ShowActionSheetOptions = ShowActionSheetOptions>(
   options: T
 ): AsyncReturn<T, ShowActionSheetOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.SHOW_ACTION_SHEET
-    const finalOptions = extend(
-      {
-        itemList: []
-      },
-      options
-    )
-    if (finalOptions.itemList.length > 6) {
-      finalOptions.itemList = finalOptions.itemList.slice(0, 6)
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.SHOW_ACTION_SHEET
+      if (options.itemList.length > 6) {
+        options.itemList = options.itemList.slice(0, 6)
+      }
+      invoke<SuccessResult<T>>(event, options, result => {
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    {
+      itemList: [] as string[]
     }
-    invoke<SuccessResult<T>>(event, finalOptions, result => {
-      invokeCallback(event, finalOptions, result)
-    })
-  }, options)
+  )
 }

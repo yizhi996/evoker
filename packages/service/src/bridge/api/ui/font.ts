@@ -34,23 +34,14 @@ type LoadFontFaceCompleteCallback = (res: GeneralCallbackResult) => void
 export function loadFontFace<T extends LoadFontFaceOptions = LoadFontFaceOptions>(
   options: T
 ): AsyncReturn<T, LoadFontFaceOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.LOAD_FONT_FACE
-    const defaultDesc = {
-      style: "normal",
-      weight: "normal",
-      variant: "normal"
-    }
-    invokeWebViewMethod(
-      event,
-      {
-        family: options.family,
-        source: options.source,
-        desc: extend(defaultDesc, options.desc)
-      },
-      result => {
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.LOAD_FONT_FACE
+      invokeWebViewMethod(event, options, result => {
         invokeCallback(event, options, result)
-      }
-    )
-  }, options)
+      })
+    },
+    options,
+    { desc: { style: "normal", weight: "normal", variant: "normal" } }
+  )
 }

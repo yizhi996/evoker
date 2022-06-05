@@ -1,5 +1,6 @@
 import { isFunction, extend } from "@nzoth/shared"
 import { InvokeCallbackResult, subscribeHandler } from "./bridge"
+import { combineOptions } from "./utils"
 
 export interface GeneralCallbackResult {
   errMsg: string
@@ -48,8 +49,12 @@ function isPromiseLike(val: any) {
   return !val.success && !val.fail && !val.complete
 }
 
-export function wrapperAsyncAPI<T>(fn: (options: T) => void, options: T): any {
-  const _options = options || ({} as T)
+export function wrapperAsyncAPI<T, U>(
+  fn: (options: T & U) => void,
+  options: T = {} as any,
+  preset: U = {} as any
+): any {
+  const _options = combineOptions(options, preset)
   if (isPromiseLike(_options)) {
     return promisify(fn, _options)
   }

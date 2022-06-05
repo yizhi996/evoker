@@ -6,7 +6,9 @@ import {
   invokeCallback,
   invokeFailure,
   invokeSuccess,
-  wrapperAsyncAPI
+  wrapperAsyncAPI,
+  errorMessage,
+  ErrorCodes
 } from "@nzoth/bridge"
 import { innerAppData } from "../../app"
 
@@ -78,7 +80,7 @@ type NavigateToCompleteCallback = (res: GeneralCallbackResult) => void
 export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
   options: T
 ): AsyncReturn<T, NavigateToOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.NAVIGATE_TO
     if (innerAppData.routerLock) {
       invokeFailure(
@@ -90,7 +92,7 @@ export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
     }
 
     if (!options.url) {
-      invokeFailure(event, options, "url cannot be empty")
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "url"))
       return
     }
 
@@ -135,19 +137,23 @@ type NavigateBackCompleteCallback = (res: GeneralCallbackResult) => void
 export function navigateBack<T extends NavigateBackOptions = NavigateBackOptions>(
   options: T
 ): AsyncReturn<T, NavigateBackOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.NAVIGATE_BACK
-    if (innerAppData.routerLock) {
-      invokeFailure(event, options, "防止重复多次打开页面，需要在新页面打开完成后才能调用。")
-      return
-    }
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.NAVIGATE_BACK
+      if (innerAppData.routerLock) {
+        invokeFailure(event, options, "防止重复多次打开页面，需要在新页面打开完成后才能调用。")
+        return
+      }
 
-    innerAppData.routerLock = true
-    InnerJSBridge.invoke<SuccessResult<T>>(event, { delta: options.delta || 1 }, result => {
-      innerAppData.routerLock = false
-      invokeCallback(event, options, result)
-    })
-  }, options)
+      innerAppData.routerLock = true
+      InnerJSBridge.invoke<SuccessResult<T>>(event, options, result => {
+        innerAppData.routerLock = false
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    { delta: 1 }
+  )
 }
 
 interface RedirectToOptions {
@@ -166,10 +172,10 @@ type RedirectToCompleteCallback = (res: GeneralCallbackResult) => void
 export function redirectTo<T extends RedirectToOptions = RedirectToOptions>(
   options: T
 ): AsyncReturn<T, RedirectToOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.REDIRECT_TO
     if (!options.url) {
-      invokeFailure(event, options, "url cannot be empty")
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "url"))
       return
     }
 
@@ -212,10 +218,10 @@ type ReLaunchCompleteCallback = (res: GeneralCallbackResult) => void
 export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
   options: T
 ): AsyncReturn<T, ReLaunchOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.RE_LAUNCH
     if (!options.url) {
-      invokeFailure(event, options, "options url can not be empty")
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "url"))
       return
     }
 
@@ -257,10 +263,10 @@ type SwitchTabCompleteCallback = (res: GeneralCallbackResult) => void
 export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
   options: T
 ): AsyncReturn<T, SwitchTabOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SWITCH_TAB
     if (!options.url) {
-      invokeFailure(event, options, "options url can not be empty")
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "url"))
       return
     }
 

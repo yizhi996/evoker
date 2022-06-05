@@ -131,7 +131,7 @@ type GetStorageCompleteCallback = (res: GeneralCallbackResult) => void
 export function getStorage<T = any, U extends GetStorageOptions<T> = GetStorageOptions<T>>(
   options: U
 ): AsyncReturn<U, GetStorageOptions<T>> {
-  return wrapperAsyncAPI<U>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.GET
     if (!isString(options.key)) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
@@ -188,7 +188,7 @@ type SetStorageCompleteCallback = (res: GeneralCallbackResult) => void
 export function setStorage<T = any, U extends SetStorageOptions<T> = SetStorageOptions<T>>(
   options: U
 ): AsyncReturn<U, SetStorageOptions<T>> {
-  return wrapperAsyncAPI<U>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SET
     if (!isString(options.key)) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
@@ -242,7 +242,7 @@ type RemoveStorageCompleteCallback = (res: GeneralCallbackResult) => void
 export function removeStorage<T extends RemoveStorageOptions = RemoveStorageOptions>(
   options: T
 ): AsyncReturn<T, RemoveStorageOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.REMOVE
     if (!isString(options.key)) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
@@ -281,7 +281,7 @@ type ClearStorageCompleteCallback = (res: GeneralCallbackResult) => void
 export function clearStorage<T extends ClearStorageOptions = ClearStorageOptions>(
   options: T
 ): AsyncReturn<T, ClearStorageOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.CLEAR
     invoke<SuccessResult<T>>(event, {}, result => {
       invokeCallback(event, options, result)
@@ -319,7 +319,7 @@ type GetStorageInfoCompleteCallback = (res: GeneralCallbackResult) => void
 export function getStorageInfo<T extends GetStorageInfoOptions = GetStorageInfoOptions>(
   options: T
 ): AsyncReturn<T, GetStorageInfoOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.INFO
     invoke<SuccessResult<T>>(event, {}, result => {
       invokeCallback(event, options, result)

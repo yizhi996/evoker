@@ -17,7 +17,7 @@
       "export function ${1/(^.)/${1:/downcase}/}<",
       "  T extends $1Options = $1Options",
       ">(options: T): AsyncReturn<T, $1Options> {",
-      "  return wrapperAsyncAPI<T>(options => {",
+      "  return wrapperAsyncAPI(options => {",
       "    const event = $0",
       "    invoke<SuccessResult<T>>(event, options, result => {",
       "      invokeCallback(event, options, result)",

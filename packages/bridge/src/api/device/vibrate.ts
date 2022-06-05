@@ -4,8 +4,10 @@ import {
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
-  wrapperAsyncAPI
+  wrapperAsyncAPI,
+  invokeFailure
 } from "../../async"
+import { ErrorCodes, errorMessage } from "../../errors"
 
 const enum Events {
   SHORT = "vibrateShort",
@@ -28,8 +30,12 @@ type VibrateShortCompleteCallback = (res: GeneralCallbackResult) => void
 export function vibrateShort<T extends VibrateShortOptions = VibrateShortOptions>(
   options: T
 ): AsyncReturn<T, VibrateShortOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SHORT
+    if (!options.type) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "type"))
+      return
+    }
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -51,9 +57,9 @@ type VibrateLongCompleteCallback = (res: GeneralCallbackResult) => void
 export function vibrateLong<T extends VibrateLongOptions = VibrateLongOptions>(
   options: T
 ): AsyncReturn<T, VibrateLongOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.LONG
-    invoke<SuccessResult<T>>(event, {}, result => {
+    invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
   }, options)

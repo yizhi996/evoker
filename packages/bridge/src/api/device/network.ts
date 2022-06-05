@@ -33,7 +33,7 @@ type GetNetworkTypeCompleteCallback = (res: GeneralCallbackResult) => void
 export function getNetworkType<T extends GetNetworkTypeOptions = GetNetworkTypeOptions>(
   options: T
 ): AsyncReturn<T, GetNetworkTypeOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.GET_NETWORK_TYPE
     invoke<SuccessResult<T>>(event, {}, result => {
       invokeCallback(event, options, result)
@@ -60,7 +60,7 @@ type GetLocalIPAddressCompleteCallback = (res: GeneralCallbackResult) => void
 export function getLocalIPAddress<T extends GetLocalIPAddressOptions = GetLocalIPAddressOptions>(
   options: T
 ): AsyncReturn<T, GetLocalIPAddressOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.GET_LOCAL_IP_ADDRESS
     invoke<SuccessResult<T>>(event, {}, result => {
       invokeCallback(event, options, result)

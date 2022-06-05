@@ -44,16 +44,16 @@ type GetLocationCompleteCallback = (res: GeneralCallbackResult) => void
 export function getLocation<T extends GetLocationOptions = GetLocationOptions>(
   options: T
 ): AsyncReturn<T, GetLocationOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.GET_LOCATION
-    invoke<SuccessResult<T>>(
-      event,
-      extend({ type: "wgs84", altitude: false, isHighAccuracy: false }, options),
-      result => {
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.GET_LOCATION
+      invoke<SuccessResult<T>>(event, options, result => {
         invokeCallback(event, options, result)
-      }
-    )
-  }, options)
+      })
+    },
+    options,
+    { type: "wgs84", altitude: false, isHighAccuracy: false }
+  )
 }
 
 interface StartLocationUpdateOptions {
@@ -72,12 +72,16 @@ type StartLocationUpdateCompleteCallback = (res: GeneralCallbackResult) => void
 export function startLocationUpdate<
   T extends StartLocationUpdateOptions = StartLocationUpdateOptions
 >(options: T): AsyncReturn<T, StartLocationUpdateOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const event = Events.START_LOCATION_UPDATE
-    invoke<SuccessResult<T>>(event, { type: options.type || "gcj02" }, result => {
-      invokeCallback(event, options, result)
-    })
-  }, options)
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.START_LOCATION_UPDATE
+      invoke<SuccessResult<T>>(event, options, result => {
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    { type: "gcj02" }
+  )
 }
 
 interface StopLocationUpdateOptions {
@@ -95,9 +99,9 @@ type StopLocationUpdateCompleteCallback = (res: GeneralCallbackResult) => void
 export function stopLocationUpdate<T extends StopLocationUpdateOptions = StopLocationUpdateOptions>(
   options: T
 ): AsyncReturn<T, StopLocationUpdateOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.STOP_LOCATION_UPDATE
-    invoke<SuccessResult<T>>(event, {}, result => {
+    invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
   }, options)

@@ -22,11 +22,14 @@ enum NZMediaAPI: String, NZBuiltInAPI {
     case openNativelyAlbum
     case saveImageToPhotosAlbum
     case getImageInfo
+    case compressImage
     
     var runInThread: DispatchQueue {
         switch self {
-        case .getLocalImage, .getImageInfo:
+        case .getLocalImage:
             return DispatchQueue.global(qos: .userInteractive)
+        case .getImageInfo, .compressImage:
+            return DispatchQueue.global()
         default:
             return DispatchQueue.main
         }
@@ -45,6 +48,8 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 saveImageToPhotosAlbum(appService: appService, bridge: bridge, args: args)
             case .getImageInfo:
                 getImageInfo(appService: appService, bridge: bridge, args: args)
+            case .compressImage:
+                compressImage(appService: appService, bridge: bridge, args: args)
             }
         }
     }
@@ -418,7 +423,7 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         } else if let url = URL(string: src), (url.scheme == "http" || url.scheme == "https") {
-            SDWebImageManager.shared.loadImage(with: url, options: [], progress: nil) { image, data, error, _, _, _ in
+            SDWebImageManager.shared.loadImage(with: url, options: [.retryFailed], progress: nil) { image, data, error, _, _, _ in
                 if let error = error {
                     bridge.invokeCallbackFail(args: args, error: NZError.custom(error.localizedDescription))
                 } else if let image = image {
@@ -458,6 +463,50 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 }
             } else {
                 let error = NZError.bridgeFailed(reason: .filePathNotExist(src))
+                bridge.invokeCallbackFail(args: args, error: error)
+            }
+        }
+    }
+    
+    private func compressImage(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
+        struct Params: Decodable {
+            let src: String
+            let quality: Int
+        }
+        
+        guard let params: Params = args.paramsString.toModel() else {
+            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        if let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: params.src) {
+            if let image = UIImage(contentsOfFile: url.path) {
+                let data = image.jpegData(compressionQuality: CGFloat(params.quality / 100))
+                let (nzfile, destination) = FilePath.generateTmpNZFilePath(ext: "jpg")
+                let success = FileManager.default.createFile(atPath: destination.path, contents: data)
+                if success {
+                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": nzfile])
+                } else {
+                    bridge.invokeCallbackFail(args: args, error: NZError.custom("create file failed"))
+                }
+            } else {
+                let error = NZError.bridgeFailed(reason: .filePathNotExist(params.src))
+                bridge.invokeCallbackFail(args: args, error: error)
+            }
+        } else {
+            let url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: params.src)
+            if let image = UIImage(contentsOfFile: url.path) {
+                let (nzfile, destination) = FilePath.generateTmpNZFilePath(ext: "jpg")
+                let success = FileManager.default.createFile(atPath: destination.path,
+                                                             contents: image.sd_imageData())
+                if success {
+                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": nzfile])
+                } else {
+                    bridge.invokeCallbackFail(args: args, error: NZError.custom("create file failed"))
+                }
+            } else {
+                let error = NZError.bridgeFailed(reason: .filePathNotExist(params.src))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         }

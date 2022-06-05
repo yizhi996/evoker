@@ -21,9 +21,9 @@ type StartPullDownRefreshCompleteCallback = (res: GeneralCallbackResult) => void
 export function startPullDownRefresh<
   T extends StartPullDownRefreshOptions = StartPullDownRefreshOptions
 >(options: T): AsyncReturn<T, StartPullDownRefreshOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.START_PULL_DOWN_REFRESH
-    invoke(event, {}, result => {
+    invoke(event, options, result => {
       invokeCallback(event, options, result)
     })
   }, options)
@@ -44,9 +44,9 @@ type StopPullDownRefreshCompleteCallback = (res: GeneralCallbackResult) => void
 export function stopPullDownRefresh<
   T extends StopPullDownRefreshOptions = StopPullDownRefreshOptions
 >(options: T): AsyncReturn<T, StopPullDownRefreshOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.STOP_PULL_DOWN_REFRESH
-    invoke(event, {}, result => {
+    invoke(event, options, result => {
       invokeCallback(event, options, result)
     })
   }, options)

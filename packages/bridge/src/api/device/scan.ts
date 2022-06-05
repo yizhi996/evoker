@@ -6,7 +6,6 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
-import { extend } from "@nzoth/shared"
 
 interface ScanCodeOptions {
   onlyFromCamera?: boolean
@@ -30,16 +29,16 @@ type ScanCodeCompleteCallback = (res: GeneralCallbackResult) => void
 export function scanCode<T extends ScanCodeOptions = ScanCodeOptions>(
   options: T
 ): AsyncReturn<T, ScanCodeOptions> {
-  return wrapperAsyncAPI<T>(options => {
-    const finalOptions = extend(
-      {
-        onlyFromCamera: false,
-        scanType: ["barCode", "qrCode"]
-      },
-      options
-    )
-    invoke<SuccessResult<T>>("scanCode", finalOptions, result => {
-      invokeCallback("scanCode", finalOptions, result)
-    })
-  }, options)
+  return wrapperAsyncAPI(
+    options => {
+      invoke<SuccessResult<T>>("scanCode", options, result => {
+        invokeCallback("scanCode", options, result)
+      })
+    },
+    options,
+    {
+      onlyFromCamera: false,
+      scanType: ["barCode", "qrCode"]
+    }
+  )
 }

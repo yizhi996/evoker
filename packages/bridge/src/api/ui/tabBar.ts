@@ -35,14 +35,14 @@ type SetTabBarBadgeCompleteCallback = (res: GeneralCallbackResult) => void
 export function setTabBarBadge<T extends SetTabBarBadgeOptions = SetTabBarBadgeOptions>(
   options: T
 ): AsyncReturn<T, SetTabBarBadgeOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SET_TAB_BAR_BADGE
     if (options.index == null) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
       return
     }
     if (!options.text) {
-      invokeFailure(event, options, "text cannot be empty")
+      invokeFailure(event, options, errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "text"))
       return
     }
     invoke<SuccessResult<T>>(event, options, result => {
@@ -67,7 +67,7 @@ type RemoveTabBarBadgeCompleteCallback = (res: GeneralCallbackResult) => void
 export function removeTabBarBadge<T extends RemoveTabBarBadgeOptions = RemoveTabBarBadgeOptions>(
   options: T
 ): AsyncReturn<T, RemoveTabBarBadgeOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.REMOVE_TAB_BAR_BADGE
     if (options.index == null) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
@@ -95,7 +95,7 @@ type ShowTabBarRedDotCompleteCallback = (res: GeneralCallbackResult) => void
 export function showTabBarRedDot<T extends ShowTabBarRedDotOptions = ShowTabBarRedDotOptions>(
   options: T
 ): AsyncReturn<T, ShowTabBarRedDotOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SHOW_TAB_BAR_RED_DOT
     if (options.index == null) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
@@ -123,7 +123,7 @@ type HideTabBarRedDotCompleteCallback = (res: GeneralCallbackResult) => void
 export function hideTabBarRedDot<T extends HideTabBarRedDotOptions = HideTabBarRedDotOptions>(
   options: T
 ): AsyncReturn<T, HideTabBarRedDotOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.HIDE_TAB_BAR_RED_DOT
     if (options.index == null) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
@@ -154,7 +154,7 @@ type SetTabBarItemCompleteCallback = (res: GeneralCallbackResult) => void
 export function setTabBarItem<T extends SetTabBarItemOptions = SetTabBarItemOptions>(
   options: T
 ): AsyncReturn<T, SetTabBarItemOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SET_TAB_BAR_ITEM
     if (options.index == null) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
@@ -185,7 +185,7 @@ type SetTabBarStyleCompleteCallback = (res: GeneralCallbackResult) => void
 export function setTabBarStyle<T extends SetTabBarStyleOptions = SetTabBarStyleOptions>(
   options: T
 ): AsyncReturn<T, SetTabBarStyleOptions> {
-  return wrapperAsyncAPI<T>(options => {
+  return wrapperAsyncAPI(options => {
     const event = Events.SET_TAB_BAR_STYLE
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
