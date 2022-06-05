@@ -219,3 +219,37 @@ export function getImageInfo<T extends GetImageInfoOptions = GetImageInfoOptions
     })
   }, options)
 }
+
+interface CompressImageOptions {
+  src: string
+  quality?: number
+  success?: CompressImageSuccessCallback
+  fail?: CompressImageFailCallback
+  complete?: CompressImageCompleteCallback
+}
+
+type CompressImageSuccessCallback = (res: GeneralCallbackResult) => void
+
+type CompressImageFailCallback = (res: GeneralCallbackResult) => void
+
+type CompressImageCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function compressImage<T extends CompressImageOptions = CompressImageOptions>(
+  options: T
+): AsyncReturn<T, CompressImageOptions> {
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.COMPRESS_IMAGE
+      if (!options.src) {
+        invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "src"))
+        return
+      }
+
+      invoke<SuccessResult<T>>(event, options, result => {
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    { quality: 80 }
+  )
+}
