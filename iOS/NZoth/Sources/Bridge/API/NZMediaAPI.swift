@@ -23,6 +23,7 @@ enum NZMediaAPI: String, NZBuiltInAPI {
     case saveImageToPhotosAlbum
     case getImageInfo
     case compressImage
+    case saveVideoToPhotosAlbum
     
     var runInThread: DispatchQueue {
         switch self {
@@ -50,6 +51,8 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 getImageInfo(appService: appService, bridge: bridge, args: args)
             case .compressImage:
                 compressImage(appService: appService, bridge: bridge, args: args)
+            case .saveVideoToPhotosAlbum:
+                saveVideoToPhotosAlbum(appService: appService, bridge: bridge, args: args)
             }
         }
     }
@@ -508,6 +511,53 @@ enum NZMediaAPI: String, NZBuiltInAPI {
             } else {
                 let error = NZError.bridgeFailed(reason: .filePathNotExist(params.src))
                 bridge.invokeCallbackFail(args: args, error: error)
+            }
+        }
+    }
+    
+    private func saveVideoToPhotosAlbum(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
+        guard let dict = args.paramsString.toDict(), let filePath = dict["filePath"] as? String else {
+            let error = NZError.bridgeFailed(reason: .fieldRequired("filePath"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: filePath),
+              FileManager.default.fileExists(atPath: url.path) else {
+            let error = NZError.bridgeFailed(reason: .filePathNotExist(filePath))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        func save() {
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+            }) { success, error in
+                if success {
+                    bridge.invokeCallbackSuccess(args: args)
+                } else {
+                    bridge.invokeCallbackFail(args: args, error: NZError.custom(error!.localizedDescription))
+                }
+            }
+        }
+        
+        func denied() {
+            let error = NZError.bridgeFailed(reason: .custom("auth denied"))
+            bridge.invokeCallbackFail(args: args, error: error)
+        }
+        
+        switch PrivacyPermission.album {
+        case .authorized:
+            save()
+        case .denied:
+            denied()
+        case .notDetermined:
+            PrivacyPermission.requestAlbum {
+                if PrivacyPermission.album == .authorized {
+                    save()
+                } else {
+                    denied()
+                }
             }
         }
     }

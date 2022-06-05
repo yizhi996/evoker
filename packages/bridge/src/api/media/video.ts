@@ -6,12 +6,18 @@ import {
   invokeFailure,
   GeneralCallbackResult,
   AsyncReturn,
-  wrapperAsyncAPI
+  wrapperAsyncAPI,
+  invokeCallback,
+  SuccessResult
 } from "../../async"
+import { invoke } from "../../bridge"
 import { clamp } from "@nzoth/shared"
+import { ErrorCodes, errorMessage } from "../../errors"
+import { requestAuthorization } from "../auth"
 
 const enum Events {
-  CHOOSE_VIDEO = "chooseVideo"
+  CHOOSE_VIDEO = "chooseVideo",
+  SAVE_VIDEO_TO_PHTOTS_ALBUM = "saveVideoToPhotosAlbum"
 }
 
 interface ChooseVideoOptions {
@@ -106,4 +112,40 @@ export function chooseVideo<T extends ChooseVideoOptions = ChooseVideoOptions>(
       camera: ["back", "front"]
     }
   )
+}
+
+interface SaveVideoToPhotosAlbumOptions {
+  filePath: string
+  success?: SaveVideoToPhotosAlbumSuccessCallback
+  fail?: SaveVideoToPhotosAlbumFailCallback
+  complete?: SaveVideoToPhotosAlbumCompleteCallback
+}
+
+type SaveVideoToPhotosAlbumSuccessCallback = (res: GeneralCallbackResult) => void
+
+type SaveVideoToPhotosAlbumFailCallback = (res: GeneralCallbackResult) => void
+
+type SaveVideoToPhotosAlbumCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function saveVideoToPhotosAlbum<
+  T extends SaveVideoToPhotosAlbumOptions = SaveVideoToPhotosAlbumOptions
+>(options: T): AsyncReturn<T, SaveVideoToPhotosAlbumOptions> {
+  return wrapperAsyncAPI(options => {
+    const event = Events.SAVE_VIDEO_TO_PHTOTS_ALBUM
+    if (!options.filePath) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "filePath"))
+      return
+    }
+
+    const scope = "scope.writePhotosAlbum"
+    requestAuthorization(scope)
+      .then(() => {
+        invoke<SuccessResult<T>>(event, options, result => {
+          invokeCallback(event, options, result)
+        })
+      })
+      .catch(error => {
+        invokeFailure(event, options, error)
+      })
+  }, options)
 }

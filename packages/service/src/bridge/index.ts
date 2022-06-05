@@ -45,7 +45,8 @@ import {
   saveImageToPhotosAlbum,
   getImageInfo,
   compressImage,
-  chooseVideo
+  chooseVideo,
+  saveVideoToPhotosAlbum
 } from "@nzoth/bridge"
 import { createCameraContext } from "./api/media/camera"
 import { createInnerAudioContext } from "@nzoth/bridge"
@@ -126,6 +127,7 @@ export {
   chooseImage,
   compressImage,
   chooseVideo,
+  saveVideoToPhotosAlbum,
   request,
   downloadFile,
   uploadFile,
@@ -226,6 +228,7 @@ export default {
   chooseImage,
   compressImage,
   chooseVideo,
+  saveVideoToPhotosAlbum,
   request,
   downloadFile,
   uploadFile,
