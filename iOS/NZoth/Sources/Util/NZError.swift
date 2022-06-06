@@ -73,6 +73,8 @@ public enum NZError: Error {
         
         case filePathNotExist(String)
         
+        case contentNotFound
+        
         case tongCengContainerViewNotFound(String)
         
         case videoPlayerIdNotFound(Int)
@@ -157,6 +159,8 @@ extension NZError.BridgeFailureReason {
             return "cannot to tabbar page"
         case .apiHookNotImplemented:
             return "api hook not implemented, see NZEngineHooks"
+        case .contentNotFound:
+            return "content not found"
         case .custom(let error):
             return "\(error)"
         }

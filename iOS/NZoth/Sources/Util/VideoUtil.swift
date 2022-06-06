@@ -18,58 +18,18 @@ struct VideoUtil {
         
         let videoTrack = asset.tracks(withMediaType: .video).first!
         
-        let t = videoTrack.preferredTransform
-        var degrees: CGFloat = 0
-        if t.a == 0 && t.b == 1.0 && t.c == -1.0 && t.d == 0 {
-            // Portrait
-            degrees = 90
-        } else if t.a == 0 && t.b == -1.0 && t.c == 1.0 && t.d == 0{
-            // PortraitUpsideDown
-            degrees = 270
-        } else if t.a == 1.0 && t.b == 0 && t.c == 0 && t.d == 1.0 {
-            // LandscapeRight
-            degrees = 0
-        } else if t.a == -1.0 && t.b == 0 && t.c == 0 && t.d == -1.0 {
-            // LandscapeLeft
-            degrees = 180
-        }
+        let (transform, targetSize) = correctVideoTrackTransformAndSize(videoTrack, targetSize: size)
         
         let videoComposition = AVMutableVideoComposition()
         videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
+        videoComposition.renderSize = targetSize
         
-        var transform: CGAffineTransform = .identity
-        
-        if degrees == 90 {
-            let width = videoTrack.naturalSize.height
-            let p = size.height / size.width
-            let height = width * p
-            let y = (videoTrack.naturalSize.width - height) * 0.5
-            transform = transform.translatedBy(x: width, y: -y)
-            transform = transform.rotated(by: .pi / 2)
-            videoComposition.renderSize = CGSize(width: width, height: height)
-        } else if degrees == 180 {
-            let width = videoTrack.naturalSize.width
-            let p = size.height / size.width
-            let height = width * p
-            let y = (videoTrack.naturalSize.height - height) * 0.5
-            transform = transform.translatedBy(x: width, y: -y)
-            transform = transform.rotated(by: .pi)
-            videoComposition.renderSize = CGSize(width: width, height: height)
-        } else if degrees == 270 {
-            let width = videoTrack.naturalSize.height
-            let p = size.height / size.width
-            let height = width * p
-            let y = (videoTrack.naturalSize.width - height) * 0.5
-            transform = transform.translatedBy(x: -y, y: width)
-            transform = transform.rotated(by: .pi / 2 * 3)
-            videoComposition.renderSize = CGSize(width: width, height: height)
-        }
+        let instruction = AVMutableVideoCompositionInstruction()
+        instruction.timeRange = CMTimeRange(start: .zero, duration: asset.duration)
         
         let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
         transformer.setTransform(transform, at: .zero)
         
-        let instruction = AVMutableVideoCompositionInstruction()
-        instruction.timeRange = CMTimeRange(start: .zero, duration: asset.duration)
         instruction.layerInstructions = [transformer]
         
         videoComposition.instructions = [instruction]
@@ -97,6 +57,288 @@ struct VideoUtil {
         return nil
     }
     
+    static func videoTrackDegrees(_ track: AVAssetTrack) -> Int {
+        let t = track.preferredTransform
+        var degrees = 0
+        if t.a == 0 && t.b == 1.0 && t.c == -1.0 && t.d == 0 {
+            // Portrait
+            degrees = 90
+        } else if t.a == 0 && t.b == -1.0 && t.c == 1.0 && t.d == 0{
+            // PortraitUpsideDown
+            degrees = 270
+        } else if t.a == 1.0 && t.b == 0 && t.c == 0 && t.d == 1.0 {
+            // LandscapeRight
+            degrees = 0
+        } else if t.a == -1.0 && t.b == 0 && t.c == 0 && t.d == -1.0 {
+            // LandscapeLeft
+            degrees = 180
+        }
+        return degrees
+    }
+    
+    static func correctVideoTrackTransformAndSize(_ track: AVAssetTrack, targetSize: CGSize) -> (CGAffineTransform, CGSize) {
+        let degrees = videoTrackDegrees(track)
+        
+        let naturalSize = track.naturalSize
+        var transform: CGAffineTransform = .identity
+        if degrees == 90 {
+            let width = naturalSize.height
+            let p = targetSize.height / targetSize.width
+            let height = width * p
+            let y = (naturalSize.width - height) * 0.5
+            transform = transform.translatedBy(x: width, y: -y)
+            transform = transform.rotated(by: .pi / 2)
+            return (transform, CGSize(width: width, height: height))
+        } else if degrees == 180 {
+            let width = naturalSize.width
+            let p = targetSize.height / targetSize.width
+            let height = width * p
+            let y = (naturalSize.height - height) * 0.5
+            transform = transform.translatedBy(x: width, y: -y)
+            transform = transform.rotated(by: .pi)
+            return (transform, CGSize(width: width, height: height))
+        } else if degrees == 270 {
+            let width = naturalSize.height
+            let p = targetSize.height / targetSize.width
+            let height = width * p
+            let y = (naturalSize.width - height) * 0.5
+            transform = transform.translatedBy(x: -y, y: width)
+            transform = transform.rotated(by: .pi / 2 * 3)
+            return (transform, CGSize(width: width, height: height))
+        }
+        return (transform, targetSize)
+    }
+    
+
+    enum CompressQuality: String, Decodable {
+        case low
+        case medium
+        case high
+    }
+    
+    typealias CompressVideoCompletionHandler = (FilePath.NZFile, Int, NZError?) -> Void
+    
+    static func compressVideo(url: URL, quality: CompressQuality?, bitrate: Float?, fps: Float?, resolution: CGFloat, completionHandler handler:  @escaping CompressVideoCompletionHandler) {
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            handler("", 0, NZError.bridgeFailed(reason: .contentNotFound))
+            return
+        }
+        
+        let asset = AVURLAsset(url: url)
+        
+        let videoTracks = asset.tracks(withMediaType: .video)
+        guard let videoTrack = videoTracks.first else {
+            handler("", 0, NZError.bridgeFailed(reason: .custom("video track not found")))
+            return
+        }
+        
+        var targetFPS = videoTrack.nominalFrameRate
+        var targetBitrate = videoTrack.estimatedDataRate
+        var targetSize = videoTrack.naturalSize
+        
+        if let quality = quality {
+            switch quality {
+            case .high:
+                targetSize.width *= 0.8
+                targetSize.height *= 0.8
+            case .medium:
+                targetSize.width *= 0.5
+                targetSize.height *= 0.5
+            case .low:
+                targetSize.width *= 0.3
+                targetSize.height *= 0.3
+            }
+        } else {
+            if let fps = fps {
+                targetFPS = fps
+            }
+            if let bitrate = bitrate {
+                targetBitrate = bitrate
+            }
+            targetSize.width *= resolution
+            targetSize.height *= resolution
+        }
+        
+        let degrees = VideoUtil.videoTrackDegrees(videoTrack)
+        var renderSize = videoTrack.naturalSize
+        var transform: CGAffineTransform = .identity
+        if degrees == 90 {
+            transform = transform.translatedBy(x: renderSize.height, y: 0)
+            transform = transform.rotated(by: .pi / 2)
+            targetSize = CGSize(width: targetSize.height, height: targetSize.width)
+            renderSize = CGSize(width: renderSize.height, height: renderSize.width)
+        } else if degrees == 180 {
+            transform = transform.translatedBy(x: renderSize.width, y: renderSize.height)
+            transform = transform.rotated(by: .pi)
+        } else if degrees == 270 {
+            transform = transform.translatedBy(x: 0, y: renderSize.width)
+            transform = transform.rotated(by: .pi / 2 * 3)
+            targetSize = CGSize(width: targetSize.height, height: targetSize.width)
+            renderSize = CGSize(width: renderSize.height, height: renderSize.width)
+        }
+  
+        let type = asset.url.pathExtension
+        guard let outputFileType = VideoUtil.pathExtendsionToAVFileType(type) else {
+            let error = NZError.bridgeFailed(reason: .custom("file type not supported, only support mp4, m4v, mov"))
+             handler("", 0, error)
+            return
+        }
+
+        let (nzfile, destination) = FilePath.generateTmpNZFilePath(ext: type)
+        do {
+            let reader = try AVAssetReader(asset: asset)
+            let writer = try AVAssetWriter(outputURL: destination, fileType: outputFileType)
+            
+            let videoWriterCompressionSettings: [String : Any] = [
+                AVVideoAverageBitRateKey : targetBitrate,
+                AVVideoMaxKeyFrameIntervalKey: targetFPS,
+                AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel
+            ]
+            
+            let videoWriterSettings: [String: Any] = [
+                AVVideoCodecKey : AVVideoCodecType.h264,
+                AVVideoCompressionPropertiesKey : videoWriterCompressionSettings,
+                AVVideoWidthKey : targetSize.width,
+                AVVideoHeightKey : targetSize.height,
+            ]
+            
+            let videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoWriterSettings)
+            videoWriterInput.expectsMediaDataInRealTime = true
+            if writer.canAdd(videoWriterInput) {
+                writer.add(videoWriterInput)
+            } else {
+                handler("", 0, NZError.custom("cannot add input"))
+                return
+            }
+            
+            let videoReaderOutput = AVAssetReaderVideoCompositionOutput(videoTracks: videoTracks, videoSettings: nil)
+            let videoComposition = AVMutableVideoComposition()
+            videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(targetFPS))
+            
+            let instruction = AVMutableVideoCompositionInstruction()
+            instruction.timeRange = CMTimeRange(start: .zero, duration: asset.duration)
+            
+            videoComposition.renderSize = renderSize
+            
+            let transformer = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
+            transformer.setTransform(transform, at: .zero)
+            instruction.layerInstructions = [transformer]
+            
+            videoComposition.instructions = [instruction]
+            videoReaderOutput.videoComposition = videoComposition
+            if reader.canAdd(videoReaderOutput) {
+                reader.add(videoReaderOutput)
+            } else {
+                handler("", 0, NZError.custom("cannot add output"))
+                return
+            }
+            
+            var audioWriterInput: AVAssetWriterInput?
+            var audioReaderOutput: AVAssetReaderTrackOutput?
+            let auduiTracks = asset.tracks(withMediaType: .audio)
+            if let audioTrack = auduiTracks.first {
+                let audioWriterSettings: [String: Any] = [
+                    AVFormatIDKey: kAudioFormatMPEG4AAC,
+                    AVSampleRateKey: 44100,
+                    AVNumberOfChannelsKey: 1,
+                    AVEncoderBitRateKey: audioTrack.estimatedDataRate,
+                ]
+                audioWriterInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioWriterSettings)
+                audioWriterInput!.expectsMediaDataInRealTime = true
+                if writer.canAdd(audioWriterInput!) {
+                    writer.add(audioWriterInput!)
+                } else {
+                    handler("", 0, NZError.custom("cannot add input"))
+                    return
+                }
+
+                audioReaderOutput = AVAssetReaderTrackOutput(track: audioTrack,
+                                                             outputSettings: [AVFormatIDKey: kAudioFormatLinearPCM])
+                if reader.canAdd(audioReaderOutput!) {
+                    reader.add(audioReaderOutput!)
+                } else {
+                    handler("", 0, NZError.custom("cannot add output"))
+                    return
+                }
+            }
+            
+            if !reader.startReading() {
+                handler("", 0, NZError.custom(reader.error?.localizedDescription ?? "reader error"))
+                return
+            }
+            
+            if !writer.startWriting() {
+                handler("", 0, NZError.custom(writer.error?.localizedDescription ?? "writer error"))
+                return
+            }
+            
+            writer.startSession(atSourceTime: .zero)
+            
+            var error: Error?
+            let group = DispatchGroup()
+            
+            func write(input: AVAssetWriterInput, output: AVAssetReaderOutput, queue: DispatchQueue) {
+                group.enter()
+                input.requestMediaDataWhenReady(on: queue) {
+                    while input.isReadyForMoreMediaData {
+                        var buffer: CMSampleBuffer?
+                        if reader.status == .reading {
+                            buffer = output.copyNextSampleBuffer()
+                            if let buffer = buffer, !input.append(buffer)  {
+                                error = writer.error
+                            }
+                        } else {
+                            error = reader.error
+                        }
+                        
+                        if error != nil || buffer == nil {
+                            input.markAsFinished()
+                            group.leave()
+                            break
+                        }
+                    }
+                }
+            }
+            
+            write(input: videoWriterInput,
+                  output: videoReaderOutput,
+                  queue: DispatchQueue(label: "com.nzothdev.video-writing-queue"))
+            
+            if let audioWriterInput = audioWriterInput {
+                write(input: audioWriterInput,
+                      output: audioReaderOutput!,
+                      queue: DispatchQueue(label: "com.nzothdev.audio-writing-queue"))
+            }
+            
+            group.notify(queue: DispatchQueue.main) {
+                writer.finishWriting {
+                    if let error = error {
+                        handler("", 0, NZError.custom(error.localizedDescription))
+                    } else {
+                        handler(nzfile, destination.fileSize / 1024, nil)
+                    }
+                }
+            }
+        } catch {
+            handler("", 0, NZError.custom(error.localizedDescription))
+        }
+    }
+    
+    static func pathExtendsionToAVFileType(_ ext: String) -> AVFileType? {
+        var outputFileType: AVFileType?
+        switch ext {
+        case "mp4":
+            outputFileType = .mp4
+        case "m4v":
+            outputFileType = .m4v
+        case "mov":
+            outputFileType = .mov
+        default:
+            break
+        }
+        return outputFileType
+    }
+
 }
 
 extension VideoUtil {

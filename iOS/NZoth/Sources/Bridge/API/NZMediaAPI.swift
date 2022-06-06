@@ -24,12 +24,14 @@ enum NZMediaAPI: String, NZBuiltInAPI {
     case getImageInfo
     case compressImage
     case saveVideoToPhotosAlbum
+    case getVideoInfo
+    case compressVideo
     
     var runInThread: DispatchQueue {
         switch self {
         case .getLocalImage:
             return DispatchQueue.global(qos: .userInteractive)
-        case .getImageInfo, .compressImage:
+        case .getImageInfo, .compressImage, .getVideoInfo, .compressVideo:
             return DispatchQueue.global()
         default:
             return DispatchQueue.main
@@ -53,6 +55,10 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 compressImage(appService: appService, bridge: bridge, args: args)
             case .saveVideoToPhotosAlbum:
                 saveVideoToPhotosAlbum(appService: appService, bridge: bridge, args: args)
+            case .getVideoInfo:
+                getVideoInfo(appService: appService, bridge: bridge, args: args)
+            case .compressVideo:
+                compressVideo(appService: appService, bridge: bridge, args: args)
             }
         }
     }
@@ -269,15 +275,11 @@ enum NZMediaAPI: String, NZBuiltInAPI {
     }
     
     private func getVideoAssetData(asset: PHAsset, completionHandler: @escaping ((UICameraEngine.VideoData?, Error?) -> Void))  {
-        var ext = "mov"
+        var ext = "unknown"
         let resource = PHAssetResource.assetResources(for: asset).first!
         let uType = resource.uniformTypeIdentifier
         if let fileExtension = UTTypeCopyPreferredTagWithClass(uType as CFString, kUTTagClassFilenameExtension) {
             ext = String(fileExtension.takeRetainedValue())
-        }
-        let allowExts = ["mov", "mp4"]
-        if !allowExts.contains(ext) {
-            ext = "mov"
         }
         
         let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
@@ -559,6 +561,79 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                     denied()
                 }
             }
+        }
+    }
+    
+    private func getVideoInfo(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
+        guard let dict = args.paramsString.toDict(), let src = dict["src"] as? String else {
+            let error = NZError.bridgeFailed(reason: .fieldRequired("src"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        func _getVideoInfo(url: URL) {
+            guard FileManager.default.fileExists(atPath: url.path) else {
+                let error = NZError.bridgeFailed(reason: .filePathNotExist(src))
+                bridge.invokeCallbackFail(args: args, error: error)
+                return
+            }
+            
+            let asset = AVURLAsset(url: url)
+            
+            guard let videoTrack = asset.tracks(withMediaType: .video).first else {
+                let error = NZError.bridgeFailed(reason: .custom("video track not found"))
+                bridge.invokeCallbackFail(args: args, error: error)
+                return
+            }
+            
+            bridge.invokeCallbackSuccess(args: args, result: ["duration": asset.duration.seconds,
+                                                              "size": url.fileSize / 1024,
+                                                              "width": videoTrack.naturalSize.width,
+                                                              "height": videoTrack.naturalSize.height,
+                                                              "fps": videoTrack.nominalFrameRate,
+                                                              "bitrate": videoTrack.estimatedDataRate,
+                                                              "type": url.pathExtension
+                                                             ])
+        }
+        
+        if let url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: src) {
+            _getVideoInfo(url: url)
+        } else {
+            let url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: src)
+            _getVideoInfo(url: url)
+        }
+    }
+    
+    private func compressVideo(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
+        struct Params: Decodable {
+            let src: String
+            let quality: VideoUtil.CompressQuality?
+            let bitrate: Float?
+            let fps: Float?
+            let resolution: CGFloat
+        }
+        
+        guard let params: Params = args.paramsString.toModel() else {
+            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        var url = FilePath.nzFilePathToRealFilePath(appId: appService.appId, filePath: params.src)
+        if url == nil {
+            url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: params.src)
+        }
+        
+        if let url = url {
+            VideoUtil.compressVideo(url: url, quality: params.quality, bitrate: params.bitrate, fps: params.fps, resolution: params.resolution) { nzfile, size, error in
+                if let error = error {
+                    bridge.invokeCallbackFail(args: args, error: error)
+                } else {
+                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": nzfile, "size": size])
+                }
+            }
+        } else {
+            bridge.invokeCallbackFail(args: args, error: NZError.bridgeFailed(reason: .custom("src invalid")))
         }
     }
 }

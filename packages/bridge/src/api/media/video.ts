@@ -17,7 +17,9 @@ import { requestAuthorization } from "../auth"
 
 const enum Events {
   CHOOSE_VIDEO = "chooseVideo",
-  SAVE_VIDEO_TO_PHTOTS_ALBUM = "saveVideoToPhotosAlbum"
+  SAVE_VIDEO_TO_PHTOTS_ALBUM = "saveVideoToPhotosAlbum",
+  GET_VIDEO_INFO = "getVideoInfo",
+  COMPTESS_VIDEO = "compressVideo"
 }
 
 interface ChooseVideoOptions {
@@ -148,4 +150,78 @@ export function saveVideoToPhotosAlbum<
         invokeFailure(event, options, error)
       })
   }, options)
+}
+
+interface GetVideoInfoOptions {
+  src: string
+  success?: GetVideoInfoSuccessCallback
+  fail?: GetVideoInfoFailCallback
+  complete?: GetVideoInfoCompleteCallback
+}
+
+interface GetVideoInfoSuccessCallbackResult {
+  type: string
+  duration: number
+  size: number
+  width: number
+  height: number
+  fps: number
+  bitrate: number
+}
+
+type GetVideoInfoSuccessCallback = (res: GetVideoInfoSuccessCallbackResult) => void
+
+type GetVideoInfoFailCallback = (res: GeneralCallbackResult) => void
+
+type GetVideoInfoCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function getVideoInfo<T extends GetVideoInfoOptions = GetVideoInfoOptions>(
+  options: T
+): AsyncReturn<T, GetVideoInfoOptions> {
+  return wrapperAsyncAPI(options => {
+    const event = Events.GET_VIDEO_INFO
+    if (!options.src) {
+      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "src"))
+      return
+    }
+    invoke<SuccessResult<T>>(event, options, result => {
+      invokeCallback(event, options, result)
+    })
+  }, options)
+}
+
+interface CompressVideoOptions {
+  src: string
+  quality?: "low" | "medium" | "high"
+  bitrate?: number
+  fps?: number
+  resolution?: number
+  success?: CompressVideoSuccessCallback
+  fail?: CompressVideoFailCallback
+  complete?: CompressVideoCompleteCallback
+}
+
+type CompressVideoSuccessCallback = (res: GeneralCallbackResult) => void
+
+type CompressVideoFailCallback = (res: GeneralCallbackResult) => void
+
+type CompressVideoCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function compressVideo<T extends CompressVideoOptions = CompressVideoOptions>(
+  options: T
+): AsyncReturn<T, CompressVideoOptions> {
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.COMPTESS_VIDEO
+      if (!options.src) {
+        invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "src"))
+        return
+      }
+      invoke<SuccessResult<T>>(event, options, result => {
+        invokeCallback(event, options, result)
+      })
+    },
+    options,
+    { resolution: 1 }
+  )
 }
