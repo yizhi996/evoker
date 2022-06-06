@@ -586,13 +586,20 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 return
             }
             
+            var mimeType = "unknown"
+            if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, url.pathExtension as CFString, nil)?.takeRetainedValue() {
+                if let _mimeType = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+                    mimeType = _mimeType as String
+                }
+            }
+            
             bridge.invokeCallbackSuccess(args: args, result: ["duration": asset.duration.seconds,
                                                               "size": url.fileSize / 1024,
                                                               "width": videoTrack.naturalSize.width,
                                                               "height": videoTrack.naturalSize.height,
                                                               "fps": videoTrack.nominalFrameRate,
                                                               "bitrate": videoTrack.estimatedDataRate,
-                                                              "type": url.pathExtension
+                                                              "type": mimeType
                                                              ])
         }
         
