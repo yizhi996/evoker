@@ -162,16 +162,16 @@ enum NZMediaAPI: String, NZBuiltInAPI {
             let types: [SourceType]
             let sizeType: [SizeType]
             let count: Int
-        }
-        
-        enum SourceType: String, Decodable {
-            case photo
-            case video
-        }
-        
-        enum SizeType: String, Decodable {
-            case original
-            case compressed
+            
+            enum SourceType: String, Decodable {
+                case photo
+                case video
+            }
+            
+            enum SizeType: String, Decodable {
+                case original
+                case compressed
+            }
         }
         
         guard let params: Params = args.paramsString.toModel() else {
@@ -246,7 +246,8 @@ enum NZMediaAPI: String, NZBuiltInAPI {
                 }
                 bridge.invokeCallbackSuccess(args: args, result: ["tempFilePaths": filePaths, "tempFiles": files])
             } else if asset.mediaType == .video {
-                getVideoAssetData(asset: asset) { videoData, error in
+                let compressed = params.sizeType.contains(.compressed)
+                processVideoAssetData(asset: asset, compressed: compressed) { videoData, error in
                     if let error = error {
                         let error = NZError.bridgeFailed(reason: .custom(error.localizedDescription))
                         bridge.invokeCallbackFail(args: args, error: error)
@@ -274,7 +275,7 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         return ext
     }
     
-    private func getVideoAssetData(asset: PHAsset, completionHandler: @escaping ((UICameraEngine.VideoData?, Error?) -> Void))  {
+    private func processVideoAssetData(asset: PHAsset, compressed: Bool, completionHandler: @escaping ((UICameraEngine.VideoData?, Error?) -> Void))  {
         var ext = "unknown"
         let resource = PHAssetResource.assetResources(for: asset).first!
         let uType = resource.uniformTypeIdentifier
@@ -282,19 +283,42 @@ enum NZMediaAPI: String, NZBuiltInAPI {
             ext = String(fileExtension.takeRetainedValue())
         }
         
-        let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
+        let (temp, destination) = FilePath.generateTmpNZFilePath(ext: ext)
         let options = PHAssetResourceRequestOptions()
-        options.isNetworkAccessAllowed = false
-        PHAssetResourceManager.default().writeData(for: resource, toFile: filePath, options: options) { error in
+        options.isNetworkAccessAllowed = true
+        PHAssetResourceManager.default().writeData(for: resource, toFile: destination, options: options) { error in
             if let error = error {
                 completionHandler(nil, error)
             } else {
-                let videoData = UICameraEngine.VideoData(tempFilePath: nzfile,
-                                                         duration: asset.duration,
-                                                         size: filePath.fileSize,
-                                                         width: CGFloat(asset.pixelWidth),
-                                                         height: CGFloat(asset.pixelHeight))
-                completionHandler(videoData, nil)
+                func notCompress() {
+                    let videoData = UICameraEngine.VideoData(tempFilePath: temp,
+                                                             duration: asset.duration,
+                                                             size: destination.fileSize,
+                                                             width: CGFloat(asset.pixelWidth),
+                                                             height: CGFloat(asset.pixelHeight))
+                    completionHandler(videoData, nil)
+                }
+                if compressed {
+                    VideoUtil.compressVideo(url: destination,
+                                            quality: compressed ? .medium : nil,
+                                            bitrate: nil,
+                                            fps: nil,
+                                            resolution: 1.0) { nzfile, fileSize, size, error in
+                        if error != nil {
+                            notCompress()
+                        } else {
+                            try? FileManager.default.removeItem(at: destination)
+                            let videoData = UICameraEngine.VideoData(tempFilePath: nzfile,
+                                                                     duration: asset.duration,
+                                                                     size: fileSize,
+                                                                     width: size.width,
+                                                                     height: size.height)
+                            completionHandler(videoData, nil)
+                        }
+                    }
+                } else {
+                    notCompress()
+                }
             }
         }
     }
@@ -632,11 +656,11 @@ enum NZMediaAPI: String, NZBuiltInAPI {
         }
         
         if let url = url {
-            VideoUtil.compressVideo(url: url, quality: params.quality, bitrate: params.bitrate, fps: params.fps, resolution: params.resolution) { nzfile, size, error in
+            VideoUtil.compressVideo(url: url, quality: params.quality, bitrate: params.bitrate, fps: params.fps, resolution: params.resolution) { nzfile, fileSize, _, error in
                 if let error = error {
                     bridge.invokeCallbackFail(args: args, error: error)
                 } else {
-                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": nzfile, "size": size])
+                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": nzfile, "size": fileSize])
                 }
             }
         } else {

@@ -75,7 +75,7 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
         imagePickerViewController.cameraFlashMode = .auto
         imagePickerViewController.delegate = self
         imagePickerViewController.videoMaximumDuration = maxDuration
-        imagePickerViewController.videoQuality = compressed ? .typeMedium : .typeHigh
+        imagePickerViewController.videoQuality = .typeHigh
         
         self.compressed = compressed
         recordVideoHandler = completionHandler
@@ -84,11 +84,58 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
     }
     
     func dismiss() {
-        currentViewController?.dismiss(animated: true, completion: nil)
-        currentViewController = nil
+        DispatchQueue.main.async {
+            self.currentViewController?.dismiss(animated: true, completion: nil)
+            self.currentViewController = nil
+        }
+        errorHandler = nil
+        cancelHandler = nil
         takePhotoHandler = nil
         recordVideoHandler = nil
-        cancelHandler = nil
+        compressed = false
+    }
+    
+    func processVideo(url: URL, completionHandler: @escaping NZEmptyBlock) {
+        let asset = AVAsset(url: url)
+        let duration = asset.duration.seconds
+        VideoUtil.compressVideo(url: url,
+                                quality: compressed ? .medium : .high,
+                                bitrate: nil,
+                                fps: nil,
+                                resolution: nil) { nzfile, fileSize, size, error in
+            if error != nil {
+                guard let track = asset.tracks(withMediaType: .video).first else {
+                    self.errorHandler?("get video track failed")
+                    completionHandler()
+                    return
+                }
+                
+                let size = track.naturalSize.applying(track.preferredTransform)
+                let ext = url.pathExtension.lowercased()
+                let (nzfile, destination) = FilePath.generateTmpNZFilePath(ext: ext)
+                do {
+                    try FileManager.default.moveItem(at: url, to: destination)
+                    let videoData = VideoData(tempFilePath: nzfile,
+                                              duration: duration,
+                                              size: destination.fileSize,
+                                              width: abs(size.width),
+                                              height: abs(size.height))
+                    self.recordVideoHandler?(videoData)
+                } catch {
+                    self.errorHandler?("save video to disk fail")
+                }
+                completionHandler()
+            } else {
+                try? FileManager.default.removeItem(at: url)
+                let videoData = VideoData(tempFilePath: nzfile,
+                                          duration: duration,
+                                          size: fileSize,
+                                          width: abs(size.width),
+                                          height: abs(size.height))
+                self.recordVideoHandler?(videoData)
+                completionHandler()
+            }
+        }
     }
 }
 
@@ -96,11 +143,12 @@ extension UICameraEngine: UIImagePickerControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let mediaType = info[.mediaType] as? String else { return }
+        
         if mediaType == String(kUTTypeImage) {
             if let image = info[.originalImage] as? UIImage,
                let imageData = image.jpegData(compressionQuality: compressed ? 0.7 : 1.0) {
-                let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: "jpg")
-                let success = FileManager.default.createFile(atPath: filePath.path,
+                let (nzfile, destination) = FilePath.generateTmpNZFilePath(ext: "jpg")
+                let success = FileManager.default.createFile(atPath: destination.path,
                                                              contents: imageData,
                                                              attributes: nil)
                 if success {
@@ -110,36 +158,18 @@ extension UICameraEngine: UIImagePickerControllerDelegate {
                 } else {
                     errorHandler?("save image to disk fail")
                 }
+                dismiss()
+            } else {
+                errorHandler?("image not found")
+                dismiss()
+            }
+        } else if let videoURL = info[.mediaURL] as? URL {
+            processVideo(url: videoURL) { [unowned self] in
+                self.dismiss()
             }
         } else {
-            if let videoURL = info[.mediaURL] as? URL {
-                let asset = AVAsset(url: videoURL)
-                guard let track = asset.tracks(withMediaType: .video).first else {
-                    return
-                }
-                
-                let size = track.naturalSize.applying(track.preferredTransform)
-               
-                let ext = videoURL.pathExtension.lowercased()
-                let (nzfile, filePath) = FilePath.generateTmpNZFilePath(ext: ext)
-                do {
-                    try FileManager.default.moveItem(at: videoURL, to: filePath)
-                    let videoData = VideoData(tempFilePath: nzfile,
-                                              duration: asset.duration.seconds,
-                                              size: videoURL.fileSize,
-                                              width: abs(size.width),
-                                              height: abs(size.height))
-                    recordVideoHandler?(videoData)
-                } catch {
-                    errorHandler?("save image to disk fail")
-                }
-            }
+            dismiss()
         }
-        errorHandler = nil
-        cancelHandler = nil
-        takePhotoHandler = nil
-        recordVideoHandler = nil
-        dismiss()
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {

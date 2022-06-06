@@ -21,7 +21,7 @@ struct VideoUtil {
         let (transform, targetSize) = correctVideoTrackTransformAndSize(videoTrack, targetSize: size)
         
         let videoComposition = AVMutableVideoComposition()
-        videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
+        videoComposition.frameDuration = CMTime(value: 1, timescale: CMTimeScale(videoTrack.nominalFrameRate))
         videoComposition.renderSize = targetSize
         
         let instruction = AVMutableVideoCompositionInstruction()
@@ -116,11 +116,11 @@ struct VideoUtil {
         case high
     }
     
-    typealias CompressVideoCompletionHandler = (FilePath.NZFile, Int, NZError?) -> Void
+    typealias CompressVideoCompletionHandler = (FilePath.NZFile, Int, CGSize, NZError?) -> Void
     
-    static func compressVideo(url: URL, quality: CompressQuality?, bitrate: Float?, fps: Float?, resolution: CGFloat, completionHandler handler:  @escaping CompressVideoCompletionHandler) {
+    static func compressVideo(url: URL, quality: CompressQuality?, bitrate: Float?, fps: Float?, resolution: CGFloat?, completionHandler handler:  @escaping CompressVideoCompletionHandler) {
         guard FileManager.default.fileExists(atPath: url.path) else {
-            handler("", 0, NZError.bridgeFailed(reason: .contentNotFound))
+            handler("", 0, .zero, NZError.bridgeFailed(reason: .contentNotFound))
             return
         }
         
@@ -128,7 +128,7 @@ struct VideoUtil {
         
         let videoTracks = asset.tracks(withMediaType: .video)
         guard let videoTrack = videoTracks.first else {
-            handler("", 0, NZError.bridgeFailed(reason: .custom("video track not found")))
+            handler("", 0, .zero, NZError.bridgeFailed(reason: .custom("video track not found")))
             return
         }
         
@@ -155,6 +155,7 @@ struct VideoUtil {
             if let bitrate = bitrate {
                 targetBitrate = bitrate
             }
+            let resolution = resolution ?? 1
             targetSize.width *= resolution
             targetSize.height *= resolution
         }
@@ -177,10 +178,10 @@ struct VideoUtil {
             renderSize = CGSize(width: renderSize.height, height: renderSize.width)
         }
   
-        let type = asset.url.pathExtension
+        let type = asset.url.pathExtension.lowercased()
         guard let outputFileType = VideoUtil.pathExtendsionToAVFileType(type) else {
             let error = NZError.bridgeFailed(reason: .custom("file type not supported, only support mp4, m4v, mov"))
-             handler("", 0, error)
+             handler("", 0, .zero, error)
             return
         }
 
@@ -207,7 +208,7 @@ struct VideoUtil {
             if writer.canAdd(videoWriterInput) {
                 writer.add(videoWriterInput)
             } else {
-                handler("", 0, NZError.custom("cannot add input"))
+                handler("", 0, .zero, NZError.custom("cannot add input"))
                 return
             }
             
@@ -229,7 +230,7 @@ struct VideoUtil {
             if reader.canAdd(videoReaderOutput) {
                 reader.add(videoReaderOutput)
             } else {
-                handler("", 0, NZError.custom("cannot add output"))
+                handler("", 0, .zero, NZError.custom("cannot add output"))
                 return
             }
             
@@ -248,7 +249,7 @@ struct VideoUtil {
                 if writer.canAdd(audioWriterInput!) {
                     writer.add(audioWriterInput!)
                 } else {
-                    handler("", 0, NZError.custom("cannot add input"))
+                    handler("", 0, .zero, NZError.custom("cannot add input"))
                     return
                 }
 
@@ -257,18 +258,18 @@ struct VideoUtil {
                 if reader.canAdd(audioReaderOutput!) {
                     reader.add(audioReaderOutput!)
                 } else {
-                    handler("", 0, NZError.custom("cannot add output"))
+                    handler("", 0, .zero, NZError.custom("cannot add output"))
                     return
                 }
             }
             
             if !reader.startReading() {
-                handler("", 0, NZError.custom(reader.error?.localizedDescription ?? "reader error"))
+                handler("", 0, .zero, NZError.custom(reader.error?.localizedDescription ?? "reader error"))
                 return
             }
             
             if !writer.startWriting() {
-                handler("", 0, NZError.custom(writer.error?.localizedDescription ?? "writer error"))
+                handler("", 0, .zero, NZError.custom(writer.error?.localizedDescription ?? "writer error"))
                 return
             }
             
@@ -313,14 +314,14 @@ struct VideoUtil {
             group.notify(queue: DispatchQueue.main) {
                 writer.finishWriting {
                     if let error = error {
-                        handler("", 0, NZError.custom(error.localizedDescription))
+                        handler("", 0, .zero, NZError.custom(error.localizedDescription))
                     } else {
-                        handler(nzfile, destination.fileSize / 1024, nil)
+                        handler(nzfile, destination.fileSize / 1024, targetSize, nil)
                     }
                 }
             }
         } catch {
-            handler("", 0, NZError.custom(error.localizedDescription))
+            handler("", 0, .zero, NZError.custom(error.localizedDescription))
         }
     }
     
