@@ -46,8 +46,8 @@ const onChangeSourceType = e => {
 }
 
 const camera = reactive({
-  range: ["前置", "后置", "前置或后置"],
-  value: 2
+  range: ["前置", "后置"],
+  value: 1
 })
 
 const onChangeCamera = e => {
@@ -76,7 +76,7 @@ const onChangeDuration = e => {
 const onChoose = async () => {
   const res = await nz.chooseVideo({
     maxDuration: parseInt(duration.range[duration.value]),
-    camera: [["front"], ["back"], ["back"]][camera.value],
+    camera: ["front", "back"][camera.value],
     sourceType: [["camera"], ["album"], ["camera", "album"]][sourceType.value],
     compressed: false
   })

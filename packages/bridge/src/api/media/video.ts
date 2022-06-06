@@ -26,7 +26,7 @@ interface ChooseVideoOptions {
   sourceType?: Array<"album" | "camera">
   compressed?: boolean
   maxDuration?: number
-  camera?: Array<"back" | "front">
+  camera?: "back" | "front"
   success?: ChooseVideoSuccessCallback
   fail?: ChooseVideoFailCallback
   complete?: ChooseVideoCompleteCallback
@@ -63,8 +63,7 @@ export function chooseVideo<T extends ChooseVideoOptions = ChooseVideoOptions>(
         : ["original"]
 
       const openCamera = () => {
-        const device = options.camera.includes("front") ? "front" : "back"
-        openNativelyCameraRecordVideo(sizeType, options.maxDuration, device)
+        openNativelyCameraRecordVideo(sizeType, options.maxDuration, options.camera)
           .then(result => {
             invokeSuccess(event, options, result)
           })
@@ -111,7 +110,7 @@ export function chooseVideo<T extends ChooseVideoOptions = ChooseVideoOptions>(
       sourceType: ["album", "camera"],
       compressed: true,
       maxDuration: 60,
-      camera: ["back", "front"]
+      camera: "back"
     }
   )
 }
