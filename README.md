@@ -1,6 +1,6 @@
 # NZoth [![platform](https://img.shields.io/badge/platform-iOS%2011-lightgrey?style=flat-square)](https://www.npmjs.com/package/nzoth) [![npm](https://img.shields.io/npm/v/nzoth?style=flat-square)](https://www.npmjs.com/package/nzoth) 
 
-小程序容器
+小程序容器（开发中，暂未发版）
 
 ## Documentation
 
