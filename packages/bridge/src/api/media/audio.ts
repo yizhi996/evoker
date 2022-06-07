@@ -3,7 +3,6 @@ import { invoke, subscribe } from "../../bridge"
 
 interface InnerAudioContextErrorCallbackResult {
   errMsg: string
-  errCode: 10001 | 10002 | 10003 | 10004 | -1
 }
 
 let audioId = 0
@@ -20,7 +19,7 @@ const enum Methods {
   SET_PLAYBACK_RATE = "setPlaybackRate"
 }
 
-const PREFIX = "MODULE_AUDIO_CONTEXT_"
+const PREFIX = "MODULE_INNER_AUDIO_CONTEXT_"
 
 enum Events {
   ON_CANPLAY = "ON_CANPLAY",
@@ -79,23 +78,23 @@ class InnerAudioContext {
 
     onCanplay(({ duration }) => {
       this._duration = duration
-      dispatchEvent(this.innerEventName(Events.ON_CANPLAY), undefined)
+      dispatchEvent(this.innerEventName(Events.ON_CANPLAY))
       this.seek(this.startTime)
     })
 
     onPlay(() => {
       this._paused = false
-      dispatchEvent(this.innerEventName(Events.ON_PLAY), undefined)
+      dispatchEvent(this.innerEventName(Events.ON_PLAY))
     })
 
     onPause(() => {
       this._paused = true
-      dispatchEvent(this.innerEventName(Events.ON_PAUSE), undefined)
+      dispatchEvent(this.innerEventName(Events.ON_PAUSE))
     })
 
     onStop(() => {
       this._paused = true
-      dispatchEvent(this.innerEventName(Events.ON_STOP), undefined)
+      dispatchEvent(this.innerEventName(Events.ON_STOP))
     })
 
     onEnded(() => {
@@ -103,7 +102,11 @@ class InnerAudioContext {
       if (this.loop) {
         this.operate(Methods.REPLAY)
       }
-      dispatchEvent(this.innerEventName(Events.ON_ENDED), undefined)
+      dispatchEvent(this.innerEventName(Events.ON_ENDED))
+    })
+
+    onWaiting(() => {
+      dispatchEvent(this.innerEventName(Events.ON_WAITING))
     })
 
     onError(res => {
@@ -113,15 +116,15 @@ class InnerAudioContext {
 
     onTimeUpdate(({ time }) => {
       this._currentTime = time
-      dispatchEvent(this.innerEventName(Events.ON_TIME_UPDATE), undefined)
+      dispatchEvent(this.innerEventName(Events.ON_TIME_UPDATE))
     })
 
     onSeeking(() => {
-      dispatchEvent(this.innerEventName(Events.ON_SEEKING), undefined)
+      dispatchEvent(this.innerEventName(Events.ON_SEEKING))
     })
 
     onSeeked(() => {
-      dispatchEvent(this.innerEventName(Events.ON_SEEKED), undefined)
+      dispatchEvent(this.innerEventName(Events.ON_SEEKED))
     })
 
     this.removaAllListener = removaAllListener
@@ -180,10 +183,11 @@ class InnerAudioContext {
 
   play() {
     if (this.src === "") {
-      console.error("[NZoth] InnerAudioContext src is empty")
+      console.error("[NZoth] InnerAudioContext src cannot be empty")
       return
     }
     this.operate(Methods.PLAY, {
+      audioId: this.id,
       src: this.src,
       startTime: this.startTime,
       volume: this.volume,
