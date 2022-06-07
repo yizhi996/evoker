@@ -154,6 +154,11 @@ enum NZAudioAPI: String, NZBuiltInAPI {
                                                            data: ["audioId": player.audioId,
                                                                   "errMsg": error])
                     }
+                    player.bufferUpdateHandler = { bufferTime in
+                        bridge.subscribeHandler(method: NZAudioPlayer.onBufferUpdateSubscribeKey,
+                                                           data: ["audioId": player.audioId,
+                                                                  "bufferTime": bufferTime])
+                    }
                     player.waitingHandler = { wait in
                         if !wait {
                             return

@@ -31,7 +31,8 @@ enum Events {
   ON_ERROR = "ON_ERROR",
   ON_SEEKING = "ON_SEEKING",
   ON_SEEKED = "ON_SEEKED",
-  ON_TIME_UPDATE = "ON_TIME_UPDATE"
+  ON_TIME_UPDATE = "ON_TIME_UPDATE",
+  ON_BUFFER_UPDATE = "ON_BUFFER_UPDATE"
 }
 
 const getEventName = (event: Events) => PREFIX + event
@@ -57,7 +58,7 @@ class InnerAudioContext {
 
   private _paused: boolean = false
 
-  readonly buffered: number = 0
+  private _buffered: number = 0
 
   private removaAllListener
 
@@ -73,6 +74,7 @@ class InnerAudioContext {
       onSeeked,
       onSeeking,
       onTimeUpdate,
+      onBufferUpdate,
       removaAllListener
     } = useAudio(this.id)
 
@@ -117,6 +119,10 @@ class InnerAudioContext {
     onTimeUpdate(({ time }) => {
       this._currentTime = time
       dispatchEvent(this.innerEventName(Events.ON_TIME_UPDATE))
+    })
+
+    onBufferUpdate(({ bufferTime }) => {
+      this._buffered = bufferTime
     })
 
     onSeeking(() => {
@@ -171,6 +177,10 @@ class InnerAudioContext {
 
   get paused() {
     return this._paused
+  }
+
+  get buffered() {
+    return this._buffered
   }
 
   private operate(method: Methods, data: Record<string, any> = {}) {
@@ -343,6 +353,9 @@ function useAudio(audioId: number) {
     },
     onTimeUpdate: (callback: (res: { time: number }) => void) => {
       return createListener(Events.ON_TIME_UPDATE, callback)
+    },
+    onBufferUpdate: (callback: (res: { bufferTime: number }) => void) => {
+      return createListener(Events.ON_BUFFER_UPDATE, callback)
     },
     removaAllListener: () => {
       ids.forEach((id, event) => removeEvent(event, id))

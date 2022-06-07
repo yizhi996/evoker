@@ -65,6 +65,8 @@ extension NZAudioPlayer {
     
     static let onTimeUpdateSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_TIME_UPDATE")
     
+    static let onBufferUpdateSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_BUFFER_UPDATE")
+    
     static let onSeekingSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_SEEKING")
     
     static let onSeekedSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_SEEKED")
