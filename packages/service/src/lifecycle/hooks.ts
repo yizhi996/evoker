@@ -9,6 +9,8 @@ export const enum LifecycleHooks {
   APP_ON_HIDE = "APP_ON_HIDE",
   APP_ON_ERROR = "APP_ON_ERROR",
   APP_THEME_CHANGE = "APP_THEME_CHANGE",
+  APP_ON_AUDIO_INTERRUPTION_BEGIN = "APP_ON_AUDIO_INTERRUPTION_BEGIN",
+  APP_ON_AUDIO_INTERRUPTION_END = "APP_ON_AUDIO_INTERRUPTION_END",
 
   PAGE_ON_LOAD = "PAGE_ON_LOAD",
   PAGE_ON_SHOW = "PAGE_ON_SHOW",
@@ -103,6 +105,14 @@ InnerJSBridge.subscribe(LifecycleHooks.APP_ON_ERROR, message => {
 InnerJSBridge.subscribe(LifecycleHooks.APP_THEME_CHANGE, message => {
   invokeAppHook(LifecycleHooks.APP_THEME_CHANGE, message)
   dispatchEvent(LifecycleHooks.APP_THEME_CHANGE, message)
+})
+
+InnerJSBridge.subscribe(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_BEGIN, message => {
+  dispatchEvent(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_BEGIN, message)
+})
+
+InnerJSBridge.subscribe(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_END, message => {
+  dispatchEvent(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_END, message)
 })
 
 InnerJSBridge.subscribe<{ pageId: number; query: Record<string, any> }>(

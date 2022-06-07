@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 class NZAudioModule: NSObject, NZModule {
     
@@ -31,10 +32,46 @@ class NZAudioModule: NSObject, NZModule {
     required init(appService: NZAppService) {
         super.init()
         self.appService = appService
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(handleInterruption),
+                                               name: AVAudioSession.interruptionNotification,
+                                               object: AVAudioSession.sharedInstance())
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc
+    func handleInterruption(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+            let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+            let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
+                return
+        }
+
+        switch type {
+        case .began:
+            players.all().forEach { $0.pause() }
+            appService?.bridge.subscribeHandler(method: NZAppService.onAudioInterruptionBeginSubscribeKey, data: [:])
+        case .ended:
+            appService?.bridge.subscribeHandler(method: NZAppService.onAudioInterruptionEndSubscribeKey, data: [:])
+        default:
+            break
+        }
+    }
+    
+    func onShow(_ page: NZPage) {
+        players.get(page.pageId)?.values.forEach { $0.didBecomeActive() }
+    }
+    
+    func onHide(_ page: NZPage) {
+        players.get(page.pageId)?.values.forEach { $0.willResignActive() }
     }
     
     func onUnload(_ page: NZPage) {
-        players.get(page.pageId)?.values.forEach { $0.stop() }
+        players.get(page.pageId)?.values.forEach { $0.destroy() }
         players.remove(page.pageId)
     }
 

@@ -18,6 +18,12 @@ class DoubleLevelDictionary<F: Hashable, S: Hashable, T> {
     
     private var dict: [F: [S: T]] = [:]
     
+    func all() -> [T] {
+        var res: [T] = []
+        dict.values.forEach { $0.values.forEach { res.append($0) } }
+        return res
+    }
+    
     func get(_ first: F) -> [S: T]? {
         return dict[first]
     }

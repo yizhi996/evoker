@@ -43,3 +43,19 @@ export function onThemeChange(callback: AppThemeChangeCallback) {
 export function offThemeChange(callback: AppThemeChangeCallback) {
   removeEvent(LifecycleHooks.APP_THEME_CHANGE, callback)
 }
+
+export function onAudioInterruptionBegin(callback: () => void) {
+  addEvent(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_BEGIN, callback)
+}
+
+export function offAudioInterruptionBegin(callback: () => void) {
+  removeEvent(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_BEGIN, callback)
+}
+
+export function onAudioInterruptionEnd(callback: () => void) {
+  addEvent(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_END, callback)
+}
+
+export function offAudioInterruptionEnd(callback: () => void) {
+  removeEvent(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_END, callback)
+}

@@ -677,6 +677,10 @@ extension NZAppService {
     
     public static let themeChangeSubscribeKey = NZSubscribeKey("APP_THEME_CHANGE")
     
+    public static let onAudioInterruptionBeginSubscribeKey = NZSubscribeKey("APP_ON_AUDIO_INTERRUPTION_BEGIN")
+    
+    public static let onAudioInterruptionEndSubscribeKey = NZSubscribeKey("APP_ON_AUDIO_INTERRUPTION_END")
+    
 }
 
 //MARK: Equatable
