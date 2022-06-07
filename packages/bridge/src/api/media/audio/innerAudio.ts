@@ -1,5 +1,12 @@
 import { clamp, addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
-import { invoke, subscribe } from "../../bridge"
+import { invoke, subscribe } from "../../../bridge"
+import {
+  wrapperAsyncAPI,
+  invokeCallback,
+  AsyncReturn,
+  SuccessResult,
+  GeneralCallbackResult
+} from "../../../async"
 
 interface InnerAudioContextErrorCallbackResult {
   errMsg: string
@@ -365,4 +372,30 @@ function useAudio(audioId: number) {
 
 export function createInnerAudioContext() {
   return new InnerAudioContext()
+}
+
+interface SetInnerAudioOptionOptions {
+  mixWithOther?: boolean
+  obeyMuteSwitch?: boolean
+  speakerOn?: boolean
+  success?: SetInnerAudioOptionSuccessCallback
+  fail?: SetInnerAudioOptionFailCallback
+  complete?: SetInnerAudioOptionCompleteCallback
+}
+
+type SetInnerAudioOptionSuccessCallback = (res: GeneralCallbackResult) => void
+
+type SetInnerAudioOptionFailCallback = (res: GeneralCallbackResult) => void
+
+type SetInnerAudioOptionCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function setInnerAudioOption<
+  T extends SetInnerAudioOptionOptions = SetInnerAudioOptionOptions
+>(options: T): AsyncReturn<T, SetInnerAudioOptionOptions> {
+  return wrapperAsyncAPI(options => {
+    const event = "setInnerAudioOption"
+    invoke<SuccessResult<T>>(event, options, result => {
+      invokeCallback(event, options, result)
+    })
+  }, options)
 }

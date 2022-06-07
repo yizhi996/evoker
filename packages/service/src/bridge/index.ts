@@ -51,7 +51,7 @@ import {
   compressVideo
 } from "@nzoth/bridge"
 import { createCameraContext } from "./api/media/camera"
-import { createInnerAudioContext } from "@nzoth/bridge"
+import { createInnerAudioContext, setInnerAudioOption } from "@nzoth/bridge"
 import { vibrateShort, vibrateLong } from "@nzoth/bridge"
 import {
   getNetworkType,
@@ -164,6 +164,7 @@ export {
   exitMiniProgram,
   createCameraContext,
   createInnerAudioContext,
+  setInnerAudioOption,
   getAppBaseInfo,
   getDeviceInfo,
   getSystemSetting,
@@ -273,6 +274,7 @@ export default {
   exitMiniProgram,
   createCameraContext,
   createInnerAudioContext,
+  setInnerAudioOption,
   getAppBaseInfo,
   getDeviceInfo,
   getSystemSetting,

@@ -11,12 +11,15 @@ import Foundation
 enum NZAudioAPI: String, NZBuiltInAPI {
     
     case operateInnerAudioContext
+    case setInnerAudioOption
     
     func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
             switch self {
             case .operateInnerAudioContext:
                 operateInnerAudioContext(appService: appService, bridge: bridge, args: args)
+            case .setInnerAudioOption:
+                setInnerAudioOption(appService: appService, bridge: bridge, args: args)
             }
         }
     }
@@ -204,5 +207,37 @@ enum NZAudioAPI: String, NZBuiltInAPI {
         }
         
         bridge.invokeCallbackSuccess(args: args)
+    }
+    
+    private func setInnerAudioOption(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
+        
+        struct Params: Decodable {
+            let mixWithOther: Bool?
+            let obeyMuteSwitch: Bool?
+            let speakerOn: Bool?
+        }
+        
+        guard let params: Params = args.paramsString.toModel() else {
+            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        guard let module: NZAudioModule = appService.getModule() else {
+            let error = NZError.bridgeFailed(reason: .moduleNotFound(NZAudioModule.name))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        if let mixWithOther = params.mixWithOther {
+            module.mixWithOther = mixWithOther
+        }
+        if let obeyMuteSwitch = params.obeyMuteSwitch {
+            module.obeyMuteSwitch = obeyMuteSwitch
+        }
+        if let speakerOn = params.speakerOn {
+            module.speakerOn = speakerOn
+        }
+        module.setAudioCategory()
     }
 }

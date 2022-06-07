@@ -25,6 +25,12 @@ class NZAudioModule: NSObject, NZModule {
         return apis
     }
     
+    var mixWithOther = true
+    
+    var obeyMuteSwitch = true
+    
+    var speakerOn = true
+    
     weak var appService: NZAppService?
     
     lazy var players: DoubleLevelDictionary<PageId, AudioId, NZAudioPlayer> = DoubleLevelDictionary()
@@ -60,6 +66,26 @@ class NZAudioModule: NSObject, NZModule {
         default:
             break
         }
+    }
+    
+    func setAudioCategory() {
+        let session = AVAudioSession.sharedInstance()
+        let options: AVAudioSession.CategoryOptions = mixWithOther ? .mixWithOthers : []
+        let cateory: AVAudioSession.Category
+        if speakerOn {
+            if obeyMuteSwitch {
+                cateory = .playback
+            } else {
+                cateory = .soloAmbient
+            }
+        } else {
+            cateory = .playAndRecord
+        }
+        try? session.setCategory(cateory, mode: .default, options: options)
+    }
+    
+    func onShow(_ service: NZAppService) {
+        setAudioCategory()
     }
     
     func onShow(_ page: NZPage) {
