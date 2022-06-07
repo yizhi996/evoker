@@ -116,14 +116,55 @@ enum NZAudioAPI: String, NZBuiltInAPI {
                     player.params = data
                     player.play()
                 } else {
-                    let player = NZAudioPlayer(audioId: params.audioId)
-                    player.delegate = module
-                    player.params = data
+                    let player = NZAudioPlayer(params: data)
+                    player.readyToPlayHandler = { duration in
+                        bridge.subscribeHandler(method: NZAudioPlayer.onCanplaySubscribeKey,
+                                                data: ["audioId": player.audioId, "duration": duration])
+                    }
+                    player.playHandler = {
+                        bridge.subscribeHandler(method: NZAudioPlayer.onPlaySubscribeKey,
+                                                data: ["audioId": player.audioId])
+                    }
+                    player.pauseHandler = {
+                        bridge.subscribeHandler(method: NZAudioPlayer.onPauseSubscribeKey,
+                                                data: ["audioId": player.audioId])
+                    }
+                    player.stopHandler = {
+                        bridge.subscribeHandler(method: NZAudioPlayer.onStopSubscribeKey,
+                                                data: ["audioId": player.audioId])
+                    }
+                    player.endedHandler = {
+                        bridge.subscribeHandler(method: NZAudioPlayer.onEndedSubscribeKey,
+                                                data: ["audioId": player.audioId])
+                    }
+                    player.timeUpdateHandler = { time in
+                        bridge.subscribeHandler(method: NZAudioPlayer.onTimeUpdateSubscribeKey,
+                                                data: ["audioId": player.audioId, "time": time])
+                    }
+                    player.seekingHandler = {
+                        bridge.subscribeHandler(method: NZAudioPlayer.onSeekingSubscribeKey,
+                                                data: ["audioId": player.audioId])
+                    }
+                    player.seekCompletionHandler = { _ in
+                        bridge.subscribeHandler(method: NZAudioPlayer.onSeekedSubscribeKey,
+                                                data: ["audioId": player.audioId])
+                    }
+                    player.playFailedHandler = { error in
+                        bridge.subscribeHandler(method: NZAudioPlayer.onErrorSubscribeKey,
+                                                           data: ["audioId": player.audioId,
+                                                                  "errMsg": error])
+                    }
+                    player.waitingHandler = { wait in
+                        if !wait {
+                            return
+                        }
+                        bridge.subscribeHandler(method: NZAudioPlayer.onWaitingSubscribeKey,
+                                                           data: ["audioId": player.audioId])
+                    }
                     player.play()
                     module.players.set(page.pageId, params.audioId, value: player)
                 }
             }
-            
         case .pause:
             guard let player = module.players.get(page.pageId, params.audioId) else { break }
             player.pause()

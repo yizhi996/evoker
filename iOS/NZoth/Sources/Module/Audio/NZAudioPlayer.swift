@@ -11,186 +11,66 @@ import UIKit
 import AVFoundation
 import KTVHTTPCache
 
-protocol NZAudioPlayerDelegate: NSObject {
-    
-    func audioPlayer(_ audioPlayer: NZAudioPlayer, canplay duration: Double)
-    
-    func didStartPlay(audioPlayer: NZAudioPlayer)
-    
-    func didPausePlay(audioPlayer: NZAudioPlayer)
-    
-    func didStopPlay(audioPlayer: NZAudioPlayer)
-    
-    func didEndPlay(audioPlayer: NZAudioPlayer)
-    
-    func audioPlayer(_ audioPlayer: NZAudioPlayer, timeUpdate time: Double)
-    
-    func willSeek(audioPlayer: NZAudioPlayer)
-    
-    func didSeek(audioPlayer: NZAudioPlayer)
-    
-    func audioPlayer(_ audioPlayer: NZAudioPlayer, playFailed error: (Int, Error))
-}
-
-class NZAudioPlayer: NSObject {
+class NZAudioPlayer: NZPlayer {
     
     struct Params: Decodable {
+        let audioId: Int
+        
         let src: String
+        
         let volume: Float
+        
         let playbackRate: Float
+        
         var _url: URL?
     }
     
-    var currentPlayURL: URL?
+    let audioId: Int
     
-    var params: Params? {
-        didSet {
-            guard let params = params, let url = params._url else { return }
+    var params: Params!
+    
+    init(params: Params) {
+        self.params = params
+        audioId = params.audioId
+        super.init()
+        
+        if let url = params._url {
             setURL(url)
         }
     }
     
-    var player: AVPlayer?
-    
-    var playerItem: AVPlayerItem?
-    
-    var timeObserver: Any?
-    
-    weak var delegate: NZAudioPlayerDelegate?
-    
-    let audioId: Int
-    
-    init(audioId: Int) {
-        self.audioId = audioId
-        super.init()
+    func changeURL(_ url: URL) {
+        params._url = url
+        setURL(url)
     }
     
-    deinit {
-        timeObserver = nil
-        player?.removeObserver(self, forKeyPath: #keyPath(AVPlayer.status))
-        NotificationCenter.default.removeObserver(self)
+    override func play() {
+        super.play()
+        setVolume(params.volume)
+        setPlaybackRate(params.playbackRate)
     }
+}
+
+extension NZAudioPlayer {
     
-    func setURL(_ url: URL) {
-        if currentPlayURL == url {
-            return
-        }
-        currentPlayURL = url
-        if !KTVHTTPCache.proxyIsRunning() {
-            do {
-                try KTVHTTPCache.proxyStart()
-            } catch {
-                NZLogger.error("KTVHTTPCache Start failed: \(error)")
-            }
-        }
-        
-        timeObserver = nil
-        
-        if let player = player {
-            player.removeObserver(self, forKeyPath: #keyPath(AVPlayer.status))
-            player.pause()
-            player.replaceCurrentItem(with: nil)
-            self.player = nil
-        }
-        
-        if let playerItem = playerItem {
-            NotificationCenter.default.removeObserver(self,
-                                                      name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
-                                                      object: playerItem)
-            self.playerItem = nil
-        }
-        
-        if let proxyURL = KTVHTTPCache.proxyURL(withOriginalURL: url) {
-            playerItem = AVPlayerItem(url: proxyURL)
-            player = AVPlayer(playerItem: playerItem)
-        }
-        
-        if let player = player, let playerItem = playerItem {
-            player.addObserver(self, forKeyPath: #keyPath(AVPlayer.status), options: [.new], context: nil)
-            let interval = CMTime(seconds: 0.25, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
-            timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: nil) { [weak self] time in
-                guard let self = self else { return }
-                self.delegate?.audioPlayer(self, timeUpdate: time.seconds)
-            }
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(onPlayEnded(_:)),
-                                                   name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
-                                                   object: playerItem)
-        }
-    }
+    static let onCanplaySubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_CANPLAY")
     
-    func play() {
-        guard let player = player else { return }
-        player.play()
-        player.volume = params?.volume ?? 1.0
-        player.rate = params?.playbackRate ?? 1.0
-        delegate?.didStartPlay(audioPlayer: self)
-    }
+    static let onPlaySubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_PLAY")
     
-    func pause() {
-        guard let player = player, let playerItem = playerItem else { return }
-        player.pause()
-        playerItem.cancelPendingSeeks()
-        delegate?.didPausePlay(audioPlayer: self)
-    }
+    static let onPauseSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_PAUSE")
     
-    func stop() {
-        guard let player = player, let playerItem = playerItem else { return }
-        playerItem.cancelPendingSeeks()
-        player.pause()
-        player.seek(to: .zero)
-        delegate?.didStopPlay(audioPlayer: self)
-    }
+    static let onStopSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_STOP")
     
-    func replay() {
-        guard let player = player, let playerItem = playerItem else { return }
-        playerItem.cancelPendingSeeks()
-        player.pause()
-        player.seek(to: .zero) { [unowned self] _ in
-            self.play()
-        }
-    }
+    static let onEndedSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_ENDED")
     
-    func setVolume(_ volume: Float) {
-        player?.volume = volume
-    }
+    static let onTimeUpdateSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_TIME_UPDATE")
     
-    func setPlaybackRate(_ rate: Float) {
-        guard let player = player else { return }
-        player.rate = rate
-    }
+    static let onSeekingSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_SEEKING")
     
-    func seek(position: TimeInterval) {
-        guard let player = player else { return }
-        delegate?.willSeek(audioPlayer: self)
-        let to = CMTime(seconds: position, preferredTimescale: player.currentTime().timescale)
-        player.seek(to: to, completionHandler: { [weak self] _ in
-            guard let self = self else { return }
-            self.delegate?.didSeek(audioPlayer: self)
-        })
-    }
+    static let onSeekedSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_SEEKED")
     
-    @objc
-    func onPlayEnded(_ notification: Notification) {
-        guard let playerItem = playerItem,
-              let object = notification.object as? AVPlayerItem,
-              object == playerItem else { return }
-        delegate?.didEndPlay(audioPlayer: self)
-    }
+    static let onErrorSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_ERROR")
     
-    override func observeValue(forKeyPath keyPath: String?,
-                               of object: Any?,
-                               change: [NSKeyValueChangeKey : Any]?,
-                               context: UnsafeMutableRawPointer?) {
-        if keyPath == #keyPath(AVPlayer.status) {
-            if let statusNumber = change?[.newKey] as? Int, let status = AVPlayer.Status(rawValue: statusNumber) {
-                if status == .readyToPlay {
-                    if let playerItem = playerItem {
-                        let duration = playerItem.asset.duration.seconds
-                        delegate?.audioPlayer(self, canplay: duration)
-                    }
-                }
-            }
-        }
-    }
+    static let onWaitingSubscribeKey = NZSubscribeKey("MODULE_INNER_AUDIO_CONTEXT_ON_WAITING")
+    
 }

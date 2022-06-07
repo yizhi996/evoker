@@ -34,11 +34,15 @@ class NZPlayer: NSObject {
     
     var pauseHandler: NZEmptyBlock?
     
+    var stopHandler: NZEmptyBlock?
+    
     var endedHandler: NZEmptyBlock?
     
     var timeUpdateHandler: ((TimeInterval) -> Void)?
     
     var bufferUpdateHandler: ((TimeInterval) -> Void)?
+    
+    var seekingHandler: NZEmptyBlock?
     
     var seekCompletionHandler: NZCGFloatBlock?
     
@@ -61,6 +65,8 @@ class NZPlayer: NSObject {
                 playHandler?()
             case .pause:
                 pauseHandler?()
+            case .stoped:
+                stopHandler?()
             default:
                 break
             }
@@ -205,12 +211,12 @@ class NZPlayer: NSObject {
     }
     
     func setPlaybackRate(_ rate: Float) {
-        guard let player = player else { return }
-        player.rate = rate
+        player?.rate = rate
     }
     
     func seek(position: TimeInterval) {
         guard let player = player else { return }
+        seekingHandler?()
         let to = CMTime(seconds: position, preferredTimescale: player.currentTime().timescale)
         player.seek(to: to, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
             guard let self = self else { return }
