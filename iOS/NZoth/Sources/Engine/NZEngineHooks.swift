@@ -34,11 +34,19 @@ public class NZEngineHooks {
         
         public var checkAppUpdate: ((String, NZAppEnvVersion, String, String, NZBoolBlock) -> Void)?
         
+        /// 自定义点击胶囊的更多按钮时显示的 action
+        /// - returns:
+        /// 第一个数组是第一行，第二个数组是第二行，第三个 Bool 表示是否在第二行的最前面加入内置的 action（包含设置和重启）
+        public var fetchAppMoreActionSheetItems: ((NZAppService) -> ([NZAppMoreActionItem], [NZAppMoreActionItem], Bool))?
+        
+        /// 点击自定义的 NZAppMoreActionItem 时执行，可根据 key 判断需要执行的事件
+        public var clickAppMoreActionItem: ((NZAppService, NZAppMoreActionItem) -> Void)?
+        
         public class LifeCycle {
             
-            public var onLaunch: ((NZAppService) -> Void)?
+            public var onLaunch: ((NZAppService, NZAppLaunchOptions) -> Void)?
             
-            public var onShow: ((NZAppService) -> Void)?
+            public var onShow: ((NZAppService, NZAppShowOptions) -> Void)?
             
             public var onHide: ((NZAppService) -> Void)?
         }

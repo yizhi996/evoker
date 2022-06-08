@@ -9,17 +9,17 @@
 import Foundation
 import UIKit
 
-open class NZTabBarView: UIView {
+class NZTabBarView: UIView {
     
-    public var isShow = false
+    var isShow = false
     
-    public var didSelectIndex: NZIntBlock?
+    var didSelectTabBarItemHandler: NZIntBlock?
     
     var tabBarItems: [NZTabBarItem] =  []
     
     let borderTopView = UIView()
     
-    public override init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         
         backgroundColor = .white
@@ -30,11 +30,11 @@ open class NZTabBarView: UIView {
         borderTopView.autoSetDimension(.height, toSize: 1 / Constant.scale)
     }
     
-    required public init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    open func load(config: NZAppConfig, envVersion: NZAppEnvVersion) {
+    func load(config: NZAppConfig, envVersion: NZAppEnvVersion) {
         guard let tabBarInfo = config.tabBar else { return }
         
         backgroundColor = tabBarInfo.backgroundColor.hexColor()
@@ -87,15 +87,24 @@ open class NZTabBarView: UIView {
         }
     }
     
-    @objc open func didSelectTab(_ item: UIButton) {
+    @objc
+    func didSelectTab(_ item: UIButton) {
         tabBarItems.forEach { $0.isSelected = false }
         item.isSelected = true
-        didSelectIndex?(item.tag)
+        didSelectTabBarItemHandler?(item.tag)
     }
     
-    func setTabItemSelect(_ index: Int) {
+    func setTabItemSelected(_ index: Int) {
         guard index < tabBarItems.count else { return }
         tabBarItems.forEach { $0.isSelected = false }
         tabBarItems[index].isSelected = true
+    }
+    
+    func add(to view: UIView) {
+        guard superview != view else { return }
+        removeFromSuperview()
+        let height = Constant.tabBarHeight
+        frame = CGRect(x: 0, y: view.frame.height - height, width: view.frame.width, height: height)
+        view.addSubview(self)
     }
 }

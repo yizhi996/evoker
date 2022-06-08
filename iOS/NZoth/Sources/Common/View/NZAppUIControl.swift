@@ -12,96 +12,76 @@ import PureLayout
 
 public class NZAppUIControl {
     
-    public var closeHandler: NZEmptyBlock?
-    
-    public var showAppMoreActionBoardHandler: NZEmptyBlock?
-    
-    public var didSelectTabBarIndexHandler: NZIntBlock?
-    
     let capsuleView = NZCapsuleView()
     
-    public lazy var tabBarView = NZTabBarView()
+    lazy var tabBarView = NZTabBarView()
     
-    public lazy var tabBarViewControllers: [String: NZPageViewController] = [:]
-    
-    public func setupTabBar(config: NZAppConfig, envVersion: NZAppEnvVersion) {
-        if let tabBarInfo = config.tabBar, !tabBarInfo.list.isEmpty {
-            tabBarView.load(config: config, envVersion: envVersion)
-            tabBarView.didSelectIndex = { [unowned self] index in
-                self.didSelectTabBarIndexHandler?(index)
-            }
-        }
-    }
-    
-    public func addTabBar(to view: UIView) {
-        guard tabBarView.superview != view else { return }
-        tabBarView.removeFromSuperview()
-        let height = Constant.tabBarHeight
-        tabBarView.frame = CGRect(x: 0, y: view.frame.height - height, width: view.frame.width, height: height)
-        view.addSubview(tabBarView)
-    }
-    
-    public func addCapsuleView(to view: UIView) {
-        capsuleView.closeButton.addTarget(self, action: #selector(close), for: .touchUpInside)
-        capsuleView.moreButton.addTarget(self, action: #selector(clickShowAppMoreActionBoard), for: .touchUpInside)
-        view.addSubview(capsuleView)
-        capsuleView.autoPinEdge(toSuperviewSafeArea: .top,
-                                withInset:  (Constant.navigationBarHeight - capsuleView.buttonHeight) / 2)
-        capsuleView.autoPinEdge(toSuperviewEdge: .right, withInset: 7)
-    }
-    
-    public func showAppMoreActionBoard(appId: String, appInfo: NZAppInfo, to view: UIView, didSelectHandler: @escaping NZStringBlock) {
-        let firstActions: [NZMiniProgramAction] = []
-        let settingIconImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-setting-icon")!,
-                                             dark: UIImage(builtIn: "mp-action-sheet-setting-icon-dark")!)
-        let settingsAction = NZMiniProgramAction(key: "settings",
-                                                 icon: nil,
-                                                 iconImage: settingIconImage,
-                                                 title: "设置")
-        let relaunchIconImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-reload-icon")!,
-                                              dark: UIImage(builtIn: "mp-action-sheet-reload-icon-dark")!)
-        let relaunchAction = NZMiniProgramAction(key: "relaunch",
-                                                 icon: nil,
-                                                 iconImage: relaunchIconImage,
-                                                 title: "重新进入小程序")
-        let secondActions = [settingsAction, relaunchAction]
-        let params = NZMiniProgramActionSheet.Params(appId: appId,
-                                                     appName: appInfo.appName,
-                                                     appIcon: appInfo.appIconURL,
-                                                     firstActions: firstActions,
-                                                     secondActions: secondActions)
-        let actionSheet = NZMiniProgramActionSheet(params: params)
-        let cover = NZCoverView(contentView: actionSheet)
-        let onHide: NZStringBlock = { key in
-            cover.hide()
-            didSelectHandler(key)
-        }
-        cover.clickHandler = {
-            onHide("cancel")
-        }
-        actionSheet.didSelectActionHandler = { action in
-            onHide(action.key)
-        }
-        actionSheet.onCancel = {
-            onHide("cancel")
-        }
-        view.endEditing(true)
-        cover.show(to: view)
-    }
+    lazy var tabBarViewControllers: [String: NZPageViewController] = [:]
     
     public func showCapsule() {
         capsuleView.isHidden = false
     }
     
     public func hideCapsule() {
-        capsuleView.isHidden = true
+        capsuleView.isHidden = false
     }
     
-    @objc private func close() {
-        closeHandler?()
+    public func showAppMoreActionBoard(appService: NZAppService,
+                                       to view: UIView,
+                                       cancellationHandler: NZEmptyBlock?,
+                                       selectionHandler: @escaping (NZAppMoreActionItem) -> Void) {
+        
+        func builtInItems() -> [NZAppMoreActionItem] {
+            let settingIconImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-setting-icon")!,
+                                                 dark: UIImage(builtIn: "mp-action-sheet-setting-icon-dark")!)
+            let settingsAction = NZAppMoreActionItem(key: NZAppMoreActionItem.builtInSettingsKey,
+                                                     icon: nil,
+                                                     iconImage: settingIconImage,
+                                                     title: "设置")
+            let relaunchIconImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-reload-icon")!,
+                                                  dark: UIImage(builtIn: "mp-action-sheet-reload-icon-dark")!)
+            let relaunchAction = NZAppMoreActionItem(key: NZAppMoreActionItem.builtInReLaunchKey,
+                                                     icon: nil,
+                                                     iconImage: relaunchIconImage,
+                                                     title: "重新进入小程序")
+            return [settingsAction, relaunchAction]
+        }
+        
+        let firstActions: [NZAppMoreActionItem]
+        let secondActions: [NZAppMoreActionItem]
+        if let data = NZEngineHooks.shared.app.fetchAppMoreActionSheetItems?(appService) {
+            firstActions = data.0
+            if data.2 {
+                secondActions = builtInItems() + data.1
+            } else {
+                secondActions = data.1
+            }
+        } else {
+            firstActions = []
+            secondActions = builtInItems()
+        }
+        
+        let params = NZAppMoreActionSheet.Params(appId: appService.appId,
+                                                 appName: appService.appInfo.appName,
+                                                 appIcon: appService.appInfo.appIconURL,
+                                                 firstActions: firstActions,
+                                                 secondActions: secondActions)
+        let actionSheet = NZAppMoreActionSheet(params: params)
+        let cover = NZCoverView(contentView: actionSheet)
+        cover.clickHandler = {
+            cover.hide()
+            cancellationHandler?()
+        }
+        actionSheet.didSelectActionHandler = { action in
+            cover.hide()
+            selectionHandler(action)
+        }
+        actionSheet.onCancel = {
+            cover.hide()
+            cancellationHandler?()
+        }
+        view.endEditing(true)
+        cover.show(to: view)
     }
     
-    @objc private func clickShowAppMoreActionBoard() {
-        showAppMoreActionBoardHandler?()
-    }
 }

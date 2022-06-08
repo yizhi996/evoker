@@ -1,5 +1,5 @@
 //
-//  NZMiniProgramActionSheet.swift
+//  NZAppMoreActionSheet.swift
 //
 //  Copyright (c) NZoth. All rights reserved. (https://nzothdev.com)
 //
@@ -9,24 +9,41 @@
 import Foundation
 import UIKit
 
-public struct NZMiniProgramAction {
+public struct NZAppMoreActionItem {
+    
+    static let builtInSettingsKey = "builtin:settings"
+    
+    static let builtInReLaunchKey = "builtin:reLaunch"
+    
+    /// 标识符
     let key: String
+    
+    /// 图标地址
     let icon: String?
+    
+    /// 使用本图标，优先级高于 icon
     let iconImage: UIImage?
+    
+    /// 标题
     let title: String
 }
 
-class NZMiniProgramActionSheet: UIView, NZTransitionView {
+class NZAppMoreActionSheet: UIView, NZTransitionView {
     
     struct Params {
         let appId: String
+        
         let appName: String
+        
         let appIcon: String
-        let firstActions: [NZMiniProgramAction]
-        let secondActions: [NZMiniProgramAction]
+        
+        let firstActions: [NZAppMoreActionItem]
+        
+        let secondActions: [NZAppMoreActionItem]
     }
     
-    var didSelectActionHandler: ((NZMiniProgramAction) -> Void)?
+    var didSelectActionHandler: ((NZAppMoreActionItem) -> Void)?
+    
     var onCancel: NZEmptyBlock?
     
     let appIconImageView = UIImageView()
@@ -142,19 +159,19 @@ class NZMiniProgramActionSheet: UIView, NZTransitionView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func addActionItem(list: [NZMiniProgramAction], to scrollView: UIScrollView, section: Int) {
-        var prev: MiniProgramActionSheetItemView?
+    func addActionItem(list: [NZAppMoreActionItem], to scrollView: UIScrollView, section: Int) {
+        var prev: NZAppMoreActionSheetItemView?
         let spacing = 12.0
         let itemSize = 56.0
         
         for (i, item) in list.enumerated() {
-            let actionView = MiniProgramActionSheetItemView()
+            let actionView = NZAppMoreActionSheetItemView()
             actionView.isUserInteractionEnabled = true
             actionView.action = item
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onClickAction(gesture:)))
             actionView.addGestureRecognizer(tapGesture)
             
-            let actionButton = MiniProgramActionSheetItemButton()
+            let actionButton = NZAppMoreActionSheetItemButton()
             actionButton.action = item
             if let icon = item.iconImage {
                 actionButton.setImage(icon, for: .normal)
@@ -206,12 +223,12 @@ class NZMiniProgramActionSheet: UIView, NZTransitionView {
     }
     
     @objc func onClickAction(button: UIButton) {
-        guard let button = button as? MiniProgramActionSheetItemButton, let action = button.action else { return }
+        guard let button = button as? NZAppMoreActionSheetItemButton, let action = button.action else { return }
         didSelectActionHandler?(action)
     }
     
     @objc func onClickAction(gesture: UIGestureRecognizer) {
-        guard let view = gesture.view as? MiniProgramActionSheetItemView, let action = view.action else { return }
+        guard let view = gesture.view as? NZAppMoreActionSheetItemView, let action = view.action else { return }
         didSelectActionHandler?(action)
     }
     
@@ -232,14 +249,14 @@ class NZMiniProgramActionSheet: UIView, NZTransitionView {
     }
 }
 
-private class MiniProgramActionSheetItemView: UIView {
+private class NZAppMoreActionSheetItemView: UIView {
     
-    var action: NZMiniProgramAction?
+    var action: NZAppMoreActionItem?
     
 }
 
-private class MiniProgramActionSheetItemButton: UIButton {
+private class NZAppMoreActionSheetItemButton: UIButton {
     
-    var action: NZMiniProgramAction?
+    var action: NZAppMoreActionItem?
     
 }

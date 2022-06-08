@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 import PureLayout
 
-open class NZTabBarItem: UIButton {
+class NZTabBarItem: UIButton {
     
     lazy var badgeView: NZBadgeView = {
         let badgeView = NZBadgeView()
@@ -21,7 +21,7 @@ open class NZTabBarItem: UIButton {
         return badgeView
     }()
     
-    open override func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         
         let iconSize = 25.0

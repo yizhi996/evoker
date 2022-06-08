@@ -58,7 +58,7 @@ final public class NZAppService {
                 rootViewController.themeChangeHandler = { [unowned self] theme in
                     self.bridge.subscribeHandler(method: Self.themeChangeSubscribeKey, data: ["theme": theme])
                 }
-                uiControl.addCapsuleView(to: rootViewController.view)
+                uiControl.capsuleView.add(to: rootViewController.view)
             }
         }
     }
@@ -106,44 +106,17 @@ final public class NZAppService {
             return self.createWebView()
         }
         
-        uiControl.closeHandler = { [unowned self] in
-            self.closeMiniProgram()
+        uiControl.capsuleView.clickCloseHandler = { [unowned self] in
+            self.close()
         }
         
-        uiControl.didSelectTabBarIndexHandler = { [unowned self] index in
-            let page = self.tabBarPages[index]
-            if !pages.contains(where: { $0.pageId == page.pageId }) {
-                pages.append(page)
-            }
-            let viewController = page.viewController ?? page.generateViewController()
-            uiControl.tabBarViewControllers[page.url] = viewController
-            if !viewController.isViewLoaded {
-                viewController.loadViewIfNeeded()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self.rootViewController?.viewControllers = [viewController]
-                    if page.isShowTabBar {
-                        self.uiControl.addTabBar(to: viewController.view)
-                        self.uiControl.tabBarView.setTabItemSelect(index)
-                    }
-                }
-            } else {
-                self.rootViewController?.viewControllers = [viewController]
-                if page.isShowTabBar {
-                    self.uiControl.addTabBar(to: viewController.view)
-                    self.uiControl.tabBarView.setTabItemSelect(index)
-                }
-            }
-        }
-        
-        uiControl.showAppMoreActionBoardHandler = { [unowned self] in
+        uiControl.capsuleView.clickMoreHandler = { [unowned self] in
             guard let rootViewController = self.rootViewController else { return }
-            self.uiControl.showAppMoreActionBoard(appId: self.appId,
-                                                  appInfo: self.appInfo,
-                                                  to: rootViewController.view) { [unowned self] action in
+            self.uiControl.showAppMoreActionBoard(appService: self, to: rootViewController.view, cancellationHandler: nil) { action in
                 self.invokeAppMoreAction(action)
             }
         }
-
+        
         context.invokeHandler = { [unowned self] message in
             guard let event = message["event"] as? String,
                   let params = message["params"] as? String,
@@ -188,9 +161,7 @@ final public class NZAppService {
         let path = launchOptions.path
         guard let info = generateFirstViewController(with: path) else { return .appLaunchPathNotFound(path) }
         if haveTabBar {
-            uiControl.setupTabBar(config: config, envVersion: envVersion)
-            uiControl.tabBarView.setTabItemSelect(info.tabBarSelectedIndex)
-            uiControl.tabBarViewControllers = [:]
+            setupTabBar(current: info.tabBarSelectedIndex)
             if info.page.isTabBarPage {
                 uiControl.tabBarViewControllers[info.page.url] = info.viewController
             }
@@ -209,7 +180,7 @@ final public class NZAppService {
         let presentViewController = viewController ?? UIViewController.visibleViewController()
         presentViewController?.present(navigationController, animated: true)
         if info.page.isTabBarPage {
-            uiControl.addTabBar(to: info.viewController.view)
+            uiControl.tabBarView.add(to: info.viewController.view)
         }
         state = .front
         
@@ -431,6 +402,40 @@ extension NZAppService {
 //MARK: View
 extension NZAppService {
     
+    func setupTabBar(current index: Int) {
+        uiControl.tabBarView.load(config: config, envVersion: envVersion)
+        uiControl.tabBarView.didSelectTabBarItemHandler = { [unowned self] index in
+            self.didSelectTabBarItem(at: index)
+        }
+        uiControl.tabBarView.setTabItemSelected(index)
+        uiControl.tabBarViewControllers = [:]
+    }
+    
+    func didSelectTabBarItem(at index: Int) {
+        let page = tabBarPages[index]
+        if !pages.contains(where: { $0.pageId == page.pageId }) {
+            pages.append(page)
+        }
+        let viewController = page.viewController ?? page.generateViewController()
+        uiControl.tabBarViewControllers[page.url] = viewController
+        if !viewController.isViewLoaded {
+            viewController.loadViewIfNeeded()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.rootViewController?.viewControllers = [viewController]
+                if page.isShowTabBar {
+                    self.uiControl.tabBarView.add(to: viewController.view)
+                    self.uiControl.tabBarView.setTabItemSelected(index)
+                }
+            }
+        } else {
+            self.rootViewController?.viewControllers = [viewController]
+            if page.isShowTabBar {
+                self.uiControl.tabBarView.add(to: viewController.view)
+                self.uiControl.tabBarView.setTabItemSelected(index)
+            }
+        }
+    }
+    
     func checkAddGotoHomeButton(path: String) -> Bool {
         let (route, _) = path.decodeURL()
         if let tabBarList = config.tabBar?.list, !tabBarList.isEmpty {
@@ -439,17 +444,16 @@ extension NZAppService {
         return config.pages.first?.path != route
     }
     
-    func gotoHomePage() {
+    /// 返回到首页，如果有 TabBar，将返回到第一个 Tab，不然就返回 config.pages 的第一个 page。
+    public func gotoHomePage() {
         if let firstTabBar = config.tabBar?.list.first, let info = generateFirstViewController(with: firstTabBar.path) {
             unloadAllPages()
-            uiControl.setupTabBar(config: config, envVersion: envVersion)
-            uiControl.tabBarView.setTabItemSelect(info.tabBarSelectedIndex)
-            uiControl.tabBarViewControllers = [:]
+            setupTabBar(current: info.tabBarSelectedIndex)
             uiControl.tabBarViewControllers[info.page.url] = info.viewController
             tabBarPages = info.tabBarPages
             pages.append(info.page)
             rootViewController?.viewControllers = [info.viewController]
-            uiControl.addTabBar(to: info.viewController.view)
+            uiControl.tabBarView.add(to: info.viewController.view)
         } else if let firstPage = config.pages.first,
                   let page = createWebPage(url: firstPage.path) {
             unloadAllPages()
@@ -458,8 +462,9 @@ extension NZAppService {
             rootViewController?.viewControllers = [viewController]
         }
     }
-
-    func closeMiniProgram() {
+    
+    /// 隐藏小程序到后台，如果 15 分钟内没有进如前台，小程序将退出。
+    public func close() {
         dismiss()
         cleanKillTimer()
         state = .suspend
@@ -472,18 +477,18 @@ extension NZAppService {
         RunLoop.main.add(killTimer!, forMode: .common)
     }
     
-    func invokeAppMoreAction(_ action: String) {
-        switch action {
-        case "settings":
+    func invokeAppMoreAction(_ action: NZAppMoreActionItem) {
+        switch action.key {
+        case NZAppMoreActionItem.builtInSettingsKey:
             let viewModel = NZSettingViewModel(appService: self)
             rootViewController?.pushViewController(viewModel.generateViewController(), animated: true)
             break
-        case "relaunch":
+        case NZAppMoreActionItem.builtInReLaunchKey:
             var options = NZAppLaunchOptions()
             options.envVersion = envVersion
             reLaunch(launchOptions: options)
         default:
-            break
+            NZEngineHooks.shared.app.clickAppMoreActionItem?(self, action)
         }
     }
 }
@@ -557,18 +562,19 @@ extension NZAppService {
     
     func publishAppOnLaunch(options: NZAppLaunchOptions) {
         bridge.subscribeHandler(method: NZAppService.onLaunchSubscribeKey, data: setEnterOptions(options: options))
-        NZEngineHooks.shared.app.lifeCycle.onLaunch?(self)
+        NZEngineHooks.shared.app.lifeCycle.onLaunch?(self, options)
         modules.values.forEach { $0.onLaunch(self) }
     }
     
     func publishAppOnShow(options: NZAppShowOptions) {
         cleanKillTimer()
         bridge.subscribeHandler(method: NZAppService.onShowSubscribeKey, data: setEnterOptions(options: options))
-        NZEngineHooks.shared.app.lifeCycle.onShow?(self)
+        NZEngineHooks.shared.app.lifeCycle.onShow?(self, options)
         modules.values.forEach { $0.onShow(self) }
     }
     
-    @objc func publishAppOnHide() {
+    @objc
+    func publishAppOnHide() {
         bridge.subscribeHandler(method: NZAppService.onHideSubscribeKey, data: [:])
         NZEngineHooks.shared.app.lifeCycle.onHide?(self)
         modules.values.forEach { $0.onHide(self) }
@@ -657,12 +663,9 @@ public extension NZAppService {
         unloadAllPages()
         
         if haveTabBar {
-            uiControl.setupTabBar(config: config, envVersion: envVersion)
-            uiControl.tabBarView.setTabItemSelect(info.tabBarSelectedIndex)
-            uiControl.tabBarViewControllers = [:]
+            setupTabBar(current: info.tabBarSelectedIndex)
             if info.page.isTabBarPage {
                 uiControl.tabBarViewControllers[info.page.url] = info.viewController
-                
             }
             tabBarPages = info.tabBarPages
         }
@@ -670,7 +673,7 @@ public extension NZAppService {
         
         rootViewController.viewControllers = [info.viewController]
         if info.page.isTabBarPage {
-            uiControl.addTabBar(to: info.viewController.view)
+            uiControl.tabBarView.add(to: info.viewController.view)
         }
         if info.needAddGotoHomeButton {
             info.viewController.navigationBar.showGotoHomeButton()
@@ -680,7 +683,7 @@ public extension NZAppService {
     
     func switchTo(url: String) {
         if let index = tabBarPages.filter(ofType: NZWebPage.self).firstIndex(where: { $0.url == url }) {
-            uiControl.didSelectTabBarIndexHandler?(index)
+            didSelectTabBarItem(at: index)
         }
     }
 }

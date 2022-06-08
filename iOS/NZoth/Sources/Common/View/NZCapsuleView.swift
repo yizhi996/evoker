@@ -11,10 +11,16 @@ import UIKit
 
 class NZCapsuleView: UIView {
     
+    var clickCloseHandler: NZEmptyBlock?
+    
+    var clickMoreHandler: NZEmptyBlock?
+    
     let moreButton = UIButton(type: .custom)
+    
     let closeButton = UIButton(type: .custom)
     
     let buttonWidth: CGFloat = 43.3
+    
     let buttonHeight: CGFloat = 32
     
     override init(frame: CGRect) {
@@ -50,4 +56,24 @@ class NZCapsuleView: UIView {
             closeButton.setImage(UIImage(builtIn: "mini-program-close-icon-dark"), for: .normal)
         }
     }
+    
+    func add(to view: UIView) {
+        closeButton.addTarget(self, action: #selector(close), for: .touchUpInside)
+        moreButton.addTarget(self, action: #selector(showMore), for: .touchUpInside)
+        view.addSubview(self)
+        autoPinEdge(toSuperviewSafeArea: .top,
+                                withInset:  (Constant.navigationBarHeight - buttonHeight) / 2)
+        autoPinEdge(toSuperviewEdge: .right, withInset: 7)
+    }
+    
+    @objc
+    func close() {
+        clickCloseHandler?()
+    }
+    
+    @objc
+    func showMore() {
+        clickMoreHandler?()
+    }
+    
 }
