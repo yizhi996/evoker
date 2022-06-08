@@ -92,13 +92,3 @@ public struct NZAppPageInfo: Decodable {
     public var style: NZAppStyle?
 
 }
-
-public enum NZAppEnvVersion: String {
-    
-    case develop
-    
-    case trail
-    
-    case release
-  
-}

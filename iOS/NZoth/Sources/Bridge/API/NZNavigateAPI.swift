@@ -57,15 +57,18 @@ enum NZNavigateAPI: String, NZBuiltInAPI {
                 return
             }
             let targetView = appService.rootViewController!.view!
-            NZAlertView.show(title: "即将打开“\(appInfo!.appName)”小程序", confirm: "允许", mask: true, to: targetView, cancelHandler: {
+            NZAlertView.show(title: "即将打开“\(appInfo!.appName)”小程序",
+                             confirm: "允许",
+                             mask: true,
+                             to: targetView, cancelHandler: {
                 let error = NZError.bridgeFailed(reason: .cancel)
                 bridge.invokeCallbackFail(args: args, error: error)
             }) { _ in
                 var options = NZAppLaunchOptions()
                 options.path = params.path ?? ""
                 options.envVersion = envVersion
-                options.referrerInfo = NZAppLaunchOptions.ReferrerInfo(appId: appService.appId,
-                                                                       extraDataString: params.extraDataString)
+                options.referrerInfo = NZAppEnterReferrerInfo(appId: appService.appId,
+                                                              extraDataString: params.extraDataString)
                 NZEngine.shared.openApp(appId: params.appId, launchOptions: options) { error in
                     if let error = error {
                         bridge.invokeCallbackFail(args: args, error: error)

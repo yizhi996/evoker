@@ -1,7 +1,8 @@
 import { InnerJSBridge } from "../bridge/bridge"
-import { dispatchEvent, extend, isFunction } from "@nzoth/shared"
+import { dispatchEvent, isFunction } from "@nzoth/shared"
 import { unmountPage } from "../app"
 import { decodeURL } from "../router"
+import { AppLaunchOptions } from "./useApp"
 
 export const enum LifecycleHooks {
   APP_ON_LAUNCH = "APP_ON_LAUNCH",
@@ -81,13 +82,33 @@ function invokePageHook(lifecycle: LifecycleHooks, pageId: number, data?: any) {
   }
 }
 
-InnerJSBridge.subscribe<{ path: string }>(LifecycleHooks.APP_ON_LAUNCH, message => {
-  const options = extend(message, decodeURL(message.path))
-  invokeAppHook(LifecycleHooks.APP_ON_LAUNCH, options)
+interface AppEnterMessage {
+  path: string
+  referrerInfo: AppEnterReferrerInfo
+}
+
+interface AppEnterReferrerInfo {
+  appId?: string
+  extraDataString?: string
+}
+
+function processEnterOptions(message: AppEnterMessage) {
+  const options = decodeURL(message.path) as AppLaunchOptions
+  options.referrerInfo = {}
+  const { appId, extraDataString } = message.referrerInfo
+  if (appId) {
+    options.referrerInfo.appId = appId
+    options.referrerInfo.extarData = extraDataString ? JSON.parse(extraDataString) : {}
+  }
+  return options
+}
+
+InnerJSBridge.subscribe<AppEnterMessage>(LifecycleHooks.APP_ON_LAUNCH, message => {
+  invokeAppHook(LifecycleHooks.APP_ON_LAUNCH, processEnterOptions(message))
 })
 
-InnerJSBridge.subscribe<{ path: string }>(LifecycleHooks.APP_ON_SHOW, message => {
-  const options = extend(message, decodeURL(message.path))
+InnerJSBridge.subscribe<AppEnterMessage>(LifecycleHooks.APP_ON_SHOW, message => {
+  const options = processEnterOptions(message)
   invokeAppHook(LifecycleHooks.APP_ON_SHOW, options)
   dispatchEvent(LifecycleHooks.APP_ON_SHOW, options)
 })

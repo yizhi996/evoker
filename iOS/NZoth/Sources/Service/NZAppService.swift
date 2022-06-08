@@ -24,7 +24,7 @@ final public class NZAppService {
     
     public private(set) var appInfo: NZAppInfo
                
-    public let launchOptions: NZAppLaunchOptions
+    public internal(set) var launchOptions: NZAppLaunchOptions
     
     public var appId: String {
         return config.appId
@@ -212,7 +212,11 @@ final public class NZAppService {
             uiControl.addTabBar(to: info.viewController.view)
         }
         state = .front
-        publishAppOnShow(path: path)
+        
+        var showOptions = NZAppShowOptions()
+        showOptions.path = path
+        showOptions.referrerInfo = launchOptions.referrerInfo
+        publishAppOnShow(options: showOptions)
         return nil
     }
     
@@ -316,17 +320,17 @@ final public class NZAppService {
     }
     
     @objc
-    func networkStatusDidChange(_ notification: Notification) {
+    private func networkStatusDidChange(_ notification: Notification) {
         guard let netType = notification.object as? NetworkType else { return }
-        bridge.subscribeHandler(method: NZSubscribeKey("APP_NETWORK_STATUS_CHANGE"), data: [
+        bridge.subscribeHandler(method: NZAppService.networkStatusChangeSubscribeKey, data: [
             "isConnected": netType != .none,
             "networkType": netType.rawValue
         ])
     }
     
     @objc
-    func userDidTakeScreenshot() {
-        bridge.subscribeHandler(method: NZSubscribeKey("APP_USER_CAPTURE_SCREEN"), data: [:])
+    private func userDidTakeScreenshot() {
+        bridge.subscribeHandler(method: NZAppService.userCaptureScreenSubscribeKey, data: [:])
     }
 }
 
@@ -538,22 +542,35 @@ extension NZAppService {
 //MARK: App Life cycle publish
 extension NZAppService {
     
+    func setEnterOptions(options: NZAppEnterOptions) -> [String: Any] {
+        launchOptions.path = options.path
+        launchOptions.referrerInfo = options.referrerInfo
+        
+        var message: [String: Any] = ["path": options.path]
+        if let referrerInfo = options.referrerInfo {
+            message["referrerInfo"] = ["appId": referrerInfo.appId, "extraDataString": referrerInfo.extraDataString]
+        } else {
+            message["referrerInfo"] = [:]
+        }
+        return message
+    }
+    
     func publishAppOnLaunch(options: NZAppLaunchOptions) {
-        let message: [String: Any] = ["path": options.path]
-        bridge.subscribeHandler(method: NZAppService.onLaunchSubscribeKey, data: message)
+        bridge.subscribeHandler(method: NZAppService.onLaunchSubscribeKey, data: setEnterOptions(options: options))
+        NZEngineHooks.shared.app.lifeCycle.onLaunch?(self)
         modules.values.forEach { $0.onLaunch(self) }
     }
     
-    func publishAppOnShow(path: String) {
+    func publishAppOnShow(options: NZAppShowOptions) {
         cleanKillTimer()
-        let message: [String: Any] = ["path": path]
-        bridge.subscribeHandler(method: NZAppService.onShowSubscribeKey, data: message)
+        bridge.subscribeHandler(method: NZAppService.onShowSubscribeKey, data: setEnterOptions(options: options))
+        NZEngineHooks.shared.app.lifeCycle.onShow?(self)
         modules.values.forEach { $0.onShow(self) }
     }
     
     @objc func publishAppOnHide() {
-        let message: [String: Any] = [:]
-        bridge.subscribeHandler(method: NZAppService.onHideSubscribeKey, data: message)
+        bridge.subscribeHandler(method: NZAppService.onHideSubscribeKey, data: [:])
+        NZEngineHooks.shared.app.lifeCycle.onHide?(self)
         modules.values.forEach { $0.onHide(self) }
     }
 }
@@ -682,6 +699,10 @@ extension NZAppService {
     public static let onAudioInterruptionBeginSubscribeKey = NZSubscribeKey("APP_ON_AUDIO_INTERRUPTION_BEGIN")
     
     public static let onAudioInterruptionEndSubscribeKey = NZSubscribeKey("APP_ON_AUDIO_INTERRUPTION_END")
+    
+    public static let networkStatusChangeSubscribeKey = NZSubscribeKey("APP_NETWORK_STATUS_CHANGE")
+    
+    public static let userCaptureScreenSubscribeKey = NZSubscribeKey("APP_USER_CAPTURE_SCREEN")
     
 }
 

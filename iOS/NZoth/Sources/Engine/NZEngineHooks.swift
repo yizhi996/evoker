@@ -33,6 +33,17 @@ public class NZEngineHooks {
         public var getAppInfo: ((String, NZAppEnvVersion, GetAppInfoCompletionHandler) -> Void)?
         
         public var checkAppUpdate: ((String, NZAppEnvVersion, String, String, NZBoolBlock) -> Void)?
+        
+        public class LifeCycle {
+            
+            public var onLaunch: ((NZAppService) -> Void)?
+            
+            public var onShow: ((NZAppService) -> Void)?
+            
+            public var onHide: ((NZAppService) -> Void)?
+        }
+        
+        public let lifeCycle = LifeCycle()
     }
     
     public let openAPI = OpenAPI()

@@ -205,7 +205,6 @@ final public class NZEngine {
         options.envVersion = .develop
         if let launchOptions = info["launchOptions"] as? NZDevServer.AppUpdateOptions.LaunchOptions {
             options.path = launchOptions.page
-            options.query = launchOptions.query ?? ""
         }
         let runningId = runningId(appId: appId, envVersion: options.envVersion)
         if let appService = runningApp.first(where: { $0.runningId == runningId }) {
@@ -225,7 +224,7 @@ final public class NZEngine {
     
     @objc private func willEnterForeground() {
         guard let currentApp = currentApp else { return }
-        currentApp.publishAppOnShow(path: "")
+        currentApp.publishAppOnShow(options: NZAppShowOptions())
         if let webPage = currentApp.currentPage as? NZWebPage {
             if webPage.webView.state == .terminate {
                 webPage.reload()
@@ -274,7 +273,10 @@ extension NZEngine {
                 completionHandler?(.presentViewControllerNotFound)
                 return
             }
-            appService.publishAppOnShow(path: launchOptions.path)
+            var showOptions = NZAppShowOptions()
+            showOptions.path = launchOptions.path
+            showOptions.referrerInfo = launchOptions.referrerInfo
+            appService.publishAppOnShow(options: showOptions)
             if !launchOptions.path.isEmpty, let error = appService.reLaunch(url: launchOptions.path) {
                 completionHandler?(error)
                 return
@@ -367,7 +369,7 @@ extension NZEngine {
                 handler(.loadAppConfigFailed)
                 return
             }
-            if let error = appService.launch(path: launchOptions.path, presentTo: viewController) {
+            if let error = appService.launch(to: viewController) {
                 handler(error)
             } else {
                 self.runningApp.append(appService)
@@ -463,42 +465,4 @@ extension NZEngine {
 public extension NZEngine {
     
     static let networkStatusDidChange = Notification.Name("NZothNetworkStatusDidChange")
-}
-
-public struct NZAppInfo {
-    
-    public var appName: String = ""
-    
-    public var appIconURL: String = ""
-    
-    public var userInfo: [String: Any] = [:]
-        
-    public init(appName: String, appIconURL: String, userInfo: [String: Any] = [:]) {
-        self.appName = appName
-        self.appIconURL = appIconURL
-        self.userInfo = userInfo
-    }
-}
-
-public struct NZAppLaunchOptions {
-    
-    public struct ReferrerInfo {
-        let appId: String
-        
-        let extraDataString: String?
-    }
-        
-    public var path: String = ""
-    
-    public var query: String = ""
-    
-    public var referrerInfo: ReferrerInfo?
-    
-    public var envVersion: NZAppEnvVersion = .release
-    
-    public var custom: [String: Any] = [:]
-    
-    public init() {
-        
-    }
 }

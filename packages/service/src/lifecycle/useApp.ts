@@ -2,9 +2,15 @@ import { LifecycleHooks, createHook } from "./hooks"
 
 export type AppLaunchCallback = (options: AppLaunchOptions) => void
 
+interface AppLaunchReferrerInfo {
+  appId?: string
+  extarData?: Record<string, any>
+}
+
 export interface AppLaunchOptions {
   path: string
   query: Record<string, any>
+  referrerInfo: AppLaunchReferrerInfo
 }
 
 export type AppShowCallback = (options: AppShowOptions) => void
@@ -12,6 +18,7 @@ export type AppShowCallback = (options: AppShowOptions) => void
 export interface AppShowOptions {
   path: string
   query: Record<string, any>
+  referrerInfo: AppLaunchReferrerInfo
 }
 
 export type AppHideCallback = () => void
