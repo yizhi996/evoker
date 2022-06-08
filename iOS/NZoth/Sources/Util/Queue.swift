@@ -8,41 +8,53 @@
 
 import Foundation
 
-class Queue {
+class KeepActiveThread: NSObject {
     
-    static let concurrentQueueGroup = ConcurrentQueueGroup(name: "com.nozthdev.async-draw-queue", qos: .userInteractive)
-}
-
-class ConcurrentQueueGroup {
+    private var thread: Thread!
     
-    private var queues: [DispatchQueue] = []
+    private var runLoop: RunLoop?
     
-    private let name: String
+    private var port: Port?
     
-    private let maxConcurrentCount: Int32
+    private var isStop = false
     
-    private let qos: DispatchQoS
-    
-    private var counter: Int32 = 0
-    
-    public init(name: String = UUID().uuidString,
-                maxConcurrentCount: Int = ProcessInfo.processInfo.activeProcessorCount,
-                qos: DispatchQoS = .default) {
+    override init() {
+        super.init()
         
-        self.name = name
-        self.maxConcurrentCount = Int32(maxConcurrentCount)
-        self.qos = qos
-        
-        for _ in 0..<maxConcurrentCount {
-            let queue = DispatchQueue(label: name, qos: qos)
-            queues.append(queue)
+        thread = Thread(target: self, selector: #selector(run), object: nil)
+        thread.start()
+    }
+    
+    @objc
+    private func run() {
+        runLoop = RunLoop.current
+        port = NSMachPort()
+        runLoop!.add(port!, forMode: .default)
+        while !isStop {
+            runLoop!.run(mode: .default, before: .distantFuture)
         }
     }
     
-    public func idleQueue() -> DispatchQueue {
-        OSAtomicIncrement32(&counter)
-        let i = Int(counter % maxConcurrentCount)
-        return queues[i]
+    func stop() {
+        if let runLoop = runLoop, let port = port {
+            runLoop.remove(port, forMode: .default)
+            CFRunLoopStop(runLoop.getCFRunLoop())
+        }
+        isStop = true
+        runLoop = nil
+        port = nil
+    }
+    
+    func exec(execute work: @escaping @convention(block) () -> Void) {
+        perform(#selector(_exec(execute:)),
+                         on: thread,
+                         with: work,
+                         waitUntilDone: false)
+    }
+    
+    @objc
+    private func _exec(execute work: @escaping @convention(block) () -> Void) {
+        work()
     }
 }
 

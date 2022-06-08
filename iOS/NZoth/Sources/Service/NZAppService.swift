@@ -184,7 +184,8 @@ final public class NZAppService {
         NZEngine.shared.allModules().forEach { modules[$0.name] = $0.init(appService: self) }
     }
     
-    func launch(path: String, presentTo viewController: UIViewController? = nil) -> NZError? {
+    func launch(to viewController: UIViewController? = nil) -> NZError? {
+        let path = launchOptions.path
         guard let info = generateFirstViewController(with: path) else { return .appLaunchPathNotFound(path) }
         if haveTabBar {
             uiControl.setupTabBar(config: config, envVersion: envVersion)
@@ -197,7 +198,7 @@ final public class NZAppService {
         }
         pages.append(info.page)
         loadAppPackage()
-        publishAppOnLaunch(path: path)
+        publishAppOnLaunch(options: launchOptions)
         
         let navigationController = NZNavigationController(rootViewController: info.viewController)
         navigationController.modalPresentationStyle = .fullScreen
@@ -274,7 +275,6 @@ final public class NZAppService {
     @objc
     private func killApp() {
         cleanKillTimer()
-        context.clearAllTimer()
         unloadAllPages()
         rootViewController = nil
         if haveTabBar {
@@ -284,10 +284,12 @@ final public class NZAppService {
         currentPage = nil
         modules.values.forEach { $0.onExit(self) }
         modules = [:]
+        context.exit()
         
         if let index = NZEngine.shared.runningApp.firstIndex(of: self) {
             NZEngine.shared.runningApp.remove(at: index)
         }
+        
         if NZEngine.shared.currentApp === self {
             NZEngine.shared.currentApp = nil
         }
@@ -536,8 +538,8 @@ extension NZAppService {
 //MARK: App Life cycle publish
 extension NZAppService {
     
-    func publishAppOnLaunch(path: String) {
-        let message: [String: Any] = ["path": path]
+    func publishAppOnLaunch(options: NZAppLaunchOptions) {
+        let message: [String: Any] = ["path": options.path]
         bridge.subscribeHandler(method: NZAppService.onLaunchSubscribeKey, data: message)
         modules.values.forEach { $0.onLaunch(self) }
     }

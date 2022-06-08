@@ -25,7 +25,7 @@ public class NZJSContext {
     
     let nativeSDK = NZAppServiceNativeSDK()
     
-    private let jsThread = DispatchQueue(label: "com.nozthdev.javascript.thread", qos: .userInteractive)
+    private var workThread = KeepActiveThread()
     
     private var isLoading = true
     
@@ -40,30 +40,33 @@ public class NZJSContext {
             self?.publishHandler?(message)
         }
         
-        jsThread.async { [unowned self] in
-            let jsvm = JSVirtualMachine()
-            self.context = JSContext(virtualMachine: jsvm)
-            self.context.name = self.name
-            self.context.exceptionHandler = { ctx, error in
-                if let globalThis = ctx?.globalObject, let error = error {
-                    globalThis.invokeMethod("invokeAppOnError", withArguments: [error])
-                }
-            }
-            self.loadSDK()
+        workThread.exec {
+            self.createJSContext()
         }
+        
     }
     
-    deinit {
-        clearAllTimer()
+    private func createJSContext() {
+        let jsvm = JSVirtualMachine()
+        context = JSContext(virtualMachine: jsvm)
+        context.name = name
+        context.exceptionHandler = { ctx, error in
+            if let globalThis = ctx?.globalObject, let error = error {
+                globalThis.invokeMethod("invokeAppOnError", withArguments: [error])
+            }
+        }
+        loadSDK()
     }
-    
-    func clearAllTimer() {
+
+    func exit() {
         nativeSDK.timer.clearAll()
+        pendingFunctions = []
+        workThread.stop()
     }
     
     public func binding(_ object: JSExport, name: String) {
-        runAfterLoad { [weak self] in
-            self?.context.setObject(object, forKeyedSubscript: name as (NSCopying & NSObjectProtocol)?)
+        runAfterLoad { [unowned self] in
+            self.context.setObject(object, forKeyedSubscript: name as (NSCopying & NSObjectProtocol)?)
         }
     }
     
@@ -71,7 +74,7 @@ public class NZJSContext {
         if isLoading {
             pendingFunctions.append(block)
         } else {
-            jsThread.async(execute: block)
+            workThread.exec(execute: block)
         }
     }
     
@@ -108,14 +111,14 @@ public class NZJSContext {
 extension NZJSContext: NZJSContainer {
     
     public func evaluateScript(_ script: String) {
-        runAfterLoad { [weak self] in
-            self?.context.evaluateScript(script)
+        runAfterLoad { [unowned self] in
+            self.context.evaluateScript(script)
         }
     }
     
     public func evaluateScript(_ script: String, name: String) {
-        runAfterLoad { [weak self] in
-            self?.context.evaluateScript(script, withSourceURL: URL(string: "file://usr/\(name)"))
+        runAfterLoad { [unowned self] in
+            self.context.evaluateScript(script, withSourceURL: URL(string: "file://usr/\(name)"))
         }
     }
     
