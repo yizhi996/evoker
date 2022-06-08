@@ -1,5 +1,5 @@
 import { SyncFlags } from "@nzoth/shared"
-import { onSync } from "@nzoth/bridge"
+import { onSync, publish } from "@nzoth/bridge"
 import {
   insertBefore,
   setText,
@@ -12,10 +12,17 @@ import {
 import { selector } from "./selector"
 import { addIntersectionObserver, removeIntersectionObserver } from "./intersection"
 
+let firstRender = false
+
 onSync(message => {
+  const start = Date.now()
   message.forEach((action: any[]) => {
     render(action)
   })
+  if (!firstRender) {
+    firstRender = true
+    publish("WEBVIEW_FIRST_RENDER", { timestamp: Date.now() - start }, window.webViewId)
+  }
 })
 
 const renderFunction: { [x: number]: Function } = {

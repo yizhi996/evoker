@@ -418,21 +418,38 @@ extension NZAppService {
         }
         let viewController = page.viewController ?? page.generateViewController()
         uiControl.tabBarViewControllers[page.url] = viewController
-        if !viewController.isViewLoaded {
-            viewController.loadViewIfNeeded()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.rootViewController?.viewControllers = [viewController]
-                if page.isShowTabBar {
-                    self.uiControl.tabBarView.add(to: viewController.view)
-                    self.uiControl.tabBarView.setTabItemSelected(index)
-                }
-            }
-        } else {
+        
+        let switchTo: () -> Void = {
             self.rootViewController?.viewControllers = [viewController]
             if page.isShowTabBar {
                 self.uiControl.tabBarView.add(to: viewController.view)
                 self.uiControl.tabBarView.setTabItemSelected(index)
             }
+        }
+        
+        if !viewController.isViewLoaded {
+            let start = Date().timeIntervalSince1970
+            let now = DispatchTime.now()
+            var isRendered = false
+            
+            viewController.loadViewIfNeeded()
+            
+            if let webPage = page as? NZWebPage {
+                DispatchQueue.main.asyncAfter(deadline: now + 0.1) {
+                    if !isRendered && Date().timeIntervalSince1970 - start >= 0.1 {
+                        webPage.webView.firstRenderCompletionHandler = nil
+                        switchTo()
+                    }
+                }
+                webPage.webView.firstRenderCompletionHandler = {
+                    isRendered = true
+                    switchTo()
+                }
+            } else {
+                switchTo()
+            }
+        } else {
+            switchTo()
         }
     }
     
@@ -596,13 +613,35 @@ public extension NZAppService {
     
     func push(_ page: NZPage, animated: Bool = true, completedHandler: NZEmptyBlock? = nil) {
         pages.append(page)
+        
         let viewController = page.generateViewController()
         viewController.loadCompletedHandler = {
             completedHandler?()
         }
-        viewController.loadViewIfNeeded()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        
+        let pushTo: () -> Void = {
             self.rootViewController?.pushViewController(viewController, animated: true)
+        }
+        
+        let start = Date().timeIntervalSince1970
+        let now = DispatchTime.now()
+        var isRendered = false
+        
+        viewController.loadViewIfNeeded()
+        
+        if let webPage = page as? NZWebPage {
+            DispatchQueue.main.asyncAfter(deadline: now + 0.1) {
+                if !isRendered && Date().timeIntervalSince1970 - start >= 0.1 {
+                    webPage.webView.firstRenderCompletionHandler = nil
+                    pushTo()
+                }
+            }
+            webPage.webView.firstRenderCompletionHandler = {
+                isRendered = true
+                pushTo()
+            }
+        } else {
+            pushTo()
         }
     }
     

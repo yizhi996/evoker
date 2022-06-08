@@ -37,6 +37,8 @@ final public class NZWebView: WKWebView {
         }
     }
     
+    public var firstRenderCompletionHandler: NZEmptyBlock?
+    
     public var adjustPosition = false
     
     private var pendingFunctions: [() -> Any?] = []
@@ -189,8 +191,14 @@ extension NZWebView: WKScriptMessageHandler {
             guard let event = body["event"] as? String,
                   let params = body["params"] as? String,
                   let webViewId = body["webViewId"] as? Int else { return }
-            let args = NZJSBridge.PublishArgs(eventName: event, paramsString: params, webViewId: webViewId)
-            bridge.onPublish(args)
+            switch event {
+            case "WEBVIEW_FIRST_RENDER":
+                firstRenderCompletionHandler?()
+                firstRenderCompletionHandler = nil
+            default:
+                let args = NZJSBridge.PublishArgs(eventName: event, paramsString: params, webViewId: webViewId)
+                bridge.onPublish(args)
+            }
         case "DOMContentLoaded":
             state = .loaded
         default:
