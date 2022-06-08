@@ -13,6 +13,8 @@ import SDWebImageWebPCoder
 
 class NZWebPSchemeHandler: NSObject, WKURLSchemeHandler {
     
+    private var tasks: Set<String> = []
+    
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
         guard let url = urlSchemeTask.request.url else {
             urlSchemeTask.didFailWithError(NZError.createURLFailed(urlSchemeTask.request.url?.absoluteString ?? ""))
@@ -32,9 +34,16 @@ class NZWebPSchemeHandler: NSObject, WKURLSchemeHandler {
             return
         }
         
+        let identifie = urlSchemeTask.description
+        tasks.insert(identifie)
+        
         SDWebImageManager.shared.loadImage(with: newURL,
                                            options: [.retryFailed],
                                            progress: nil) { image, data, error, _, _, _ in
+            if !self.tasks.contains(identifie) {
+                return
+            }
+            self.tasks.remove(identifie)
             if let error = error {
                 urlSchemeTask.didFailWithError(error)
             } else if var data = data {
@@ -53,7 +62,7 @@ class NZWebPSchemeHandler: NSObject, WKURLSchemeHandler {
     }
     
     func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-        
+        tasks.remove(urlSchemeTask.description)
     }
     
     func responseImage(_ url: URL, data: Data, urlSchemeTask: WKURLSchemeTask) {
