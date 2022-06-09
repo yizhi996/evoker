@@ -402,6 +402,23 @@ extension NZAppService {
 //MARK: View
 extension NZAppService {
     
+    func waitPageFirstRendered(page: NZPage, pageViewController: UIViewController, finishHandler: @escaping () -> Void) {
+        pageViewController.loadViewIfNeeded()
+        if let webPage = page as? NZWebPage {
+            var isRendered = false
+            let exec: () -> Void = {
+                if !isRendered {
+                    isRendered = true
+                    finishHandler()
+                }
+            }
+            webPage.webView.firstRenderCompletionHandler = exec
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: exec)
+        } else {
+            finishHandler()
+        }
+    }
+    
     func setupTabBar(current index: Int) {
         uiControl.tabBarView.load(config: config, envVersion: envVersion)
         uiControl.tabBarView.didSelectTabBarItemHandler = { [unowned self] index in
@@ -428,26 +445,7 @@ extension NZAppService {
         }
         
         if !viewController.isViewLoaded {
-            let start = Date().timeIntervalSince1970
-            let now = DispatchTime.now()
-            var isRendered = false
-            
-            viewController.loadViewIfNeeded()
-            
-            if let webPage = page as? NZWebPage {
-                DispatchQueue.main.asyncAfter(deadline: now + 0.1) {
-                    if !isRendered && Date().timeIntervalSince1970 - start >= 0.1 {
-                        webPage.webView.firstRenderCompletionHandler = nil
-                        switchTo()
-                    }
-                }
-                webPage.webView.firstRenderCompletionHandler = {
-                    isRendered = true
-                    switchTo()
-                }
-            } else {
-                switchTo()
-            }
+            waitPageFirstRendered(page: page, pageViewController: viewController, finishHandler: switchTo)
         } else {
             switchTo()
         }
@@ -464,19 +462,25 @@ extension NZAppService {
     /// 返回到首页，如果有 TabBar，将返回到第一个 Tab，不然就返回 config.pages 的第一个 page。
     public func gotoHomePage() {
         if let firstTabBar = config.tabBar?.list.first, let info = generateFirstViewController(with: firstTabBar.path) {
-            unloadAllPages()
-            setupTabBar(current: info.tabBarSelectedIndex)
-            uiControl.tabBarViewControllers[info.page.url] = info.viewController
-            tabBarPages = info.tabBarPages
-            pages.append(info.page)
-            rootViewController?.viewControllers = [info.viewController]
-            uiControl.tabBarView.add(to: info.viewController.view)
+            let allpages = pages
+            pages = [info.page]
+            waitPageFirstRendered(page: info.page, pageViewController: info.viewController) {
+                allpages.forEach { self.unloadPage($0) }
+                self.setupTabBar(current: info.tabBarSelectedIndex)
+                self.uiControl.tabBarViewControllers[info.page.url] = info.viewController
+                self.tabBarPages = info.tabBarPages
+                self.rootViewController?.viewControllers = [info.viewController]
+                self.uiControl.tabBarView.add(to: info.viewController.view)
+            }
         } else if let firstPage = config.pages.first,
                   let page = createWebPage(url: firstPage.path) {
-            unloadAllPages()
-            pages.append(page)
+            let allpages = pages
+            pages = [page]
             let viewController = page.generateViewController()
-            rootViewController?.viewControllers = [viewController]
+            waitPageFirstRendered(page: page, pageViewController: viewController) {
+                allpages.forEach { self.unloadPage($0) }
+                self.rootViewController?.viewControllers = [viewController]
+            }
         }
     }
     
@@ -619,29 +623,8 @@ public extension NZAppService {
             completedHandler?()
         }
         
-        let pushTo: () -> Void = {
+        waitPageFirstRendered(page: page, pageViewController: viewController) {
             self.rootViewController?.pushViewController(viewController, animated: true)
-        }
-        
-        let start = Date().timeIntervalSince1970
-        let now = DispatchTime.now()
-        var isRendered = false
-        
-        viewController.loadViewIfNeeded()
-        
-        if let webPage = page as? NZWebPage {
-            DispatchQueue.main.asyncAfter(deadline: now + 0.1) {
-                if !isRendered && Date().timeIntervalSince1970 - start >= 0.1 {
-                    webPage.webView.firstRenderCompletionHandler = nil
-                    pushTo()
-                }
-            }
-            webPage.webView.firstRenderCompletionHandler = {
-                isRendered = true
-                pushTo()
-            }
-        } else {
-            pushTo()
         }
     }
     
@@ -657,20 +640,24 @@ public extension NZAppService {
         }
         if let currentPage = currentPage {
             if currentPage.isTabBarPage {
-                unloadAllPages()
-                uiControl.tabBarViewControllers = [:]
-                pages.append(info.page)
-                rootViewController.viewControllers = [info.viewController]
-                if info.needAddGotoHomeButton {
-                    info.viewController.navigationBar.showGotoHomeButton()
+                let allpages = pages
+                pages = [info.page]
+                waitPageFirstRendered(page: info.page, pageViewController: info.viewController) {
+                    allpages.forEach { self.unloadPage($0) }
+                    self.uiControl.tabBarViewControllers = [:]
+                    rootViewController.viewControllers = [info.viewController]
+                    if info.needAddGotoHomeButton {
+                        info.viewController.navigationBar.showGotoHomeButton()
+                    }
                 }
             } else {
-                unloadPage(currentPage)
                 pages.append(info.page)
-                rootViewController.viewControllers.removeLast()
-                rootViewController.viewControllers.append(info.viewController)
-                if pages.count == 1 {
-                    info.viewController.navigationBar.showGotoHomeButton()
+                waitPageFirstRendered(page: info.page, pageViewController: info.viewController) {
+                    self.unloadPage(currentPage)
+                    rootViewController.viewControllers[rootViewController.viewControllers.count - 1] = info.viewController
+                    if self.pages.count == 1 {
+                        info.viewController.navigationBar.showGotoHomeButton()
+                    }
                 }
             }
         }
