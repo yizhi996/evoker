@@ -402,8 +402,7 @@ extension NZAppService {
 //MARK: View
 extension NZAppService {
     
-    func waitPageFirstRendered(page: NZPage, pageViewController: UIViewController, finishHandler: @escaping () -> Void) {
-        pageViewController.loadViewIfNeeded()
+    func waitPageFirstRendered(page: NZPage, finishHandler: @escaping () -> Void) {
         if let webPage = page as? NZWebPage {
             var isRendered = false
             let exec: () -> Void = {
@@ -445,7 +444,7 @@ extension NZAppService {
         }
         
         if !viewController.isViewLoaded {
-            waitPageFirstRendered(page: page, pageViewController: viewController, finishHandler: switchTo)
+            waitPageFirstRendered(page: page, finishHandler: switchTo)
         } else {
             switchTo()
         }
@@ -464,7 +463,7 @@ extension NZAppService {
         if let firstTabBar = config.tabBar?.list.first, let info = generateFirstViewController(with: firstTabBar.path) {
             let allpages = pages
             pages = [info.page]
-            waitPageFirstRendered(page: info.page, pageViewController: info.viewController) {
+            waitPageFirstRendered(page: info.page) {
                 allpages.forEach { self.unloadPage($0) }
                 self.setupTabBar(current: info.tabBarSelectedIndex)
                 self.uiControl.tabBarViewControllers[info.page.url] = info.viewController
@@ -477,7 +476,7 @@ extension NZAppService {
             let allpages = pages
             pages = [page]
             let viewController = page.generateViewController()
-            waitPageFirstRendered(page: page, pageViewController: viewController) {
+            waitPageFirstRendered(page: page) {
                 allpages.forEach { self.unloadPage($0) }
                 self.rootViewController?.viewControllers = [viewController]
             }
@@ -623,8 +622,11 @@ public extension NZAppService {
             completedHandler?()
         }
         
-        waitPageFirstRendered(page: page, pageViewController: viewController) {
+        waitPageFirstRendered(page: page) {
+            // 不使用 CATransaction 会有一定几率造成跳转延迟或者动画消失
+            CATransaction.begin()
             self.rootViewController?.pushViewController(viewController, animated: true)
+            CATransaction.commit()
         }
     }
     
@@ -642,7 +644,7 @@ public extension NZAppService {
             if currentPage.isTabBarPage {
                 let allpages = pages
                 pages = [info.page]
-                waitPageFirstRendered(page: info.page, pageViewController: info.viewController) {
+                waitPageFirstRendered(page: info.page) {
                     allpages.forEach { self.unloadPage($0) }
                     self.uiControl.tabBarViewControllers = [:]
                     rootViewController.viewControllers = [info.viewController]
@@ -652,7 +654,7 @@ public extension NZAppService {
                 }
             } else {
                 pages.append(info.page)
-                waitPageFirstRendered(page: info.page, pageViewController: info.viewController) {
+                waitPageFirstRendered(page: info.page) {
                     self.unloadPage(currentPage)
                     rootViewController.viewControllers[rootViewController.viewControllers.count - 1] = info.viewController
                     if self.pages.count == 1 {
