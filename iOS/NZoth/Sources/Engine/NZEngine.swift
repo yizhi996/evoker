@@ -19,8 +19,6 @@ final public class NZEngine {
 
     public static let shared = NZEngine()
     
-    public var config: NZEngineConfig = NZEngineConfig()
-    
     /// 数据存储在   userId → [appId_a]   [appId_b]  [...] 中，
     /// 具有 user Id 和 app Id 两级隔离。
     public var userId = "__global__"
@@ -104,16 +102,6 @@ final public class NZEngine {
                                                object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(willTerminate), name: UIApplication.willTerminateNotification, object: nil)
-    }
-    
-    public func launch(_ config: NZEngineConfig) {
-        if !isLaunch {
-            self.config = config
-            if config.devServer.useDevServer {
-                NZDevServer.shared.connect(host: config.devServer.host, port: config.devServer.port)
-            }
-            isLaunch = true
-        }
     }
     
     deinit {
@@ -290,7 +278,7 @@ extension NZEngine {
                 }
             }
             
-            if let checkAppUpdateHandler = NZEngineHooks.shared.app.checkAppUpdate {
+            if let checkAppUpdateHandler = NZEngineConfig.shared.hooks.app.checkAppUpdate {
                 let localVersion = NZVersionManager.shared.localAppVersion(appId: appId,
                                                                            envVersion: launchOptions.envVersion)
                 checkAppUpdateHandler(appId,
@@ -380,7 +368,7 @@ extension NZEngine {
     }
     
     public func getAppInfo(appId: String, envVersion: NZAppEnvVersion, completion: (NZAppInfo?, NZError?) -> Void) {
-        if let getAppInfoHandler = NZEngineHooks.shared.app.getAppInfo {
+        if let getAppInfoHandler = NZEngineConfig.shared.hooks.app.getAppInfo {
             getAppInfoHandler(appId, envVersion, completion)
         } else {
             completion(NZAppInfo(appName: appId, appIconURL: ""), nil)

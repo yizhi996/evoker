@@ -227,7 +227,7 @@ final public class NZAppService {
     public func reLaunch(launchOptions: NZAppLaunchOptions? = nil) {
         dismiss(animated: false) {
             self.killApp()
-            if NZEngine.shared.config.devServer.useDevServer {
+            if NZEngineConfig.shared.dev.useDevServer {
                 NZEngine.shared.webViewPool.clean()
             }
             let launchOptions = launchOptions ?? self.launchOptions
@@ -509,7 +509,7 @@ extension NZAppService {
             options.envVersion = envVersion
             reLaunch(launchOptions: options)
         default:
-            NZEngineHooks.shared.app.clickAppMoreActionItem?(self, action)
+            NZEngineConfig.shared.hooks.app.clickAppMoreActionItem?(self, action)
         }
     }
 }
@@ -583,21 +583,21 @@ extension NZAppService {
     
     func publishAppOnLaunch(options: NZAppLaunchOptions) {
         bridge.subscribeHandler(method: NZAppService.onLaunchSubscribeKey, data: setEnterOptions(options: options))
-        NZEngineHooks.shared.app.lifeCycle.onLaunch?(self, options)
+        NZEngineConfig.shared.hooks.app.lifeCycle.onLaunch?(self, options)
         modules.values.forEach { $0.onLaunch(self) }
     }
     
     func publishAppOnShow(options: NZAppShowOptions) {
         cleanKillTimer()
         bridge.subscribeHandler(method: NZAppService.onShowSubscribeKey, data: setEnterOptions(options: options))
-        NZEngineHooks.shared.app.lifeCycle.onShow?(self, options)
+        NZEngineConfig.shared.hooks.app.lifeCycle.onShow?(self, options)
         modules.values.forEach { $0.onShow(self) }
     }
     
     @objc
     func publishAppOnHide() {
         bridge.subscribeHandler(method: NZAppService.onHideSubscribeKey, data: [:])
-        NZEngineHooks.shared.app.lifeCycle.onHide?(self)
+        NZEngineConfig.shared.hooks.app.lifeCycle.onHide?(self)
         modules.values.forEach { $0.onHide(self) }
     }
 }
@@ -605,11 +605,11 @@ extension NZAppService {
 extension NZAppService {
     
     func createWebPage(url: String) -> NZWebPage? {
-        return NZEngine.shared.config.webPageClass.init(appService: self, url: url)
+        return NZEngineConfig.shared.classes.webPage.init(appService: self, url: url)
     }
     
     func createBrowserPage(url: String) -> NZBrowserPage? {
-        return NZEngine.shared.config.browserPageClass.init(appService: self, url: url)
+        return NZEngineConfig.shared.classes.browserPage.init(appService: self, url: url)
     }
 }
 

@@ -214,7 +214,7 @@ function createCustomTouchEvent(currentTarget: HTMLElement, ev: TouchEvent, type
 
   const event: NZTouchEvent & NZCustomEvent = {
     type: type,
-    timestamp: ev.timeStamp,
+    timestamp: Date.now(),
     target: {
       id: target.id,
       offsetLeft: target.offsetLeft,

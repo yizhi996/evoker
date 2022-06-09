@@ -49,7 +49,7 @@ public class NZAppUIControl {
         
         let firstActions: [NZAppMoreActionItem]
         let secondActions: [NZAppMoreActionItem]
-        if let data = NZEngineHooks.shared.app.fetchAppMoreActionSheetItems?(appService) {
+        if let data = NZEngineConfig.shared.hooks.app.fetchAppMoreActionSheetItems?(appService) {
             firstActions = data.0
             if data.2 {
                 secondActions = builtInItems() + data.1

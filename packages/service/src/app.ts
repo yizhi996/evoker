@@ -137,7 +137,6 @@ function dispatchEvent(data: any[]) {
       const customEvent = new NZothEvent(event.type)
       customEvent.target = node
       customEvent.args = event.args
-
       innerAppData.eventFromUserClick = event.type === "click"
       node.dispatchEvent(customEvent)
       innerAppData.eventFromUserClick = false

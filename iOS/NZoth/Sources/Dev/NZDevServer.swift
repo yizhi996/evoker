@@ -10,19 +10,9 @@ import Foundation
 import Telegraph
 import Zip
 
-public struct NZDevServerConfig {
-    
-    public var useDevJSSDK: Bool = false
-    
-    public var useDevServer = false
-    
-    public var host: String = "127.0.0.1"
-    
-    public var port: UInt16 = 8800
-    
-}
 
-class NZDevServer: NZWebSocket {
+
+public class NZDevServer: NZWebSocket {
     
     struct AppUpdateOptions: Decodable {
         let appId: String
@@ -32,7 +22,6 @@ class NZDevServer: NZWebSocket {
         
         struct LaunchOptions: Decodable {
             let page: String
-            var query: String?
         }
     }
     
@@ -60,7 +49,11 @@ class NZDevServer: NZWebSocket {
             recvFile(bodyData, header: header)
         }
     }
-
+    
+    public override func connect(host: String = "127.0.0.1", port: UInt16 = 8800) {
+        guard NZEngineConfig.shared.dev.useDevServer else { return }
+        super.connect(host: host, port: port)
+    }
 }
 
 private extension NZDevServer {
@@ -136,7 +129,7 @@ private extension NZDevServer {
     }
 }
 
-extension NZDevServer {
+public extension NZDevServer {
     
     static let didUpdateNotification = Notification.Name("NZothDevServerDidUpdateNotification")
 }

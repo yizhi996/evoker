@@ -9,7 +9,7 @@
 import Foundation
 import Telegraph
 
-class NZWebSocket {
+public class NZWebSocket {
     
     public private(set) var host: String = "127.0.0.1"
     
@@ -49,9 +49,7 @@ class NZWebSocket {
         self.host = host
         self.port = port
         
-        guard NZEngine.shared.config.devServer.useDevServer &&
-                isForeground &&
-                NZEngine.shared.networkType != .none else { return }
+        guard isForeground && NZEngine.shared.networkType != .none else { return }
         
         let address = "ws://\(host):\(port)"
         do {
@@ -119,7 +117,7 @@ class NZWebSocket {
 
 extension NZWebSocket: WebSocketClientDelegate {
     
-    func webSocketClient(_ client: WebSocketClient, didConnectToHost host: String) {
+    public func webSocketClient(_ client: WebSocketClient, didConnectToHost host: String) {
         NZLogger.debug("dev server: \(host) connected")
         
         isConnected = true
@@ -137,7 +135,7 @@ extension NZWebSocket: WebSocketClientDelegate {
         RunLoop.main.add(heartTimer!, forMode: .common)
     }
     
-    func webSocketClient(_ client: WebSocketClient, didDisconnectWithError error: Error?) {
+    public func webSocketClient(_ client: WebSocketClient, didDisconnectWithError error: Error?) {
         NZLogger.debug("dev server disconnected")
         
         isConnected = false
@@ -148,11 +146,11 @@ extension NZWebSocket: WebSocketClientDelegate {
         reconnect()
     }
     
-    func webSocketClient(_ client: WebSocketClient, didReceiveText text: String) {
+    public func webSocketClient(_ client: WebSocketClient, didReceiveText text: String) {
         onRecv(text)
     }
     
-    func webSocketClient(_ client: WebSocketClient, didReceiveData data: Data) {
+    public func webSocketClient(_ client: WebSocketClient, didReceiveData data: Data) {
         onRecv(data)
     }
     

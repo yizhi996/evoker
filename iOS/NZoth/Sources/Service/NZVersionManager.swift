@@ -17,7 +17,7 @@ public class NZVersionManager {
     private let jsSDKVersionkey = "nzoth:version:js-sdk"
     
     public var localJSSDKVersion: String {
-        if NZEngine.shared.config.devServer.useDevJSSDK {
+        if NZEngineConfig.shared.dev.useDevJSSDK {
             return "dev"
         }
         let version = Constant.jsSDKVersion
@@ -46,7 +46,7 @@ public class NZVersionManager {
     }
     
     public func updateJSSDK(resultHandler handler: @escaping NZBoolBlock) {
-        if NZEngine.shared.config.devServer.useDevJSSDK {
+        if NZEngineConfig.shared.dev.useDevJSSDK {
             handler(false)
         } else {
             handler(false)

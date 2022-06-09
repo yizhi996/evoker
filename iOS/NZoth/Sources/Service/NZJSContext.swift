@@ -90,7 +90,7 @@ public class NZJSContext {
         let version = NZVersionManager.shared.localJSSDKVersion
         let jsSDKDir = FilePath.jsSDK(version: version)
         var vueFilename = "vue.runtime.global"
-        vueFilename += NZEngine.shared.config.devServer.useDevJSSDK ? ".js" : ".prod.js"
+        vueFilename += NZEngineConfig.shared.dev.useDevJSSDK ? ".js" : ".prod.js"
         loadSDKFile(url: jsSDKDir.appendingPathComponent(vueFilename), name: "Vue.js")
         loadSDKFile(url: jsSDKDir.appendingPathComponent("nzoth.global.js"), name: "NZoth.js")
         
