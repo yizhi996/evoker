@@ -140,12 +140,28 @@ class NZAudioRecorder: NSObject {
     
     @objc
     func audioSessionInterruption(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+            let typeValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+            let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
+                return
+        }
+        
         guard let userInfo = notification.userInfo as? [String: AVAudioSession.InterruptionType] else { return }
         if userInfo[AVAudioSessionInterruptionTypeKey] == AVAudioSession.InterruptionType.began {
             onInterruptionBeginHandler?()
-            onPauseHandler?()
+            pause()
         } else if userInfo[AVAudioSessionInterruptionTypeKey] == AVAudioSession.InterruptionType.ended {
             onInterruptionEndHandler?()
+        }
+        
+        switch type {
+        case .began:
+            onInterruptionBeginHandler?()
+            pause()
+        case .ended:
+            onInterruptionEndHandler?()
+        default:
+            break
         }
     }
  
