@@ -179,7 +179,7 @@ extension NZAudioRecorder: AVAudioRecorderDelegate {
         
         let assets = AVURLAsset(url: currentFile.1)
         let data = RecordData(tempFilePath: currentFile.0,
-                              duration: assets.duration.seconds,
+                              duration: assets.duration.seconds * 1000,
                               fileSize: currentFile.1.fileSize)
         onStopHandler?(data)
     }
