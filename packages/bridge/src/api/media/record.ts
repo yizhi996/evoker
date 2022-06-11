@@ -1,6 +1,6 @@
-import { extend } from "@nzoth/shared"
 import { GeneralCallbackResult } from "../../async"
 import { invoke, subscribe } from "../../bridge"
+import { combineOptions } from "../../utils"
 import { requestAuthorization } from "../auth"
 
 interface RecorderManagerStartOptions {
@@ -87,14 +87,16 @@ class RecorderManager {
     const scope = "scope.record"
     requestAuthorization(scope)
       .then(() => {
-        const opt = {
-          duration: 60000,
-          sampleRate: 8000,
-          numberOfChannels: 2,
-          encodeBitRate: 48000,
-          format: "aac"
-        }
-        this.operate(Methods.START, extend(opt, options))
+        this.operate(
+          Methods.START,
+          combineOptions(options, {
+            duration: 60000,
+            sampleRate: 8000,
+            numberOfChannels: 2,
+            encodeBitRate: 48000,
+            format: "aac"
+          })
+        )
       })
       .catch(error => {
         this.onErrorCallback && this.onErrorCallback({ errMsg: error })
@@ -146,8 +148,8 @@ class RecorderManager {
   }
 }
 
-let globalRecorderManager: RecorderManager | undefined
+let globalRecorderManager: RecorderManager
 
 export function getRecorderManager() {
-  return globalRecorderManager || new RecorderManager()
+  return globalRecorderManager || (globalRecorderManager = new RecorderManager())
 }
