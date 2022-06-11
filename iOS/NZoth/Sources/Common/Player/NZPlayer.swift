@@ -96,7 +96,6 @@ class NZPlayer: NSObject {
     }
     
     deinit {
-        destroy()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -127,7 +126,7 @@ class NZPlayer: NSObject {
             }
         }
         
-        destroy()
+        reset()
         
         if let proxyURL = KTVHTTPCache.proxyURL(withOriginalURL: url) {
             playerItem = AVPlayerItem(url: proxyURL)
@@ -177,7 +176,7 @@ class NZPlayer: NSObject {
         isPlaying = false
     }
     
-    func destroy() {
+    func reset() {
         stop()
         player?.replaceCurrentItem(with: nil)
         timeUpdateObserver = nil
@@ -195,6 +194,23 @@ class NZPlayer: NSObject {
         currentPlayURL = nil
         isPlaying = false
         playStatus = .none
+    }
+    
+    
+    func destroy() {
+        reset()
+        
+        playHandler = nil
+        stopHandler = nil
+        endedHandler = nil
+        pauseHandler = nil
+        seekingHandler = nil
+        waitingHandler = nil
+        playFailedHandler = nil
+        timeUpdateHandler = nil
+        bufferUpdateHandler = nil
+        seekCompletionHandler = nil
+        readyToPlayHandler = nil
     }
     
     func replay() {

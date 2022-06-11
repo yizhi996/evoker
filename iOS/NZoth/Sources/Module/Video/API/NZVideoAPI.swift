@@ -254,7 +254,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                     }
                 } else {
                     playerView.params._url = nil
-                    playerView.player.destroy()
+                    playerView.player.reset()
                 }
             }
         case .seek:

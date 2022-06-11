@@ -208,6 +208,7 @@ enum NZAudioAPI: String, NZBuiltInAPI {
         case .destroy:
             guard let player = module.players.get(page.pageId, params.audioId) else { break }
             player.destroy()
+            module.players.remove(page.pageId, params.audioId)
         }
         
         bridge.invokeCallbackSuccess(args: args)

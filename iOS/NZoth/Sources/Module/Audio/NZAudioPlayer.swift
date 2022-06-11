@@ -49,6 +49,7 @@ class NZAudioPlayer: NZPlayer {
         setVolume(params.volume)
         setPlaybackRate(params.playbackRate)
     }
+    
 }
 
 extension NZAudioPlayer {
