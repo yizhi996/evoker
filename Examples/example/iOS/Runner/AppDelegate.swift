@@ -41,7 +41,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             UserDefaults.standard.set(userId, forKey: "K_UID")
         }
         
-        NZEngineHooks.shared.app.getAppInfo = { appId, envVersion, completionHandler in
+        let config = NZEngineConfig.shared
+        
+        config.hooks.app.getAppInfo = { appId, envVersion, completionHandler in
             if let app = LaunchpadViewController.apps.first(where: { $0.appId == appId }) {
                 completionHandler(NZAppInfo(appName: app.appName, appIconURL: app.appIcon), nil)
             } else {
@@ -49,35 +51,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        NZEngineHooks.shared.app.checkAppUpdate = { appId, envVersion, appVersion, nzVersion, completionHandler in
+        config.hooks.app.checkAppUpdate = { appId, envVersion, appVersion, nzVersion, completionHandler in
             completionHandler(true)
         }
         
-        NZEngineHooks.shared.openAPI.login = { _, bridge, args in
+        config.hooks.openAPI.login = { _, bridge, args in
             bridge.invokeCallbackSuccess(args: args, result: ["code": "abcd..."])
         }
         
-        NZEngineHooks.shared.openAPI.checkSession = { _, bridge, args in
+        config.hooks.openAPI.checkSession = { _, bridge, args in
             bridge.invokeCallbackSuccess(args: args)
         }
         
-        NZEngineHooks.shared.openAPI.getUserProfile = { _, bridge, args in
+        config.hooks.openAPI.getUserProfile = { _, bridge, args in
             let userInfo: [String: Any] = ["nickName": "yizhi996",
                                            "avatarUrl": "https://file.lilithvue.com/lilith-test-assets/avatar-new.png"]
             bridge.invokeCallbackSuccess(args: args, result: ["userInfo": userInfo])
         }
         
-        NZEngineHooks.shared.openAPI.getUserInfo = { _, bridge, args in
+        config.hooks.openAPI.getUserInfo = { _, bridge, args in
             let userInfo: [String: Any] = ["nickName": "yizhi007",
                                            "avatarUrl": "https://file.lilithvue.com/lilith-test-assets/avatar-new.png"]
             bridge.invokeCallbackSuccess(args: args, result: ["userInfo": userInfo])
         }
         
-        var config = NZEngineConfig()
-        config.devServer.useDevJSSDK = true
-        config.devServer.useDevServer = true
-        config.devServer.host = "172.17.205.138"
-        NZEngine.shared.launch(config)
+        config.dev.useDevJSSDK = true
+        config.dev.useDevServer = true
+        NZDevServer.shared.connect(host: "192.168.0.105")
         
         NZVersionManager.shared.updateJSSDK { _ in
             NZEngine.shared.preload()
