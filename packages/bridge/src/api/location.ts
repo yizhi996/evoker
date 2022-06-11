@@ -6,7 +6,7 @@ import {
   invokeCallback,
   wrapperAsyncAPI
 } from "../async"
-import { addEvent, removeEvent, dispatchEvent, extend } from "@nzoth/shared"
+import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
 
 const enum Events {
   GET_LOCATION = "getLocation",

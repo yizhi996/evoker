@@ -94,34 +94,53 @@ class NZOnceLocationManager: NSObject {
     }
     
     func getLocation(params: GetLocationParams, completionHandler: @escaping (NZLocationData?, Error?) -> Void) {
+        locationManager.stopUpdatingLocation()
+        if let getLocationHandler = getLocationHandler {
+            getLocationHandler(nil, NZError.custom("stop"))
+        }
+        
         getLocationHandler = completionHandler
         type = params.type
         if params.isHighAccuracy {
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            if let highAccuracyExpireTime = params.highAccuracyExpireTime, highAccuracyExpireTime >= 3000 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + highAccuracyExpireTime / 1000) {
+                    self.locationManager.stopUpdatingLocation()
+                    if let location = self.locationManager.location {
+                        self.getLocationHandler?(self.locationData(location), nil)
+                    } else {
+                        self.getLocationHandler?(nil, NZError.custom("not location"))
+                    }
+                    self.getLocationHandler = nil
+                }
+            }
         } else {
             locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         }
         locationManager.requestLocation()
     }
     
+    func locationData(_ location: CLLocation) -> NZLocationData {
+        var coordinate = location.coordinate
+        if type == .gcj02 {
+            coordinate = coordinate.gcj02Encrypt()
+        }
+        let data = NZLocationData(latitude: coordinate.latitude,
+                                  longitude: coordinate.longitude,
+                                  speed: location.speed,
+                                  accuracy: location.horizontalAccuracy,
+                                  altitude: location.altitude,
+                                  verticalAccuracy: location.verticalAccuracy,
+                                  horizontalAccuracy: location.horizontalAccuracy)
+        return data
+    }
 }
 
 extension NZOnceLocationManager: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
-            var coordinate = location.coordinate
-            if type == .gcj02 {
-                coordinate = coordinate.gcj02Encrypt()
-            }
-            let data = NZLocationData(latitude: coordinate.latitude,
-                                      longitude: coordinate.longitude,
-                                      speed: location.speed,
-                                      accuracy: location.horizontalAccuracy,
-                                      altitude: location.altitude,
-                                      verticalAccuracy: location.verticalAccuracy,
-                                      horizontalAccuracy: location.horizontalAccuracy)
-            getLocationHandler?(data, nil)
+            getLocationHandler?(locationData(location), nil)
             getLocationHandler = nil
         }
     }
