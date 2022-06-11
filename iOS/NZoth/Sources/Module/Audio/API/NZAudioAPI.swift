@@ -39,6 +39,7 @@ enum NZAudioAPI: String, NZBuiltInAPI {
                 case setVolume
                 case setSrc
                 case setPlaybackRate
+                case destroy
             }
             
             enum Data: Decodable {
@@ -204,6 +205,9 @@ enum NZAudioAPI: String, NZBuiltInAPI {
             if case .setPlaybackRate(let data) = params.data {
                 player.setPlaybackRate(data.rate)
             }
+        case .destroy:
+            guard let player = module.players.get(page.pageId, params.audioId) else { break }
+            player.destroy()
         }
         
         bridge.invokeCallbackSuccess(args: args)

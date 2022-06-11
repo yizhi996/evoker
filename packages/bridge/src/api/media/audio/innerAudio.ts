@@ -20,7 +20,7 @@ const enum Methods {
   STOP = "stop",
   REPLAY = "replay",
   SEEK = "seek",
-  DESTORY = "destroy",
+  DESTROY = "destroy",
   SET_VOLUME = "setVolume",
   SET_SRC = "setSrc",
   SET_PLAYBACK_RATE = "setPlaybackRate"
@@ -47,15 +47,15 @@ const getEventName = (event: Events) => PREFIX + event
 class InnerAudioContext {
   private readonly id: number = audioId++
 
-  private _src: string = ""
-
-  private _volume: number = 1
-
   startTime: number = 0
 
   autoplay: boolean = false
 
   loop: boolean = false
+
+  private _src: string = ""
+
+  private _volume: number = 1
 
   private _playbackRate: number = 1
 
@@ -66,6 +66,8 @@ class InnerAudioContext {
   private _paused: boolean = false
 
   private _buffered: number = 0
+
+  private destroyed = false
 
   private removaAllListener
 
@@ -191,22 +193,26 @@ class InnerAudioContext {
   }
 
   private operate(method: Methods, data: Record<string, any> = {}) {
-    invoke("operateInnerAudioContext", {
-      audioId: this.id,
-      method,
-      data
-    })
+    !this.destroyed &&
+      invoke("operateInnerAudioContext", {
+        audioId: this.id,
+        method,
+        data
+      })
   }
 
   play() {
-    if (this.src === "") {
+    if (this.destroyed) {
+      console.log("[NZoth] InnerAudioContext is destroyed")
+      return
+    }
+    if (!this.src) {
       console.error("[NZoth] InnerAudioContext src cannot be empty")
       return
     }
     this.operate(Methods.PLAY, {
       audioId: this.id,
       src: this.src,
-      startTime: this.startTime,
       volume: this.volume,
       playbackRate: this.playbackRate
     })
@@ -225,7 +231,8 @@ class InnerAudioContext {
   }
 
   destroy() {
-    this.operate(Methods.DESTORY)
+    this.operate(Methods.DESTROY)
+    this.destroyed = true
     this.removaAllListener()
   }
 
