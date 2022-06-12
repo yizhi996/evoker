@@ -94,7 +94,7 @@ import {
 } from "@nzoth/bridge"
 import { getRecorderManager } from "@nzoth/bridge"
 import { getSetting, authorize } from "@nzoth/bridge"
-import { getUserProfile } from "./api/open"
+import { getUserProfile, getUserInfo } from "./api/open"
 import { openSetting } from "./api/auth"
 import { login, checkSession } from "@nzoth/bridge"
 import { showTabBar, hideTabBar } from "../bridge/api/ui/tabBar"
@@ -210,6 +210,7 @@ export {
   openSetting,
   authorize,
   getUserProfile,
+  getUserInfo,
   login,
   checkSession,
   createIntersectionObserver,
@@ -322,6 +323,7 @@ export default {
   openSetting,
   authorize,
   getUserProfile,
+  getUserInfo,
   login,
   checkSession,
   createIntersectionObserver,

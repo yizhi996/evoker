@@ -6,13 +6,17 @@ import {
   wrapperAsyncAPI,
   AsyncReturn,
   invokeFailure,
-  openAuthorizationView
+  openAuthorizationView,
+  requestAuthorization,
+  getAuthorize,
+  AuthorizationStatus
 } from "@nzoth/bridge"
 import { innerAppData } from "../../app"
 import { extend } from "@nzoth/shared"
 
 const enum Events {
-  GET_USER_PRIFILE = "getUserProfile"
+  GET_USER_PRIFILE = "getUserProfile",
+  GET_USER_INFO = "getUserProfile"
 }
 
 interface GetUserProfileOptions {
@@ -51,4 +55,42 @@ export function getUserProfile<T extends GetUserProfileOptions = GetUserProfileO
       invokeFailure(event, options, "fail auth deny")
     }
   }, options)
+}
+
+interface GetUserInfoOptions {
+  withCredentials?: boolean
+  lang?: "en" | "zh_CN" | "zh_TW"
+  success?: GetUserInfoSuccessCallback
+  fail?: GetUserInfoFailCallback
+  complete?: GetUserInfoCompleteCallback
+}
+
+type GetUserInfoSuccessCallback = (res: GeneralCallbackResult) => void
+
+type GetUserInfoFailCallback = (res: GeneralCallbackResult) => void
+
+type GetUserInfoCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function getUserInfo<T extends GetUserInfoOptions = GetUserInfoOptions>(
+  options: T
+): AsyncReturn<T, GetUserInfoOptions> {
+  return wrapperAsyncAPI(
+    options => {
+      const event = Events.GET_USER_INFO
+
+      const scope = "scope.userInfo"
+
+      getAuthorize(scope).then(status => {
+        if (status === AuthorizationStatus.authorized) {
+          InnerJSBridge.invoke<SuccessResult<T>>(event, options, result => {
+            invokeCallback(event, options, result)
+          })
+        } else {
+          invokeFailure(event, options, "not authorized")
+        }
+      })
+    },
+    options,
+    { withCredentials: false, lang: "en" }
+  )
 }

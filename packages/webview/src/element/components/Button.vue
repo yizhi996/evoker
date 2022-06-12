@@ -17,7 +17,7 @@ import { isTrue } from "../../utils"
 import useHover from "../use/useHover"
 import Loading from "./Loading.vue"
 import { dispatchEvent } from "../../dom/event"
-import { getUserInfo } from "@nzoth/bridge"
+import { getUserInfo } from "../../bridge/api/open"
 
 const emit = defineEmits(["getuserinfo"])
 
