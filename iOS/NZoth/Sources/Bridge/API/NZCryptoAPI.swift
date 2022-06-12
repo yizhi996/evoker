@@ -102,11 +102,11 @@ enum NZCryptoAPI: String, NZBuiltInAPI {
     }
     
     func stringKeyToSecKey(_ key: String) -> SecKey? {
-        guard let certificateData = key.data(using: .utf8) else { return nil }
-        let certificate = SecCertificateCreateWithData(nil, certificateData as CFData)
+        guard let certificateData = key.data(using: .utf8),
+              let certificate = SecCertificateCreateWithData(nil, certificateData as CFData) else { return nil }
         var trust: SecTrust?
         let policy = SecPolicyCreateBasicX509()
-        let status = SecTrustCreateWithCertificates(certificate!, policy, &trust)
+        let status = SecTrustCreateWithCertificates(certificate, policy, &trust)
         if status == errSecSuccess {
             return SecTrustCopyPublicKey(trust!)
         }
