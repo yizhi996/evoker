@@ -11,8 +11,7 @@ import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
 const enum Events {
   GET_LOCATION = "getLocation",
   START_LOCATION_UPDATE = "startLocationUpdate",
-  STOP_LOCATION_UPDATE = "stopLocationUpdate",
-  ON_LOCATION_CHANGE = "APP_LOCATION_ON_CHANGE"
+  STOP_LOCATION_UPDATE = "stopLocationUpdate"
 }
 
 interface GetLocationOptions {
@@ -107,16 +106,38 @@ export function stopLocationUpdate<T extends StopLocationUpdateOptions = StopLoc
   }, options)
 }
 
-subscribe(Events.ON_LOCATION_CHANGE, result => {
-  dispatchEvent(Events.ON_LOCATION_CHANGE, result)
+const ON_LOCATION_CHANGE = "MODULE_LOCATION_ON_CHANGE"
+
+const ON_LOCATION_CHANGE_ERROR = "MODULE_LOCATION_ON_CHANGE_ERROR"
+
+subscribe(ON_LOCATION_CHANGE, result => {
+  dispatchEvent(ON_LOCATION_CHANGE, result)
+})
+
+subscribe(ON_LOCATION_CHANGE_ERROR, result => {
+  dispatchEvent(ON_LOCATION_CHANGE_ERROR, result)
 })
 
 type OnLocationChangeCallback = (res: GetLocationSuccessCallbackResult) => void
 
 export function onLocationChange(callback: OnLocationChangeCallback) {
-  addEvent(Events.ON_LOCATION_CHANGE, callback)
+  addEvent(ON_LOCATION_CHANGE, callback)
 }
 
 export function offLocationChange(callback: () => void) {
-  removeEvent(Events.ON_LOCATION_CHANGE, callback)
+  removeEvent(ON_LOCATION_CHANGE, callback)
+}
+
+interface OnLocationChangeErrorCallbackResult {
+  errMsg: string
+}
+
+type OnLocationChangeErrorCallback = (res: OnLocationChangeErrorCallbackResult) => void
+
+export function onLocationChangeError(callback: OnLocationChangeErrorCallback) {
+  addEvent(ON_LOCATION_CHANGE_ERROR, callback)
+}
+
+export function offLocationChangeError(callback: () => void) {
+  removeEvent(ON_LOCATION_CHANGE_ERROR, callback)
 }

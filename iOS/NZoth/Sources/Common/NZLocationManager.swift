@@ -28,7 +28,7 @@ class NZLocationManager: NSObject {
     
     let locationManager = CLLocationManager()
     
-    var getLocationHandler: ((NZLocationData) -> Void)?
+    var getLocationHandler: ((NZLocationData?, NZError?) -> Void)?
     
     var type: NZLocationType = .wgs84
     
@@ -38,7 +38,7 @@ class NZLocationManager: NSObject {
         locationManager.delegate = self
     }
     
-    func startLocationUpdate(type: NZLocationType, completionHandler: @escaping (NZLocationData) -> Void) {
+    func startLocationUpdate(type: NZLocationType, completionHandler: @escaping (NZLocationData?, NZError?) -> Void) {
         self.type = type
         getLocationHandler = completionHandler
         locationManager.startUpdatingLocation()
@@ -53,24 +53,14 @@ extension NZLocationManager: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
-            var coordinate = location.coordinate
-            if type == .gcj02 {
-                coordinate = coordinate.gcj02Encrypt()
-            }
-            let data = NZLocationData(latitude: coordinate.latitude,
-                                      longitude: coordinate.longitude,
-                                      speed: location.speed,
-                                      accuracy: location.horizontalAccuracy,
-                                      altitude: location.altitude,
-                                      verticalAccuracy: location.verticalAccuracy,
-                                      horizontalAccuracy: location.horizontalAccuracy)
-            getLocationHandler?(data)
+            getLocationHandler?(location.toData(type: type), nil)
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print(error)
+        getLocationHandler?(nil, NZError.custom(error.localizedDescription))
     }
+
 }
 
 class NZOnceLocationManager: NSObject {
@@ -103,11 +93,11 @@ class NZOnceLocationManager: NSObject {
         type = params.type
         if params.isHighAccuracy {
             locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            if let highAccuracyExpireTime = params.highAccuracyExpireTime, highAccuracyExpireTime >= 3000 {
+            if let highAccuracyExpireTime = params.highAccuracyExpireTime {
                 DispatchQueue.main.asyncAfter(deadline: .now() + highAccuracyExpireTime / 1000) {
                     self.locationManager.stopUpdatingLocation()
                     if let location = self.locationManager.location {
-                        self.getLocationHandler?(self.locationData(location), nil)
+                        self.getLocationHandler?(location.toData(type: self.type), nil)
                     } else {
                         self.getLocationHandler?(nil, NZError.custom("not location"))
                     }
@@ -120,27 +110,14 @@ class NZOnceLocationManager: NSObject {
         locationManager.requestLocation()
     }
     
-    func locationData(_ location: CLLocation) -> NZLocationData {
-        var coordinate = location.coordinate
-        if type == .gcj02 {
-            coordinate = coordinate.gcj02Encrypt()
-        }
-        let data = NZLocationData(latitude: coordinate.latitude,
-                                  longitude: coordinate.longitude,
-                                  speed: location.speed,
-                                  accuracy: location.horizontalAccuracy,
-                                  altitude: location.altitude,
-                                  verticalAccuracy: location.verticalAccuracy,
-                                  horizontalAccuracy: location.horizontalAccuracy)
-        return data
-    }
+    
 }
 
 extension NZOnceLocationManager: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.first {
-            getLocationHandler?(locationData(location), nil)
+            getLocationHandler?(location.toData(type: type), nil)
             getLocationHandler = nil
         }
     }
@@ -154,6 +131,24 @@ extension NZOnceLocationManager: CLLocationManagerDelegate {
 extension NZOnceLocationManager {
     
     static let getLocationNotification = Notification.Name("NZOnceLocationManagerGetLocationNotification")
+}
+
+extension CLLocation {
+    
+    func toData(type: NZLocationType) -> NZLocationData {
+        var coordinate = coordinate
+        if type == .gcj02 {
+            coordinate = coordinate.gcj02Encrypt()
+        }
+        let data = NZLocationData(latitude: coordinate.latitude,
+                                  longitude: coordinate.longitude,
+                                  speed: speed,
+                                  accuracy: horizontalAccuracy,
+                                  altitude: altitude,
+                                  verticalAccuracy: verticalAccuracy,
+                                  horizontalAccuracy: horizontalAccuracy)
+        return data
+    }
 }
 
 extension CLLocationCoordinate2D {

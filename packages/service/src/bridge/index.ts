@@ -88,7 +88,9 @@ import {
   startLocationUpdate,
   stopLocationUpdate,
   onLocationChange,
-  offLocationChange
+  offLocationChange,
+  onLocationChangeError,
+  offLocationChangeError,
 } from "@nzoth/bridge"
 import { getRecorderManager } from "@nzoth/bridge"
 import { getSetting, authorize } from "@nzoth/bridge"
@@ -201,6 +203,8 @@ export {
   stopLocationUpdate,
   onLocationChange,
   offLocationChange,
+  onLocationChangeError,
+  offLocationChangeError,
   getRecorderManager,
   getSetting,
   openSetting,
@@ -311,6 +315,8 @@ export default {
   stopLocationUpdate,
   onLocationChange,
   offLocationChange,
+  onLocationChangeError,
+  offLocationChangeError,
   getRecorderManager,
   getSetting,
   openSetting,

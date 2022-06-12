@@ -42,3 +42,10 @@ class NZLocationModule: NZModule {
         }
     }
 }
+
+extension NZLocationModule {
+    
+    public static let onLocationChangeSubscribeKey = NZSubscribeKey("MODULE_LOCATION_ON_CHANGE")
+    
+    public static let onLocationChangeErrorSubscribeKey = NZSubscribeKey("MODULE_LOCATION_ON_CHANGE_ERROR")
+}

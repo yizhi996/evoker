@@ -68,9 +68,14 @@ enum NZLocationAPI: String, NZBuiltInAPI {
         }
         
         module.isStartUpdatingLocation = true
-        module.locationManager.startLocationUpdate(type: params.type) { [weak bridge] data in
+        module.locationManager.startLocationUpdate(type: params.type) { [weak bridge] data, error in
             guard let bridge = bridge else { return }
-            bridge.subscribeHandler(method: NZSubscribeKey("APP_LOCATION_ON_CHANGE"), data: data)
+            if let error = error {
+                bridge.subscribeHandler(method: NZLocationModule.onLocationChangeErrorSubscribeKey,
+                                        data: ["errMsg": error.localizedDescription])
+            } else {
+                bridge.subscribeHandler(method: NZLocationModule.onLocationChangeSubscribeKey, data: data!)
+            }
         }
         bridge.invokeCallbackSuccess(args: args)
     }
