@@ -68,7 +68,7 @@ import {
 } from "@nzoth/bridge"
 import { getClipboardData, setClipboardData } from "@nzoth/bridge"
 import { makePhoneCall } from "@nzoth/bridge"
-import { rsa } from "@nzoth/bridge"
+import { getRandomValues, rsa } from "@nzoth/bridge"
 import { createSelectorQuery } from "./api/html/selector"
 import { getBatteryInfo } from "@nzoth/bridge"
 import {
@@ -90,7 +90,7 @@ import {
   onLocationChange,
   offLocationChange,
   onLocationChangeError,
-  offLocationChangeError,
+  offLocationChangeError
 } from "@nzoth/bridge"
 import { getRecorderManager } from "@nzoth/bridge"
 import { getSetting, authorize } from "@nzoth/bridge"
@@ -159,6 +159,7 @@ export {
   showActionSheet,
   vibrateShort,
   vibrateLong,
+  getRandomValues,
   rsa,
   getWindowInfo,
   getAppAuthorizeSetting,
@@ -272,6 +273,7 @@ export default {
   showActionSheet,
   vibrateShort,
   vibrateLong,
+  getRandomValues,
   rsa,
   getWindowInfo,
   getAppAuthorizeSetting,

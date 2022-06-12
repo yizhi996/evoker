@@ -6,7 +6,8 @@ import {
   GeneralCallbackResult,
   AsyncReturn,
   SuccessResult,
-  wrapperAsyncAPI
+  wrapperAsyncAPI,
+  invokeSuccess
 } from "../async"
 import { ErrorCodes, errorMessage } from "../errors"
 
@@ -66,7 +67,11 @@ interface GetRandomValuesOptions {
   complete?: GetRandomValuesCompleteCallback
 }
 
-type GetRandomValuesSuccessCallback = (res: GeneralCallbackResult) => void
+interface GetRandomValuesSuccessCallbackResult {
+  randomValues: ArrayBuffer
+}
+
+type GetRandomValuesSuccessCallback = (res: GetRandomValuesSuccessCallbackResult) => void
 
 type GetRandomValuesFailCallback = (res: GeneralCallbackResult) => void
 
@@ -82,7 +87,13 @@ export function getRandomValues<T extends GetRandomValuesOptions = GetRandomValu
       return
     }
     invoke<SuccessResult<T>>(event, options, result => {
-      invokeCallback(event, options, result)
+      if (result.errMsg) {
+        invokeFailure(event, options, result.errMsg)
+      } else {
+        const { randomValues } = result.data! as any
+        result.data!.randomValues = Uint8Array.from(randomValues).buffer
+        invokeSuccess(event, options, result.data)
+      }
     })
   }, options)
 }

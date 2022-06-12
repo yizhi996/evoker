@@ -7,7 +7,6 @@ import {
   AsyncReturn,
   invokeFailure,
   openAuthorizationView,
-  requestAuthorization,
   getAuthorize,
   AuthorizationStatus
 } from "@nzoth/bridge"
