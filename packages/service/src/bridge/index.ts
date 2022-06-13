@@ -9,6 +9,7 @@ import {
   getSystemInfoAsync,
   getSystemInfoSync
 } from "./api/base/system"
+import { base64ToArrayBuffer, arrayBufferToBase64 } from "./api/base/base64"
 import { navigateTo, navigateBack, redirectTo, reLaunch, switchTab } from "./api/route"
 import { navigateToMiniProgram, exitMiniProgram } from "./api/navigate"
 import {
@@ -117,6 +118,8 @@ import "./fromWebView"
 
 export {
   env,
+  base64ToArrayBuffer,
+  arrayBufferToBase64,
   navigateTo,
   navigateBack,
   redirectTo,
@@ -231,6 +234,8 @@ export {
 
 export default {
   env,
+  base64ToArrayBuffer,
+  arrayBufferToBase64,
   navigateTo,
   navigateBack,
   redirectTo,

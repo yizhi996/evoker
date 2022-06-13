@@ -19,6 +19,8 @@ import JavaScriptCore
     
     var storage: NZStorageSyncAPI { get }
     
+    var base64: NZBase64API { get }
+    
     init()
 
 }
@@ -46,6 +48,8 @@ import JavaScriptCore
     public var messageChannel = NZMessageChannel()
     
     public var storage = NZStorageSyncAPI()
+    
+    public var base64 = NZBase64API()
     
     override public required init() {
         super.init()

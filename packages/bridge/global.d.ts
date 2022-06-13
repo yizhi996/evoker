@@ -1,5 +1,11 @@
 import { DataType, GetStorageInfoSuccessCallbackResult } from "./src/api/storage"
 
+interface Base64 {
+  base64ToArrayBuffer(string: string): number[]
+
+  arrayBufferToBase64(buffer: ArrayBuffer): string
+}
+
 interface NZAppServiceNativeSDK {
   timer: NativeTimer
 
@@ -8,6 +14,8 @@ interface NZAppServiceNativeSDK {
   system: NativeSystem
 
   storage: Storage
+
+  base64: Base64
 }
 
 interface NativeTimer {
