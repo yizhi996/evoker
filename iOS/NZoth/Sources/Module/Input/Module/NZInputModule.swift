@@ -108,29 +108,30 @@ extension NZInputModule: KeyboardObserver {
               page.isVisible else { return }
         
         let webView = page.webView
-        let keyboardHeight = transition.toFrame.height
+        let keyboardHeight = transition.toVisible ? transition.toFrame.height : 0
         
-        allInputs(pageId: page.pageId).forEach { input in
-            let message: [String: Any] = [
-                "inputId": input.inputId,
-                "height": transition.toVisible ? keyboardHeight : 0,
-                "duration": transition.animationDuration,
-            ]
-            webView.bridge.subscribeHandler(method: KeyboardManager.heightChangeSubscribeKey, data: message)
-        }
-        
-        var keyboardHeightUpdated = false
-        if keyboardHeight != prevKeyboardHeight {
+        let keyboardHeightUpdated = keyboardHeight != prevKeyboardHeight
+        if keyboardHeightUpdated {
             prevKeyboardHeight = keyboardHeight
-            keyboardHeightUpdated = true
+            
+            allInputs(pageId: page.pageId).forEach { input in
+                let message: [String: Any] = [
+                    "inputId": input.inputId,
+                    "height": keyboardHeight,
+                    "duration": transition.animationDuration,
+                ]
+                webView.bridge.subscribeHandler(method: KeyboardManager.heightChangeSubscribeKey, data: message)
+            }
+            
+            appService.bridge.subscribeHandler(method: KeyboardManager.heightChangeSubscribeKey,
+                                               data: ["height": keyboardHeight])
+
         }
         
         if transition.toVisible {
             if keyboardHeightUpdated {
                 if let input = first(pageId: page.pageId, where: { $0.isFirstResponder }),
                    input.adjustPosition {
-                    let data: [String: Any] = ["inputId": input.inputId, "height": keyboardHeight]
-                    webView.bridge.subscribeHandler(method: KeyboardManager.onShowSubscribeKey, data: data)
                     let keyboardY = transition.toFrame.minY
                     var rect = input.frame
                     if let selectedTextRange = input.field.selectedTextRange {

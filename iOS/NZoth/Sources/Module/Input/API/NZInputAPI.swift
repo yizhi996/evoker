@@ -13,6 +13,7 @@ enum NZInputAPI: String, NZBuiltInAPI {
     case insertTextArea
     case insertInput
     case operateInput
+    case hideKeyboard
 
     func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
@@ -23,6 +24,8 @@ enum NZInputAPI: String, NZBuiltInAPI {
                 insertInput(appService: appService, bridge: bridge, args: args)
             case .operateInput:
                 operateInput(appService: appService, bridge: bridge, args: args)
+            case .hideKeyboard:
+                hideKeyboard(appService: appService, bridge: bridge, args: args)
             }
         }
     }
@@ -443,6 +446,20 @@ enum NZInputAPI: String, NZBuiltInAPI {
                     input.placeholderLabel.textColor = style.color.hexColor()
                 }
             }
+        }
+        
+        bridge.invokeCallbackSuccess(args: args)
+    }
+    
+    private func hideKeyboard(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
+        guard let module: NZInputModule = appService.getModule() else {
+            let error = NZError.bridgeFailed(reason: .moduleNotFound(NZInputModule.name))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        if let needResignFirstInput = module.inputs.all().first(where: { $0.isFirstResponder }) {
+            needResignFirstInput.endEdit()
         }
         
         bridge.invokeCallbackSuccess(args: args)

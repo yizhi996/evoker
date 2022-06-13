@@ -66,13 +66,14 @@ import {
   setScreenBrightness,
   onUserCaptureScreen,
   offUserCaptureScreen,
-  setKeepScreenOn,
+  setKeepScreenOn
 } from "@nzoth/bridge"
 import { getClipboardData, setClipboardData } from "@nzoth/bridge"
 import { makePhoneCall } from "@nzoth/bridge"
 import { getRandomValues, rsa } from "@nzoth/bridge"
 import { createSelectorQuery } from "./api/html/selector"
 import { getBatteryInfo } from "@nzoth/bridge"
+import { onKeyboardHeighChange, offKeyboardHeighChange, hideKeyboard } from "@nzoth/bridge"
 import {
   setTabBarBadge,
   hideTabBarRedDot,
@@ -180,6 +181,9 @@ export {
   getSystemInfoSync,
   createSelectorQuery,
   getBatteryInfo,
+  onKeyboardHeighChange,
+  offKeyboardHeighChange,
+  hideKeyboard,
   getNetworkType,
   getLocalIPAddress,
   scanCode,
@@ -297,6 +301,9 @@ export default {
   getSystemInfoSync,
   createSelectorQuery,
   getBatteryInfo,
+  onKeyboardHeighChange,
+  offKeyboardHeighChange,
+  hideKeyboard,
   getNetworkType,
   getLocalIPAddress,
   scanCode,

@@ -122,5 +122,5 @@ extension KeyboardManager {
     
     public static let onConfirmSubscribeKey = NZSubscribeKey("WEBVIEW_KEYBOARD_ON_CONFIRM")
     
-    public static let heightChangeSubscribeKey = NZSubscribeKey("WEBVIEW_KEYBOARD_HEIGHT_CHANGE")
+    public static let heightChangeSubscribeKey = NZSubscribeKey("KEYBOARD_HEIGHT_CHANGE")
 }
