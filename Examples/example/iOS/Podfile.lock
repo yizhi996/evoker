@@ -39,6 +39,7 @@ PODS:
     - SDWebImage (~> 5.0)
     - SDWebImageWebPCoder
     - SQLite.swift (~> 0.13.2)
+    - SwiftyRSA
     - Telegraph
     - Zip (~> 2.1)
     - ZLPhotoBrowser
@@ -57,6 +58,9 @@ PODS:
   - SQLite.swift (0.13.3):
     - SQLite.swift/standard (= 0.13.3)
   - SQLite.swift/standard (0.13.3)
+  - SwiftyRSA (1.7.0):
+    - SwiftyRSA/ObjC (= 1.7.0)
+  - SwiftyRSA/ObjC (1.7.0)
   - Telegraph (0.29):
     - CocoaAsyncSocket (~> 7.6)
     - HTTPParserC (~> 2.9)
@@ -90,6 +94,7 @@ SPEC REPOS:
     - SDWebImage
     - SDWebImageWebPCoder
     - SQLite.swift
+    - SwiftyRSA
     - Telegraph
     - Zip
     - ZLPhotoBrowser
@@ -113,11 +118,12 @@ SPEC CHECKSUMS:
   KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961
-  NZoth: 9a30811119813a4fe58b851716ac3b55914f2796
+  NZoth: 762abfd54f18217fa027a9ac7112861894a7b937
   PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
   SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   SQLite.swift: 903bfa3bc9ab06345fdfbb578e34f47cfcf417da
+  SwiftyRSA: 8c6dd1ea7db1b8dc4fb517a202f88bb1354bc2c6
   Telegraph: 0cae12d0c9efa5a33de08286c8a71d4c4d16a70c
   Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
   ZLPhotoBrowser: 4bfab86b851042e18d7f413284472aa68759626a

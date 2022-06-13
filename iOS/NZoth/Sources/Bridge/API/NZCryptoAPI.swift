@@ -8,6 +8,7 @@
 
 import Foundation
 import CryptoSwift
+import SwiftyRSA
 
 enum NZCryptoAPI: String, NZBuiltInAPI {
     
@@ -32,7 +33,7 @@ enum NZCryptoAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let action = params["action"] as? String, !action.isEmpty, ["encrypt", "decrypt"].contains(action) else {
+        guard let action = params["action"] as? String else {
             let error = NZError.bridgeFailed(reason: .fieldRequired("action"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
@@ -50,30 +51,25 @@ enum NZCryptoAPI: String, NZBuiltInAPI {
             return
         }
         
-        guard let secKey = stringKeyToSecKey(key) else {
-            let error = NZError.bridgeFailed(reason: .custom("sec key create fail"))
-            bridge.invokeCallbackFail(args: args, error: error)
-            return
-        }
-        
         if action == "encrypt" {
-            var blockSize = SecKeyGetBlockSize(secKey)
-            let plainText = Array<UInt8>(text.utf8)
-            var cipherText = Array(repeating: UInt8(0), count: blockSize)
-            if SecKeyEncrypt(secKey, .PKCS1, plainText, plainText.count, &cipherText, &blockSize) == errSecSuccess {
-                bridge.invokeCallbackSuccess(args: args, result: ["text": cipherText.toBase64()])
-            } else {
-                let error = NZError.bridgeFailed(reason: .custom("encrypt fail"))
+            do {
+                let publicKey = try PublicKey(base64Encoded: key)
+                let clear = try ClearMessage(string: text, using: .utf8)
+                let encrypted = try clear.encrypted(with: publicKey, padding: .PKCS1)
+                bridge.invokeCallbackSuccess(args: args, result: ["text": encrypted.base64String])
+            } catch {
+                let error = NZError.bridgeFailed(reason: .custom(error.localizedDescription))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
-        } else {
-            var blockSize = SecKeyGetBlockSize(secKey)
-            let plainText = Array<UInt8>(text.utf8)
-            var cipherText = Array(repeating: UInt8(0), count: blockSize)
-            if SecKeyDecrypt(secKey, .PKCS1, plainText, plainText.count, &cipherText, &blockSize) == errSecSuccess {
-                bridge.invokeCallbackSuccess(args: args, result: ["text": cipherText])
-            } else {
-                let error = NZError.bridgeFailed(reason: .custom("decrypt fail"))
+        } else if action == "decrypt" {
+            do {
+                let privateKey = try PrivateKey(base64Encoded: key)
+                let encrypted = try EncryptedMessage(base64Encoded: text)
+                let clear = try encrypted.decrypted(with: privateKey, padding: .PKCS1)
+                let string = try clear.string(encoding: .utf8)
+                bridge.invokeCallbackSuccess(args: args, result: ["text": string])
+            } catch {
+                let error = NZError.bridgeFailed(reason: .custom(error.localizedDescription))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         }
@@ -100,17 +96,5 @@ enum NZCryptoAPI: String, NZBuiltInAPI {
             bridge.invokeCallbackFail(args: args, error: .bridgeFailed(reason: .custom("")))
         }
     }
-    
-    func stringKeyToSecKey(_ key: String) -> SecKey? {
-        guard let certificateData = key.data(using: .utf8),
-              let certificate = SecCertificateCreateWithData(nil, certificateData as CFData) else { return nil }
-        var trust: SecTrust?
-        let policy = SecPolicyCreateBasicX509()
-        let status = SecTrustCreateWithCertificates(certificate, policy, &trust)
-        if status == errSecSuccess {
-            return SecTrustCopyPublicKey(trust!)
-        }
-        return nil
-    }
-    
+
 }

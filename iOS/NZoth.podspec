@@ -43,6 +43,7 @@ Pod::Spec.new do |s|
       ss.dependency 'ZLPhotoBrowser'
       ss.dependency 'KTVHTTPCache', '~> 2.0.0'
       ss.dependency 'SQLite.swift', '~> 0.13.2'
+      ss.dependency 'SwiftyRSA'
     end
     
     s.subspec 'Resources' do |ss|
