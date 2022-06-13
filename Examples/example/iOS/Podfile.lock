@@ -1,11 +1,11 @@
 PODS:
-  - Alamofire (5.5.0)
-  - AMap3DMap (9.1.0):
+  - Alamofire (5.6.1)
+  - AMap3DMap (9.2.1):
     - AMapFoundation (~> 1.6.9)
   - AMapFoundation (1.6.9)
   - AMapLocation (2.8.0):
     - AMapFoundation (~> 1.6.9)
-  - AMapSearch (8.1.0):
+  - AMapSearch (9.2.0):
     - AMapFoundation (~> 1.6.9)
   - Bugly (2.5.91)
   - CocoaAsyncSocket (7.6.5)
@@ -49,9 +49,9 @@ PODS:
     - AMapSearch
   - NZoth/Resources (0.1.0)
   - PureLayout (3.1.9)
-  - SDWebImage (5.12.5):
-    - SDWebImage/Core (= 5.12.5)
-  - SDWebImage/Core (5.12.5)
+  - SDWebImage (5.12.6):
+    - SDWebImage/Core (= 5.12.6)
+  - SDWebImage/Core (5.12.6)
   - SDWebImageWebPCoder (0.8.4):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
@@ -65,9 +65,9 @@ PODS:
     - CocoaAsyncSocket (~> 7.6)
     - HTTPParserC (~> 2.9)
   - Zip (2.1.2)
-  - ZLPhotoBrowser (4.2.5):
-    - ZLPhotoBrowser/Core (= 4.2.5)
-  - ZLPhotoBrowser/Core (4.2.5)
+  - ZLPhotoBrowser (4.3.2):
+    - ZLPhotoBrowser/Core (= 4.3.2)
+  - ZLPhotoBrowser/Core (4.3.2)
 
 DEPENDENCIES:
   - Bugly
@@ -104,11 +104,11 @@ EXTERNAL SOURCES:
     :path: "../../../iOS"
 
 SPEC CHECKSUMS:
-  Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
-  AMap3DMap: a1ba024c96017912499330afdc3a7885acd083f8
+  Alamofire: 87bd8c952f9a4454320fce00d9cc3de57bcadaf5
+  AMap3DMap: 0de590972bfbe2852fe63109bc11b485d7d848fa
   AMapFoundation: 8d8ecbb0b2e9ce5487995360d26c885d94642bfd
   AMapLocation: 5ef44a1117be7dc541cb7a7d43d03c5ee91e4387
-  AMapSearch: 5c1cc07429f04b9cc76438fcb2411c66fdbbb178
+  AMapSearch: b461cdf25b39cdca8957017de2f376cd1ac5da85
   Bugly: afe841bba2ea6de6d432a3c125240a5e75949c55
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CryptoSwift: a0799ee936271bd2253a006f1e4523df21845000
@@ -120,13 +120,13 @@ SPEC CHECKSUMS:
   MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961
   NZoth: 762abfd54f18217fa027a9ac7112861894a7b937
   PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
-  SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
+  SDWebImage: a47aea9e3d8816015db4e523daff50cfd294499d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   SQLite.swift: 903bfa3bc9ab06345fdfbb578e34f47cfcf417da
   SwiftyRSA: 8c6dd1ea7db1b8dc4fb517a202f88bb1354bc2c6
   Telegraph: 0cae12d0c9efa5a33de08286c8a71d4c4d16a70c
   Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
-  ZLPhotoBrowser: 4bfab86b851042e18d7f413284472aa68759626a
+  ZLPhotoBrowser: fbd03a797675cca8f7a85e0f539eef28eb742bf6
 
 PODFILE CHECKSUM: 2dcae5619955db8c56b10d0c488988b684043015
 
