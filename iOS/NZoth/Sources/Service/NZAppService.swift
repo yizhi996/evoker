@@ -83,6 +83,8 @@ final public class NZAppService {
     
     var webViewPool: NZPool<NZWebView>!
     
+    var keepScreenOn = false
+    
     init?(appId: String, appInfo: NZAppInfo, launchOptions: NZAppLaunchOptions) {
         guard !appId.isEmpty,
               let config = NZAppConfig.load(appId: appId, envVersion: launchOptions.envVersion),
@@ -587,6 +589,7 @@ extension NZAppService {
     }
     
     func publishAppOnShow(options: NZAppShowOptions) {
+        UIApplication.shared.isIdleTimerDisabled = keepScreenOn
         cleanKillTimer()
         bridge.subscribeHandler(method: NZAppService.onShowSubscribeKey, data: setEnterOptions(options: options))
         NZEngineConfig.shared.hooks.app.lifeCycle.onShow?(self, options)
@@ -595,6 +598,7 @@ extension NZAppService {
     
     @objc
     func publishAppOnHide() {
+        UIApplication.shared.isIdleTimerDisabled = false
         bridge.subscribeHandler(method: NZAppService.onHideSubscribeKey, data: [:])
         NZEngineConfig.shared.hooks.app.lifeCycle.onHide?(self)
         modules.values.forEach { $0.onHide(self) }

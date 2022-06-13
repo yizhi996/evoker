@@ -65,7 +65,8 @@ import {
   getScreenBrightness,
   setScreenBrightness,
   onUserCaptureScreen,
-  offUserCaptureScreen
+  offUserCaptureScreen,
+  setKeepScreenOn,
 } from "@nzoth/bridge"
 import { getClipboardData, setClipboardData } from "@nzoth/bridge"
 import { makePhoneCall } from "@nzoth/bridge"
@@ -199,6 +200,7 @@ export {
   offNetworkStatusChange,
   onUserCaptureScreen,
   offUserCaptureScreen,
+  setKeepScreenOn,
   createAnimation,
   pageScrollTo,
   loadFontFace,
@@ -315,6 +317,7 @@ export default {
   offNetworkStatusChange,
   onUserCaptureScreen,
   offUserCaptureScreen,
+  setKeepScreenOn,
   createAnimation,
   pageScrollTo,
   loadFontFace,

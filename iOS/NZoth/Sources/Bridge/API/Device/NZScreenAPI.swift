@@ -13,14 +13,17 @@ enum NZScreenAPI: String, NZBuiltInAPI {
     
     case getScreenBrightness
     case setScreenBrightness
+    case setKeepScreenOn
     
     func onInvoke(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
         DispatchQueue.main.async {
-        switch self {
+            switch self {
             case .getScreenBrightness:
                 getScreenBrightness(appService: appService, bridge: bridge, args: args)
             case .setScreenBrightness:
                 setScreenBrightness(appService: appService, bridge: bridge, args: args)
+            case .setKeepScreenOn:
+                setKeepScreenOn(appService: appService, bridge: bridge, args: args)
             }
         }
     }
@@ -41,6 +44,24 @@ enum NZScreenAPI: String, NZBuiltInAPI {
         }
         
         UIScreen.main.brightness = params.value
+        bridge.invokeCallbackSuccess(args: args)
+    }
+    
+    private func setKeepScreenOn(appService: NZAppService, bridge: NZJSBridge, args: NZJSBridge.InvokeArgs) {
+        struct Params: Decodable {
+            let keepScreenOn: Bool
+        }
+        
+        guard let params: Params = args.paramsString.toModel() else {
+            let error = NZError.bridgeFailed(reason: .jsonParseFailed)
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
+        UIApplication.shared.isIdleTimerDisabled = params.keepScreenOn
+        
+        appService.keepScreenOn = params.keepScreenOn
+        
         bridge.invokeCallbackSuccess(args: args)
     }
 }
