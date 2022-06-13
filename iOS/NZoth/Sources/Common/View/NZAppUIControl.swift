@@ -80,7 +80,6 @@ public class NZAppUIControl {
             cover.hide()
             cancellationHandler?()
         }
-        view.endEditing(true)
         cover.show(to: view)
     }
     

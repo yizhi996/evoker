@@ -114,7 +114,16 @@ final public class NZAppService {
         
         uiControl.capsuleView.clickMoreHandler = { [unowned self] in
             guard let rootViewController = self.rootViewController else { return }
-            self.uiControl.showAppMoreActionBoard(appService: self, to: rootViewController.view, cancellationHandler: nil) { action in
+            if let module: NZInputModule = self.getModule() {
+                if let input = module.inputs.all().first(where: { $0.isFirstResponder }) {
+                    input.endEdit()
+                }
+            }
+            NZEngine.shared.shouldInteractivePopGesture = false
+            self.uiControl.showAppMoreActionBoard(appService: self, to: rootViewController.view, cancellationHandler: {
+                NZEngine.shared.shouldInteractivePopGesture = true
+            }) { action in
+                NZEngine.shared.shouldInteractivePopGesture = true
                 self.invokeAppMoreAction(action)
             }
         }
