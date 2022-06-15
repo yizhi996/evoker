@@ -477,7 +477,8 @@ const mutedSwitch = () => {
 
 const enterFullScreen = (direction = getDirection()) => {
   videoData.fullscreen = true
-  viewRef.value!.style.zIndex = "100000"
+  viewRef.value!.style.zIndex = "100000000"
+  viewRef.value!.style.overflow = "visible"
   operateVideoPlayer(Methods.FULLSCREEN, {
     enter: videoData.fullscreen,
     direction
@@ -487,7 +488,8 @@ const enterFullScreen = (direction = getDirection()) => {
 
 const exitFullScreen = () => {
   videoData.fullscreen = false
-  viewRef.value!.style.zIndex = "0"
+  viewRef.value!.style.zIndex = ""
+  viewRef.value!.style.overflow = ""
   operateVideoPlayer(Methods.FULLSCREEN, {
     enter: videoData.fullscreen,
     direction: 0
