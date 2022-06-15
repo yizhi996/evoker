@@ -600,7 +600,6 @@ const onMoveSlideProgress = (ev: TouchEvent) => {
   value = clamp(value, 0, videoData.duration)
   seekingTime.value = value
   isMoveProgressSlider = true
-  console.log(touch.deltaX.value, touch.startX.value, x, rect.left)
 }
 
 const onEndSlideProgress = (ev: TouchEvent) => {
@@ -880,8 +879,8 @@ nz-video {
       padding: 0 14px;
 
       &--fullscreen {
-        padding-left: var(--safe-area-inset-left);
-        padding-right: var(--safe-area-inset-right);
+        padding-left: calc(var(--safe-area-inset-left) + 14px);
+        padding-right: calc(var(--safe-area-inset-right) + 14px);
         padding-top: 0;
         padding-bottom: calc(var(--safe-area-inset-bottom) + 14px);
         height: 62px;
@@ -897,8 +896,8 @@ nz-video {
         background-image: linear-gradient(0deg, transparent, rgba(0, 0, 0, 0.5));
         height: 60px;
         line-height: 60px;
-        padding-left: var(--safe-area-inset-left);
-        padding-right: var(--safe-area-inset-right);
+        padding-left: calc(var(--safe-area-inset-left) + 14px);
+        padding-right: calc(var(--safe-area-inset-right) + 14px);
         padding-top: var(--safe-area-inset-top);
       }
 
@@ -959,7 +958,7 @@ nz-video {
     &__button {
       width: 24px;
       height: 24px;
-      background-position: 50% 50%;
+      background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
       margin-right: 16px;
@@ -967,7 +966,7 @@ nz-video {
 
     &__lock {
       position: absolute;
-      left: var(--safe-area-inset-left);
+      left: calc(var(--safe-area-inset-left) + 14px);
       top: 50%;
       transform: translate(0, -50%);
     }
