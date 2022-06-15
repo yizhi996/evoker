@@ -1,7 +1,5 @@
 import { ImageLoadState, ImageLoadResult, loadImage, imageLazyLoadInfos } from "./loader"
 
-export const supportIntersectionObserver = "IntersectionObserver" in window
-
 const observer = new IntersectionObserver(
   entries => {
     entries.forEach(entry => {

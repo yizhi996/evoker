@@ -6,7 +6,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from "vue"
-import { addObserve, removeObserve, loadImage, ImageLoadResult } from "../lazy"
+import { addIntersectionObserve, removeIntersectionObserve } from "../lazy/observer"
+import { loadImage, ImageLoadResult } from "../lazy/loader"
 import type { ImageMode } from "../utils/style"
 import { getImageModeStyleCssText } from "../utils/style"
 
@@ -70,7 +71,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  containerRef.value && removeObserve(containerRef.value)
+  containerRef.value && removeIntersectionObserve(containerRef.value)
 })
 
 const updateSize = () => {
@@ -120,15 +121,11 @@ const tryLoadImage = () => {
 }
 
 const lazyLoadImage = () => {
-  containerRef.value && addObserve(containerRef.value, getSrc(), onLazyLoad)
+  containerRef.value && addIntersectionObserve(containerRef.value, getSrc(), onLoad)
 }
 
 const immediateLoadImage = () => {
   loadImage(getSrc()).then(onLoad).catch(onError)
-}
-
-const onLazyLoad = (result: ImageLoadResult) => {
-  onLoad(result)
 }
 
 const onLoad = (result: ImageLoadResult) => {
