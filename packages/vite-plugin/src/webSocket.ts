@@ -3,12 +3,14 @@ import { isString, isFunction } from "@nzoth/shared"
 
 let websocketServer: ws.Server
 
+export type Client = ws & { _id: number }
+
 interface RunWssOptions {
   host?: string | boolean
   port?: number
-  onConnect?: (client: ws) => void
-  onDisconnect?: (code?: number) => void
-  onRecv?: (message: string) => void
+  onConnect?: (client: Client) => void
+  onDisconnect?: (client: Client) => void
+  onRecv?: (client: Client, message: string) => void
 }
 
 export function runWebSocketServer(options: RunWssOptions) {
@@ -29,23 +31,25 @@ export function runWebSocketServer(options: RunWssOptions) {
     port: port
   })
 
-  websocketServer.on("connection", client => {
+  websocketServer.on("connection", (client: Client) => {
     console.log("\n[NZoth devServer] client connected")
+
+    client._id = Date.now()
 
     isFunction(options.onConnect) && options.onConnect(client)
 
-    client.on("close", ws => {
-      console.log("[NZoth devServer] client close connection", ws)
-      isFunction(options.onDisconnect) && options.onDisconnect(ws)
+    client.on("close", () => {
+      console.log("[NZoth devServer] client close connection")
+      isFunction(options.onDisconnect) && options.onDisconnect(client)
     })
 
     client.on("error", error => {
       console.log("NZoth devServer] client connection error", error)
-      isFunction(options.onDisconnect) && options.onDisconnect()
+      isFunction(options.onDisconnect) && options.onDisconnect(client)
     })
 
     client.on("message", (message: string) => {
-      isFunction(options.onRecv) && options.onRecv(message)
+      isFunction(options.onRecv) && options.onRecv(client, message)
     })
   })
 

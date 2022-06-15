@@ -1,9 +1,8 @@
 import type { Plugin, ResolvedConfig } from "vite"
 import colors from "picocolors"
-import ws from "ws"
 import path from "path"
 import { getDirAllFiles, getFileHash, getAppId, zip } from "./utils"
-import { runWebSocketServer, createMessage, createFileMessage } from "./webSocket"
+import { runWebSocketServer, createMessage, createFileMessage, Client } from "./webSocket"
 
 let firstBuildFinished = false
 
@@ -11,7 +10,7 @@ let serviceVersion = Date.now()
 
 const prevFileHash = new Map()
 
-let wsClient: ws | undefined
+const clients: Client[] = []
 
 let config: ResolvedConfig
 
@@ -45,13 +44,13 @@ export default function vitePluginNZothDevtools(options: Options = {}): Plugin {
     writeBundle() {
       firstBuildFinished = true
       serviceVersion = Date.now()
-      update()
+      update(clients)
     }
   }
 }
 
-function send(data: any) {
-  wsClient && wsClient.readyState === 1 && data && wsClient.send(data)
+function send(data: any, clients: Client[]) {
+  data && clients.filter(x => x.readyState === 1).forEach(x => x.send(data))
 }
 
 let options: Options
@@ -65,33 +64,36 @@ function createWebSocketServer(opts: Options) {
     host: options.host,
     port: options.port,
     onConnect: client => {
-      wsClient = client
-      checkClientVersion()
+      clients.push(client)
+      checkClientVersion(client)
     },
-    onDisconnect: code => {
-      wsClient = undefined
+    onDisconnect: client => {
+      const i = clients.findIndex(x => x._id === client._id)
+      if (i > -1) {
+        clients.splice(i, 1)
+      }
     },
-    onRecv: message => {
+    onRecv: (client, message) => {
       if (message === "ping") {
-        send("pong")
+        send("pong", [client])
       } else {
         try {
           const obj = JSON.parse(message)
-          obj && onRecv(obj)
+          obj && onRecv(client, obj)
         } catch {}
       }
     }
   })
 }
 
-function onRecv(message: { event: string; data: Record<string, any> }) {
+function onRecv(client: Client, message: { event: string; data: Record<string, any> }) {
   switch (message.event) {
     case "version":
       const { version: clientVersion } = message.data
       if (clientVersion !== serviceVersion.toString()) {
         if (firstBuildFinished) {
           prevFileHash.clear()
-          update()
+          client && update([client])
         }
       }
       break
@@ -101,35 +103,17 @@ function onRecv(message: { event: string; data: Record<string, any> }) {
 /**
  * 查询客户端是否需要更新
  */
-function checkClientVersion() {
+function checkClientVersion(client: Client) {
   const appId = getAppId()
-  const message = JSON.stringify({ appId })
+  const message = JSON.stringify({ appId, wsId: client._id })
   const data = createMessage("--CHECKVERSION--", message)
-  send(data)
-}
-
-/**
- * 增量更新客户端
- */
-function update() {
-  wsClient && wsClient.readyState === 1 && sendAllPackageFile()
-}
-
-/**
- * 向客户端发送执行命令
- * @param event
- * @param body
- */
-export function exec(event: string, params: Record<string, any>) {
-  const body = JSON.stringify({ event, params })
-  const data = createMessage("--EXEC--", body)
-  send(data)
+  send(data, [client])
 }
 
 /**
  * 向客户端发送需要更新的文件
  */
-function sendAllPackageFile() {
+function update(clients: Client[]) {
   return new Promise(async () => {
     const appId = getAppId()
 
@@ -174,16 +158,16 @@ function sendAllPackageFile() {
         })
 
         const data = createMessage("--UPDATE--", message)
-        send(data)
+        send(data, clients)
 
         if (sdk) {
           const data = createFileMessage(appId, "sdk", sdk)
-          send(data)
+          send(data, clients)
         }
 
         if (app) {
           const data = createFileMessage(appId, "app", app)
-          send(data)
+          send(data, clients)
         }
 
         config.logger.info(colors.cyan(`push ${appId} update files to client completed.\n`))
