@@ -131,6 +131,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                 case changeURL
                 case seek
                 case replay
+                case setPlaybackRate
             }
             
             enum Data: Decodable {
@@ -138,6 +139,7 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                 case fullscreen(FullscreenData)
                 case seek(SeekData)
                 case changeURL(ChangeURLData)
+                case setPlaybackRate(SetPlaybackRateData)
                 case unknown
                 
                 init(from decoder: Decoder) throws {
@@ -156,6 +158,10 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                     }
                     if let data = try? container.decode(SeekData.self) {
                         self = .seek(data)
+                        return
+                    }
+                    if let data = try? container.decode(SetPlaybackRateData.self) {
+                        self = .setPlaybackRate(data)
                         return
                     }
                     self = .unknown
@@ -179,6 +185,11 @@ enum NZVideoAPI: String, NZBuiltInAPI {
                     let objectFit: NZVideoPlayerViewParams.ObjectFit
                     let muted: Bool
                 }
+                
+                struct SetPlaybackRateData: Decodable {
+                    let rate: Float
+                }
+
             }
         }
 
@@ -263,6 +274,10 @@ enum NZVideoAPI: String, NZBuiltInAPI {
             }
         case .replay:
             playerView.player.replay()
+        case .setPlaybackRate:
+            if case .setPlaybackRate(let data) = params.data {
+                playerView.player.setPlaybackRate(data.rate)
+            }
         }
        
         bridge.invokeCallbackSuccess(args: args)

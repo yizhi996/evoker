@@ -1,9 +1,9 @@
 import { getCurrentPages } from "../../../app"
 import { NZothPage } from "../../../dom/page"
-import { createCanvasNode } from "./node"
 import { isFunction, SyncFlags } from "@nzoth/shared"
 import { randomId } from "../../../utils"
 import { sync } from "@nzoth/bridge"
+import { createVideoContextInstance } from "../media/video"
 
 const selectorQueryCallbacks = new Map<string, Function>()
 
@@ -54,12 +54,6 @@ class SelectorQuery {
     const result = (res: any) => {
       for (let i = 0; i < this.queueCb.length; i++) {
         const queueCallback = this.queueCb[i]
-        const node = res[i].node
-        if (node) {
-          if (node.nodeIs === "nz-canvas") {
-            createCanvasNode(node.nodeId, node.canvasType, node.canvasId)
-          }
-        }
         isFunction(queueCallback) && queueCallback(res[i])
       }
       isFunction(callback) && callback(res)
@@ -111,6 +105,10 @@ interface NodeFields {
   node?: boolean
 }
 
+interface ContextCallbackResult {
+  context: any
+}
+
 class NodesRef {
   query: SelectorQuery
   selector: string
@@ -146,8 +144,41 @@ class NodesRef {
     this.query.push(this.selector, this.single, fields, callback)
     return this.query
   }
+
+  context(callback?: (res: ContextCallbackResult) => void) {
+    this.query.push(
+      this.selector,
+      this.single,
+      { id: true, dataset: true, context: true },
+      (res: ContextCallbackResult) => {
+        if (res.context) {
+          res.context = createContextInstance(res.context)
+        }
+        callback && callback(res)
+      }
+    )
+    return this.query
+  }
 }
 
 export function createSelectorQuery() {
   return new SelectorQuery()
+}
+
+export interface ContextInfo {
+  nodeId: number
+  tagName: string
+  contextId: number
+  webViewId: number
+}
+
+function createContextInstance(context: ContextInfo) {
+  const { tagName } = context
+
+  switch (tagName) {
+    case "NZ-VIDEO":
+      return createVideoContextInstance(context)
+    default:
+      break
+  }
 }

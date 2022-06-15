@@ -17,7 +17,8 @@ const callbacks = new Map<number, InvokeCallback<any>>()
 export function invokeWebViewMethod<T = unknown>(
   event: string,
   params: any = {},
-  callback?: InvokeCallback<T>
+  callback?: InvokeCallback<T>,
+  webViewId: number = getCurrentWebViewId()
 ) {
   const cbId = callbackId++
   InnerJSBridge.publish(
@@ -27,7 +28,7 @@ export function invokeWebViewMethod<T = unknown>(
       params,
       callbackId: cbId
     },
-    getCurrentWebViewId()
+    webViewId
   )
   if (callback) {
     callbacks.set(cbId, callback)

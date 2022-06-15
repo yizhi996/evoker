@@ -1,66 +1,121 @@
 <template>
-  <nz-video ref="viewRef" @touchstart="onStartPanGesture" @touchmove="onMovePanGesture" @touchend="onEndPanGesture"
-    @touchcancel="onEndPanGesture" v-tap.stop="showOrHideControl">
-    <div class="nz-video__native" ref="containerRef" :id="tongcengKey" :style="tongcengSize">
-      <div style="width: 100%;" :style="height"></div>
+  <nz-video
+    ref="viewRef"
+    @touchstart="onStartPanGesture"
+    @touchmove="onMovePanGesture"
+    @touchend="onEndPanGesture"
+    @touchcancel="onEndPanGesture"
+    v-tap.stop="showOrHideControl"
+  >
+    <div
+      class="nz-native__tongceng nz-video__native"
+      ref="tongcengRef"
+      :id="tongcengKey"
+      :style="tongcengSize"
+    >
+      <div style="width: 100%" :style="height"></div>
     </div>
     <div class="nz-video__wrapper" :style="tongcengSize">
       <loading v-if="isBufferLoading" class="nz-video__loading" size="50px" color="white"></loading>
       <img v-if="poster && videoData.showPoster" class="nz-video__poster" :src="poster" />
       <div v-if="showCenterPlayBtn && showCenterPlayCover" class="nz-video__cover">
-        <div class="nz-video__cover__play nz-video__icon--play" v-tap.stop="clickCenterPlayButton"></div>
+        <div
+          class="nz-video__cover__play nz-video__icon--play"
+          v-tap.stop="clickCenterPlayButton"
+        ></div>
         <span class="nz-video__cover__duration">{{ secondsToDuration(videoData.duration) }}</span>
       </div>
       <template v-else-if="controls">
         <div v-show="isShowControl" class="nz-video__control">
-          <div v-show="videoData.fullscreen && showScreenLockButton"
+          <div
+            v-show="videoData.fullscreen && showScreenLockButton"
             class="nz-video__control__button nz-video__control__lock"
-            :class="`nz-video__icon--${isLocked ? 'lock' : 'unlock'}`" v-tap.stop="controlsLock"></div>
+            :class="`nz-video__icon--${isLocked ? 'lock' : 'unlock'}`"
+            v-tap.stop="controlsLock"
+          ></div>
           <div v-show="videoData.fullscreen && !isLocked" class="nz-video__control__bar__top">
-            <div class="nz-video__control__button nz-video__icon--back" v-tap.stop="enterFullscreen"></div>
+            <div
+              class="nz-video__control__button nz-video__icon--back"
+              v-tap.stop="fullScreenSwitch"
+            ></div>
             <div class="nz-video__title">{{ title }}</div>
           </div>
-          <div v-if="playBtnPosition === 'center' && !isLocked"
+          <div
+            v-if="playBtnPosition === 'center' && !isLocked"
             class="nz-video__control__button nz-video__control__center__playButton"
-            :class="`nz-video__icon--${videoData.playing ? 'pause' : 'play'}`" style="width: 36px;height: 36px;"
-            v-tap.stop="play"></div>
-          <div v-show="!isLocked" class="nz-video__control__bar"
-            :class="videoData.fullscreen ? 'nz-video__control__bar--fullscreen' : ''" v-tap.stop="showControl">
-            <div v-if="showPlayBtn && playBtnPosition === 'bottom'" class="nz-video__control__button" v-tap.stop="play">
-              <div class="nz-video__control__button" :class="`nz-video__icon--${videoData.playing ? 'pause' : 'play'}`">
-              </div>
+            :class="`nz-video__icon--${videoData.playing ? 'pause' : 'play'}`"
+            style="width: 36px; height: 36px"
+            v-tap.stop="playSwitch"
+          ></div>
+          <div
+            v-show="!isLocked"
+            class="nz-video__control__bar"
+            :class="videoData.fullscreen ? 'nz-video__control__bar--fullscreen' : ''"
+            v-tap.stop="showControl"
+          >
+            <div
+              v-if="showPlayBtn && playBtnPosition === 'bottom'"
+              class="nz-video__control__button"
+              v-tap.stop="playSwitch"
+            >
+              <div
+                class="nz-video__control__button"
+                :class="`nz-video__icon--${videoData.playing ? 'pause' : 'play'}`"
+              ></div>
             </div>
             <template v-if="showProgress">
               <span class="nz-video__control__progress__time" style="margin-right: 8px">{{
-                  secondsToDuration(currentTime)
+                secondsToDuration(currentTime)
               }}</span>
               <div ref="progressRef" class="nz-video__control__progress">
-                <div class="nz-video__control__progress__buffer"
-                  :style="{ width: dutationPercent(videoData.bufferTime) }">
-                </div>
-                <div class="nz-video__control__progress__played" :style="{ width: dutationPercent(currentTime) }">
-                </div>
-                <div class="nz-video__control__progress__handle" :style="{ left: dutationPercent(currentTime) }"
-                  @touchstart="onStartSlideProgress" @touchmove="onMoveSlideProgress" @touchend="onEndSlideProgress"
-                  @touchcancel="onEndSlideProgress">
+                <div
+                  class="nz-video__control__progress__buffer"
+                  :style="{ width: dutationPercent(videoData.bufferTime) }"
+                ></div>
+                <div
+                  class="nz-video__control__progress__played"
+                  :style="{ width: dutationPercent(currentTime) }"
+                ></div>
+                <div
+                  class="nz-video__control__progress__handle"
+                  :style="{ left: dutationPercent(currentTime) }"
+                  @touchstart="onStartSlideProgress"
+                  @touchmove="onMoveSlideProgress"
+                  @touchend="onEndSlideProgress"
+                  @touchcancel="onEndSlideProgress"
+                >
                   <div class="nz-video__control__progress__ball"></div>
                 </div>
               </div>
               <span class="nz-video__control__progress__time" style="margin-left: 8px">{{
-                  secondsToDuration(videoData.duration)
+                secondsToDuration(videoData.duration)
               }}</span>
             </template>
             <div class="nz-video__control__bar__right">
-              <div v-if="showMuteBtn" class="nz-video__control__button"
-                :class="`nz-video__icon--mute-${videoData.muted ? 'on' : 'off'}`" style="margin-left: 8px"
-                v-tap.stop="mutedSwitch"></div>
-              <div v-if="showFullscreenBtn" class="nz-video__control__button nz-video__icon--fullscreen"
-                style="margin-right: 8px" v-tap.stop="enterFullscreen"></div>
+              <div
+                v-if="showMuteBtn"
+                class="nz-video__control__button"
+                :class="`nz-video__icon--mute-${videoData.muted ? 'on' : 'off'}`"
+                style="margin-left: 8px"
+                v-tap.stop="mutedSwitch"
+              ></div>
+              <div
+                v-if="showFullscreenBtn"
+                class="nz-video__control__button nz-video__icon--fullscreen"
+                style="margin-right: 8px"
+                v-tap.stop="fullScreenSwitch"
+              ></div>
             </div>
           </div>
         </div>
       </template>
-      <video-screen-brightness v-show="isShowScreenBrightnessToast" :value="screenBrightness"></video-screen-brightness>
+      <video-screen-brightness
+        v-show="isShowScreenBrightnessToast"
+        :value="screenBrightness"
+      ></video-screen-brightness>
+      <div v-show="isShowSeekTime" class="nz-video__seektime">
+        {{ secondsToDuration(currentTime) }}
+      </div>
     </div>
     <div class="nz-video__slot" :style="tongcengSize"></div>
   </nz-video>
@@ -95,57 +150,60 @@ const emit = defineEmits([
   "seekcomplete"
 ])
 
-const props = withDefaults(defineProps<{
-  src: string
-  duration?: number
-  controls?: boolean
-  autoplay?: boolean
-  loop?: boolean
-  muted?: boolean
-  initialTime?: number
-  direction?: "" | 0 | 90 | -90
-  showProgress?: boolean
-  showFullscreenBtn?: boolean
-  showPlayBtn?: boolean
-  showCenterPlayBtn?: boolean
-  showMuteBtn?: boolean
-  enableProgressGesture?: boolean
-  enablePlayGesture?: boolean
-  objectFit?: "contain" | "fill" | "cover"
-  poster?: string
-  title?: string
-  playBtnPosition?: "bottom" | "center"
-  vslideGesture?: boolean
-  vslideGestureInFullscreen?: boolean
-  showScreenLockButton?: boolean
-  referrerPolicy?: "origin" | "no-referrer"
-}>(), {
-  controls: true,
-  autoplay: false,
-  loop: false,
-  muted: false,
-  initialTime: 0,
-  direction: "",
-  showProgress: true,
-  showFullscreenBtn: true,
-  showPlayBtn: true,
-  showCenterPlayBtn: true,
-  showMuteBtn: false,
-  enableProgressGesture: true,
-  enablePlayGesture: false,
-  objectFit: "contain",
-  playBtnPosition: "bottom",
-  vslideGesture: false,
-  vslideGestureInFullscreen: true,
-  referrerPolicy: "no-referrer",
-})
+const props = withDefaults(
+  defineProps<{
+    src: string
+    duration?: number
+    controls?: boolean
+    autoplay?: boolean
+    loop?: boolean
+    muted?: boolean
+    initialTime?: number
+    direction?: "" | 0 | 90 | -90
+    showProgress?: boolean
+    showFullscreenBtn?: boolean
+    showPlayBtn?: boolean
+    showCenterPlayBtn?: boolean
+    showMuteBtn?: boolean
+    enableProgressGesture?: boolean
+    enablePlayGesture?: boolean
+    objectFit?: "contain" | "fill" | "cover"
+    poster?: string
+    title?: string
+    playBtnPosition?: "bottom" | "center"
+    vslideGesture?: boolean
+    vslideGestureInFullscreen?: boolean
+    showScreenLockButton?: boolean
+    referrerPolicy?: "origin" | "no-referrer"
+  }>(),
+  {
+    controls: true,
+    autoplay: false,
+    loop: false,
+    muted: false,
+    initialTime: 0,
+    direction: "",
+    showProgress: true,
+    showFullscreenBtn: true,
+    showPlayBtn: true,
+    showCenterPlayBtn: true,
+    showMuteBtn: false,
+    enableProgressGesture: true,
+    enablePlayGesture: false,
+    objectFit: "contain",
+    playBtnPosition: "bottom",
+    vslideGesture: false,
+    vslideGestureInFullscreen: true,
+    referrerPolicy: "no-referrer"
+  }
+)
 
 const viewRef = ref<HTMLElement>()
 
 const {
   tongcengKey,
   nativeId: videoPlayerId,
-  containerRef,
+  tongcengRef,
   height,
   insertContainer,
   updateContainer
@@ -167,12 +225,14 @@ const {
 const enum Methods {
   PLAY = "play",
   PAUSE = "pause",
+  STOP = "stop",
   MUTE = "mute",
   FULLSCREEN = "fullscreen",
   SEEK = "seek",
   REMOVE = "remove",
   REPLAY = "replay",
-  CHANGE_URL = "changeURL"
+  CHANGE_URL = "changeURL",
+  SET_PLAYBACK_RAGE = "setPlaybackRate"
 }
 
 const videoData = reactive({
@@ -242,7 +302,11 @@ onLoadedData(data => {
   videoData.width = data.width
   videoData.height = data.height
   props.initialTime > 0 && seekTo(props.initialTime)
-  emit("loadedmetadata", { duration: data.duration, width: videoData.width, height: videoData.height })
+  emit("loadedmetadata", {
+    duration: data.duration,
+    width: videoData.width,
+    height: videoData.height
+  })
 })
 
 onPlay(() => {
@@ -266,19 +330,22 @@ onEnded(() => {
   }
 })
 
-onError((data) => {
+onError(data => {
   videoData.playing = false
   emit("error", { error: data.error })
 })
 
 timeUpdate(data => {
   videoData.currentTime = data.currentTime
-  emit("timeupdate", { currentTime: videoData.currentTime, duration: videoData.duration })
+  emit("timeupdate", {
+    currentTime: videoData.currentTime,
+    duration: videoData.duration
+  })
 })
 
 bufferUpdate(data => {
   videoData.bufferTime = data.bufferTime
-  emit("progress", { buffered: data.bufferTime })
+  emit("progress", { buffered: clamp(data.bufferTime / videoData.duration, 0, 1) })
 })
 
 fullscreenChange(() => {
@@ -287,6 +354,7 @@ fullscreenChange(() => {
 })
 
 seekComplete(data => {
+  isSeekingFromGesture.value = false
   emit("seekcomplete", { position: data.position })
 })
 
@@ -295,32 +363,46 @@ waiting(data => {
   isBufferLoading.value && emit("waiting", {})
 })
 
-watch(() => tongcengSize.value, () => {
-  setTimeout(() => {
-    updateContainer()
-  }, 100)
-})
+watch(
+  () => tongcengSize.value,
+  () => {
+    setTimeout(() => {
+      updateContainer()
+    }, 100)
+  }
+)
 
-watch(isShowControl, (show) => {
+watch(isShowControl, show => {
   emit("controlstoggle", { show })
 })
 
-watch(() => props.src, (newValue) => {
-  videoData.playing = false
-  operateVideoPlayer(Methods.CHANGE_URL, {
-    url: newValue,
-    objectFit: props.objectFit,
-    muted: props.muted,
-  })
-})
+watch(
+  () => props.src,
+  newValue => {
+    videoData.playing = false
+    operateVideoPlayer(Methods.CHANGE_URL, {
+      url: newValue,
+      objectFit: props.objectFit,
+      muted: props.muted
+    })
+  }
+)
 
-watch(() => props.muted, (newValue) => {
-  videoData.muted = newValue
-}, { immediate: true })
+watch(
+  () => props.muted,
+  newValue => {
+    videoData.muted = newValue
+  },
+  { immediate: true }
+)
 
-watch(() => props.duration, (newValue) => {
-  newValue && (videoData.duration = newValue)
-}, { immediate: true })
+watch(
+  () => props.duration,
+  newValue => {
+    newValue && (videoData.duration = newValue)
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   setTimeout(() => {
@@ -333,40 +415,56 @@ onUnmounted(() => {
 })
 
 const insert = () => {
-  insertContainer((success) => {
+  insertContainer(success => {
     if (success) {
-      NZJSBridge.invoke("insertVideoPlayer", {
-        parentId: tongcengKey,
-        videoPlayerId,
-        url: props.src,
-        objectFit: props.objectFit,
-        muted: props.muted,
-        loop: props.loop,
-      }, result => {
-        if (result.errMsg) {
-
-        } else {
-          if (props.autoplay) {
-            play()
+      NZJSBridge.invoke(
+        "insertVideoPlayer",
+        {
+          parentId: tongcengKey,
+          videoPlayerId,
+          url: props.src,
+          objectFit: props.objectFit,
+          muted: props.muted,
+          loop: props.loop
+        },
+        result => {
+          if (result.errMsg) {
+          } else {
+            if (props.autoplay) {
+              playSwitch()
+            }
           }
         }
-      })
+      )
     }
   })
 }
 
 const clickCenterPlayButton = () => {
   showCenterPlayCover.value = false
-  play()
+  playSwitch()
 }
 
 const play = () => {
-  operateVideoPlayer(videoData.playing ? Methods.PAUSE : Methods.PLAY)
+  operateVideoPlayer(Methods.PLAY)
   showControl()
+}
+
+const pause = () => {
+  operateVideoPlayer(Methods.PAUSE)
+  showControl()
+}
+
+const playSwitch = () => {
+  videoData.playing ? pause() : play()
 }
 
 const seekTo = (position: number) => {
   operateVideoPlayer(Methods.SEEK, { position })
+}
+
+const setPlaybackRate = (rate: number) => {
+  operateVideoPlayer(Methods.SET_PLAYBACK_RAGE, { rate })
 }
 
 const mutedSwitch = () => {
@@ -377,11 +475,28 @@ const mutedSwitch = () => {
   showControl()
 }
 
-const enterFullscreen = () => {
-  videoData.fullscreen = !videoData.fullscreen
-  viewRef.value!.style.zIndex = videoData.fullscreen ? "100000" : ""
-  operateVideoPlayer(Methods.FULLSCREEN, { enter: videoData.fullscreen, direction: getDirection() })
+const enterFullScreen = (direction = getDirection()) => {
+  videoData.fullscreen = true
+  viewRef.value!.style.zIndex = "100000"
+  operateVideoPlayer(Methods.FULLSCREEN, {
+    enter: videoData.fullscreen,
+    direction
+  })
   showControl()
+}
+
+const exitFullScreen = () => {
+  videoData.fullscreen = false
+  viewRef.value!.style.zIndex = "0"
+  operateVideoPlayer(Methods.FULLSCREEN, {
+    enter: videoData.fullscreen,
+    direction: 0
+  })
+  showControl()
+}
+
+const fullScreenSwitch = () => {
+  videoData.fullscreen ? exitFullScreen() : enterFullScreen()
 }
 
 let clickTimes = 0
@@ -399,7 +514,7 @@ const showOrHideControl = () => {
     if (clickTimes === 2) {
       clickTimes = 0
       if (!isLocked.value) {
-        play()
+        playSwitch()
         showControl(true)
       }
     } else {
@@ -441,43 +556,62 @@ const touch = Touch()
 
 const progressRef = ref<HTMLElement>()
 
-const isSlidingProgress = ref(false)
+const isSeekingFromGesture = ref(false)
 
-const slidingTime = ref(0)
+const isShowSeekTime = ref(false)
+
+const seekingTime = ref(0)
+
+let isMoveProgressSlider = false
 
 const currentTime = computed(() => {
-  if (isSlidingProgress.value) {
-    return slidingTime.value
+  if (isSeekingFromGesture.value) {
+    return seekingTime.value
   } else {
     return videoData.currentTime
   }
 })
 
 const onStartSlideProgress = (ev: TouchEvent) => {
+  ev.preventDefault()
+  ev.stopPropagation()
   touch.start(ev)
-  slidingTime.value = videoData.currentTime
-  isSlidingProgress.value = true
+
+  isMoveProgressSlider = false
+  seekingTime.value = videoData.currentTime
+  isSeekingFromGesture.value = true
+  isShowSeekTime.value = true
+  clearTimeout(controlAutoHiddenTimer)
+  isShowControl.value = true
 }
 
 const onMoveSlideProgress = (ev: TouchEvent) => {
+  ev.preventDefault()
+  ev.stopPropagation()
   touch.move(ev)
 
-  const rect = progressRef!.value?.getBoundingClientRect()!
-
-  const x = touch.deltaX.value + touch.startX.value - rect.left
+  const rect = progressRef.value!.getBoundingClientRect()
+  const x = touch.deltaX.value
   const percent = x / rect.width
   let value = videoData.duration * percent
-  value = Math.round(value)
+  value = Math.floor(value)
   value = clamp(value, 0, videoData.duration)
-  slidingTime.value = value
-  isSlidingProgress.value = true
+  seekingTime.value = value
+  isMoveProgressSlider = true
+  console.log(touch.deltaX.value, touch.startX.value, x, rect.left)
 }
 
 const onEndSlideProgress = (ev: TouchEvent) => {
-  isSlidingProgress.value = false
+  ev.preventDefault()
+  ev.stopPropagation()
   touch.reset()
   showControl()
-  seekTo(slidingTime.value)
+  isShowSeekTime.value = false
+  if (isMoveProgressSlider) {
+    seekTo(seekingTime.value)
+  } else {
+    isSeekingFromGesture.value = false
+  }
 }
 
 const enum GestureEvents {
@@ -498,17 +632,18 @@ const isShowScreenBrightnessToast = ref(false)
 let showScreenBrightnessToastTimer: ReturnType<typeof setTimeout>
 
 const onStartPanGesture = (ev: TouchEvent) => {
+  ev.preventDefault()
+  ev.stopPropagation()
   touch.start(ev)
-
-  slidingTime.value = videoData.currentTime
 
   currentGestureEvent = GestureEvents.NONE
 }
 
 const onMovePanGesture = async (ev: TouchEvent) => {
   ev.preventDefault()
+  ev.stopPropagation()
 
-  if (isLocked.value || props.showCenterPlayBtn && showCenterPlayCover.value) {
+  if (isLocked.value || (props.showCenterPlayBtn && showCenterPlayCover.value)) {
     return
   }
 
@@ -550,14 +685,19 @@ const onMovePanGesture = async (ev: TouchEvent) => {
   }
 
   if (currentGestureEvent === GestureEvents.SEEK) {
-    const x = touch.deltaX.value + touch.startX.value - rect.left
+    isMoveProgressSlider = false
+    seekingTime.value = videoData.currentTime
+    isSeekingFromGesture.value = true
+    isShowSeekTime.value = true
+
+    const x = touch.deltaX.value
     const percent = x / rect.width
     let value = videoData.duration * percent
-    value = Math.round(value)
+    value = Math.floor(value)
     value = clamp(value, 0, videoData.duration)
-    slidingTime.value = value
-    isSlidingProgress.value = true
-    showControl()
+    seekingTime.value = value
+    clearTimeout(controlAutoHiddenTimer)
+    isShowControl.value = true
   } else if (currentGestureEvent === GestureEvents.VOLUME) {
     const position = touch.startY.value - (touch.deltaY.value + touch.startY.value)
     const percent = position / (rect.height * 0.5)
@@ -568,7 +708,9 @@ const onMovePanGesture = async (ev: TouchEvent) => {
     setVolume({ volume: value })
 
     systemVolume.value = value
-    showControl()
+
+    clearTimeout(controlAutoHiddenTimer)
+    isShowControl.value = true
   } else if (currentGestureEvent === GestureEvents.BRIGHTNESS) {
     const position = touch.startY.value - (touch.deltaY.value + touch.startY.value)
     const percent = position / (rect.height * 0.5)
@@ -586,19 +728,57 @@ const onMovePanGesture = async (ev: TouchEvent) => {
     showScreenBrightnessToastTimer = setTimeout(() => {
       isShowScreenBrightnessToast.value = false
     }, 1500)
-    showControl()
+    clearTimeout(controlAutoHiddenTimer)
+    isShowControl.value = true
   }
 }
 
 const onEndPanGesture = (ev: TouchEvent) => {
-  isSlidingProgress.value = false
   touch.reset()
 
+  if (currentGestureEvent !== GestureEvents.NONE) {
+    showControl()
+  }
   if (currentGestureEvent === GestureEvents.SEEK) {
-    seekTo(slidingTime.value)
+    isShowSeekTime.value = false
+    seekTo(seekingTime.value)
   }
 }
 
+const operateFromService = (options: { method: string; data: Record<string, any> }) => {
+  const { method, data } = options
+  switch (method) {
+    case Methods.PLAY:
+      play()
+      break
+    case Methods.PAUSE:
+      pause()
+      break
+    case Methods.STOP:
+      operateVideoPlayer(method)
+      showControl()
+      break
+    case Methods.SEEK:
+      seekTo(data.position)
+      break
+    case Methods.SET_PLAYBACK_RAGE:
+      setPlaybackRate(data.rate)
+      break
+    case "requestFullScreen":
+      enterFullScreen(data.direction)
+      break
+    case "exitFullScreen":
+      exitFullScreen()
+      break
+    default:
+      break
+  }
+}
+
+defineExpose({
+  getContextId: () => videoPlayerId,
+  operate: operateFromService
+})
 </script>
 
 <style lang="less">
@@ -614,14 +794,9 @@ nz-video {
 
 .nz-video {
   &__native {
-    display: inline-block;
     position: absolute;
-    width: 100%;
-    height: 100%;
     left: 0;
     top: 0;
-    overflow: scroll;
-    -webkit-overflow-scrolling: touch;
   }
 
   &__wrapper {
@@ -698,9 +873,7 @@ nz-video {
       right: 0;
       bottom: 0;
       height: 48px;
-      background-image: linear-gradient(-180deg,
-          transparent,
-          rgba(0, 0, 0, 0.5));
+      background-image: linear-gradient(-180deg, transparent, rgba(0, 0, 0, 0.5));
       overflow: hidden;
       padding: 0 14px;
 
@@ -719,9 +892,7 @@ nz-video {
         right: 0;
         display: flex;
         align-items: center;
-        background-image: linear-gradient(0deg,
-            transparent,
-            rgba(0, 0, 0, 0.5));
+        background-image: linear-gradient(0deg, transparent, rgba(0, 0, 0, 0.5));
         height: 60px;
         line-height: 60px;
         padding-left: var(--safe-area-inset-left);
@@ -769,18 +940,17 @@ nz-video {
 
       &__handle {
         position: absolute;
-        width: 12px;
-        height: 12px;
-        margin-left: -6px;
-        top: -6px;
+        margin-left: -14px;
+        top: -14px;
         left: 0%;
+        padding: 8px;
       }
 
       &__ball {
         background-color: #fff;
         border-radius: 50%;
-        width: 100%;
-        height: 100%;
+        width: 12px;
+        height: 12px;
       }
     }
 
@@ -803,6 +973,16 @@ nz-video {
 
   &__loading {
     position: absolute;
+  }
+
+  &__seektime {
+    position: absolute;
+    font-size: 14px;
+    line-height: 14px;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    color: #fff;
   }
 
   &__slot {
@@ -845,7 +1025,7 @@ nz-video {
     }
 
     &--unlock {
-      background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxmaWx0ZXIgeD0iLTM3LjUlIiB5PSItMjguNiUiIHdpZHRoPSIxNzUlIiBoZWlnaHQ9IjE1Ny4xJSIgZmlsdGVyVW5pdHM9Im9iamVjdEJvdW5kaW5nQm94IiBpZD0iYSI+PGZlT2Zmc2V0IGluPSJTb3VyY2VBbHBoYSIgcmVzdWx0PSJzaGFkb3dPZmZzZXRPdXRlcjEiLz48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIiBpbj0ic2hhZG93T2Zmc2V0T3V0ZXIxIiByZXN1bHQ9InNoYWRvd0JsdXJPdXRlcjEiLz48ZmVDb2xvck1hdHJpeCB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuNSAwIiBpbj0ic2hhZG93Qmx1ck91dGVyMSIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0xNCA2YTQgNCAwIDAgMSAzLjk1NSAzLjRIMTYuNTNhMi42MDIgMi42MDIgMCAwIDAtMi4zNjYtMS45OTVMMTQgNy40YTIuNiAyLjYgMCAwIDAtMi41OTUgMi40MzZMMTEuNCAxMHYyLjE3NWgtLjAwMkwxMS4zOTcgMTQgMjAgMTRhMiAyIDAgMCAxIDIgMnY5YTIgMiAwIDAgMS0yIDJIOGEyIDIgMCAwIDEtMi0ydi05YTIgMiAwIDAgMSAyLTJsMS45OTktLjAwMUwxMCAxMGE0IDQgMCAwIDEgNC00em02IDkuNEg4YS42LjYgMCAwIDAtLjU5Mi41MDNMNy40IDE2djlhLjYuNiAwIDAgMCAuNTAzLjU5Mkw4IDI1LjZoMTJhLjYuNiAwIDAgMCAuNTkyLS41MDNMMjAuNiAyNXYtOWEuNi42IDAgMCAwLS41MDMtLjU5MkwyMCAxNS40eiIgaWQ9ImIiLz48L2RlZnM+PGcgZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJub25lIj48dXNlIGZpbGw9IiMwMDAiIGZpbHRlcj0idXJsKCNhKSIgeGxpbms6aHJlZj0iI2IiLz48dXNlIGZpbGw9IiNGRkYiIHhsaW5rOmhyZWY9IiNiIi8+PC9nPjwvc3ZnPg==")
+      background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgiIGhlaWdodD0iMzMiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxmaWx0ZXIgeD0iLTM3LjUlIiB5PSItMjguNiUiIHdpZHRoPSIxNzUlIiBoZWlnaHQ9IjE1Ny4xJSIgZmlsdGVyVW5pdHM9Im9iamVjdEJvdW5kaW5nQm94IiBpZD0iYSI+PGZlT2Zmc2V0IGluPSJTb3VyY2VBbHBoYSIgcmVzdWx0PSJzaGFkb3dPZmZzZXRPdXRlcjEiLz48ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIiBpbj0ic2hhZG93T2Zmc2V0T3V0ZXIxIiByZXN1bHQ9InNoYWRvd0JsdXJPdXRlcjEiLz48ZmVDb2xvck1hdHJpeCB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuNSAwIiBpbj0ic2hhZG93Qmx1ck91dGVyMSIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0xNCA2YTQgNCAwIDAgMSAzLjk1NSAzLjRIMTYuNTNhMi42MDIgMi42MDIgMCAwIDAtMi4zNjYtMS45OTVMMTQgNy40YTIuNiAyLjYgMCAwIDAtMi41OTUgMi40MzZMMTEuNCAxMHYyLjE3NWgtLjAwMkwxMS4zOTcgMTQgMjAgMTRhMiAyIDAgMCAxIDIgMnY5YTIgMiAwIDAgMS0yIDJIOGEyIDIgMCAwIDEtMi0ydi05YTIgMiAwIDAgMSAyLTJsMS45OTktLjAwMUwxMCAxMGE0IDQgMCAwIDEgNC00em02IDkuNEg4YS42LjYgMCAwIDAtLjU5Mi41MDNMNy40IDE2djlhLjYuNiAwIDAgMCAuNTAzLjU5Mkw4IDI1LjZoMTJhLjYuNiAwIDAgMCAuNTkyLS41MDNMMjAuNiAyNXYtOWEuNi42IDAgMCAwLS41MDMtLjU5MkwyMCAxNS40eiIgaWQ9ImIiLz48L2RlZnM+PGcgZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSJub25lIj48dXNlIGZpbGw9IiMwMDAiIGZpbHRlcj0idXJsKCNhKSIgeGxpbms6aHJlZj0iI2IiLz48dXNlIGZpbGw9IiNGRkYiIHhsaW5rOmhyZWY9IiNiIi8+PC9nPjwvc3ZnPg==");
     }
   }
 }

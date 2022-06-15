@@ -36,6 +36,7 @@ class NZAudioPlayer: NZPlayer {
         
         if let url = params._url {
             setURL(url)
+            playbackRate = params.playbackRate
         }
     }
     
@@ -47,7 +48,6 @@ class NZAudioPlayer: NZPlayer {
     override func play() {
         super.play()
         setVolume(params.volume)
-        setPlaybackRate(params.playbackRate)
     }
     
 }

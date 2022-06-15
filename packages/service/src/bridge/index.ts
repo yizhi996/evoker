@@ -118,6 +118,8 @@ import {
 } from "../lifecycle/global"
 import "./fromWebView"
 
+export type { VideoContext } from "./api/media/video"
+
 export {
   env,
   base64ToArrayBuffer,

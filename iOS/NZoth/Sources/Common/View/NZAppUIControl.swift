@@ -23,7 +23,7 @@ public class NZAppUIControl {
     }
     
     public func hideCapsule() {
-        capsuleView.isHidden = false
+        capsuleView.isHidden = true
     }
     
     public func showAppMoreActionBoard(appService: NZAppService,

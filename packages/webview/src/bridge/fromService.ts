@@ -2,6 +2,7 @@ import NZJSBridge from "./bridge"
 import type { InvokeCallback } from "@nzoth/bridge"
 import { pageScrollTo } from "./api/scroll"
 import { loadFontFace } from "./api/font"
+import { isNZothElement, nodes } from "../dom/element"
 
 let callbackId = 0
 
@@ -43,9 +44,24 @@ NZJSBridge.subscribe<{ callbackId: number; result: any }>(Events.CALLBACK_APP_SE
   }
 })
 
+interface OperateContextOptions {
+  nodeId: number
+  method: string
+  data: Record<string, any>
+}
+
+const operateContext = (options: OperateContextOptions) => {
+  const node = nodes.get(options.nodeId)
+  if (node && isNZothElement(node.el)) {
+    node.el.__instance!.exposed!.operate(options)
+  }
+  return Promise.resolve({})
+}
+
 const methods: Record<string, Function> = {
   pageScrollTo,
-  loadFontFace
+  loadFontFace,
+  operateContext
 }
 
 NZJSBridge.subscribe<{ callbackId: number; event: string; params: any[] }>(
@@ -58,7 +74,7 @@ NZJSBridge.subscribe<{ callbackId: number; event: string; params: any[] }>(
     }
     if (method) {
       method
-        .call(null, params || [])
+        .call(null, params || {})
         .then((result: any) => {
           publish({ errMsg: "", data: result })
         })

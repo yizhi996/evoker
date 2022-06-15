@@ -1,6 +1,5 @@
 import { AsyncReturn, GeneralCallbackResult, invokeCallback, wrapperAsyncAPI } from "@nzoth/bridge"
 import { invokeWebViewMethod } from "../../fromWebView"
-import { extend } from "@nzoth/shared"
 
 const enum Events {
   LOAD_FONT_FACE = "loadFontFace"

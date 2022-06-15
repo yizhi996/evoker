@@ -79,6 +79,8 @@ class NZPlayer: NSObject {
         }
     }
     
+    var playbackRate: Float = 1.0
+    
     var needResume = false
     
     override init() {
@@ -153,6 +155,7 @@ class NZPlayer: NSObject {
         guard let player = player else { return }
         player.play()
         player.isMuted = isMuted
+        player.rate = playbackRate
         playStatus = .playing
         isPlaying = true
     }
@@ -227,7 +230,10 @@ class NZPlayer: NSObject {
     }
     
     func setPlaybackRate(_ rate: Float) {
-        player?.rate = rate
+        playbackRate = rate
+        if isPlaying {
+            player?.rate = rate
+        }
     }
     
     func seek(position: TimeInterval) {

@@ -1,4 +1,4 @@
-import { isNZothElement, nodes } from "./element"
+import { isNZothElement } from "./element"
 import { SyncFlags } from "@nzoth/shared"
 import { sync } from "@nzoth/bridge"
 
@@ -37,17 +37,17 @@ export function selector(data: any[]) {
       res.scrollWidth = el.scrollWidth
       res.scrollHeight = el.scrollHeight
     }
-    if (fields.node) {
-      if (isNZothElement(el)) {
-        const llnode = nodes.get(el.__nodeId)
-        if (llnode && llnode.vnode) {
-          const { vnode } = llnode
-          res.node = { nodeIs: el.tagName, nodeId: el.__nodeId }
 
-          if (el.tagName === "nz-canvas" && vnode.component && vnode.component.exposed) {
-            const { type, canvasId } = vnode.component.exposed
-            res.node.canvasType = type
-            res.node.canvasId = canvasId
+    if (fields.context) {
+      if (isNZothElement(el)) {
+        if (["NZ-VIDEO"].includes(el.tagName)) {
+          const instance = el.__instance
+          const contextId = instance.exposed!.getContextId()
+          res.context = {
+            nodeId: el.__nodeId,
+            tagName: el.tagName,
+            contextId,
+            webViewId: window.webViewId
           }
         }
       }
