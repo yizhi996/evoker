@@ -98,6 +98,7 @@ class NZPlayer: NSObject {
     }
     
     deinit {
+        removeObserver()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -112,6 +113,18 @@ class NZPlayer: NSObject {
         if needResume {
             play()
             needResume = false
+        }
+    }
+    
+    func removeObserver() {
+        if let playerItem = playerItem {
+            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
+            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
+            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferEmpty))
+            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp))
+            NotificationCenter.default.removeObserver(self,
+                                                      name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
+                                                      object: playerItem)
         }
     }
     
@@ -183,22 +196,13 @@ class NZPlayer: NSObject {
         stop()
         player?.replaceCurrentItem(with: nil)
         timeUpdateObserver = nil
-        if let playerItem = playerItem {
-            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
-            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.loadedTimeRanges))
-            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.isPlaybackBufferEmpty))
-            playerItem.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.isPlaybackLikelyToKeepUp))
-            NotificationCenter.default.removeObserver(self,
-                                                      name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
-                                                      object: playerItem)
-        }
+        removeObserver()
         playerItem = nil
         player = nil
         currentPlayURL = nil
         isPlaying = false
         playStatus = .none
     }
-    
     
     func destroy() {
         reset()
