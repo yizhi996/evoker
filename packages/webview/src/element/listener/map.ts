@@ -1,31 +1,45 @@
 import { onUnmounted } from "vue"
 import { NZJSBridge } from "../../bridge"
-import { dispatch, on, off } from "@nzoth/shared"
+import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
 
-enum SubscribeKeys {}
+enum SubscribeKeys {
+  ON_UPDATED = "ON_UPDATED",
+  ON_TAP = "ON_TAP",
+  ON_TAP_POI = "ON_TAP_POI",
+  ON_REGION_CHANGE = "ON_REGION_CHANGE"
+}
+
+const combineSubscribeKey = (key: SubscribeKeys) => {
+  return "MODULE_MAP_" + key
+}
 
 Object.values(SubscribeKeys).forEach(key => {
-  NZJSBridge.subscribe(key, message => {
-    dispatch(key, message)
+  const _key = combineSubscribeKey(key)
+  NZJSBridge.subscribe(_key, data => {
+    dispatchEvent(_key, data)
   })
 })
 
-export default function useMap(mapId: number) {
+interface Coordinate {
+  longitude: number
+  latitude: number
+}
+
+export function useMap(mapId: number) {
   const ids = new Map<string, number>()
 
   function createListener(key: SubscribeKeys, callback: (data: any) => void) {
-    const id = on(key, data => {
-      if (data.mapId === mapId) {
-        callback(data)
-      }
+    const _key = combineSubscribeKey(key)
+    const id = addEvent<{ mapId: number }>(_key, data => {
+      data.mapId === mapId && callback(data)
     })
-    ids.set(key, id)
+    ids.set(_key, id)
     return id
   }
 
   function removaAllListener() {
     ids.forEach((value, key) => {
-      off(key, value)
+      removeEvent(key, value)
     })
   }
 
@@ -34,6 +48,20 @@ export default function useMap(mapId: number) {
   })
 
   return {
+    onUpdated: (callback: (data: any) => void) => {
+      return createListener(SubscribeKeys.ON_UPDATED, callback)
+    },
+    onTap: (callback: (data: Coordinate) => void) => {
+      return createListener(SubscribeKeys.ON_TAP, callback)
+    },
+    onTapPoi: (callback: (data: Coordinate & { name: string }) => void) => {
+      return createListener(SubscribeKeys.ON_TAP_POI, callback)
+    },
+    onRegionChange: (
+      callback: (data: { type: "begin" | "end"; centerLocation: Coordinate }) => void
+    ) => {
+      return createListener(SubscribeKeys.ON_REGION_CHANGE, callback)
+    },
     removaAllListener
   }
 }

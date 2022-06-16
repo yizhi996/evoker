@@ -9,8 +9,10 @@
 <script setup lang="ts">
 import { watch, onMounted } from "vue"
 import useNative from "../use/useNative"
-import useMap from "../listener/map"
+import { useMap } from "../listener/map"
 import { NZJSBridge } from "../../bridge"
+
+const emit = defineEmits(["updated", "tap", "tappoi", "regionchange"])
 
 const props = withDefaults(
   defineProps<{
@@ -49,7 +51,30 @@ const props = withDefaults(
 
 const { tongcengKey, nativeId: mapId, tongcengRef, height, insertContainer } = useNative()
 
-const {} = useMap(mapId)
+const { onUpdated, onTap, onTapPoi, onRegionChange } = useMap(mapId)
+
+onUpdated(() => {
+  emit("updated", {})
+})
+
+onTap(({ longitude, latitude }) => {
+  emit("tap", { longitude, latitude })
+})
+
+onTapPoi(({ name, longitude, latitude }) => {
+  emit("tappoi", { name, longitude, latitude })
+})
+
+onRegionChange(({ type, centerLocation }) => {
+  emit("regionchange", { type, centerLocation })
+})
+
+watch(
+  () => [props.longitude, props.latitude],
+  ([longitude, latitude]) => {
+    update({ longitude, latitude })
+  }
+)
 
 watch(
   () => props.scale,

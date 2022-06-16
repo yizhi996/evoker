@@ -57,6 +57,7 @@ enum NZMapAPI: String, NZBuiltInAPI {
         }
         
         let mapView = NZMapView(params: params)
+        mapView.delegate = webView
         container.addSubview(mapView)
         
         mapModule.mapViews[page.pageId] = mapView
