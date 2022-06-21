@@ -2,7 +2,8 @@
   "name": "@nzoth/service",
   "version": "0.1.0",
   "description": "nzoth jscore runtime",
-  "main": "dist/service.global.js",
+  "main": "dist/service.cjs.js",
+  "module": "dist/service.esm-bundler.js",
   "types": "dist/service.d.ts",
   "sideEffects": false,
   "buildOptions": {

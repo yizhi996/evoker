@@ -1,7 +1,7 @@
 import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
 import copy from "rollup-plugin-copy"
-import { isHTMLTag, isSVGTag } from "@vue/shared"
+import { isHTMLTag, isSVGTag, isBuiltInComponent } from "@vue/shared"
 import { relative, resolve } from "path"
 import dts from "vite-plugin-dts"
 import jsx from "@vitejs/plugin-vue-jsx"
@@ -46,7 +46,9 @@ export default defineConfig(() => {
         ],
         hook: "writeBundle"
       }),
-      jsx()
+      jsx({
+        isCustomElement: tag => tag.startsWith("nz-")
+      })
       // dts({
       //   tsConfigFilePath: relative(__dirname, "../../tsconfig.json"),
       //   include: ["src/**/*"],

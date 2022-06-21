@@ -10,6 +10,7 @@ import {
   tapEvents,
   addTapEvent
 } from "./event"
+import Loading from "../element/components/Loading.vue"
 
 export type EL = Node | Element | HTMLElement | NZothElement | Text | Comment | SVGAElement
 
@@ -20,6 +21,7 @@ vueApp.config.warnHandler = msg => {
 vueApp.config.errorHandler = err => {
   console.error(err)
 }
+vueApp.component("loading", Loading)
 
 export function isNZothElement(el: any): el is NZothElement {
   return el && "__instance" in el
