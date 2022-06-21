@@ -51,7 +51,6 @@ export default function vitePluginNZothAssets(): Plugin {
   }
 }
 
-const rawRE = /(\?|&)raw(?:&|$)/
 const urlRE = /(\?|&)url(?:&|$)/
 
 const queryRE = /\?.*$/s

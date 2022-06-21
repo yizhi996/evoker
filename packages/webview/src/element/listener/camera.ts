@@ -1,6 +1,6 @@
 import { onUnmounted } from "vue"
 import { NZJSBridge, authorize } from "../../bridge"
-import { AuthorizationStatus } from "@nzoth/bridge"
+import { AuthorizationStatus } from "../utils"
 import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
 
 enum SubscribeKeys {

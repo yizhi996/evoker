@@ -1,6 +1,6 @@
-import { reactive, provide, InjectionKey, ComponentInternalInstance } from "vue"
+import { reactive, provide, InjectionKey, ComponentInternalInstance } from "@vue/runtime-core"
 import { isNZothElement } from "../../dom/element"
-import { extend } from "@nzoth/shared"
+import { extend } from "@vue/shared"
 
 export type ParentProvide<T> = T & {
   link(child: ComponentInternalInstance): void
@@ -52,19 +52,16 @@ export function useParent<T>(
 }
 
 export function useChildren<T>(key: InjectionKey<ParentProvide<T>>) {
-  let publicChildren = reactive<ComponentInternalInstance[]>([])
-  let internalChildren = reactive<ComponentInternalInstance[]>([])
+  const internalChildren = reactive<ComponentInternalInstance[]>([])
 
   const linkChildren = (value?: any) => {
     const link = (child: ComponentInternalInstance) => {
       internalChildren.push(child)
-      publicChildren.push(child)
     }
 
     const unlink = (child: ComponentInternalInstance) => {
       const index = internalChildren.indexOf(child)
       if (index > -1) {
-        publicChildren.splice(index, 1)
         internalChildren.splice(index, 1)
       }
     }
@@ -75,8 +72,7 @@ export function useChildren<T>(key: InjectionKey<ParentProvide<T>>) {
         {
           link,
           unlink,
-          children: publicChildren,
-          internalChildren
+          children: internalChildren
         },
         value
       )
@@ -84,7 +80,7 @@ export function useChildren<T>(key: InjectionKey<ParentProvide<T>>) {
   }
 
   return {
-    children: publicChildren,
+    children: internalChildren,
     linkChildren
   }
 }

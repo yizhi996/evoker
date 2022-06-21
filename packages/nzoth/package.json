@@ -9,13 +9,9 @@
     "url": "git+https://github.com/yizhi996/nzoth.git"
   },
   "license": "MIT",
-  "main": "dist/nzoth.global.js",
-  "module": "dist/nzoth.esm.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "dev": "vite build --watch --mode 'development'",
-    "build": "vite build"
-  },
+  "main": "dist/nzoth.cjs.js",
+  "module": "dist/nzoth.esm-bundler.js",
+  "types": "dist/nzoth.d.ts",
   "sideEffects": false,
   "keywords": [
     "nzoth",
@@ -24,9 +20,15 @@
     "mini-app"
   ],
   "buildOptions": {
-    "name": "NZoth"
+    "name": "NZoth",
+    "formats": [
+      "global",
+      "cjs",
+      "esm-bundler"
+    ]
   },
   "dependencies": {
+    "vue": "^3.2.37",
     "@nzoth/service": "workspace:^0.1.0",
     "@nzoth/webview": "workspace:^0.1.0"
   },

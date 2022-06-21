@@ -10,8 +10,8 @@ export default defineConfig(() => {
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
         name: pkg.buildOptions?.name,
-        fileName: foramt => `service.${foramt === "iife" ? "global" : "esm"}.js`,
-        formats: ["iife", "es"]
+        fileName: foramt => `service.${foramt === "es" ? "esm-bundler" : "cjs"}.js`,
+        formats: ["es", "cjs"]
       },
       rollupOptions: {
         external: ["vue"],

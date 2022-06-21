@@ -1,4 +1,4 @@
-import { env } from "./api/env"
+import { env } from "./api/const"
 import {
   getWindowInfo,
   getAppBaseInfo,

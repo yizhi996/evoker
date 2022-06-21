@@ -1,4 +1,4 @@
-import { isFunction, extend } from "@nzoth/shared"
+import { isFunction, extend } from "@vue/shared"
 import { InvokeCallbackResult, subscribeHandler } from "./bridge"
 import { combineOptions } from "./utils"
 

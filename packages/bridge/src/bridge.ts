@@ -1,4 +1,4 @@
-import { isString } from "@nzoth/shared"
+import { isString } from "@vue/shared"
 
 let callbackId = 0
 

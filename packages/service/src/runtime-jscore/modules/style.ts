@@ -1,5 +1,5 @@
 import { camelize } from "vue"
-import { isString, hyphenate, capitalize, isArray } from "@nzoth/shared"
+import { isString, hyphenate, capitalize, isArray } from "@vue/shared"
 import { NZothHTMLElement } from "../../dom/html"
 import { NZothElement } from "../../dom/element"
 import { NZothCSSStyleDeclaration } from "../../dom/style"

@@ -1,6 +1,5 @@
 import { AsyncReturn, GeneralCallbackResult, invokeSuccess, wrapperAsyncAPI } from "@nzoth/bridge"
 import { invokeWebViewMethod } from "../../fromWebView"
-import { extend } from "@nzoth/shared"
 
 interface PageScrollToOptions {
   scrollTop?: number

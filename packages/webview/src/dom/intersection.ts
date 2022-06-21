@@ -1,5 +1,5 @@
 import "intersection-observer"
-import { SyncFlags } from "@nzoth/shared"
+import { SyncFlags } from "./vdSync"
 import { sync } from "@nzoth/bridge"
 
 interface CreateIntersectionObserverOptions {

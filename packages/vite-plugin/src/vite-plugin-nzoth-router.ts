@@ -20,8 +20,8 @@ export default function vitePluginNZothRouter(): Plugin {
 
       const config = getAppConfig()
 
-      const imports = []
-      const defines = []
+      const imports: string[] = []
+      const defines: string[] = []
 
       const newPages: Page[] = []
       for (let i = 0; i < config.pages.length; i++) {

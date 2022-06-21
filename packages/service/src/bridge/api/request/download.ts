@@ -1,8 +1,8 @@
 import { InnerJSBridge } from "../../bridge"
 import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@nzoth/bridge"
-import { isString } from "@nzoth/shared"
+import { isString } from "@vue/shared"
 import { Events, MAX_TIMEOUT, headerValueToString } from "./util"
-import { env } from "../env"
+import { env } from "../const"
 import { Task } from "./task"
 
 const downloadTasks: Map<string, DownloadTask> = new Map()

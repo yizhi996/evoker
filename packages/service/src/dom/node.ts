@@ -2,7 +2,7 @@ import { NZothPage } from "./page"
 import { NZothEventTarget } from "./eventTarget"
 import { NZothHTMLElement } from "./html"
 import { NZothCSSStyleDeclaration } from "./style"
-import { extend } from "@nzoth/shared"
+import { extend } from "@vue/shared"
 
 export class NZothNode extends NZothEventTarget {
   page: NZothPage

@@ -6,7 +6,7 @@
 import { computed, watch } from "vue"
 import { NZJSBridge } from "../../../bridge"
 import { vTap } from "../../directive/tap"
-import { isObject } from "@nzoth/shared"
+import { isObject } from "@vue/shared"
 
 const emit = defineEmits(["change", "columnchange", "cancel"])
 

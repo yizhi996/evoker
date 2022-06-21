@@ -33,7 +33,7 @@ interface Props {
   animation: AnimationAction[]
 }
 
-export default function useCSSAnimation(viewRef: Ref<HTMLElement | undefined>, props: Props) {
+export function useCSSAnimation(viewRef: Ref<HTMLElement | undefined>, props: Props) {
   let animateIdx = 0
 
   watch(

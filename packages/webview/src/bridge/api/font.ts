@@ -18,6 +18,7 @@ export function loadFontFace(options: LoadFontFaceOptions) {
       .load()
       .then(
         () => {
+          // @ts-ignore
           document.fonts.add(font)
           resolve({ status: font.status })
         },

@@ -1,5 +1,5 @@
 import { createApp, reactive, createVNode, render, ComponentInternalInstance } from "vue"
-import { toHandlerKey } from "@nzoth/shared"
+import { toHandlerKey } from "@vue/shared"
 import { BuiltInComponent, requireBuiltInComponent } from "../element"
 import { restoreNode, NZVNode } from "./vnode"
 import {

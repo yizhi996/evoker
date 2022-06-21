@@ -1,7 +1,7 @@
 import { isNZothElement } from "./element"
 import { NZothEventListenerOptions } from "./vnode"
 import { sync } from "@nzoth/bridge"
-import { SyncFlags } from "@nzoth/shared"
+import { SyncFlags } from "./vdSync"
 
 interface Event {
   type: string
@@ -65,7 +65,6 @@ export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: b
     el.__listenerOptions || (el.__listenerOptions = {})
 
   let touchStartTimestamp = 0
-  let isTouching = false
   let isMoved = false
 
   const isDisabled = () => {
@@ -81,13 +80,11 @@ export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: b
   }
 
   const onStart = (ev: TouchEvent) => {
-    isTouching = true
     touchStartTimestamp = ev.timeStamp
 
     if (isDisabled()) {
       ev.stopPropagation()
       ev.preventDefault()
-      isTouching = false
       isMoved = false
       return
     }
@@ -103,7 +100,6 @@ export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: b
   }
 
   const onEnd = (ev: TouchEvent) => {
-    isTouching = false
     const firstTouch = ev.changedTouches[0]
     if (firstTouch.identifier !== singleTouch) {
       isMoved = false
@@ -138,7 +134,6 @@ export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: b
 
   const onCancel = (ev: TouchEvent) => {
     isMoved = false
-    isTouching = false
     singleTouch = -1
   }
 

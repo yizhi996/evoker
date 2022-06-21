@@ -1,4 +1,4 @@
-import { extend } from "@nzoth/shared"
+import { extend } from "@vue/shared"
 
 type AnimationTimingFunction =
   | "linear"

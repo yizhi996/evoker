@@ -11,7 +11,7 @@ import { onMounted, watch } from "vue"
 import { NZJSBridge, showModal } from "../../bridge"
 import useNative from "../use/useNative"
 import useCamera from "../listener/camera"
-import { AuthorizationStatus } from "@nzoth/bridge"
+import { AuthorizationStatus } from "../utils"
 
 const emit = defineEmits(["initdone", "scancode", "error", "stop"])
 

@@ -14,8 +14,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "removeComments": false,
-    "noUnusedParameters": false,
-    // "isolatedModules":true,
+    "noImplicitAny": false,
     "jsx": "preserve",
     "lib": [
       "esnext",
@@ -37,10 +36,9 @@
   },
   "include": [
     "packages/nzoth/global.d.ts",
+    "packages/bridge/global.d.ts",
+    "packages/webview/global.d.ts",
     "packages/*/src",
     "packages/*/__tests__",
   ],
-  "exclude": [
-    "**/node_modules/*"
-  ]
 }

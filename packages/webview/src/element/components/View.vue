@@ -1,14 +1,11 @@
 <template>
-  <nz-view ref="viewRef" :class="finalHoverClass">
-    <slot></slot>
-  </nz-view>
+  <nz-view ref="el" :class="finalHoverClass"></nz-view>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue"
 import useHover from "../use/useHover"
-import useCSSAnimation from "../use/useCSSAnimation"
-import type { AnimationAction } from "../use/useCSSAnimation"
+import { useCSSAnimation, AnimationAction } from "../use/useCSSAnimation"
 
 const props = withDefaults(
   defineProps<{
@@ -27,11 +24,11 @@ const props = withDefaults(
   }
 )
 
-const viewRef = ref<HTMLElement>()
+const el = ref<HTMLElement>()
 
-const { finalHoverClass } = useHover(viewRef, props)
+const { finalHoverClass } = useHover(el, props)
 
-useCSSAnimation(viewRef, props)
+useCSSAnimation(el, props)
 </script>
 
 <style>

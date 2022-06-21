@@ -11,7 +11,7 @@ import {
   AuthorizationStatus
 } from "@nzoth/bridge"
 import { innerAppData } from "../../app"
-import { extend } from "@nzoth/shared"
+import { extend } from "@vue/shared"
 
 const enum Events {
   GET_USER_PRIFILE = "getUserProfile",

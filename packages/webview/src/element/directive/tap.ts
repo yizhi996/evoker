@@ -1,5 +1,5 @@
 import { Directive } from "vue"
-import { isFunction } from "@nzoth/shared"
+import { isFunction } from "@vue/shared"
 import { addClickEvent } from "../../dom/event"
 
 export const vTap: Directive = {

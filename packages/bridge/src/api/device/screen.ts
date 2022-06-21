@@ -1,4 +1,5 @@
-import { isString, isNumber, clamp, addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
+import { isNumber, clamp, addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
+import { isString } from "@vue/shared"
 import { invoke, subscribe } from "../../bridge"
 import {
   invokeFailure,

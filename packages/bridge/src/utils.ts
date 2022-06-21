@@ -1,4 +1,4 @@
-import { isPlainObject } from "@nzoth/shared"
+import { isPlainObject } from "@vue/shared"
 
 export function combineOptions<T = Record<string, any>, U = Record<string, any>>(
   options: T,

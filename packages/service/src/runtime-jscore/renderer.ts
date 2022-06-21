@@ -1,5 +1,5 @@
 import { createRenderer, RendererOptions } from "vue"
-import { extend } from "@nzoth/shared"
+import { extend } from "@vue/shared"
 import { NZothElement } from "../dom/element"
 import { NZothNode } from "../dom/node"
 import { NZothHTMLElement } from "../dom/html"

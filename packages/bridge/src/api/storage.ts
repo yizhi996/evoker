@@ -1,4 +1,5 @@
-import { isNumber, isObject, isString, isBoolean } from "@nzoth/shared"
+import { isNumber, isBoolean } from "@nzoth/shared"
+import { isString, isObject } from "@vue/shared"
 import { invoke } from "../bridge"
 import {
   invokeCallback,
@@ -137,14 +138,14 @@ export function getStorage<T = any, U extends GetStorageOptions<T> = GetStorageO
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
       return
     }
-    invoke<SuccessResult<U>>(event, { key: options.key }, result => {
-      if (result.errMsg && result.errMsg.length) {
+    invoke<{ data: string; dataType: DataType }>(event, { key: options.key }, result => {
+      if (result.errMsg) {
         invokeFailure(event, options, result.errMsg)
       } else {
-        const { data, dataType } = result.data as any
+        const { data: dataString, dataType } = result.data!
         try {
-          const reallyData = getReallyDataByDataType(data, dataType)
-          invokeSuccess(event, options, { data: reallyData })
+          const data = getReallyDataByDataType(dataString, dataType)
+          invokeSuccess(event, options, { data })
         } catch (error) {
           invokeFailure(event, options, (error as Error).message)
         }
@@ -249,7 +250,7 @@ export function removeStorage<T extends RemoveStorageOptions = RemoveStorageOpti
       return
     }
 
-    invoke<SuccessResult<T>>(event, { key: options.key }, result => {
+    invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
   }, options)
@@ -283,7 +284,7 @@ export function clearStorage<T extends ClearStorageOptions = ClearStorageOptions
 ): AsyncReturn<T, ClearStorageOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.CLEAR
-    invoke<SuccessResult<T>>(event, {}, result => {
+    invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
   }, options)
@@ -321,7 +322,7 @@ export function getStorageInfo<T extends GetStorageInfoOptions = GetStorageInfoO
 ): AsyncReturn<T, GetStorageInfoOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.INFO
-    invoke<SuccessResult<T>>(event, {}, result => {
+    invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
   }, options)

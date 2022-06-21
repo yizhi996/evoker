@@ -1,5 +1,5 @@
 import ws from "ws"
-import { isString, isFunction } from "@nzoth/shared"
+import { isString, isFunction } from "@vue/shared"
 
 let websocketServer: ws.Server
 
@@ -49,7 +49,7 @@ export function runWebSocketServer(options: RunWssOptions) {
     })
 
     client.on("message", (message: string) => {
-      isFunction(options.onRecv) && options.onRecv(client, message)
+      options.onRecv && options.onRecv(client, message)
     })
   })
 

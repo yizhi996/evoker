@@ -47,11 +47,11 @@ const getEventName = (event: Events) => PREFIX + event
 class InnerAudioContext {
   private readonly id: number = audioId++
 
-  startTime: number = 0
+  public startTime: number = 0
 
-  autoplay: boolean = false
+  public autoplay: boolean = false
 
-  loop: boolean = false
+  public loop: boolean = false
 
   private _src: string = ""
 

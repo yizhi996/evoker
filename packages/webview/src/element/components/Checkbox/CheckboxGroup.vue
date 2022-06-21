@@ -24,7 +24,7 @@ linkChildren({
 })
 
 const getValue = () => {
-  let res = []
+  const res: string[] = []
   for (const [value, checked] of Object.entries(checkeds)) {
     checked && res.push(value)
   }

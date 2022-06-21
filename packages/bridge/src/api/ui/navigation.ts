@@ -7,7 +7,7 @@ import {
   wrapperAsyncAPI,
   invokeFailure
 } from "../../async"
-import { extend } from "@nzoth/shared"
+import { extend } from "@vue/shared"
 import { errorMessage, ErrorCodes } from "../../errors"
 
 const enum Events {

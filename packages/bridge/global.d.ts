@@ -6,7 +6,7 @@ interface Base64 {
   arrayBufferToBase64(buffer: ArrayBuffer): string
 }
 
-interface NZAppServiceNativeSDK {
+export interface NZAppServiceNativeSDK {
   timer: NativeTimer
 
   messageChannel: MessageChannel
@@ -38,24 +38,24 @@ interface MessageChannelPort {
 }
 
 interface WebKit {
-  messageHandlers: MessageChannel
+  messageHandlers: MessageChannel & { DOMContentLoaded: MessageChannelPort }
 }
 
-interface SystemSetting {
+export interface SystemSetting {
   bluetoothEnabled: boolean
   locationEnabled: boolean
   wifiEnabled: boolean
   deviceOrientation: "portrait" | "landscape"
 }
 
-interface DeviceInfo {
+export interface DeviceInfo {
   brand: string
   model: string
   system: string
   platform: string
 }
 
-interface WindowInfo {
+export interface WindowInfo {
   pixelRatio: number
   screenWidth: number
   screenHeight: number
@@ -66,7 +66,7 @@ interface WindowInfo {
   screenTop: number
 }
 
-interface SafeArea {
+export interface SafeArea {
   left: number
   right: number
   top: number
@@ -75,7 +75,7 @@ interface SafeArea {
   height: number
 }
 
-interface AppBaseInfo {
+export interface AppBaseInfo {
   SDKVersion: string
   enableDebug: boolean
   language: string
@@ -85,7 +85,7 @@ interface AppBaseInfo {
 
 type AuthorizedStatus = "authorized" | "denied" | "not determined"
 
-interface AppAuthorizedSetting {
+export interface AppAuthorizedSetting {
   albumAuthorized: AuthorizedStatus
   bluetoothAuthorized: AuthorizedStatus
   cameraAuthorized: AuthorizedStatus

@@ -1,6 +1,7 @@
 import { getCurrentPages } from "../../../app"
 import { NZothPage } from "../../../dom/page"
-import { isFunction, SyncFlags } from "@nzoth/shared"
+import { SyncFlags } from "@nzoth/shared"
+import { isFunction } from "@vue/shared"
 import { randomId } from "../../../utils"
 import { sync } from "@nzoth/bridge"
 import { createVideoContextInstance } from "../media/video"

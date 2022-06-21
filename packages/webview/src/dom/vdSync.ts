@@ -1,4 +1,3 @@
-import { SyncFlags } from "@nzoth/shared"
 import { onSync, publish } from "@nzoth/bridge"
 import {
   insertBefore,
@@ -24,6 +23,22 @@ onSync(message => {
     publish("WEBVIEW_FIRST_RENDER", { timestamp: Date.now() - start }, window.webViewId)
   }
 })
+
+export const enum SyncFlags {
+  CREATE = 0,
+  INSERT,
+  SET_TEXT,
+  REMOVE,
+  DISPLAY,
+  ADD_EVENT,
+  UPDATE_PROP,
+  SET_MODEL_VALUE,
+  DISPATCH_EVENT,
+  SELECTOR,
+  ADD_INTERSECTION_OBSERVER,
+  REMOVE_INTERSECTION_OBSERVER,
+  INTERSECTION_OBSERVER_ENTRY
+}
 
 const renderFunction: { [x: number]: Function } = {
   [SyncFlags.INSERT]: insertBefore,

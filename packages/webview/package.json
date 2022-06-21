@@ -10,7 +10,10 @@
     "build": "vue-tsc --declaration --emitDeclarationOnly && vite build"
   },
   "buildOptions": {
-    "name": "NZothWebView"
+    "name": "NZothWebView",
+    "formats": [
+      "global"
+    ]
   },
   "sideEffects": false,
   "keywords": [
@@ -21,13 +24,16 @@
     "@nzoth/bridge": "workspace:^0.1.0",
     "@nzoth/shared": "workspace:^0.1.0",
     "@tweenjs/tween.js": "^18.6.4",
+    "@vue/runtime-core": "^3.2.37",
+    "@vue/shared": "^3.2.37",
     "intersection-observer": "^0.12.0",
     "lodash.throttle": "^4.1.1",
-    "vue": "^3.2.33"
+    "vue": "^3.2.37"
   },
   "devDependencies": {
     "@types/lodash.throttle": "^4.1.7",
     "@vitejs/plugin-vue": "^2.3.3",
+    "@vitejs/plugin-vue-jsx": "^1.3.10",
     "@vue/eslint-config-typescript": "^9.1.0",
     "@vue/test-utils": "^2.0.0-rc.21",
     "@vue/vue3-jest": "^27.0.0",
@@ -36,7 +42,8 @@
     "less": "^4.1.2",
     "postcss": "^8.4.13",
     "rollup-plugin-copy": "^3.4.0",
-    "vue-tsc": "^0.30.6"
+    "vite-plugin-dts": "^1.2.0",
+    "vue-tsc": "^0.38.1"
   },
   "browserslist": [
     "iOS >= 11",

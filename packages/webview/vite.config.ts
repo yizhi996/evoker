@@ -1,8 +1,10 @@
 import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
 import copy from "rollup-plugin-copy"
-import { isHTMLTag, isSVGTag } from "@nzoth/shared"
-import { resolve } from "path"
+import { isHTMLTag, isSVGTag } from "@vue/shared"
+import { relative, resolve } from "path"
+import dts from "vite-plugin-dts"
+import jsx from "@vitejs/plugin-vue-jsx"
 
 const pkg = require(resolve(__dirname, "package.json"))
 
@@ -14,7 +16,7 @@ export default defineConfig(() => {
         entry: resolve(__dirname, "src/index.ts"),
         name: pkg.buildOptions?.name,
         fileName: foramt => `webview.${foramt === "iife" ? "global" : "esm"}.js`,
-        formats: ["iife", "es"]
+        formats: ["iife"]
       },
       rollupOptions: {
         output: {
@@ -43,7 +45,15 @@ export default defineConfig(() => {
           }
         ],
         hook: "writeBundle"
-      })
+      }),
+      jsx()
+      // dts({
+      //   tsConfigFilePath: relative(__dirname, "../../tsconfig.json"),
+      //   include: ["src/**/*"],
+      //   outputDir: "dist/packages",
+      //   insertTypesEntry: true,
+      //   staticImport: true
+      // })
     ]
   }
 })

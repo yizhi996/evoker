@@ -1,5 +1,5 @@
 import { ComponentInternalInstance, callWithAsyncErrorHandling } from "vue"
-import { hyphenate, isArray } from "@nzoth/shared"
+import { hyphenate, isArray } from "@vue/shared"
 import { NZothElement } from "../../dom/element"
 import { NZothEvent, NZothEventListener } from "../../dom/eventTarget"
 

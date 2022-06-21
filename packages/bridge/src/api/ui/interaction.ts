@@ -6,7 +6,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
-import { isString } from "@nzoth/shared"
+import { isString } from "@vue/shared"
 
 const enum Events {
   SHOW_TOAST = "showToast",

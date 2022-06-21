@@ -1,9 +1,9 @@
 import { InnerJSBridge } from "../../bridge"
 import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@nzoth/bridge"
-import { isString } from "@nzoth/shared"
+import { isString } from "@vue/shared"
 import { Events, MAX_TIMEOUT, headerValueToString } from "./util"
 import { Task } from "./task"
-import { nzfile } from "../env"
+import { NZFILE_SCHEME } from "../const"
 
 const uploadTasks: Map<string, UploadTask> = new Map()
 
@@ -108,7 +108,7 @@ export function uploadFile<T extends UploadFileOptions = UploadFileOptions>(
     return
   }
 
-  if (!filePath || !isString(filePath) || !filePath.startsWith(nzfile)) {
+  if (!filePath || !isString(filePath) || !filePath.startsWith(NZFILE_SCHEME)) {
     invokeFailure(event, options, "upload filePath invalid")
     return
   }

@@ -10,9 +10,8 @@ export default defineConfig(({ mode }) => {
       minify: mode === "development" ? false : "terser",
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
-        name: pkg.buildOptions?.name,
-        fileName: foramt => `bridge.${foramt}.js`,
-        formats: ["cjs", "es"]
+        fileName: foramt => `bridge${foramt === "es" ? ".esm-bundler" : ""}.js`,
+        formats: ["es"]
       },
       rollupOptions: {
         external: ["vue", "@nzoth/shared"]

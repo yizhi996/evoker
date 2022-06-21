@@ -13,3 +13,9 @@ export function debounce(callback: () => void, delay: number) {
     timer = setTimeout(callback, delay)
   }
 }
+
+export const enum AuthorizationStatus {
+  authorized = 0,
+  denied,
+  notDetermined
+}

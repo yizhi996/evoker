@@ -39,19 +39,19 @@ const enum Methods {
 }
 
 class RecorderManager {
-  private onStartCallback?: () => void
+  private onStartCallback?: () => void = undefined
 
-  private onStopCallback?: (res: RecorderManagerStopCallbackResult) => void
+  private onStopCallback?: (res: RecorderManagerStopCallbackResult) => void = undefined
 
-  private onPauseCallback?: () => void
+  private onPauseCallback?: () => void = undefined
 
-  private onResumeCallback?: () => void
+  private onResumeCallback?: () => void = undefined
 
-  private onInterruptionBeginCallback?: () => void
+  private onInterruptionBeginCallback?: () => void = undefined
 
-  private onInterruptionEndCallback?: () => void
+  private onInterruptionEndCallback?: () => void = undefined
 
-  private onErrorCallback?: (res: GeneralCallbackResult) => void
+  private onErrorCallback?: (res: GeneralCallbackResult) => void = undefined
 
   constructor() {
     subscribe(eventName(Events.ON_START), _ => {

@@ -1,4 +1,5 @@
-import { isNumber, isString } from "@nzoth/shared"
+import { isString } from "@vue/shared"
+import { isNumber } from "@nzoth/shared"
 import { invoke } from "../../bridge"
 import {
   invokeCallback,

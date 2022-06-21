@@ -1,4 +1,5 @@
-import { isString, isNumber } from "@nzoth/shared"
+import { isNumber } from "@nzoth/shared"
+import { isString } from "@vue/shared"
 
 export const CONTENT_TYPE = "content-type"
 
@@ -11,7 +12,7 @@ export const enum Events {
 }
 
 export function objectToQueryString(obj: Record<string, any>) {
-  let str = []
+  const str: string[] = []
   for (let k in obj)
     if (obj.hasOwnProperty(k)) {
       const v = obj[k]

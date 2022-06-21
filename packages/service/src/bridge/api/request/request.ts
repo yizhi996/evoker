@@ -1,6 +1,7 @@
 import { InnerJSBridge } from "../../bridge"
 import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@nzoth/bridge"
-import { isString, isObject, isArrayBuffer, extend } from "@nzoth/shared"
+import { isArrayBuffer } from "@nzoth/shared"
+import { isString, isObject, extend } from "@vue/shared"
 import { Task } from "./task"
 import {
   Events,

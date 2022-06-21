@@ -1,5 +1,5 @@
 export const enum ErrorCodes {
-  MISSING_REQUIRED_PRAMAR,
+  MISSING_REQUIRED_PRAMAR = 0,
   CANNOT_BE_EMPTY,
   ILLEGAL_VALUE
 }

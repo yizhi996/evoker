@@ -9,12 +9,12 @@ import {
 import { nodes, createElement, ElementWithTransition } from "./element"
 import { restoreNode } from "./vnode"
 import { isNZothElement, EL } from "./element"
-import { toHandlerKey } from "@nzoth/shared"
-import { SyncFlags } from "@nzoth/shared"
+import { toHandlerKey } from "@vue/shared"
+import { SyncFlags } from "./vdSync"
 
 export function insertBefore(data: any[]) {
   const [_, childData, parentData, anchorData] = data
-  let parentEl: EL | null
+  let parentEl: EL | null = null
   if (parentData && parentData[3] === "app") {
     const parent = restoreNode(parentData)
     const el = document.getElementById(parent.id)

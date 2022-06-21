@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "description": "nzoth js bridge",
   "main": "dist/bridge.cjs.js",
-  "module": "dist/bridge.es.js",
+  "module": "dist/bridge.esm-bundler.js",
   "types": "dist/bridge.d.ts",
-  "scripts": {
-    "dev": "vite build --watch --mode 'development'",
-    "build": "vite build"
-  },
   "buildOptions": {
-    "name": "NZothBridge"
+    "name": "NZothBridge",
+    "formats": [
+      "esm-bundler",
+      "cjs"
+    ]
   },
   "sideEffects": false,
   "files": [
@@ -19,6 +19,7 @@
   ],
   "dependencies": {
     "@nzoth/shared": "workspace:^0.1.0",
-    "vue": "^3.2.33"
+    "vue": "^3.2.37",
+    "@vue/shared": "^3.2.37"
   }
 }

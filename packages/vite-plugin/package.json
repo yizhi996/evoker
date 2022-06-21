@@ -7,17 +7,32 @@
   "types": "dist/vite-plugin.d.ts",
   "sideEffects": false,
   "buildOptions": {
-    "name": "NZothPlugin"
+    "name": "NZothPlugin",
+    "formats": [
+      "esm-bundler",
+      "cjs"
+    ],
+    "external": [
+      "dependencies",
+      "ws",
+      "zlib",
+      "path",
+      "fs",
+      "os",
+      "crypto"
+    ]
   },
   "dependencies": {
     "@nzoth/shared": "workspace:^0.1.0",
     "@vitejs/plugin-vue": "^2.3.3",
-    "@vue/compiler-core": "^3.2.33",
+    "@vue/compiler-core": "^3.2.37",
     "archiver": "^5.3.1",
     "picocolors": "^1.0.0",
     "rollup-plugin-copy": "^3.4.0",
     "tmp": "^0.2.1",
-    "vue": "^3.2.33"
+    "vue": "^3.2.37",
+    "@vue/shared": "^3.2.37",
+    "esbuild": "^0.14.43"
   },
   "devDependencies": {
     "@types/archiver": "^5.3.1",

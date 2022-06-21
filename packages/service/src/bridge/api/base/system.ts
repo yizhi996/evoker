@@ -1,23 +1,80 @@
 import { AsyncReturn, GeneralCallbackResult, invokeSuccess, wrapperAsyncAPI } from "@nzoth/bridge"
-import { extend } from "@nzoth/shared"
+import { extend } from "@vue/shared"
 
-export function getSystemSetting() {
+interface SystemSetting {
+  bluetoothEnabled: boolean
+  locationEnabled: boolean
+  wifiEnabled: boolean
+  deviceOrientation: "portrait" | "landscape"
+}
+
+export function getSystemSetting(): SystemSetting {
   return globalThis.__NZAppServiceNativeSDK.system.getSystemSetting()
 }
 
-export function getDeviceInfo() {
+interface DeviceInfo {
+  brand: string
+  model: string
+  system: string
+  platform: string
+}
+
+export function getDeviceInfo(): DeviceInfo {
   return globalThis.__NZAppServiceNativeSDK.system.getDeviceInfo()
 }
 
-export function getWindowInfo() {
+interface WindowInfo {
+  pixelRatio: number
+  screenWidth: number
+  screenHeight: number
+  windowWidth: number
+  windowHeight: number
+  statusBarHeight: number
+  safeArea: SafeArea
+  screenTop: number
+}
+
+interface SafeArea {
+  left: number
+  right: number
+  top: number
+  bottom: number
+  width: number
+  height: number
+}
+
+export function getWindowInfo(): WindowInfo {
   return globalThis.__NZAppServiceNativeSDK.system.getWindowInfo()
 }
 
-export function getAppBaseInfo() {
+interface AppBaseInfo {
+  SDKVersion: string
+  enableDebug: boolean
+  language: string
+  version: string
+  theme: "light" | "dark"
+}
+
+export function getAppBaseInfo(): AppBaseInfo {
   return globalThis.__NZAppServiceNativeSDK.system.getAppBaseInfo()
 }
 
-export function getAppAuthorizeSetting() {
+type AuthorizedStatus = "authorized" | "denied" | "not determined"
+
+interface AppAuthorizedSetting {
+  albumAuthorized: AuthorizedStatus
+  bluetoothAuthorized: AuthorizedStatus
+  cameraAuthorized: AuthorizedStatus
+  locationAuthorized: AuthorizedStatus
+  locationReducedAccuracy: boolean
+  microphoneAuthorized: AuthorizedStatus
+  notificationAuthorized: AuthorizedStatus
+  notificationAlertAuthorized: AuthorizedStatus
+  notificationBadgeAuthorized: AuthorizedStatus
+  notificationSoundAuthorized: AuthorizedStatus
+}
+
+export function getAppAuthorizeSetting(): AppAuthorizedSetting {
   return globalThis.__NZAppServiceNativeSDK.system.getAppAuthorizeSetting()
 }
 

@@ -1,4 +1,4 @@
-import { isFunction } from "@nzoth/shared"
+import { isFunction } from "@vue/shared"
 import { invokeAppOnError } from "./lifecycle/global"
 
 const nativeTimer = globalThis.__NZAppServiceNativeSDK.timer

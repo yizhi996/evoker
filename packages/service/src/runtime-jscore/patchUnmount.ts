@@ -8,7 +8,7 @@ import {
   Fragment,
   ComponentOptions
 } from "vue"
-import { invokeArrayFns } from "@nzoth/shared"
+import { invokeArrayFns } from "@vue/shared"
 
 const enum ShapeFlags {
   ELEMENT = 1,

@@ -1,5 +1,5 @@
 import { isNZothElement } from "./element"
-import { SyncFlags } from "@nzoth/shared"
+import { SyncFlags } from "./vdSync"
 import { sync } from "@nzoth/bridge"
 
 interface SelectorQueueItem {

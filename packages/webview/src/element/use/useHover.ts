@@ -9,7 +9,7 @@ interface Props {
   loading?: boolean
 }
 
-export default function useHover(viewRef: Ref<HTMLElement | undefined>, props: Props) {
+export default function useHover(el: Ref<HTMLElement | undefined>, props: Props) {
   const hovering = ref(false)
 
   let hoverStartTimer: ReturnType<typeof setTimeout>
@@ -46,20 +46,20 @@ export default function useHover(viewRef: Ref<HTMLElement | undefined>, props: P
   }
 
   const bindHover = () => {
-    if (viewRef.value) {
-      viewRef.value.addEventListener("touchstart", hoverTouchStart)
-      viewRef.value.addEventListener("canceltap", hoverCancel)
-      viewRef.value.addEventListener("touchcancel", hoverCancel)
-      viewRef.value.addEventListener("touchend", hoverTouchEnd)
+    if (el.value) {
+      el.value.addEventListener("touchstart", hoverTouchStart)
+      el.value.addEventListener("canceltap", hoverCancel)
+      el.value.addEventListener("touchcancel", hoverCancel)
+      el.value.addEventListener("touchend", hoverTouchEnd)
     }
   }
 
   const unbindHover = () => {
-    if (viewRef.value) {
-      viewRef.value.removeEventListener("touchstart", hoverTouchStart)
-      viewRef.value.removeEventListener("canceltap", hoverCancel)
-      viewRef.value.removeEventListener("touchcancel", hoverCancel)
-      viewRef.value.removeEventListener("touchend", hoverTouchEnd)
+    if (el.value) {
+      el.value.removeEventListener("touchstart", hoverTouchStart)
+      el.value.removeEventListener("canceltap", hoverCancel)
+      el.value.removeEventListener("touchcancel", hoverCancel)
+      el.value.removeEventListener("touchend", hoverTouchEnd)
     }
   }
 

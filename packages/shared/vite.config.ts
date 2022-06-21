@@ -10,8 +10,8 @@ export default defineConfig(({ mode }) => {
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
         name: pkg.buildOptions?.name,
-        fileName: foramt => `shared.${foramt}.js`,
-        formats: ["cjs", "es"]
+        fileName: foramt => `shared.${foramt === "es" ? "esm-bundler" : "cjs"}.js`,
+        formats: ["es", "cjs"]
       },
       rollupOptions: {
         external: ["@vue/shared"]

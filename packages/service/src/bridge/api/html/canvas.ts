@@ -1,4 +1,4 @@
-import { isString } from "@nzoth/shared"
+import { isString } from "@vue/shared"
 import { queuePostFlushCb } from "vue"
 
 class CanvasPattern {
@@ -115,7 +115,7 @@ export class CanvasRenderingContext2D {
     if (this.commandQueue.length === 0) {
       return
     }
-    Canvas2D.exec(this.commandQueue, this.canvasId)
+    // Canvas2D.exec(this.commandQueue, this.canvasId)
     this.commandQueue = []
   }
 

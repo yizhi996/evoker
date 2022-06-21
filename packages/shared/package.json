@@ -3,20 +3,19 @@
   "version": "0.1.0",
   "description": "nzoth shared",
   "main": "dist/shared.cjs.js",
-  "module": "dist/shared.es.js",
+  "module": "dist/shared.esm-bundler.js",
   "types": "dist/shared.d.ts",
-  "scripts": {
-    "dev": "vite build --watch --mode 'development'",
-    "build": "vite build"
-  },
   "buildOptions": {
-    "name": "NZothShared"
+    "formats": [
+      "esm-bundler",
+      "cjs"
+    ]
   },
   "sideEffects": false,
   "keywords": [
     "nzoth"
   ],
   "dependencies": {
-    "@vue/shared": "^3.2.33"
+    "@vue/shared": "^3.2.37"
   }
 }
