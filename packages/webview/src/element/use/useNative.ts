@@ -14,7 +14,7 @@ export default function useNative(options: { scrollEnabled?: boolean } = { scrol
   const tongcengId = incTongcengId++
   const tongcengKey = "__nzoth_tongceng_id_" + tongcengId
   const tongcengRef = ref<HTMLElement>()
-  const height = "height:" + `${418094 + tongcengId}px`
+  const height = `${418094 + tongcengId}px`
 
   let retryLimit = 5
   let containerInserting = false
