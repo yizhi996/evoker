@@ -1,0 +1,57 @@
+nz-slider {
+  display: block;
+  margin: 10px 18px;
+  padding: 0;
+}
+
+.nz-slider {
+  &__wrapper {
+    display: flex;
+    min-height: 16px;
+    align-items: center;
+  }
+
+  &__input {
+    flex: 1;
+    padding: 8px 0;
+
+    &__bar {
+      z-index: 0;
+      -webkit-tap-highlight-color: transparent;
+      border-radius: 5px;
+      height: 2px;
+      position: relative;
+      transition: background-color 0.3s ease;
+    }
+
+    &__thumb {
+      z-index: 2;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    }
+
+    &__handle {
+      z-index: 3;
+      background-color: transparent;
+    }
+
+    &__handle,
+    &__thumb {
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+    }
+
+    &__track {
+      border-radius: 6px;
+      height: 100%;
+      transition: background-color 0.3s ease;
+    }
+  }
+
+  &__value {
+    color: #888;
+    font-size: 14px;
+    margin-left: 1em;
+    text-align: center;
+  }
+}
