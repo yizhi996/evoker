@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { nextTick, watch, onMounted, getCurrentInstance } from "vue"
-import Icon from "../Icon.vue"
+import Icon from "../icon"
 import { vTap } from "../../directive/tap"
 import { useParent, ParentProvide } from "../../use/useRelation"
 import { CHECKBOX_GROUP_KEY, CheckboxProvide } from "./constant"
