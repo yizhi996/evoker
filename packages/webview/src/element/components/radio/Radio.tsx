@@ -64,7 +64,7 @@ export default defineComponent({
 
     return () => {
       const node = (
-        <nz-radio class={props.disabled ? "nz-radio--disabled" : ""}>
+        <nz-radio class={{ "nz-radio--disabled": props.disabled }}>
           <Icon type={props.checked ? "success" : "circle"} color={props.color} />
           <span class="nz-radio__label"></span>
         </nz-radio>

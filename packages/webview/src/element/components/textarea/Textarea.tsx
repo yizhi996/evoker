@@ -12,6 +12,7 @@ import useNative from "../../use/useNative"
 import useKeyboard from "../../listener/keyboard"
 import useTextArea from "../../listener/textarea"
 import { getInputStyle, getInputPlaceholderStyle } from "../../utils/style"
+import { classNames } from "../../utils"
 
 const props = {
   value: { type: String, default: "" },
@@ -241,17 +242,17 @@ export default defineComponent({
       }
     })
 
-    return () => {
-      const plaseholderClass = "nz-textarea__placeholder " + props.placeholderClass
-
-      return (
-        <nz-textarea ref={container}>
-          <div ref={tongcengRef} class="nz-native__tongceng" id={tongcengKey}>
-            <div style={{ width: "100%", height: height }}></div>
-          </div>
-          <p ref={placeholderEl} class={plaseholderClass} style={props.placeholderStyle}></p>
-        </nz-textarea>
-      )
-    }
+    return () => (
+      <nz-textarea ref={container}>
+        <div ref={tongcengRef} class="nz-native__tongceng" id={tongcengKey}>
+          <div style={{ width: "100%", height: height }}></div>
+        </div>
+        <p
+          ref={placeholderEl}
+          class={classNames("nz-textarea__placeholder", props.placeholderClass)}
+          style={props.placeholderStyle}
+        ></p>
+      </nz-textarea>
+    )
   }
 })

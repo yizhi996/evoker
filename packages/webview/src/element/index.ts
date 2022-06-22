@@ -1,6 +1,6 @@
 import { Component } from "vue"
 
-import ScrollView from "./components/ScrollView.vue"
+import ScrollView from "./components/scroll-view"
 import Swiper from "./components/Swiper/Swiper.vue"
 import SwiperItem from "./components/Swiper/SwiperItem.vue"
 import Image from "./components/image"

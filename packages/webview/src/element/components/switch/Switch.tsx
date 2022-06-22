@@ -1,6 +1,7 @@
 import { defineComponent, getCurrentInstance, PropType, VNode, withDirectives } from "vue"
 import { vibrateShort } from "../../../bridge"
 import { vTap } from "../../directive/tap"
+import { classNames } from "../../utils"
 import Icon from "../icon"
 
 const props = {
@@ -47,11 +48,10 @@ export default defineComponent({
       if (props.type === "checkbox") {
         return <Icon type={checked ? "success" : "circle"} color={color} />
       } else {
-        const cls = "nz-switch__input " + (checked ? "nz-switch__input--checked" : "")
         return (
           <div class="nz-switch__wrapper">
             <div
-              class={cls}
+              class={classNames("nz-switch__input", { "nz-switch__input--checked": checked })}
               style={{
                 "border-color": checked ? color : "#dfdfdf",
                 "background-color": checked ? color : "#fff"
@@ -67,7 +67,7 @@ export default defineComponent({
 
     return () => {
       const node = (
-        <nz-switch class={props.disabled ? "nz-switch--disabled" : ""}>
+        <nz-switch class={{ "nz-switch--disabled": props.disabled }}>
           {renderType()}
           <span class="nz-switch__label"></span>
         </nz-switch>

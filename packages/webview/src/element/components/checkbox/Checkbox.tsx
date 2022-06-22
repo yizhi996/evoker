@@ -66,7 +66,7 @@ export default defineComponent({
 
     return () => {
       const node = (
-        <nz-checkbox class={props.disabled ? "nz-checkbox--disabled" : ""}>
+        <nz-checkbox class={{ "nz-checkbox--disabled": props.disabled }}>
           <Icon type={props.checked ? "success" : "circle"} color={props.color} />
           <span class="nz-checkbox__label"></span>
         </nz-checkbox>

@@ -6,6 +6,7 @@ import { Easing } from "@tweenjs/tween.js"
 import { vibrateShort, NZJSBridge } from "../../../bridge"
 import { clamp } from "@nzoth/shared"
 import useJSAnimation from "../../use/useJSAnimation"
+import { classNames } from "../../utils"
 
 export default defineComponent({
   name: "nz-picker-view-column",
@@ -205,25 +206,28 @@ export default defineComponent({
       getCurrent: () => currentIndex
     })
 
-    return () => {
-      const _maskClass = "nz-picker-view-column__mask " + maskClass.value
-      const _indicatorClass = "nz-picker-view-column__indicator " + indicatorClass.value
-      return (
-        <nz-picker-view-column>
-          <div ref={groupRef} class="nz-picker-view-column__group">
-            <div class={_maskClass} style={combineMaskStyle.value}></div>
-            <div ref={indicatorRef} class={_indicatorClass} style={indicatorStyle.value}></div>
-            <div
-              ref={contentRef}
-              class="nz-picker-view-column__content"
-              style={{
-                transform: `translate3d(0, ${translateY.value}px, 0)`,
-                padding: `${indicatorTop.value}px 0px`
-              }}
-            ></div>
-          </div>
-        </nz-picker-view-column>
-      )
-    }
+    return () => (
+      <nz-picker-view-column>
+        <div ref={groupRef} class="nz-picker-view-column__group">
+          <div
+            class={classNames("nz-picker-view-column__mask", maskClass.value)}
+            style={combineMaskStyle.value}
+          ></div>
+          <div
+            ref={indicatorRef}
+            class={classNames("nz-picker-view-column__indicator", indicatorClass.value)}
+            style={indicatorStyle.value}
+          ></div>
+          <div
+            ref={contentRef}
+            class="nz-picker-view-column__content"
+            style={{
+              transform: `translate3d(0, ${translateY.value}px, 0)`,
+              padding: `${indicatorTop.value}px 0px`
+            }}
+          ></div>
+        </div>
+      </nz-picker-view-column>
+    )
   }
 })

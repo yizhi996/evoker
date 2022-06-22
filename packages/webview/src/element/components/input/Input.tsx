@@ -11,6 +11,7 @@ import useNative from "../../use/useNative"
 import useKeyboard from "../../listener/keyboard"
 import { getInputStyle, getInputPlaceholderStyle } from "../../utils/style"
 import { NZJSBridge } from "../../../bridge"
+import { classNames } from "../../utils"
 
 const props = {
   value: { type: String, default: "" },
@@ -207,17 +208,17 @@ export default defineComponent({
       }
     })
 
-    return () => {
-      const placeholderClass = "nz-input__placeholder " + props.placeholderClass
-
-      return (
-        <nz-input ref={container}>
-          <div ref={tongcengRef} class="nz-native__tongceng" id={tongcengKey}>
-            <div style={{ width: "100%", height: height }}></div>
-          </div>
-          <p ref={placeholderEl} class={placeholderClass} style={props.placeholderStyle}></p>
-        </nz-input>
-      )
-    }
+    return () => (
+      <nz-input ref={container}>
+        <div ref={tongcengRef} class="nz-native__tongceng" id={tongcengKey}>
+          <div style={{ width: "100%", height: height }}></div>
+        </div>
+        <p
+          ref={placeholderEl}
+          class={classNames("nz-input__placeholder", props.placeholderClass)}
+          style={props.placeholderStyle}
+        ></p>
+      </nz-input>
+    )
   }
 })
