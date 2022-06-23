@@ -27,8 +27,8 @@ import Canvas from "./components/Canvas.vue"
 import View from "./components/view"
 import PickerView from "./components/picker-view"
 import PickerViewColumn from "./components/picker-view-column"
-import Form from "./components/Form.vue"
-import Label from "./components/Label.vue"
+import Form from "./components/form"
+import Label from "./components/label"
 
 import "./index.less"
 
