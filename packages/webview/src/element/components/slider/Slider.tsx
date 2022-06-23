@@ -8,7 +8,7 @@ import {
   defineComponent
 } from "vue"
 import { unitToPx } from "../../utils/format"
-import useTouch from "../../use/useTouch"
+import { useTouch } from "../../composables/useTouch"
 import { clamp } from "@nzoth/shared"
 
 const props = {

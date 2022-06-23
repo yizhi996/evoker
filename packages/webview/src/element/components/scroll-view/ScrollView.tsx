@@ -8,9 +8,9 @@ import {
   defineComponent
 } from "vue"
 import { unitToPx } from "../../utils/format"
-import useJSAnimation from "../../use/useJSAnimation"
+import { useJSAnimation } from "../../composables/useJSAnimation"
 import { Easing } from "@tweenjs/tween.js"
-import useNative from "../../use/useNative"
+import { useTongceng } from "../../composables/useTongceng"
 import { NZJSBridge } from "../../../bridge"
 import { classNames } from "../../utils"
 
@@ -43,7 +43,7 @@ export default defineComponent({
       nativeId: scrollViewId,
       tongcengRef,
       insertContainer
-    } = useNative({ scrollEnabled: true })
+    } = useTongceng({ scrollEnabled: true })
 
     let lastScrollTime = 0
     let lastScrollTop = 0

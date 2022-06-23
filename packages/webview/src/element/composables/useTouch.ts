@@ -72,7 +72,7 @@ export function Touch() {
   }
 }
 
-export default function useTouch(el: HTMLElement) {
+export function useTouch(el: HTMLElement) {
   const touch = Touch()
 
   let touchStartCallback: (ev: TouchEvent, touch: Touch) => void

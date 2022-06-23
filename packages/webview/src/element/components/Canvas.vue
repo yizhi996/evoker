@@ -1,7 +1,7 @@
 <template>
   <nz-canvas>
     <div ref="tongcengRef" class="nz-native__tongceng nz-canvas-tongceng" :id="tongcengKey">
-      <div style="width: 100%" :style="height"></div>
+      <div style="width: 100%" :style="{ height: tongcengHeight }"></div>
     </div>
     <canvas></canvas>
   </nz-canvas>
@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { onMounted } from "vue"
-import useNative from "../use/useNative"
+import { useTongceng } from "../composables/useTongceng"
 import { NZJSBridge } from "../../bridge"
 
 const props = withDefaults(
@@ -26,9 +26,9 @@ const {
   tongcengKey,
   nativeId: canvasId,
   tongcengRef,
-  height,
+  tongcengHeight,
   insertContainer
-} = useNative()
+} = useTongceng()
 
 onMounted(() => {
   setTimeout(() => {

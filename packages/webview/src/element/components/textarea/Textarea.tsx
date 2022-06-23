@@ -8,9 +8,9 @@ import {
   defineComponent
 } from "vue"
 import { NZJSBridge } from "../../../bridge"
-import useNative from "../../use/useNative"
-import useKeyboard from "../../listener/keyboard"
-import useTextArea from "../../listener/textarea"
+import { useTongceng } from "../../composables/useTongceng"
+import { useKeyboard } from "../../composables/useKeyboard"
+import { useTextArea } from "../../composables/useTextarea"
 import { getInputStyle, getInputPlaceholderStyle } from "../../utils/style"
 import { classNames } from "../../utils"
 
@@ -58,11 +58,11 @@ export default defineComponent({
       tongcengKey,
       nativeId: inputId,
       tongcengRef,
-      height,
+      tongcengHeight,
       insertContainer,
       updateContainer,
       onUpdatedContainer
-    } = useNative()
+    } = useTongceng()
 
     const container = ref<HTMLElement>()
     const placeholderEl = ref<HTMLElement>()
@@ -245,7 +245,7 @@ export default defineComponent({
     return () => (
       <nz-textarea ref={container}>
         <div ref={tongcengRef} class="nz-native__tongceng" id={tongcengKey}>
-          <div style={{ width: "100%", height: height }}></div>
+          <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
         <p
           ref={placeholderEl}

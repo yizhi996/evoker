@@ -1,5 +1,5 @@
 import { defineComponent } from "vue"
-import { useChildren } from "../../use/useRelation"
+import { useChildren } from "../../composables/useRelation"
 import { CHECKBOX_GROUP_KEY } from "../checkbox/constant"
 
 const props = {

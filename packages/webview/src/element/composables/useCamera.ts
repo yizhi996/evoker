@@ -17,7 +17,7 @@ Object.values(SubscribeKeys).forEach(key => {
 
 let cameraAuthorizedStatus = AuthorizationStatus.notDetermined
 
-export default function useCamera(cameraId: number) {
+export function useCamera(cameraId: number) {
   const ids = new Map<string, number>()
 
   function createListener(key: SubscribeKeys, callback: (data: any) => void) {

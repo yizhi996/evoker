@@ -9,7 +9,7 @@ import {
 } from "vue"
 import Icon from "../icon"
 import { vTap } from "../../directive/tap"
-import { useParent, ParentProvide } from "../../use/useRelation"
+import { useParent, ParentProvide } from "../../composables/useRelation"
 import { CHECKBOX_GROUP_KEY, CheckboxProvide } from "./constant"
 
 const props = {

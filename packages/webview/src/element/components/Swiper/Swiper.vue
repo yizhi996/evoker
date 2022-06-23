@@ -27,12 +27,12 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch, computed, getCurrentInstance, nextTick } from "vue"
-import { useChildren } from "../../use/useRelation"
+import { useChildren } from "../../composables/useRelation"
 import { SWIPE_KEY } from "./constant"
-import useTouch from "../../use/useTouch"
+import { useTouch } from "../../composables/useTouch"
 import { Easing } from "@tweenjs/tween.js"
-import useJSAnimation from "../../use/useJSAnimation"
-import useResize from "../../use/useResize"
+import { useJSAnimation } from "../../composables/useJSAnimation"
+import { useResize } from "../../composables/useResize"
 
 const containerRef = ref<HTMLElement>()
 

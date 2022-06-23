@@ -1,4 +1,4 @@
-export default function useResize(el: HTMLElement) {
+export function useResize(el: HTMLElement) {
   let callback: (rect: DOMRect) => void | undefined
 
   const onResize = () => {

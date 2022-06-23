@@ -31,7 +31,7 @@ interface VideoData {
   height: number
 }
 
-export default function useVideoPlayer(videoPlayerId: number) {
+export function useVideo(videoPlayerId: number) {
   const ids = new Map<string, number>()
 
   function createListener(key: SubscribeKeys, callback: (data: any) => void) {

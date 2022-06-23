@@ -2,7 +2,7 @@ import { defineComponent, PropType, ref, watch } from "vue"
 import { clamp } from "@nzoth/shared"
 import { Easing } from "@tweenjs/tween.js"
 import { unitToPx } from "../../utils/format"
-import useJSAnimation from "../../use/useJSAnimation"
+import { useJSAnimation } from "../../composables/useJSAnimation"
 
 const props = {
   percent: { type: Number, default: 0 },

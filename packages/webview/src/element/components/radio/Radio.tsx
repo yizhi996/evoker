@@ -9,7 +9,7 @@ import {
 } from "vue"
 import Icon from "../icon"
 import { vTap } from "../../directive/tap"
-import { useParent, ParentProvide } from "../../use/useRelation"
+import { useParent, ParentProvide } from "../../composables/useRelation"
 import { RADIO_GROUP_KEY, RadioProvide } from "./constant"
 
 const props = {

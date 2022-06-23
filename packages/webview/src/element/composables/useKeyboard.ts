@@ -16,7 +16,7 @@ Object.values(SubscribeKeys).forEach(key => {
   })
 })
 
-export default function useKeyboard(inputId: number) {
+export function useKeyboard(inputId: number) {
   const ids = new Map<string, number>()
 
   function createListener(key: SubscribeKeys, callback: (data: any) => void) {

@@ -12,11 +12,11 @@ import {
   VNode
 } from "vue"
 import { NZJSBridge } from "../../../bridge"
-import useNative from "../../use/useNative"
+import { useTongceng } from "../../composables/useTongceng"
 import { vTap } from "../../directive/tap"
-import usePlayer from "../../listener/video"
+import { useVideo } from "../../composables/useVideo"
 import { secondsToDuration } from "../../utils/format"
-import { Touch } from "../../use/useTouch"
+import { Touch } from "../../composables/useTouch"
 import { clamp } from "@nzoth/shared"
 import { getVolume, setVolume, setScreenBrightness, getScreenBrightness } from "@nzoth/bridge"
 import { classNames } from "../../utils"
@@ -77,10 +77,10 @@ export default defineComponent({
       tongcengKey,
       nativeId: videoPlayerId,
       tongcengRef,
-      height,
+      tongcengHeight,
       insertContainer,
       updateContainer
-    } = useNative()
+    } = useTongceng()
 
     const {
       onLoadedData,
@@ -93,7 +93,7 @@ export default defineComponent({
       fullscreenChange,
       seekComplete,
       waiting
-    } = usePlayer(videoPlayerId)
+    } = useVideo(videoPlayerId)
 
     const enum Methods {
       PLAY = "play",
@@ -740,7 +740,7 @@ export default defineComponent({
           id={tongcengKey}
           style={tongcengSize.value}
         >
-          <div style={{ width: "100%", height }}></div>
+          <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
       )
     }

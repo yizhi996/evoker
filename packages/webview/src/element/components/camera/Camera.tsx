@@ -1,7 +1,7 @@
 import { defineComponent, onMounted, PropType, watch } from "vue"
 import { NZJSBridge, showModal } from "../../../bridge"
-import useNative from "../../use/useNative"
-import useCamera from "../../listener/camera"
+import { useTongceng } from "../../composables/useTongceng"
+import { useCamera } from "../../composables/useCamera"
 import { AuthorizationStatus } from "../../utils"
 
 const props = {
@@ -16,7 +16,13 @@ export default defineComponent({
   props,
   emits: ["initdone", "scancode", "error", "stop"],
   setup(props, { emit }) {
-    const { tongcengKey, nativeId: cameraId, tongcengRef, height, insertContainer } = useNative()
+    const {
+      tongcengKey,
+      nativeId: cameraId,
+      tongcengRef,
+      tongcengHeight,
+      insertContainer
+    } = useTongceng()
 
     const { onInit, onScanCode, onError, authorize } = useCamera(cameraId)
 
@@ -95,7 +101,7 @@ export default defineComponent({
     return () => (
       <nz-camera>
         <div ref={tongcengRef} class="nz-native__tongceng" id={tongcengKey}>
-          <div style={{ width: "100%", height }}></div>
+          <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
       </nz-camera>
     )

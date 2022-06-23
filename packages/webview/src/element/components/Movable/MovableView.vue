@@ -8,12 +8,12 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, getCurrentInstance } from "vue"
-import useTouch from "../../use/useTouch"
-import { useParent } from "../../use/useRelation"
+import { useTouch } from "../../composables/useTouch"
+import { useParent } from "../../composables/useRelation"
 import { MOVABLE_KEY } from "./constant"
 import { unitToPx } from "../../utils/format"
 import { Easing } from "@tweenjs/tween.js"
-import useJSAnimation from "../../use/useJSAnimation"
+import { useJSAnimation } from "../../composables/useJSAnimation"
 
 const emit = defineEmits(["update:x", "update:y", "change", "scale"])
 

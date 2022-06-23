@@ -1,6 +1,6 @@
 import { watch, onMounted, defineComponent } from "vue"
-import useNative from "../../use/useNative"
-import { useMap } from "../../listener/map"
+import { useTongceng } from "../../composables/useTongceng"
+import { useMap } from "../../composables/useMap"
 import { NZJSBridge } from "../../../bridge"
 
 const props = {
@@ -26,7 +26,13 @@ export default defineComponent({
   props,
   emits: ["updated", "tap", "tappoi", "regionchange"],
   setup(props, { emit }) {
-    const { tongcengKey, nativeId: mapId, tongcengRef, height, insertContainer } = useNative()
+    const {
+      tongcengKey,
+      nativeId: mapId,
+      tongcengRef,
+      tongcengHeight,
+      insertContainer
+    } = useTongceng()
 
     const { onUpdated, onTap, onTapPoi, onRegionChange } = useMap(mapId)
 
@@ -188,7 +194,7 @@ export default defineComponent({
           style="position: absolute"
           id={tongcengKey}
         >
-          <div style={{ width: "100%", height }}></div>
+          <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
       </nz-map>
     )

@@ -10,11 +10,11 @@ const enum NativeInvokeKeys {
   REMOVE = "removeContainer"
 }
 
-export default function useNative(options: { scrollEnabled?: boolean } = { scrollEnabled: false }) {
+export function useTongceng(options: { scrollEnabled?: boolean } = { scrollEnabled: false }) {
   const tongcengId = incTongcengId++
   const tongcengKey = "__nzoth_tongceng_id_" + tongcengId
   const tongcengRef = ref<HTMLElement>()
-  const height = `${418094 + tongcengId}px`
+  const tongcengHeight = `${418094 + tongcengId}px`
 
   let retryLimit = 5
   let containerInserting = false
@@ -143,7 +143,7 @@ export default function useNative(options: { scrollEnabled?: boolean } = { scrol
     tongcengKey,
     nativeId: getRandomInt(10000, 10000000),
     tongcengRef: tongcengRef,
-    height,
+    tongcengHeight,
     getContainerBox,
     insertContainer,
     updateContainer,

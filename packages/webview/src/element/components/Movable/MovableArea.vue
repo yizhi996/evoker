@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue"
-import { useChildren } from "../../use/useRelation"
+import { useChildren } from "../../composables/useRelation"
 import { MOVABLE_KEY } from "./constant"
 
 const areaRef = ref<HTMLElement>()

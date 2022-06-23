@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, getCurrentInstance, onUnmounted } from "vue"
 import { SWIPE_KEY, SwipeProvide } from "./constant"
-import { useParent, ParentProvide } from "../../use/useRelation"
+import { useParent, ParentProvide } from "../../composables/useRelation"
 
 const instance = getCurrentInstance()!
 

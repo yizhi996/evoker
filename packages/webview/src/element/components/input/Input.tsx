@@ -7,8 +7,8 @@ import {
   PropType,
   defineComponent
 } from "vue"
-import useNative from "../../use/useNative"
-import useKeyboard from "../../listener/keyboard"
+import { useTongceng } from "../../composables/useTongceng"
+import { useKeyboard } from "../../composables/useKeyboard"
 import { getInputStyle, getInputPlaceholderStyle } from "../../utils/style"
 import { NZJSBridge } from "../../../bridge"
 import { classNames } from "../../utils"
@@ -47,10 +47,10 @@ export default defineComponent({
       tongcengKey,
       nativeId: inputId,
       tongcengRef,
-      height,
+      tongcengHeight,
       insertContainer,
       onUpdatedContainer
-    } = useNative()
+    } = useTongceng()
 
     const {
       onKeyboardSetValue,
@@ -211,7 +211,7 @@ export default defineComponent({
     return () => (
       <nz-input ref={container}>
         <div ref={tongcengRef} class="nz-native__tongceng" id={tongcengKey}>
-          <div style={{ width: "100%", height: height }}></div>
+          <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
         <p
           ref={placeholderEl}

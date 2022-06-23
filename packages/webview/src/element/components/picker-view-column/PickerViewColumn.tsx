@@ -1,11 +1,11 @@
 import { ref, computed, getCurrentInstance, onMounted, nextTick, defineComponent } from "vue"
-import useTouch from "../../use/useTouch"
-import { useParent, ParentProvide } from "../../use/useRelation"
+import { useTouch } from "../../composables/useTouch"
+import { useParent, ParentProvide } from "../../composables/useRelation"
 import { PICKER_VIEW_KEY, PickerViewProvide } from "../picker-view/define"
 import { Easing } from "@tweenjs/tween.js"
 import { vibrateShort, NZJSBridge } from "../../../bridge"
 import { clamp } from "@nzoth/shared"
-import useJSAnimation from "../../use/useJSAnimation"
+import { useJSAnimation } from "../../composables/useJSAnimation"
 import { classNames } from "../../utils"
 
 export default defineComponent({

@@ -9,7 +9,7 @@ interface Props {
   loading?: boolean
 }
 
-export default function useHover(el: Ref<HTMLElement | undefined>, props: Props) {
+export function useHover(el: Ref<HTMLElement | undefined>, props: Props) {
   const hovering = ref(false)
 
   let hoverStartTimer: ReturnType<typeof setTimeout>

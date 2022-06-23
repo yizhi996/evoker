@@ -12,7 +12,7 @@ Object.values(SubscribeKeys).forEach(key => {
   })
 })
 
-export default function useTextArea(inputId: number) {
+export function useTextArea(inputId: number) {
   const ids = new Map<string, number>()
 
   function createListener(key: SubscribeKeys, callback: (data: any) => void) {

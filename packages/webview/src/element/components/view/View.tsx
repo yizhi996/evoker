@@ -1,6 +1,6 @@
 import { defineComponent, PropType, ref } from "vue"
-import useHover from "../../use/useHover"
-import { useCSSAnimation, AnimationAction } from "../../use/useCSSAnimation"
+import { useHover } from "../../composables/useHover"
+import { useCSSAnimation, AnimationAction } from "../../composables/useCSSAnimation"
 
 const props = {
   hoverClass: { type: String, default: "none" },

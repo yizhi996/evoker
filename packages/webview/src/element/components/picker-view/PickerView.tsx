@@ -1,6 +1,6 @@
 import { defineComponent, getCurrentInstance, PropType, ref, watch } from "vue"
 import { PICKER_VIEW_KEY } from "./define"
-import { useChildren } from "../../use/useRelation"
+import { useChildren } from "../../composables/useRelation"
 
 const props = {
   value: { type: Array as PropType<number[]>, default: () => [] },
