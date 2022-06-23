@@ -1,0 +1,48 @@
+.nz-video {
+  &__progress {
+    flex-grow: 1;
+    position: relative;
+    background-color: hsla(0, 0%, 100%, 0.2);
+    height: 2px;
+
+    &__time {
+      color: #fff;
+      font-size: 11px;
+      height: 24px;
+      line-height: 24px;
+      width: 5ch;
+    }
+
+    &__buffer {
+      position: absolute;
+      background-color: hsla(0, 0%, 100%, 0.5);
+      width: 0;
+      height: 100%;
+      top: 0;
+      transition: width 0.05s ease;
+    }
+
+    &__played {
+      position: absolute;
+      background-color: #fff;
+      width: 0;
+      height: 100%;
+      top: 0;
+    }
+
+    &__handle {
+      position: absolute;
+      margin-left: -14px;
+      top: -14px;
+      left: 0%;
+      padding: 8px;
+    }
+
+    &__ball {
+      background-color: #fff;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+    }
+  }
+}

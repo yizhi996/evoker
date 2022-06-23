@@ -5,6 +5,7 @@ import { isTrue } from "../../../utils"
 import useHover from "../../use/useHover"
 import { dispatchEvent } from "../../../dom/event"
 import { getUserInfo } from "../../../bridge/api/open"
+import Loading from "../loading"
 
 const props = {
   type: {
@@ -187,7 +188,7 @@ export default defineComponent({
 
     const renderLoading = () => {
       if (props.loading) {
-        return <loading style="margin-right: 5px"></loading>
+        return <Loading style="margin-right: 5px" />
       }
     }
 
