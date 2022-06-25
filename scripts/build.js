@@ -2,6 +2,7 @@
 const { resolve } = require("path")
 const execa = require("execa")
 const fs = require("fs-extra")
+const colors = require("picocolors")
 
 const args = require("minimist")(process.argv.slice(2))
 
@@ -11,11 +12,18 @@ const pkgDir = resolve(`packages/${target}`)
 
 const pkg = require(resolve(pkgDir, "package.json"))
 
-async function webviewBuild() {
-  return await execa("vite", ["build"], { stdio: "inherit", cwd: pkgDir })
+async function buildWebview() {
+  console.log(colors.bold(colors.cyan(`generating ${target} ts declaration`)))
+  await execa("tsc", ["--declarationDir", "dist", "--declaration", "--target", "es2016"], {
+    stdio: "inherit",
+    cwd: pkgDir
+  })
+  console.log(colors.bold(colors.green(`generated ${target} ts declaration`)))
+
+  return await rollupBuild(false)
 }
 
-async function rollupBuild() {
+async function rollupBuild(types = true) {
   const env = (pkg.buildOptions && pkg.buildOptions.env) || "production"
   return await execa(
     "rollup",
@@ -23,7 +31,7 @@ async function rollupBuild() {
       "-c",
       "rollup.config.js",
       "--environment",
-      [`NODE_ENV:${env}`, `TARGET:${target}`, `TYPES:true`, `PROD_ONLY:true`]
+      [`NODE_ENV:${env}`, `TARGET:${target}`, `TYPES:${types}`, `PROD_ONLY:true`]
         .filter(Boolean)
         .join(",")
     ],
@@ -31,26 +39,16 @@ async function rollupBuild() {
   )
 }
 
-async function rollupDTS() {
-  return await execa(
-    "rollup",
-    ["-c", "rollup.config.dts.js", "--environment", `TARGET:${target}`],
-    { stdio: "inherit" }
-  )
-}
-
-async function buildTarget() {
+async function build() {
   await fs.remove(resolve(__dirname, "../node_modules/.rts2_cache"))
 
   if (target === "webview") {
-    await webviewBuild()
-    await rollupDTS()
+    await buildWebview()
   } else {
     await rollupBuild()
-    await rollupDTS()
   }
 
   await fs.remove(`${pkgDir}/dist/packages`)
 }
 
-buildTarget()
+build()

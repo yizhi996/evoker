@@ -1,14 +1,17 @@
 // @ts-check
 import path from "path"
 import ts from "rollup-plugin-typescript2"
-import json from "@rollup/plugin-json"
 import commonjs from "@rollup/plugin-commonjs"
+import { DEFAULT_EXTENSIONS } from "@babel/core"
+import nodeResolve from "@rollup/plugin-node-resolve"
+import replace from "@rollup/plugin-replace"
+import dts from "rollup-plugin-dts"
+import { terser } from "rollup-plugin-terser"
 
 if (!process.env.TARGET) {
   throw new Error("TARGET package must be specified via --environment flag.")
 }
 
-const masterVersion = require("./package.json").version
 const packagesDir = path.resolve(__dirname, "packages")
 const packageDir = path.resolve(packagesDir, process.env.TARGET)
 const resolve = p => path.resolve(packageDir, p)
@@ -34,52 +37,51 @@ const outputConfigs = {
   global: {
     file: resolve(`dist/${name}.global.js`),
     format: `iife`
-  },
-  // runtime-only builds, for main "vue" package only
-  "esm-bundler-runtime": {
-    file: resolve(`dist/${name}.runtime.esm-bundler.js`),
-    format: `es`
-  },
-  "esm-browser-runtime": {
-    file: resolve(`dist/${name}.runtime.esm-browser.js`),
-    format: "es"
-  },
-  "global-runtime": {
-    file: resolve(`dist/${name}.runtime.global.js`),
-    format: "iife"
   }
 }
 
 const packageFormats = packageOptions.formats || ["esm-bundler", "cjs"]
 
-export default packageFormats.map(format => {
-  return createConfig(format, outputConfigs[format])
-})
+export default [
+  ...packageFormats.map(format => {
+    return createConfig(format, outputConfigs[format])
+  }),
+  createRollupDtsConfig({ file: resolve(`dist/${name}.d.ts`), format: "es" })
+]
 
-function createConfig(format, output, plugins = []) {
+function createConfig(format, output) {
   if (!output) {
-    console.log(require("chalk").yellow(`invalid format: "${format}"`))
+    console.log(require("picocolors").yellow(`invalid format: "${format}"`))
     process.exit(1)
   }
 
-  const isProductionBuild = process.env.__DEV__ === "false" || /\.prod\.js$/.test(output.file)
-  const isBundlerESMBuild = /esm-bundler/.test(format)
-  const isServerRenderer = name === "server-renderer"
+  const isWebView = name === "webview"
   const isNodeBuild = format === "cjs"
   const isGlobalBuild = /global/.test(format)
-  const isCompatBuild = !!packageOptions.compat
 
   output.exports = "named"
   output.sourcemap = !!process.env.SOURCE_MAP
   output.externalLiveBindings = false
 
+  const plugins = [
+    terser({
+      module: /^esm/.test(format),
+      compress: {
+        ecma: 2016,
+        pure_getters: true
+      }
+    })
+  ]
+
   if (isGlobalBuild) {
     output.name = packageOptions.name
+
+    plugins.push(...[commonjs(), nodeResolve()])
   }
 
   const shouldEmitDeclarations = pkg.types && process.env.TYPES != null && !hasTSChecked
 
-  const tsPlugin = ts({
+  let tsPlugin = ts({
     check: process.env.NODE_ENV === "production" && !hasTSChecked,
     tsconfig: path.resolve(__dirname, "tsconfig.json"),
     cacheRoot: path.resolve(__dirname, "node_modules/.rts2_cache"),
@@ -90,40 +92,64 @@ function createConfig(format, output, plugins = []) {
         declaration: shouldEmitDeclarations,
         declarationMap: shouldEmitDeclarations
       },
-      exclude: ["**/__tests__", "test-dts"]
+      exclude: ["**/__tests__"]
     }
   })
 
   hasTSChecked = true
 
-  let entryFile = `src/index.ts`
+  const external = []
 
-  let external = []
+  if (isWebView) {
+    plugins.push(
+      require("@rollup/plugin-babel").babel({
+        presets: [["@babel/preset-env", { targets: { ios: 11 } }]],
+        extensions: [...DEFAULT_EXTENSIONS, ".ts", ".tsx"],
+        plugins: [
+          [
+            "@vue/babel-plugin-jsx",
+            {
+              isCustomElement: tag => tag.startsWith("nz-")
+            }
+          ]
+        ]
+      })
+    )
+    plugins.push(
+      require("rollup-plugin-less")({
+        output: resolve("dist/nzoth-built-in.css")
+      })
+    )
+    plugins.push(
+      // @ts-ignore
+      require("rollup-plugin-copy")({
+        targets: [
+          {
+            src: resolve("src/index.html"),
+            dest: resolve("dist/")
+          }
+        ],
+        hook: "writeBundle"
+      })
+    )
 
-  if (name === "nzoth" && isGlobalBuild) {
+    // plugins.push(postcss({ plugins: [autoprefixer()] }))
+  } else if (name === "nzoth" && isGlobalBuild) {
     external.push("vue")
     output.globals = { vue: "Vue" }
-    plugins.push(...[commonjs(), require("@rollup/plugin-node-resolve").nodeResolve()])
   } else {
-    external.push(
-      ...Object.keys(pkg.dependencies || {}),
-      ...Object.keys(pkg.peerDependencies || {})
-    )
+    external.push(...Object.keys(pkg.dependencies || {}))
 
     if (name === "vite-plugin") {
       external.push(...["ws", "zlib", "path", "fs", "os", "crypto"])
     }
   }
 
-  console.log(external)
-
   return {
-    input: resolve(entryFile),
+    input: resolve("src/index.ts"),
     external,
     plugins: [
-      json({
-        namedExports: false
-      }),
+      replace({ "process.env.NODE_ENV": JSON.stringify("production"), preventAssignment: true }),
       tsPlugin,
       ...plugins
     ],
@@ -133,8 +159,21 @@ function createConfig(format, output, plugins = []) {
         warn(msg)
       }
     },
-    treeshake: {
-      moduleSideEffects: false
+    treeshake: {}
+  }
+}
+
+function createRollupDtsConfig(output) {
+  output.exports = "named"
+
+  return {
+    input: resolve(`dist/packages/${name}/src/index.d.ts`),
+    plugins: [dts()],
+    output,
+    onwarn: (msg, warn) => {
+      if (!/Circular/.test(msg)) {
+        warn(msg)
+      }
     }
   }
 }

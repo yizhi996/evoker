@@ -23,7 +23,7 @@ import MovableView from "./components/movable-view"
 import TextArea from "./components/textarea"
 import Text from "./components/text"
 import Map from "./components/map"
-import Canvas from "./components/Canvas.vue"
+// import Canvas from "./components/Canvas.vue"
 import View from "./components/view"
 import PickerView from "./components/picker-view"
 import PickerViewColumn from "./components/picker-view-column"
@@ -64,7 +64,6 @@ const builtInComponent: Record<string, BuiltInComponent> = {
   textarea: { component: TextArea },
   text: { component: Text, slot: ".nz-text__content" },
   map: { component: Map },
-  canvas: { component: Canvas },
   view: { component: View },
   "picker-view": { component: PickerView, slot: ".nz-picker-view__wrapper" },
   "picker-view-column": {

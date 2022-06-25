@@ -1,7 +1,7 @@
 import { isNZothElement } from "./element"
 import { NZothEventListenerOptions } from "./vnode"
 import { sync } from "@nzoth/bridge"
-import { SyncFlags } from "./vdSync"
+import { SyncFlags } from "@nzoth/shared"
 
 interface Event {
   type: string

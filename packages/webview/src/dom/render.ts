@@ -10,7 +10,7 @@ import { nodes, createElement, ElementWithTransition } from "./element"
 import { restoreNode } from "./vnode"
 import { isNZothElement, EL } from "./element"
 import { toHandlerKey } from "@vue/shared"
-import { SyncFlags } from "./vdSync"
+import { SyncFlags } from "@nzoth/shared"
 
 export function insertBefore(data: any[]) {
   const [_, childData, parentData, anchorData] = data
