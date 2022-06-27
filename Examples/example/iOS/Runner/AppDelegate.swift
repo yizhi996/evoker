@@ -75,9 +75,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             bridge.invokeCallbackSuccess(args: args, result: ["userInfo": userInfo])
         }
         
-        config.dev.useDevJSSDK = true
-        config.dev.useDevServer = true
-        NZDevServer.shared.connect(host: "192.168.0.105")
+//        config.dev.useDevJSSDK = true
+//        config.dev.useDevServer = true
+//        NZDevServer.shared.connect(host: "192.168.0.105")
         
         NZVersionManager.shared.updateJSSDK { _ in
             NZEngine.shared.preload()

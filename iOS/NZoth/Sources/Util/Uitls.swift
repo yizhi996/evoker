@@ -53,3 +53,22 @@ class DoubleLevelDictionary<F: Hashable, S: Hashable, T> {
     }
     
 }
+
+class PerformanceTimer {
+    
+    static let shared = PerformanceTimer()
+    
+    var labals: [String: TimeInterval] = [:]
+    
+    func start(_ label: String) {
+        labals[label] = Date().timeIntervalSince1970
+    }
+    
+    func end(_ label: String) {
+        if let x = labals[label] {
+            let now = Date().timeIntervalSince1970
+            print("🔔 \(label) now: \(now * 1000) use: \((now - x) * 1000) ms")
+            labals[label] = nil
+        }
+    }
+}

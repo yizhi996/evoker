@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import Alamofire
+import Zip
 
 public class NZVersionManager {
     
@@ -46,11 +47,31 @@ public class NZVersionManager {
     }
     
     public func updateJSSDK(resultHandler handler: @escaping NZBoolBlock) {
+        try? unpackBudleSDK()
         if NZEngineConfig.shared.dev.useDevJSSDK {
             handler(false)
         } else {
             handler(false)
         }
+    }
+    
+    func unpackBudleSDK() throws {
+        let version = Constant.jsSDKVersion
+        let filePath = Constant.assetsBundle.url(forResource: "nzoth-sdk", withExtension: "nzpkg")!
+        try unpackLocalSDK(filePath: filePath, version: version)
+    }
+    
+    func unpackLocalSDK(filePath: URL, version: String) throws {
+        Zip.addCustomFileExtension("nzpkg")
+        
+        let dest = FilePath.jsSDK(version: version)
+        
+        if FileManager.default.fileExists(atPath: dest.appendingPathComponent("index.html").path) {
+            return
+        }
+        
+        try FileManager.default.createDirectory(at: dest, withIntermediateDirectories: true, attributes: nil)
+        try Zip.unzipFile(filePath, destination: dest, overwrite: true, password: nil)
     }
 
 }

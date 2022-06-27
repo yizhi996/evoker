@@ -55,7 +55,7 @@ final public class NZWebView: WKWebView {
         let scriptMessageHandler = NZScriptMessageHandler(delegate: self)
         configuration.userContentController.add(scriptMessageHandler, name: "invokeHandler")
         configuration.userContentController.add(scriptMessageHandler, name: "publishHandler")
-        configuration.userContentController.add(scriptMessageHandler, name: "DOMContentLoaded")
+        configuration.userContentController.add(scriptMessageHandler, name: "loaded")
         
         if NZEngine.shared.userAgent.isEmpty, let userAgent = value(forKey: "userAgent") as? String {
             let jsVersion = NZVersionManager.shared.localJSSDKVersion
@@ -199,7 +199,7 @@ extension NZWebView: WKScriptMessageHandler {
                 let args = NZJSBridge.PublishArgs(eventName: event, paramsString: params, webViewId: webViewId)
                 bridge.onPublish(args)
             }
-        case "DOMContentLoaded":
+        case "loaded":
             state = .loaded
         default:
             break
@@ -215,11 +215,20 @@ extension NZWebView: WKNavigationDelegate {
     }
     
     public func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        let ext = NZEngineConfig.shared.dev.useDevJSSDK ? ".js" : ".prod.js"
+        let script = """
+        const head = document.head || document.getElementsByTagName("head")
+        const script = document.createElement("script")
+        script.type = "text/javascript"
+        script.src = "./webview.global\(ext)"
+        head.appendChild(script)
+        """
         
+        evaluateJavaScript(script, completionHandler: nil)
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-
+        
     }
 
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
