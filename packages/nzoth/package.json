@@ -10,7 +10,7 @@
   },
   "license": "MIT",
   "main": "dist/nzoth.cjs.js",
-  "module": "dist/nzoth.esm-bundler.js",
+  "module": "dist/nzoth.es.js",
   "types": "dist/nzoth.d.ts",
   "sideEffects": false,
   "keywords": [
@@ -24,7 +24,7 @@
     "formats": [
       "global",
       "cjs",
-      "esm-bundler"
+      "es"
     ]
   },
   "dependencies": {

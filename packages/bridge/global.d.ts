@@ -38,7 +38,7 @@ interface MessageChannelPort {
 }
 
 interface WebKit {
-  messageHandlers: MessageChannel & { DOMContentLoaded: MessageChannelPort }
+  messageHandlers: MessageChannel & { loaded: MessageChannelPort }
 }
 
 export interface SystemSetting {

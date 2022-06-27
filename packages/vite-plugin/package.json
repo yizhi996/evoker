@@ -9,17 +9,8 @@
   "buildOptions": {
     "name": "NZothPlugin",
     "formats": [
-      "esm-bundler",
+      "es",
       "cjs"
-    ],
-    "external": [
-      "dependencies",
-      "ws",
-      "zlib",
-      "path",
-      "fs",
-      "os",
-      "crypto"
     ]
   },
   "dependencies": {

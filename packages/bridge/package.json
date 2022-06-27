@@ -3,22 +3,20 @@
   "version": "0.1.0",
   "description": "nzoth js bridge",
   "main": "dist/bridge.cjs.js",
-  "module": "dist/bridge.esm-bundler.js",
+  "module": "dist/bridge.es.js",
   "types": "dist/bridge.d.ts",
   "buildOptions": {
-    "name": "NZothBridge",
     "formats": [
-      "esm-bundler",
+      "es",
       "cjs"
     ]
   },
   "sideEffects": false,
   "files": [
-    "package.json",
     "dist"
   ],
   "dependencies": {
-    "@nzoth/shared": "workspace:^0.1.0",
+    "@nzoth/shared": "0.1.0",
     "vue": "^3.2.37",
     "@vue/shared": "^3.2.37"
   }

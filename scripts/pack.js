@@ -9,16 +9,19 @@ const nzothDir = resolve(root, "nzoth")
 const version = require(resolve(nzothDir, "package.json")).version
 
 const include = {
-  nzoth: ["nzoth.global.js"],
-  webview: ["webview.global.js", "nzoth-built-in.css", "index.html"],
+  nzoth: ["nzoth.global.prod.js"],
+  webview: ["webview.global.prod.js", "nzoth-built-in.css", "index.html"],
   vue: ["vue.runtime.global.prod.js"]
 }
 
+const dir = resolve(__dirname, "../temp")
+
 const fileName = `nzoth-sdk-${version}.nzpkg`
-const output = resolve(
-  __dirname,
-  `../iOS/NZoth/Sources/Resources/SDK/${fileName}`
-)
+if (!fs.existsSync(dir)) {
+  fs.mkdirSync(dir)
+}
+
+const output = resolve(dir, fileName)
 
 const stream = fs.createWriteStream(output)
 
@@ -29,6 +32,8 @@ let totalSize = 0
 stream.on("finish", () => {
   const stat = fs.statSync(output)
   console.log(`${fileName} - ${toKiB(totalSize)} - zip ${toKiB(stat.size)}`)
+
+  fs.copyFileSync(output, resolve(__dirname, `../iOS/NZoth/Sources/Resources/SDK/nzoth-sdk.nzpkg`))
 })
 
 const toKiB = n => {

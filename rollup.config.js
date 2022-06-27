@@ -1,12 +1,10 @@
 // @ts-check
 import path from "path"
 import ts from "rollup-plugin-typescript2"
-import commonjs from "@rollup/plugin-commonjs"
 import { DEFAULT_EXTENSIONS } from "@babel/core"
 import nodeResolve from "@rollup/plugin-node-resolve"
 import replace from "@rollup/plugin-replace"
 import dts from "rollup-plugin-dts"
-import { terser } from "rollup-plugin-terser"
 
 if (!process.env.TARGET) {
   throw new Error("TARGET package must be specified via --environment flag.")
@@ -22,12 +20,8 @@ const name = packageOptions.filename || path.basename(packageDir)
 let hasTSChecked = false
 
 const outputConfigs = {
-  "esm-bundler": {
-    file: resolve(`dist/${name}.esm-bundler.js`),
-    format: `es`
-  },
-  "esm-browser": {
-    file: resolve(`dist/${name}.esm-browser.js`),
+  es: {
+    file: resolve(`dist/${name}.es.js`),
     format: `es`
   },
   cjs: {
@@ -40,16 +34,23 @@ const outputConfigs = {
   }
 }
 
-const packageFormats = packageOptions.formats || ["esm-bundler", "cjs"]
+const packageFormats = packageOptions.formats || ["es", "cjs"]
 
 export default [
   ...packageFormats.map(format => {
     return createConfig(format, outputConfigs[format])
   }),
+  ...packageFormats
+    .map(format => {
+      if (/global/.test(format)) {
+        return createTerserConfig(format)
+      }
+    })
+    .filter(Boolean),
   createRollupDtsConfig({ file: resolve(`dist/${name}.d.ts`), format: "es" })
 ]
 
-function createConfig(format, output) {
+function createConfig(format, output, plugins = []) {
   if (!output) {
     console.log(require("picocolors").yellow(`invalid format: "${format}"`))
     process.exit(1)
@@ -63,20 +64,9 @@ function createConfig(format, output) {
   output.sourcemap = !!process.env.SOURCE_MAP
   output.externalLiveBindings = false
 
-  const plugins = [
-    terser({
-      module: /^esm/.test(format),
-      compress: {
-        ecma: 2016,
-        pure_getters: true
-      }
-    })
-  ]
-
   if (isGlobalBuild) {
     output.name = packageOptions.name
-
-    plugins.push(...[commonjs(), nodeResolve()])
+    plugins.push(nodeResolve())
   }
 
   const shouldEmitDeclarations = pkg.types && process.env.TYPES != null && !hasTSChecked
@@ -101,6 +91,11 @@ function createConfig(format, output) {
   const external = []
 
   if (isWebView) {
+    output.assetFileNames = () => "nzoth-built-in.css"
+
+    // @ts-ignore
+    plugins.push(require("rollup-plugin-styles")({ mode: "extract" }))
+
     plugins.push(
       require("@rollup/plugin-babel").babel({
         presets: [["@babel/preset-env", { targets: { ios: 11 } }]],
@@ -115,11 +110,7 @@ function createConfig(format, output) {
         ]
       })
     )
-    plugins.push(
-      require("rollup-plugin-less")({
-        output: resolve("dist/nzoth-built-in.css")
-      })
-    )
+
     plugins.push(
       // @ts-ignore
       require("rollup-plugin-copy")({
@@ -132,8 +123,6 @@ function createConfig(format, output) {
         hook: "writeBundle"
       })
     )
-
-    // plugins.push(postcss({ plugins: [autoprefixer()] }))
   } else if (name === "nzoth" && isGlobalBuild) {
     external.push("vue")
     output.globals = { vue: "Vue" }
@@ -163,13 +152,53 @@ function createConfig(format, output) {
   }
 }
 
+function createTerserConfig(format) {
+  const { terser } = require("rollup-plugin-terser")
+
+  const { file, format: fmt } = outputConfigs[format]
+
+  return createConfig(
+    format,
+    {
+      file: file.replace(/.js$/, ".prod.js"),
+      format: fmt
+    },
+    [
+      terser({
+        module: /^es/.test(format),
+        compress: {
+          ecma: 2016,
+          pure_getters: true
+        }
+      })
+    ]
+  )
+}
+
 function createRollupDtsConfig(output) {
   output.exports = "named"
 
+  const plugins = [dts()]
+  if (name === "nzoth") {
+    plugins.push(
+      // @ts-ignore
+      require("rollup-plugin-copy")({
+        targets: [
+          {
+            src: resolve("global.d.ts"),
+            dest: resolve("dist/")
+          }
+        ],
+        hook: "writeBundle"
+      })
+    )
+  }
+
   return {
     input: resolve(`dist/packages/${name}/src/index.d.ts`),
-    plugins: [dts()],
+    plugins,
     output,
+    external: [/\.less$/u],
     onwarn: (msg, warn) => {
       if (!/Circular/.test(msg)) {
         warn(msg)

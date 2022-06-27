@@ -1,4 +1,5 @@
-import { nz } from "@nzoth/service"
-;(globalThis as any).nz = nz
+import { nz as NZothGlobal } from "@nzoth/service"
 
 export * from "@nzoth/service"
+
+globalThis.nz = NZothGlobal
