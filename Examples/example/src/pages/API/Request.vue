@@ -22,7 +22,7 @@ const header = ref<Record<string, string>>({})
 const onRequest = async () => {
   const deviceId = await getDeviceId()
 
-  nz.request({
+  ev.request({
     url: url.value,
     method: "POST",
     data: { deviceId },

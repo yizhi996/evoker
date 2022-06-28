@@ -1,21 +1,27 @@
 {
-  "name": "@nzoth/service",
+  "name": "@evoker/service",
   "version": "0.1.0",
-  "description": "nzoth jscore runtime",
+  "description": "evoker jscore runtime",
+  "author": "yizhi996",
+  "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/service",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yizhi996/evoker.git"
+  },
+  "license": "MIT",
   "main": "dist/service.cjs.js",
   "module": "dist/service.es.js",
   "types": "dist/service.d.ts",
   "sideEffects": false,
   "buildOptions": {
-    "name": "NZothService",
     "formats": [
       "es",
       "cjs"
     ]
   },
   "dependencies": {
-    "@nzoth/bridge": "workspace:^0.1.0",
-    "@nzoth/shared": "workspace:^0.1.0",
+    "@evoker/bridge": "workspace:^0.1.0",
+    "@evoker/shared": "workspace:^0.1.0",
     "vue": "^3.2.37",
     "@vue/shared": "^3.2.37"
   },

@@ -1,13 +1,13 @@
 import { VNode } from "vue"
 import { unmountComponent } from "../runtime-jscore/patchUnmount"
-import { NZothElement } from "./element"
-import { NZothHTMLElement } from "./html"
-import { SyncFlags } from "@nzoth/shared"
-import { sync } from "@nzoth/bridge"
-import { NZothNode } from "./node"
+import { EvokerElement } from "./element"
+import { EvokerHTMLElement } from "./html"
+import { SyncFlags } from "@evoker/shared"
+import { sync } from "@evoker/bridge"
+import { EvokerNode } from "./node"
 import { minifyNode } from "./utils"
 
-export class NZothPage {
+export class EvokerPage {
   pageId: number
 
   route: string
@@ -15,7 +15,7 @@ export class NZothPage {
   tabIndex: number
 
   /**  @internal */
-  nodes = new Map<number, NZothNode>()
+  nodes = new Map<number, EvokerNode>()
 
   /**  @internal */
   vnode?: VNode
@@ -28,7 +28,7 @@ export class NZothPage {
     this.tabIndex = tabIndex
   }
 
-  appendChildNode(node: NZothNode) {
+  appendChildNode(node: EvokerNode) {
     node.nodeId = ++this.childId
     this.nodes.set(node.nodeId, node)
   }
@@ -39,7 +39,7 @@ export class NZothPage {
     this.nodes.clear()
   }
 
-  onInsertBefore(parent: NZothNode, child: NZothNode, anchor?: NZothNode | null) {
+  onInsertBefore(parent: EvokerNode, child: EvokerNode, anchor?: EvokerNode | null) {
     const message = [
       SyncFlags.INSERT,
       child.isMounted ? [child.nodeId] : minifyNode(child),
@@ -51,13 +51,13 @@ export class NZothPage {
     sync(message, this.pageId)
   }
 
-  onRemove(parent: NZothNode, child: NZothNode) {
+  onRemove(parent: EvokerNode, child: EvokerNode) {
     this.nodes.delete(child.nodeId)
     const message = [SyncFlags.REMOVE, parent.nodeId, child.nodeId]
     sync(message, this.pageId)
   }
 
-  onPatchStyle(el: NZothElement) {
+  onPatchStyle(el: EvokerElement) {
     if (!el.isMounted) {
       return
     }
@@ -65,20 +65,20 @@ export class NZothPage {
       SyncFlags.UPDATE_PROP,
       el.nodeId,
       "style",
-      (el as NZothHTMLElement).style.styleObject
+      (el as EvokerHTMLElement).style.styleObject
     ]
     sync(message, this.pageId)
   }
 
-  onShow(el: NZothElement) {
+  onShow(el: EvokerElement) {
     if (!el.isMounted) {
       return
     }
-    const message = [SyncFlags.DISPLAY, el.nodeId, (el as NZothHTMLElement).style.display]
+    const message = [SyncFlags.DISPLAY, el.nodeId, (el as EvokerHTMLElement).style.display]
     sync(message, this.pageId)
   }
 
-  onPatchProp(el: NZothElement, name: string, value?: any) {
+  onPatchProp(el: EvokerElement, name: string, value?: any) {
     if (!el.isMounted) {
       return
     }
@@ -86,7 +86,7 @@ export class NZothPage {
     sync(message, this.pageId)
   }
 
-  onSetElementText(el: NZothNode, textContent: string) {
+  onSetElementText(el: EvokerNode, textContent: string) {
     if (!el.isMounted) {
       return
     }
@@ -100,7 +100,7 @@ export class NZothPage {
   }
 
   onAddEventListener(
-    el: NZothNode,
+    el: EvokerNode,
     type: string,
     options?: EventListenerOptions,
     modifiers?: string[]

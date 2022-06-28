@@ -14,18 +14,18 @@ const location = reactive({
 })
 
 onMounted(() => {
-  nz.onLocationChange(onLocationChange)
+  ev.onLocationChange(onLocationChange)
 
-  nz.startLocationUpdate({})
+  ev.startLocationUpdate({})
 })
 
 onUnmounted(() => {
-  nz.stopLocationUpdate({})
-  nz.offLocationChange(onLocationChange)
+  ev.stopLocationUpdate({})
+  ev.offLocationChange(onLocationChange)
 })
 
 const getLocation = async () => {
-  const res = await nz.getLocation({ type: "gcj02" })
+  const res = await ev.getLocation({ type: "gcj02" })
   location.latitude = res.latitude.toFixed(3)
   location.longitude = res.longitude.toFixed(3)
 }

@@ -1,8 +1,8 @@
-import { NZothPage } from "./page"
-import { NZothElement } from "./element"
+import { EvokerPage } from "./page"
+import { EvokerElement } from "./element"
 
-export class NZothText extends NZothElement {
-  constructor(textContent: string, page: NZothPage) {
+export class EvokerText extends EvokerElement {
+  constructor(textContent: string, page: EvokerPage) {
     super("", page)
     this.textContent = textContent
   }

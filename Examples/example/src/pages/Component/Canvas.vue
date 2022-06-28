@@ -10,7 +10,7 @@ let ctx: CanvasRenderingContext2D
 let timer: ReturnType<typeof setInterval>
 
 onMounted(() => {
-  const query = nz.createSelectorQuery()
+  const query = ev.createSelectorQuery()
   query
     .select("#canvas")
     .fields({ node: true, size: true })
@@ -18,7 +18,7 @@ onMounted(() => {
       const canvas = res[0].node
       ctx = canvas.getContext("2d")
 
-      const dpr = nz.getSystemInfoSync().pixelRatio
+      const dpr = ev.getSystemInfoSync().pixelRatio
       canvas.width = res[0].width * dpr
       canvas.height = res[0].height * dpr
       ctx.scale(dpr, dpr)

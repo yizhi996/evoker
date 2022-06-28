@@ -5,7 +5,7 @@ use_frameworks!
 target 'Runner' do
   pod 'Bugly'
   
-  pod 'NZoth', :path => '../../../iOS'
-  pod 'NZoth/Map', :path => '../../../iOS'
+  pod 'Evoker', :path => '../../../iOS'
+  pod 'Evoker/Map', :path => '../../../iOS'
   
 end

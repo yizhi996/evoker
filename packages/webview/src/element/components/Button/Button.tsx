@@ -1,5 +1,5 @@
 import { defineComponent, PropType, ref, watch, computed, nextTick } from "vue"
-import { NZothElement } from "../../../dom/element"
+import { EvokerElement } from "../../../dom/element"
 import { addClickEvent } from "../../../dom/event"
 import { isTrue } from "../../../utils"
 import { useHover } from "../../composables/useHover"
@@ -34,7 +34,7 @@ const props = {
   },
   hoverClass: {
     type: String,
-    default: "nz-button--hover"
+    default: "ev-button--hover"
   },
   hoverStopPropagation: {
     type: Boolean,
@@ -59,7 +59,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-button",
+  name: "ev-button",
   props,
   emits: ["getuserinfo"],
   setup(props, { emit, expose }) {
@@ -68,14 +68,14 @@ export default defineComponent({
     const { finalHoverClass } = useHover(container, props)
 
     const classes = computed(() => {
-      let cls = "nz-button "
-      cls += `nz-button--${props.type} `
-      cls += `nz-button--size-${props.size} `
+      let cls = "ev-button "
+      cls += `ev-button--${props.type} `
+      cls += `ev-button--size-${props.size} `
       if (isTrue(props.disabled)) {
-        cls += "nz-button--disabled "
+        cls += "ev-button--disabled "
       }
       if (props.plain) {
-        cls += `nz-button--${props.type}--plain `
+        cls += `ev-button--${props.type}--plain `
       }
       cls += `${finalHoverClass.value}`
       return cls
@@ -90,11 +90,11 @@ export default defineComponent({
       return style
     })
 
-    const findForm = (el: HTMLElement): NZothElement | undefined => {
+    const findForm = (el: HTMLElement): EvokerElement | undefined => {
       const parent = el.parentElement
       if (parent) {
-        if (parent.tagName === "NZ-FORM") {
-          return parent as NZothElement
+        if (parent.tagName === "EV-FORM") {
+          return parent as EvokerElement
         }
         return findForm(parent)
       }
@@ -177,7 +177,7 @@ export default defineComponent({
         if (props.formType === "submit" || props.formType === "reset") {
           onTapForm()
         } else {
-          const nodeId = (container.value as NZothElement).__nodeId
+          const nodeId = (container.value as EvokerElement).__nodeId
           dispatchEvent(nodeId, {
             type: "click",
             args: []
@@ -193,12 +193,12 @@ export default defineComponent({
     }
 
     return () => (
-      <nz-button ref={container} class={classes.value} style={styleses.value}>
-        <div class="nz-button__content">
+      <ev-button ref={container} class={classes.value} style={styleses.value}>
+        <div class="ev-button__content">
           {renderLoading()}
           <div id="content"></div>
         </div>
-      </nz-button>
+      </ev-button>
     )
   }
 })

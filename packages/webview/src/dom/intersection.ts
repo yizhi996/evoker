@@ -1,6 +1,6 @@
 import "intersection-observer"
-import { SyncFlags } from "@nzoth/shared"
-import { sync } from "@nzoth/bridge"
+import { SyncFlags } from "@evoker/shared"
+import { sync } from "@evoker/bridge"
 
 interface CreateIntersectionObserverOptions {
   thresholds: number[]

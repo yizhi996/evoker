@@ -30,14 +30,14 @@
 
 <script setup lang="ts">
 import { reactive } from "vue"
-import { usePage, VideoContext } from "nzoth"
+import { usePage, VideoContext } from "evoker"
 
 const { onReady } = usePage()
 
 let ctx: VideoContext | null
 
 onReady(() => {
-  nz.createSelectorQuery()
+  ev.createSelectorQuery()
     .select("#my-video")
     .context(res => {
       ctx = res.context

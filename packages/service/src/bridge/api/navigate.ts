@@ -8,7 +8,7 @@ import {
   invokeFailure,
   ErrorCodes,
   errorMessage
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 import { innerAppData } from "../../app"
 
 const enum Events {

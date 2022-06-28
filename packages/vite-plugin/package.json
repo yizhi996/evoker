@@ -1,20 +1,26 @@
 {
-  "name": "@nzoth/vite-plugin",
+  "name": "@evoker/vite-plugin",
   "version": "0.1.0",
-  "description": "nzoth vite plugins",
+  "description": "evoker vite plugins",
+  "author": "yizhi996",
+  "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/vite-plugin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yizhi996/evoker.git"
+  },
+  "license": "MIT",
   "main": "dist/vite-plugin.cjs.js",
   "module": "dist/vite-plugin.es.js",
   "types": "dist/vite-plugin.d.ts",
   "sideEffects": false,
   "buildOptions": {
-    "name": "NZothPlugin",
     "formats": [
       "es",
       "cjs"
     ]
   },
   "dependencies": {
-    "@nzoth/shared": "workspace:^0.1.0",
+    "@evoker/shared": "workspace:^0.1.0",
     "@vitejs/plugin-vue": "^2.3.3",
     "@vue/compiler-core": "^3.2.37",
     "archiver": "^5.3.1",

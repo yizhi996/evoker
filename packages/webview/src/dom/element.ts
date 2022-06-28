@@ -1,7 +1,7 @@
 import { createApp, reactive, createVNode, render, ComponentInternalInstance } from "vue"
 import { toHandlerKey } from "@vue/shared"
 import { BuiltInComponent, requireBuiltInComponent } from "../element"
-import { restoreNode, NZVNode } from "./vnode"
+import { restoreNode, EvokerVNode } from "./vnode"
 import {
   touchEvents,
   dispatchEvent,
@@ -11,7 +11,7 @@ import {
   addTapEvent
 } from "./event"
 
-export type EL = Node | Element | HTMLElement | NZothElement | Text | Comment | SVGAElement
+export type EL = Node | Element | HTMLElement | EvokerElement | Text | Comment | SVGAElement
 
 const vueApp = createApp({})
 vueApp.config.warnHandler = msg => {
@@ -21,17 +21,17 @@ vueApp.config.errorHandler = err => {
   console.error(err)
 }
 
-export function isNZothElement(el: any): el is NZothElement {
-  return el && "__instance" in el
-}
-
-export interface NZothElement extends HTMLElement {
+export interface EvokerElement extends HTMLElement {
   __nodeId: number
   __instance: ComponentInternalInstance
   __slot: HTMLElement | null
 }
 
-export interface ElementWithTransition extends NZothElement {
+export function isEvokerElement(el: any): el is EvokerElement {
+  return el && "__instance" in el
+}
+
+export interface ElementWithTransition extends EvokerElement {
   // _vtc = Vue Transition Classes.
   // Store the temporarily-added transition classes on the element
   // so that we can avoid overwriting them if the element's class is patched
@@ -39,7 +39,7 @@ export interface ElementWithTransition extends NZothElement {
   _vtc?: Set<string>
 }
 
-export const nodes = new Map<number, NZVNode>()
+export const nodes = new Map<number, EvokerVNode>()
 
 const svgNS = "http://www.w3.org/2000/svg"
 
@@ -50,7 +50,7 @@ export function createElement(data: any[]): EL | null {
     return has.el
   }
 
-  let el: NZothElement | HTMLElement | SVGElement | Text | Comment | null = null
+  let el: EL | null = null
 
   const node = restoreNode(data)
   if (node.tagName) {
@@ -74,7 +74,7 @@ export function createElement(data: any[]): EL | null {
   return el
 }
 
-function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
+function createBuiltInComponent(node: EvokerVNode, component: BuiltInComponent) {
   node.props = reactive({})
 
   const { id, nodeId, props, className, style, attributes, listeners, textContent } = node
@@ -116,7 +116,7 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
   const template = document.createElement("template")
   render(wrapper, template)
 
-  const el = template.firstElementChild as NZothElement
+  const el = template.firstElementChild as EvokerElement
   el.__instance = vnodeInstance!
 
   if (component.slot) {
@@ -152,7 +152,7 @@ function createBuiltInComponent(node: NZVNode, component: BuiltInComponent) {
   return el
 }
 
-function createNativeElement(node: NZVNode) {
+function createNativeElement(node: EvokerVNode) {
   const { isSVG, tagName, className, id, nodeId, attributes, listeners, textContent, style } = node
 
   let el: HTMLElement | SVGElement

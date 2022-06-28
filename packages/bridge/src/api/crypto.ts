@@ -1,4 +1,4 @@
-import { isNumber } from "@nzoth/shared"
+import { isNumber } from "@evoker/shared"
 import { invoke } from "../bridge"
 import {
   invokeCallback,

@@ -1,5 +1,5 @@
 import { ref, onMounted, onUnmounted } from "vue"
-import { NZJSBridge } from "../../bridge"
+import { JSBridge } from "../../bridge"
 import { getRandomInt } from "../utils"
 
 let incTongcengId = 1000
@@ -12,7 +12,7 @@ const enum NativeInvokeKeys {
 
 export function useTongceng(options: { scrollEnabled?: boolean } = { scrollEnabled: false }) {
   const tongcengId = incTongcengId++
-  const tongcengKey = "__nzoth_tongceng_id_" + tongcengId
+  const tongcengKey = "__evoker_tongceng_id_" + tongcengId
   const tongcengRef = ref<HTMLElement>()
   const tongcengHeight = `${418094 + tongcengId}px`
 
@@ -78,7 +78,7 @@ export function useTongceng(options: { scrollEnabled?: boolean } = { scrollEnabl
         return
       }
       containerInserting = true
-      NZJSBridge.invoke(
+      JSBridge.invoke(
         NativeInvokeKeys.INSERT,
         {
           tongcengId: tongcengKey,
@@ -112,7 +112,7 @@ export function useTongceng(options: { scrollEnabled?: boolean } = { scrollEnabl
     if (containerInserted) {
       const position = getContainerBox()
       nextTick(() => {
-        NZJSBridge.invoke(
+        JSBridge.invoke(
           NativeInvokeKeys.UPDATE,
           {
             tongcengId: tongcengKey,
@@ -128,7 +128,7 @@ export function useTongceng(options: { scrollEnabled?: boolean } = { scrollEnabl
 
   const removeContainer = () => {
     if (containerInserted) {
-      NZJSBridge.invoke(NativeInvokeKeys.REMOVE, {
+      JSBridge.invoke(NativeInvokeKeys.REMOVE, {
         tongcengId: tongcengKey
       })
     }

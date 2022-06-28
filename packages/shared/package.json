@@ -1,7 +1,14 @@
 {
-  "name": "@nzoth/shared",
+  "name": "@evoker/shared",
   "version": "0.1.0",
-  "description": "nzoth shared",
+  "description": "evoker shared",
+  "author": "yizhi996",
+  "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/shared",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yizhi996/evoker.git"
+  },
+  "license": "MIT",
   "main": "dist/shared.cjs.js",
   "module": "dist/shared.es.js",
   "types": "dist/shared.d.ts",
@@ -12,9 +19,6 @@
     ]
   },
   "sideEffects": false,
-  "keywords": [
-    "nzoth"
-  ],
   "dependencies": {
     "@vue/shared": "^3.2.37"
   }

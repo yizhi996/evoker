@@ -1,6 +1,6 @@
-import { isNZothElement } from "./element"
-import { SyncFlags } from "@nzoth/shared"
-import { sync } from "@nzoth/bridge"
+import { isEvokerElement } from "./element"
+import { SyncFlags } from "@evoker/shared"
+import { sync } from "@evoker/bridge"
 
 interface SelectorQueueItem {
   selector: string
@@ -39,8 +39,8 @@ export function selector(data: any[]) {
     }
 
     if (fields.context) {
-      if (isNZothElement(el)) {
-        if (["NZ-VIDEO"].includes(el.tagName)) {
+      if (isEvokerElement(el)) {
+        if (["EV-VIDEO"].includes(el.tagName)) {
           const instance = el.__instance
           const contextId = instance.exposed!.getContextId()
           res.context = {

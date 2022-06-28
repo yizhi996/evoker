@@ -1,30 +1,30 @@
 import { defineComponent, ref, VNode, withDirectives } from "vue"
 import { vTap } from "../../directive/tap"
-import { isNZothElement } from "../../../dom/element"
+import { isEvokerElement } from "../../../dom/element"
 
 const props = {
   for: { type: String, required: false }
 }
 
 export default defineComponent({
-  name: "nz-label",
+  name: "ev-label",
   props,
   setup(props) {
     const container = ref<HTMLElement>()
 
     const validTags = [
-      "NZ-BUTTON",
-      "NZ-INPUT",
-      "NZ-TEXTAREA",
-      "NZ-SWITCH",
-      "NZ-RADIO",
-      "NZ-CHECKBOX"
+      "EV-BUTTON",
+      "EV-INPUT",
+      "EV-TEXTAREA",
+      "EV-SWITCH",
+      "EV-RADIO",
+      "EV-CHECKBOX"
     ]
 
     const onTap = () => {
       if (props.for) {
         const el = document.getElementById(props.for)
-        if (isNZothElement(el) && validTags.includes(el.tagName)) {
+        if (isEvokerElement(el) && validTags.includes(el.tagName)) {
           const { onTapLabel } = el.__instance.exposed!
           onTapLabel()
         }
@@ -37,7 +37,7 @@ export default defineComponent({
       const childNodes = el.childNodes
       for (let i = 0; i < childNodes.length; i++) {
         const node = childNodes[i]
-        if (isNZothElement(node) && validTags.includes(node.tagName)) {
+        if (isEvokerElement(node) && validTags.includes(node.tagName)) {
           const { onTapLabel } = node.__instance.exposed!
           onTapLabel()
         } else {
@@ -47,7 +47,7 @@ export default defineComponent({
     }
 
     return () => {
-      return withDirectives((<nz-label ref={container}></nz-label>) as VNode, [[vTap, onTap]])
+      return withDirectives((<ev-label ref={container}></ev-label>) as VNode, [[vTap, onTap]])
     }
   }
 })

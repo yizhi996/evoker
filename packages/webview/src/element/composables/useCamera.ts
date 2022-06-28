@@ -1,7 +1,7 @@
 import { onUnmounted } from "vue"
-import { NZJSBridge, authorize } from "../../bridge"
+import { JSBridge, authorize } from "../../bridge"
 import { AuthorizationStatus } from "../utils"
-import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
+import { addEvent, removeEvent, dispatchEvent } from "@evoker/shared"
 
 enum SubscribeKeys {
   ON_INIT_DONE = "MODULE_CAMERA_ON_INIT_DONE",
@@ -10,7 +10,7 @@ enum SubscribeKeys {
 }
 
 Object.values(SubscribeKeys).forEach(key => {
-  NZJSBridge.subscribe(key, data => {
+  JSBridge.subscribe(key, data => {
     dispatchEvent(key, data)
   })
 })

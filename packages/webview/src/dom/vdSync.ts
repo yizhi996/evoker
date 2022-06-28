@@ -1,5 +1,5 @@
-import { onSync, publish } from "@nzoth/bridge"
-import { SyncFlags } from "@nzoth/shared"
+import { onSync, publish } from "@evoker/bridge"
+import { SyncFlags } from "@evoker/shared"
 import {
   insertBefore,
   setText,

@@ -8,22 +8,22 @@
 
 <script setup lang="ts">
 const navigateTo = () => {
-  nz.navigateTo({ url: "api/navigator" })
+  ev.navigateTo({ url: "api/navigator" })
 }
 
 const navigateBack = () => {
-  nz.navigateBack({})
+  ev.navigateBack({})
 }
 
 const redirectTo = () => {
-  nz.redirectTo({ url: "api/navigator" })
+  ev.redirectTo({ url: "api/navigator" })
 }
 
 const switchTab = () => {
-  nz.switchTab({ url: "component" })
+  ev.switchTab({ url: "component" })
 }
 
 const reLaunch = () => {
-  nz.reLaunch({ url: "component" })
+  ev.reLaunch({ url: "component" })
 }
 </script>

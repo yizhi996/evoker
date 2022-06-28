@@ -1,4 +1,4 @@
-import { invoke, invokeCallbackHandler, publish, subscribe, subscribeHandler } from "@nzoth/bridge"
+import { invoke, invokeCallbackHandler, publish, subscribe, subscribeHandler } from "@evoker/bridge"
 
 export const InnerJSBridge = {
   invoke,
@@ -8,7 +8,7 @@ export const InnerJSBridge = {
   subscribeHandler
 }
 
-const NZJSBridge = {
+const JSBridge = {
   get invokeCallbackHandler() {
     return invokeCallbackHandler
   },
@@ -16,4 +16,4 @@ const NZJSBridge = {
     return subscribeHandler
   }
 }
-;(globalThis as any).NZJSBridge = NZJSBridge
+;(globalThis as any).JSBridge = JSBridge

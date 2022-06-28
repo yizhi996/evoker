@@ -6,15 +6,15 @@
 </template>
 
 <script setup lang="ts">
-import { usePage } from "nzoth"
+import { usePage } from "evoker"
 
 const { onPullDownRefresh } = usePage()
 
 onPullDownRefresh(() => {
-  nz.showToast({ title: "Loading...", icon: "none" })
+  ev.showToast({ title: "Loading...", icon: "none" })
 })
 
 const onStop = () => {
-  nz.stopPullDownRefresh()
+  ev.stopPullDownRefresh()
 }
 </script>

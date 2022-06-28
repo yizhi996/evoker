@@ -1,5 +1,5 @@
 import { InnerJSBridge } from "./bridge"
-import type { InvokeCallback } from "@nzoth/bridge"
+import type { InvokeCallback } from "@evoker/bridge"
 import { navigateTo, navigateBack, redirectTo, reLaunch, switchTab } from "./api/route"
 import { getCurrentWebViewId } from "../app"
 

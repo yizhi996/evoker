@@ -44,7 +44,7 @@ export function getClipboardData<T extends GetClipboardDataOptions = GetClipboar
       } else {
         invokeSuccess(event, options, result.data)
         showToast({
-          title: `“${globalThis.__NZConfig.appName}” 读取了你的剪切板内容`,
+          title: `“${globalThis.__Config.appName}” 读取了你的剪切板内容`,
           icon: "none",
           duration: 1500
         })

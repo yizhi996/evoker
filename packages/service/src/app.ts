@@ -1,12 +1,12 @@
 import { Component, AppContext, reactive, createVNode, App } from "vue"
 import { renderer } from "./runtime-jscore/renderer"
 import { InnerJSBridge } from "./bridge/bridge"
-import { NZothPage } from "./dom/page"
-import { NZothHTMLElement } from "./dom/html"
-import { NZothEvent } from "./dom/eventTarget"
+import { EvokerPage } from "./dom/page"
+import { EvokerHTMLElement } from "./dom/html"
+import { EvokerEvent } from "./dom/eventTarget"
 import { getPageComponentFormRoute, decodeURL } from "./router"
-import { onSync } from "@nzoth/bridge"
-import { SyncFlags } from "@nzoth/shared"
+import { onSync } from "@evoker/bridge"
+import { SyncFlags } from "@evoker/shared"
 import { invokeSelectorQuery } from "./bridge/api/html/selector"
 import { intersectionObserverEntry } from "./bridge/api/html/intersection"
 import { invokeAppOnError } from "./lifecycle/global"
@@ -20,7 +20,7 @@ export const innerAppData = reactive({
   appState: AppState.FORE_GROUND,
   currentPageId: 0,
   globalData: {},
-  pages: new Map<number, NZothPage>(),
+  pages: new Map<number, EvokerPage>(),
   currentTabIndex: 0,
   query: {},
   routerLock: false,
@@ -36,8 +36,8 @@ export function createApp(
   const app = renderer.createApp(rootComponent, rootProps)
   const { mount } = app
   app.mount = () => {
-    const page = new NZothPage(-999, "hook", 0)
-    const root = new NZothHTMLElement("div", page)
+    const page = new EvokerPage(-999, "hook", 0)
+    const root = new EvokerHTMLElement("div", page)
     root.id = "app"
     const { errorHandler } = app.config
     app.config.errorHandler = (err, instance, info) => {
@@ -53,7 +53,7 @@ export function createApp(
 
 export function getCurrentPages() {
   const currentTabIndex = innerAppData.currentTabIndex
-  const pages: NZothPage[] = []
+  const pages: EvokerPage[] = []
   innerAppData.pages.forEach(page => page.tabIndex === currentTabIndex && pages.push(page))
   return pages.sort((left, right) => {
     return left.pageId < right.pageId ? -1 : 1
@@ -80,7 +80,7 @@ export function mountPage(pageId: number, route: string, query: {}) {
     return
   }
 
-  const page = new NZothPage(pageId, route, innerAppData.currentTabIndex)
+  const page = new EvokerPage(pageId, route, innerAppData.currentTabIndex)
 
   innerAppData.pages.set(pageId, page)
   innerAppData.currentPageId = pageId
@@ -96,7 +96,7 @@ export function mountPage(pageId: number, route: string, query: {}) {
 
   page.vnode = vnode
 
-  const root = new NZothHTMLElement("div", page)
+  const root = new EvokerHTMLElement("div", page)
   root.id = "app"
   renderer.render(vnode, root)
 }
@@ -134,7 +134,7 @@ function dispatchEvent(data: any[]) {
   if (page) {
     const node = page.nodes.get(nodeId)
     if (node) {
-      const customEvent = new NZothEvent(event.type)
+      const customEvent = new EvokerEvent(event.type)
       customEvent.target = node
       customEvent.args = event.args
       innerAppData.eventFromUserClick = event.type === "click"

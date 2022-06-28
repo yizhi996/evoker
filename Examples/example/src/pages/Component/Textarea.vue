@@ -3,7 +3,7 @@
     <n-topic>isFocus: {{ focus }}</n-topic>
     <textarea
       class="w-full h-14 bg-white"
-      value="NZoth"
+      value="Evoker"
       placeholder="请输入..."
       focus
       @focus="onFocus"

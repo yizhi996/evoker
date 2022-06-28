@@ -1,4 +1,4 @@
-import { isNumber } from "@nzoth/shared"
+import { isNumber } from "@evoker/shared"
 import { isString } from "@vue/shared"
 
 export const CONTENT_TYPE = "content-type"

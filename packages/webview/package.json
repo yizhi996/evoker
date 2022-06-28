@@ -1,11 +1,18 @@
 {
-  "name": "@nzoth/webview",
+  "name": "@evoker/webview",
   "version": "0.1.0",
-  "description": "nzoth webview",
+  "description": "evoker webview",
+  "author": "yizhi996",
+  "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/webview",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yizhi996/evoker.git"
+  },
+  "license": "MIT",
   "main": "dist/webview.global.js",
   "types": "dist/webview.d.ts",
   "buildOptions": {
-    "name": "NZothWebView",
+    "name": "EvokerWebView",
     "formats": [
       "global"
     ]
@@ -13,13 +20,9 @@
   "files": [
     "dist"
   ],
-  "keywords": [
-    "nzoth",
-    "vue"
-  ],
   "dependencies": {
-    "@nzoth/bridge": "workspace:^0.1.0",
-    "@nzoth/shared": "workspace:^0.1.0",
+    "@evoker/bridge": "workspace:^0.1.0",
+    "@evoker/shared": "workspace:^0.1.0",
     "@tweenjs/tween.js": "^18.6.4",
     "@vue/runtime-core": "^3.2.37",
     "@vue/shared": "^3.2.37",

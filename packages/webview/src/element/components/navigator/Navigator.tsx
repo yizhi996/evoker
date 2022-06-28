@@ -25,7 +25,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-navigator",
+  name: "ev-navigator",
   props,
   setup(props) {
     const invoke = () => {
@@ -61,7 +61,7 @@ export default defineComponent({
     }
 
     return () => {
-      return withDirectives((<nz-navigator></nz-navigator>) as VNode, [[vTap, invoke]])
+      return withDirectives((<ev-navigator></ev-navigator>) as VNode, [[vTap, invoke]])
     }
   }
 })

@@ -7,7 +7,7 @@ import {
   AsyncReturn,
   invokeFailure,
   AuthSetting
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 import { innerAppData } from "../../app"
 
 const enum Events {

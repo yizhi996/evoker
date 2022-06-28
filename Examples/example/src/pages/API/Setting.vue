@@ -26,12 +26,12 @@ import { ref } from "vue"
 const auths = ref({})
 
 const getSetting = async () => {
-  const res = await nz.getSetting({})
+  const res = await ev.getSetting({})
   auths.value = res.authSetting
 }
 
 const openSetting = async () => {
-  const res = await nz.openSetting({})
+  const res = await ev.openSetting({})
   auths.value = res.authSetting
 }
 </script>

@@ -1,6 +1,6 @@
 import { InnerJSBridge } from "../bridge/bridge"
 import { LifecycleHooks } from "./hooks"
-import { addEvent, removeEvent } from "@nzoth/shared"
+import { addEvent, removeEvent } from "@evoker/shared"
 import type {
   AppShowCallback,
   AppHideCallback,

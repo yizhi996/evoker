@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import { reactive } from "vue"
-import { usePage } from "nzoth"
+import { usePage } from "evoker"
 
 const { onReady } = usePage()
 
@@ -33,7 +33,7 @@ onReady(() => {
 })
 
 const getNodeInfo = () => {
-  const query = nz.createSelectorQuery()
+  const query = ev.createSelectorQuery()
   query
     .select(".target")
     .boundingClientRect(res => {

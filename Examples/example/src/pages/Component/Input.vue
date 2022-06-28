@@ -3,7 +3,7 @@
     <n-topic>isFocus: {{ focus }}</n-topic>
     <input
       class="w-full h-12 bg-white px-2.5"
-      value="NZoth"
+      value="Evoker"
       placeholder="请输入"
       focus
       @focus="onFocus"

@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import NZoth
+import Evoker
 import Bugly
 import AMapFoundationKit
 
@@ -25,33 +25,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = UINavigationController(rootViewController: LaunchpadViewController())
         
         DispatchQueue.main.async {
-            self.launchNZothEngine()
+            self.launchEvokerEngine()
         }
 
         return true
     }
     
-    func launchNZothEngine() {
+    func launchEvokerEngine() {
         if let userId = UserDefaults.standard.string(forKey: "K_UID") {
-            NZEngine.shared.userId = userId
+            Engine.shared.userId = userId
         } else {
             var userId = UUID().uuidString
             userId = String(userId[userId.startIndex..<userId.index(userId.startIndex, offsetBy: 8)]).lowercased()
-            NZEngine.shared.userId = userId
+            Engine.shared.userId = userId
             UserDefaults.standard.set(userId, forKey: "K_UID")
         }
         
-        let config = NZEngineConfig.shared
+        let config = Engine.shared.config
         
         config.hooks.app.getAppInfo = { appId, envVersion, completionHandler in
             if let app = LaunchpadViewController.apps.first(where: { $0.appId == appId }) {
-                completionHandler(NZAppInfo(appName: app.appName, appIconURL: app.appIcon), nil)
+                completionHandler(AppInfo(appName: app.appName, appIconURL: app.appIcon), nil)
             } else {
-                completionHandler(nil, NZError.custom("appId is invalid"))
+                completionHandler(nil, EVError.custom("appId is invalid"))
             }
         }
         
-        config.hooks.app.checkAppUpdate = { appId, envVersion, appVersion, nzVersion, completionHandler in
+        config.hooks.app.checkAppUpdate = { appId, envVersion, appVersion, sdkVersion, completionHandler in
             completionHandler(true)
         }
         
@@ -76,15 +76,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
 //        config.dev.useDevJSSDK = true
-//        config.dev.useDevServer = true
-//        NZDevServer.shared.connect(host: "192.168.0.105")
+        config.dev.useDevServer = true
+        DevServer.shared.connect(host: "192.168.0.105")
         
-        NZVersionManager.shared.updateJSSDK { _ in
-            NZEngine.shared.preload()
+        VersionManager.shared.updateJSSDK { _ in
+            Engine.shared.preload()
         }
         
         AMapServices.shared().apiKey = "35130e0c213883fba57defc0d2004c79"
-        NZEngine.shared.injectModule(NZMapModule.self)
+        Engine.shared.injectModule(MapModule.self)
     }
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {

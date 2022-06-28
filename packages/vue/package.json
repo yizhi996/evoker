@@ -1,5 +1,5 @@
 {
-  "name": "@nzoth/vue",
+  "name": "@evoker/vue",
   "version": "0.1.0",
   "main": "dist/vue.runtime.global.js",
   "types": "dist/vue.d.ts",

@@ -11,7 +11,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-view",
+  name: "ev-view",
   props,
   setup(props) {
     const el = ref<HTMLElement>()
@@ -20,6 +20,6 @@ export default defineComponent({
 
     useCSSAnimation(el, props)
 
-    return () => <nz-view ref={el} class={finalHoverClass.value}></nz-view>
+    return () => <ev-view ref={el} class={finalHoverClass.value}></ev-view>
   }
 })

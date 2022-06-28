@@ -1,6 +1,6 @@
-import { isNZothNode } from "./node"
+import { isEvokerNode } from "./node"
 
-export class NZothEvent {
+export class EvokerEvent {
   type: string
   target?: any
   args: any[] = []
@@ -14,37 +14,37 @@ export class NZothEvent {
   stopImmediatePropagation() {}
 }
 
-export interface NZothEventListener {
-  (evt: NZothEvent): void
+export interface EvokerEventListener {
+  (evt: EvokerEvent): void
 }
 
-interface NZothEventListenerParams {
-  listener: NZothEventListener
+interface EvokerEventListenerParams {
+  listener: EvokerEventListener
   options?: EventListenerOptions
   modifiers?: string[]
 }
 
-export class NZothEventTarget {
-  listeners?: Record<string, NZothEventListenerParams[]>
+export class EvokerEventTarget {
+  listeners?: Record<string, EvokerEventListenerParams[]>
 
   addEventListener(
     type: string,
-    listener: NZothEventListener,
+    listener: EvokerEventListener,
     options?: EventListenerOptions,
     modifiers?: string[]
   ) {
     const listeners =
       this.listeners ||
-      ((this.listeners = Object.create(null)) as Record<string, NZothEventListenerParams[]>)
+      ((this.listeners = Object.create(null)) as Record<string, EvokerEventListenerParams[]>)
 
     !(type in listeners) && (listeners[type] = [])
 
     listeners[type].push({ listener, options, modifiers })
 
-    isNZothNode(this) && this.page.onAddEventListener(this, type, options, modifiers)
+    isEvokerNode(this) && this.page.onAddEventListener(this, type, options, modifiers)
   }
 
-  removeEventListener(type: string, listener: NZothEventListener): void {
+  removeEventListener(type: string, listener: EvokerEventListener): void {
     if (this.listeners === undefined || !(type in this.listeners)) {
       return
     }
@@ -57,7 +57,7 @@ export class NZothEventTarget {
     }
   }
 
-  dispatchEvent(event: NZothEvent) {
+  dispatchEvent(event: EvokerEvent) {
     if (this.listeners === undefined || !(event.type in this.listeners)) {
       return
     }

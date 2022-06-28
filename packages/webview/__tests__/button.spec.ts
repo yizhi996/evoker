@@ -9,7 +9,7 @@ describe("button type", () => {
       }
     })
 
-    expect(wrapper.classes("nz-button--primary")).toBe(true)
+    expect(wrapper.classes("ev-button--primary")).toBe(true)
   })
 })
 
@@ -21,6 +21,6 @@ describe("button size", () => {
       }
     })
 
-    expect(wrapper.classes("nz-button--mini")).toBe(true)
+    expect(wrapper.classes("ev-button--mini")).toBe(true)
   })
 })

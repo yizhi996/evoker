@@ -1,9 +1,9 @@
-import { NZothComment } from "./comment"
-import { NZothElement } from "./element"
-import { NZothHTMLElement } from "./html"
-import { NZothNode } from "./node"
-import { NZothText } from "./text"
-import { NZothSVGElement } from "./svg"
+import { EvokerComment } from "./comment"
+import { EvokerElement } from "./element"
+import { EvokerHTMLElement } from "./html"
+import { EvokerNode } from "./node"
+import { EvokerText } from "./text"
+import { EvokerSVGElement } from "./svg"
 
 const enum Index {
   TAG = 1,
@@ -18,7 +18,7 @@ const enum Index {
 }
 
 export function minifyNode(
-  node: NZothNode | NZothElement | NZothHTMLElement | NZothComment | NZothText | NZothSVGElement
+  node: EvokerNode | EvokerElement | EvokerHTMLElement | EvokerComment | EvokerText | EvokerSVGElement
 ) {
   const miniNode: any[] = [node.nodeId, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -28,7 +28,7 @@ export function minifyNode(
   }
 
   // element
-  if (node instanceof NZothElement) {
+  if (node instanceof EvokerElement) {
     miniNode[Index.TAG] = node.tagName
 
     if (node.className) {
@@ -48,11 +48,11 @@ export function minifyNode(
     }
   }
 
-  if (node instanceof NZothHTMLElement) {
+  if (node instanceof EvokerHTMLElement) {
     miniNode[Index.STYLE] = node.style.styleObject
-  } else if (node instanceof NZothComment) {
+  } else if (node instanceof EvokerComment) {
     miniNode[Index.COMMENT] = node.data
-  } else if (node instanceof NZothSVGElement) {
+  } else if (node instanceof EvokerSVGElement) {
     miniNode[Index.SVG] = true
   }
 

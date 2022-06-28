@@ -1,5 +1,5 @@
-import NZJSBridge from "./bridge"
-import { vibrateShort, vibrateLong, authorize, showModal } from "@nzoth/bridge"
+import JSBridge from "./bridge"
+import { vibrateShort, vibrateLong, authorize, showModal } from "@evoker/bridge"
 import {
   navigateTo,
   navigateBack,
@@ -27,4 +27,4 @@ export {
   showModal
 }
 
-export { NZJSBridge }
+export { JSBridge }

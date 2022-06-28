@@ -6,7 +6,7 @@ import {
   wrapperAsyncAPI,
   AsyncReturn,
   invokeFailure
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 import { innerAppData, getCurrentWebViewId } from "../../../app"
 import { pathIsTabBar } from "../route"
 

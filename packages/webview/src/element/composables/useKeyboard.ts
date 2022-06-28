@@ -1,6 +1,6 @@
 import { onUnmounted } from "vue"
-import { NZJSBridge } from "../../bridge"
-import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
+import { JSBridge } from "../../bridge"
+import { addEvent, removeEvent, dispatchEvent } from "@evoker/shared"
 
 enum SubscribeKeys {
   SET_VALUE = "WEBVIEW_KEYBOARD_SET_VALUE",
@@ -11,7 +11,7 @@ enum SubscribeKeys {
 }
 
 Object.values(SubscribeKeys).forEach(key => {
-  NZJSBridge.subscribe(key, data => {
+  JSBridge.subscribe(key, data => {
     dispatchEvent(key, data)
   })
 })

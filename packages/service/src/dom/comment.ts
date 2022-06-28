@@ -1,10 +1,10 @@
-import { NZothPage } from "./page"
-import { NZothNode } from "./node"
+import { EvokerPage } from "./page"
+import { EvokerNode } from "./node"
 
-export class NZothComment extends NZothNode {
+export class EvokerComment extends EvokerNode {
   data: string
 
-  constructor(data: string, page: NZothPage) {
+  constructor(data: string, page: EvokerPage) {
     super(page)
 
     this.data = data

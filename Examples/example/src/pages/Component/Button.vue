@@ -49,7 +49,7 @@ onUnmounted(() => {
 })
 
 const onClick = () => {
-  nz.showToast({
+  ev.showToast({
     title: "CLICK",
     icon: "none"
   })

@@ -26,16 +26,16 @@
     ],
     "rootDir": ".",
     "paths": {
-      "@nzoth/*": [
+      "@evoker/*": [
         "packages/*/src"
       ],
-      "nzoth": [
-        "packages/nzoth/src"
+      "evoker": [
+        "packages/evoker/src"
       ]
     },
   },
   "include": [
-    "packages/nzoth/global.d.ts",
+    "packages/evoker/global.d.ts",
     "packages/bridge/global.d.ts",
     "packages/webview/global.d.ts",
     "packages/*/src",

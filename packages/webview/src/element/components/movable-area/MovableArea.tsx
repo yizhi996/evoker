@@ -3,7 +3,7 @@ import { useChildren } from "../../composables/useRelation"
 import { MOVABLE_KEY } from "./constant"
 
 export default defineComponent({
-  name: "nz-movable-area",
+  name: "ev-movable-area",
   setup() {
     const container = ref<HTMLElement>()
 
@@ -24,6 +24,6 @@ export default defineComponent({
       }
     )
 
-    return () => <nz-movable-area ref={container}></nz-movable-area>
+    return () => <ev-movable-area ref={container}></ev-movable-area>
   }
 })

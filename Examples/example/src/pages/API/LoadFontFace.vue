@@ -14,7 +14,7 @@ const fontFamily = "Bitstream Vera Serif Bold"
 const loaded = ref(false)
 
 const onLoad = async () => {
-  await nz.loadFontFace({
+  await ev.loadFontFace({
     family: fontFamily,
     source: 'url("https://file.lilithvue.com/lilith-test-assets/Pacifico-Regular.ttf")'
   })

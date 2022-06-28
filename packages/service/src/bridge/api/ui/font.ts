@@ -1,4 +1,4 @@
-import { AsyncReturn, GeneralCallbackResult, invokeCallback, wrapperAsyncAPI } from "@nzoth/bridge"
+import { AsyncReturn, GeneralCallbackResult, invokeCallback, wrapperAsyncAPI } from "@evoker/bridge"
 import { invokeWebViewMethod } from "../../fromWebView"
 
 const enum Events {

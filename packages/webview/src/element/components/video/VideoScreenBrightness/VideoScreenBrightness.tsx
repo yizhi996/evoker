@@ -1,4 +1,4 @@
-import { clamp } from "@nzoth/shared"
+import { clamp } from "@evoker/shared"
 import { computed, defineComponent } from "vue"
 
 export default defineComponent({
@@ -11,13 +11,13 @@ export default defineComponent({
     })
     return () => {
       const indicator = [...Array(count.value).keys()].map(i => (
-        <i key={i} class="nz-video__screen-brightness__value__block"></i>
+        <i key={i} class="ev-video__screen-brightness__value__block"></i>
       ))
       return (
-        <div class="nz-video__screen-brightness">
+        <div class="ev-video__screen-brightness">
           <div>亮度</div>
-          <div class="nz-video__screen-brightness__icon"></div>
-          <div class="nz-video__screen-brightness__value">{indicator}</div>
+          <div class="ev-video__screen-brightness__icon"></div>
+          <div class="ev-video__screen-brightness__value">{indicator}</div>
         </div>
       )
     }

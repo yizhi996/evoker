@@ -22,20 +22,8 @@
     "types": [
       "node"
     ],
-    "paths": {
-      "nzoth": [
-        "../../packages/nzoth/src"
-      ],
-      "@nzoth/service": [
-        "../../packages/service/src"
-      ],
-      "@nzoth/vite-plugin": [
-        "../../packages/vite-plugin/src"
-      ]
-    },
   },
   "include": [
     "src/**/*",
-    "../../packages/nzoth/global.d.ts"
   ],
 }

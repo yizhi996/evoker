@@ -20,7 +20,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-checkbox",
+  name: "ev-checkbox",
   props,
   setup(props, { expose }) {
     const instance = getCurrentInstance()!
@@ -66,10 +66,10 @@ export default defineComponent({
 
     return () => {
       const node = (
-        <nz-checkbox class={{ "nz-checkbox--disabled": props.disabled }}>
+        <ev-checkbox class={{ "ev-checkbox--disabled": props.disabled }}>
           <Icon type={props.checked ? "success" : "circle"} color={props.color} />
-          <span class="nz-checkbox__label"></span>
-        </nz-checkbox>
+          <span class="ev-checkbox__label"></span>
+        </ev-checkbox>
       )
 
       return withDirectives(node as VNode, [[vTap, onClick, "", { stop: true }]])

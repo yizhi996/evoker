@@ -1,6 +1,6 @@
 import { RendererOptions } from "vue"
-import { NZothNode } from "../dom/node"
-import { NZothElement } from "../dom/element"
+import { EvokerNode } from "../dom/node"
+import { EvokerElement } from "../dom/element"
 import { isOn } from "@vue/shared"
 import { patchStyle } from "./modules/style"
 import { patchAttr } from "./modules/attrs"
@@ -8,7 +8,7 @@ import { patchDOMProp } from "./modules/props"
 import { patchEvent } from "./modules/events"
 import { patchClass } from "./modules/class"
 
-type DOMRendererOptions = RendererOptions<NZothNode, NZothElement>
+type DOMRendererOptions = RendererOptions<EvokerNode, EvokerElement>
 
 export const patchProp: DOMRendererOptions["patchProp"] = (
   el,
@@ -40,7 +40,7 @@ export const patchProp: DOMRendererOptions["patchProp"] = (
   }
 }
 
-function shouldSetAsProp(el: NZothElement, key: string, value: unknown, isSVG: boolean) {
+function shouldSetAsProp(el: EvokerElement, key: string, value: unknown, isSVG: boolean) {
   if (isSVG) {
     // most keys must be set as attribute on svg elements to work
     // ...except innerHTML & textContent

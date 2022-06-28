@@ -1,7 +1,7 @@
 import { isFunction } from "@vue/shared"
 import { invokeAppOnError } from "./lifecycle/global"
 
-const nativeTimer = globalThis.__NZAppServiceNativeSDK.timer
+const nativeTimer = globalThis.__AppServiceNativeSDK.timer
 
 if (nativeTimer) {
   /** @ts-ignore */

@@ -17,7 +17,7 @@ export default defineComponent({
     return () => {
       return withDirectives(
         (
-          <div class={classNames("nz-video__button", `nz-video__icon--${props.type}`)}></div>
+          <div class={classNames("ev-video__button", `ev-video__icon--${props.type}`)}></div>
         ) as VNode,
         [[vTap, onClick, "", { stop: true }]]
       )

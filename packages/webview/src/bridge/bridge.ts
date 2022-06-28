@@ -1,12 +1,12 @@
-import { invoke, invokeCallbackHandler, publish, subscribe, subscribeHandler } from "@nzoth/bridge"
+import { invoke, invokeCallbackHandler, publish, subscribe, subscribeHandler } from "@evoker/bridge"
 
-const NZJSBridge = {
+const JSBridge = {
   invoke,
   publish,
   subscribe,
   invokeCallbackHandler,
   subscribeHandler
 }
-;(globalThis as any).NZJSBridge = NZJSBridge
+;(globalThis as any).JSBridge = JSBridge
 
-export default NZJSBridge
+export default JSBridge

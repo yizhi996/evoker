@@ -1,15 +1,15 @@
-import { NZothCSSStyleDeclaration } from "./style"
-import { NZothElement } from "./element"
-import { NZothPage } from "./page"
+import { EvokerCSSStyleDeclaration } from "./style"
+import { EvokerElement } from "./element"
+import { EvokerPage } from "./page"
 
 export type Style = string | Record<string, string | string[]> | null
 
-export class NZothHTMLElement extends NZothElement {
-  style: NZothCSSStyleDeclaration
+export class EvokerHTMLElement extends EvokerElement {
+  style: EvokerCSSStyleDeclaration
 
-  constructor(tagName: string, page: NZothPage) {
+  constructor(tagName: string, page: EvokerPage) {
     super(tagName, page)
 
-    this.style = new NZothCSSStyleDeclaration(this)
+    this.style = new EvokerCSSStyleDeclaration(this)
   }
 }

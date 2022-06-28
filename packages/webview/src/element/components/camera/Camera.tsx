@@ -1,5 +1,5 @@
 import { defineComponent, onMounted, PropType, watch } from "vue"
-import { NZJSBridge, showModal } from "../../../bridge"
+import { JSBridge, showModal } from "../../../bridge"
 import { useTongceng } from "../../composables/useTongceng"
 import { useCamera } from "../../composables/useCamera"
 import { AuthorizationStatus } from "../../utils"
@@ -12,7 +12,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-camera",
+  name: "ev-camera",
   props,
   emits: ["initdone", "scancode", "error", "stop"],
   setup(props, { emit }) {
@@ -78,7 +78,7 @@ export default defineComponent({
     const insert = () => {
       insertContainer(success => {
         if (success) {
-          NZJSBridge.invoke("insertCamera", {
+          JSBridge.invoke("insertCamera", {
             parentId: tongcengKey,
             cameraId,
             mode: props.mode,
@@ -91,7 +91,7 @@ export default defineComponent({
     }
 
     const update = () => {
-      NZJSBridge.invoke("updateCamera", {
+      JSBridge.invoke("updateCamera", {
         cameraId,
         flash: props.flash,
         devicePosition: props.devicePosition
@@ -99,11 +99,11 @@ export default defineComponent({
     }
 
     return () => (
-      <nz-camera>
-        <div ref={tongcengRef} class="nz-native__tongceng" id={tongcengKey}>
+      <ev-camera>
+        <div ref={tongcengRef} class="ev-native__tongceng" id={tongcengKey}>
           <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
-      </nz-camera>
+      </ev-camera>
     )
   }
 })

@@ -6,7 +6,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../../async"
-import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
+import { addEvent, removeEvent, dispatchEvent } from "@evoker/shared"
 
 const enum Events {
   GET_NETWORK_TYPE = "getNetworkType",

@@ -7,10 +7,10 @@
 
 <script setup lang="ts">
 const onShow = () => {
-  nz.showNavigationBarLoading()
+  ev.showNavigationBarLoading()
 }
 
 const onHide = () => {
-  nz.hideNavigationBarLoading()
+  ev.hideNavigationBarLoading()
 }
 </script>

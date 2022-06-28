@@ -11,7 +11,7 @@ import {
   SuccessResult
 } from "../../async"
 import { invoke } from "../../bridge"
-import { clamp } from "@nzoth/shared"
+import { clamp } from "@evoker/shared"
 import { ErrorCodes, errorMessage } from "../../errors"
 import { requestAuthorization } from "../auth"
 

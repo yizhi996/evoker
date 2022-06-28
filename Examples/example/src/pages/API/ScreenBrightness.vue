@@ -20,7 +20,7 @@ import { ref } from "vue"
 const brightness = ref(0)
 
 const getScreenBrightness = async () => {
-  const res = await nz.getScreenBrightness()
+  const res = await ev.getScreenBrightness()
   brightness.value = res.value.toFixed(1)
 }
 
@@ -29,6 +29,6 @@ getScreenBrightness()
 const onChange = e => {
   const value = e.detail.value
   brightness.value = value.toFixed(1)
-  nz.setScreenBrightness({ value: brightness.value })
+  ev.setScreenBrightness({ value: brightness.value })
 }
 </script>

@@ -1,11 +1,11 @@
 {
-  "appId": "com.nzothdev.example",
+  "appId": "com.evokerdev.example",
   "version": "1.0.0",
   "mode": "miniProgram",
   "window": {
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "NZoth",
+    "navigationBarTitleText": "Evoker",
     "navigationStyle": "default",
     "backgroundColor": "#f3f4f6"
   },

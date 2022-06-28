@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import NZoth
+import Evoker
 
 class LaunchpadViewController: UIViewController {
     
@@ -15,15 +15,15 @@ class LaunchpadViewController: UIViewController {
         let appId: String
         let appName: String
         let appIcon: String
-        let envVersion: NZAppEnvVersion
+        let envVersion: AppEnvVersion
     }
     
     static let apps = [
-        App(appId: "com.nzothdev.example",
+        App(appId: "com.evokerdev.example",
             appName: "小程序示例",
             appIcon: "",
             envVersion: .develop),
-        App(appId: "com.nzothdev.pdd",
+        App(appId: "com.evokerdev.pdd",
             appName: "拼多多",
             appIcon: "",
             envVersion: .develop)
@@ -32,7 +32,7 @@ class LaunchpadViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "NZoth"
+        title = "Evoker"
         if #available(iOS 13.0, *) {
             view.backgroundColor = .systemBackground
         } else {
@@ -51,9 +51,9 @@ class LaunchpadViewController: UIViewController {
     
     @objc func openApp(_ button: UIButton) {
         let app = LaunchpadViewController.apps[button.tag]
-        var options = NZAppLaunchOptions()
+        var options = AppLaunchOptions()
         options.envVersion = app.envVersion
-        NZEngine.shared.openApp(appId: app.appId, launchOptions: options)
+        Engine.shared.openApp(appId: app.appId, launchOptions: options)
     }
     
     func generateAppButton(title: String) -> UIButton {

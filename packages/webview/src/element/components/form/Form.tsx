@@ -1,17 +1,17 @@
 import { defineComponent, ref } from "vue"
-import { isNZothElement } from "../../../dom/element"
+import { isEvokerElement } from "../../../dom/element"
 
 const validTags = [
-  "NZ-INPUT",
-  "NZ-SWITCH",
-  "NZ-SLIDER",
-  "NZ-RADIO-GROUP",
-  "NZ-CHECKBOX-GROUP",
-  "NZ-PICKER"
+  "EV-INPUT",
+  "EV-SWITCH",
+  "EV-SLIDER",
+  "EV-RADIO-GROUP",
+  "EV-CHECKBOX-GROUP",
+  "EV-PICKER"
 ]
 
 export default defineComponent({
-  name: "nz-form",
+  name: "ev-form",
   emits: ["submit", "reset"],
   setup(_, { emit, expose }) {
     const container = ref<HTMLElement>()
@@ -22,7 +22,7 @@ export default defineComponent({
       const childNodes = el.childNodes
       for (let i = 0; i < childNodes.length; i++) {
         const node = childNodes[i]
-        if (isNZothElement(node) && validTags.includes(node.tagName)) {
+        if (isEvokerElement(node) && validTags.includes(node.tagName)) {
           const name = node.__instance.props.name as string
           if (name) {
             const exposed = node.__instance.exposed!
@@ -39,7 +39,7 @@ export default defineComponent({
         const childNodes = el.childNodes
         for (let i = 0; i < childNodes.length; i++) {
           const node = childNodes[i]
-          if (isNZothElement(node) && validTags.includes(node.tagName)) {
+          if (isEvokerElement(node) && validTags.includes(node.tagName)) {
             const exposed = node.__instance.exposed!
             exposed.resetFormData()
           }
@@ -61,6 +61,6 @@ export default defineComponent({
       }
     })
 
-    return () => <nz-form ref={container}></nz-form>
+    return () => <ev-form ref={container}></ev-form>
   }
 })

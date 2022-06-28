@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-import { usePage } from "nzoth"
+import { usePage } from "evoker"
 const percent = ref(0)
 
 const { onLoad, onUnload } = usePage()

@@ -1,5 +1,5 @@
-import { NZJSBridge } from "../../bridge"
-import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
+import { JSBridge } from "../../bridge"
+import { addEvent, removeEvent, dispatchEvent } from "@evoker/shared"
 
 enum SubscribeKeys {
   ON_LOADED_DATA = "ON_LOADED_DATA",
@@ -20,7 +20,7 @@ const combineSubscribeKey = (key: SubscribeKeys) => {
 
 Object.values(SubscribeKeys).forEach(key => {
   const _key = combineSubscribeKey(key)
-  NZJSBridge.subscribe(_key, data => {
+  JSBridge.subscribe(_key, data => {
     dispatchEvent(_key, data)
   })
 })

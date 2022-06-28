@@ -3,13 +3,13 @@ import { useTouch } from "../../composables/useTouch"
 import { useParent, ParentProvide } from "../../composables/useRelation"
 import { PICKER_VIEW_KEY, PickerViewProvide } from "../picker-view/define"
 import { Easing } from "@tweenjs/tween.js"
-import { vibrateShort, NZJSBridge } from "../../../bridge"
-import { clamp } from "@nzoth/shared"
+import { vibrateShort, JSBridge } from "../../../bridge"
+import { clamp } from "@evoker/shared"
 import { useJSAnimation } from "../../composables/useJSAnimation"
 import { classNames } from "../../utils"
 
 export default defineComponent({
-  name: "nz-picker-view-column",
+  name: "ev-picker-view-column",
   setup(_, { expose }) {
     const instance = getCurrentInstance()!
 
@@ -140,7 +140,7 @@ export default defineComponent({
 
     const playSound = () => {
       vibrateShort({ type: "light" })
-      NZJSBridge.invoke("playSystemSound", { id: 1157 })
+      JSBridge.invoke("playSystemSound", { id: 1157 })
     }
 
     const indicatorTop = ref(0)
@@ -207,27 +207,27 @@ export default defineComponent({
     })
 
     return () => (
-      <nz-picker-view-column>
-        <div ref={groupRef} class="nz-picker-view-column__group">
+      <ev-picker-view-column>
+        <div ref={groupRef} class="ev-picker-view-column__group">
           <div
-            class={classNames("nz-picker-view-column__mask", maskClass.value)}
+            class={classNames("ev-picker-view-column__mask", maskClass.value)}
             style={combineMaskStyle.value}
           ></div>
           <div
             ref={indicatorRef}
-            class={classNames("nz-picker-view-column__indicator", indicatorClass.value)}
+            class={classNames("ev-picker-view-column__indicator", indicatorClass.value)}
             style={indicatorStyle.value}
           ></div>
           <div
             ref={contentRef}
-            class="nz-picker-view-column__content"
+            class="ev-picker-view-column__content"
             style={{
               transform: `translate3d(0, ${translateY.value}px, 0)`,
               padding: `${indicatorTop.value}px 0px`
             }}
           ></div>
         </div>
-      </nz-picker-view-column>
+      </ev-picker-view-column>
     )
   }
 })

@@ -21,7 +21,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-icon",
+  name: "ev-icon",
   props,
   setup(props) {
     const iconSize = computed(() => {
@@ -29,12 +29,12 @@ export default defineComponent({
     })
 
     return () => (
-      <nz-icon>
+      <ev-icon>
         <i
-          class={"nz-icon--" + props.type}
+          class={"ev-icon--" + props.type}
           style={{ width: iconSize.value, height: iconSize.value, color: props.color }}
         ></i>
-      </nz-icon>
+      </ev-icon>
     )
   }
 })

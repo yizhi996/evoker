@@ -19,11 +19,11 @@ const copy = ref("123")
 const paste = ref("")
 
 const onGet = async () => {
-  const res = await nz.getClipboardData()
+  const res = await ev.getClipboardData()
   paste.value = res.data
 }
 
 const onSet = () => {
-  nz.setClipboardData({ data: copy.value })
+  ev.setClipboardData({ data: copy.value })
 }
 </script>

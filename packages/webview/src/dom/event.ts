@@ -1,7 +1,7 @@
-import { isNZothElement } from "./element"
-import { NZothEventListenerOptions } from "./vnode"
-import { sync } from "@nzoth/bridge"
-import { SyncFlags } from "@nzoth/shared"
+import { isEvokerElement } from "./element"
+import { EvokerEventListenerOptions } from "./vnode"
+import { sync } from "@evoker/bridge"
+import { SyncFlags } from "@evoker/shared"
 
 interface Event {
   type: string
@@ -30,9 +30,9 @@ export function addTouchEvent(
   nodeId: number,
   el: any,
   type: string,
-  options: NZothEventListenerOptions
+  options: EvokerEventListenerOptions
 ) {
-  const listenerOptions: Record<string, NZothEventListenerOptions> =
+  const listenerOptions: Record<string, EvokerEventListenerOptions> =
     el.__listenerOptions || (el.__listenerOptions = {})
 
   listenerOptions[type] = options
@@ -61,7 +61,7 @@ export function addTouchEvent(
 }
 
 export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: boolean) => void) {
-  const listenerOptions: Record<string, NZothEventListenerOptions> =
+  const listenerOptions: Record<string, EvokerEventListenerOptions> =
     el.__listenerOptions || (el.__listenerOptions = {})
 
   let touchStartTimestamp = 0
@@ -69,7 +69,7 @@ export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: b
 
   const isDisabled = () => {
     let result = false
-    if (isNZothElement(el)) {
+    if (isEvokerElement(el)) {
       const { disabled, loading } = el.__instance.props as {
         disabled: boolean
         loading: boolean
@@ -171,9 +171,9 @@ export function addTapEvent(
   nodeId: number,
   el: any,
   type: string,
-  options: NZothEventListenerOptions
+  options: EvokerEventListenerOptions
 ) {
-  const listenerOptions: Record<string, NZothEventListenerOptions> =
+  const listenerOptions: Record<string, EvokerEventListenerOptions> =
     el.__listenerOptions || (el.__listenerOptions = {})
   listenerOptions[type] = options
 
@@ -192,7 +192,7 @@ export function addTapEvent(
 function createCustomTouchEvent(currentTarget: HTMLElement, ev: TouchEvent, type: string) {
   const target = ev.target as HTMLElement
 
-  const changedTouches: NZTouch[] = []
+  const changedTouches: EvokerTouch[] = []
   for (let i = 0; i < ev.changedTouches.length; i++) {
     const touch = ev.changedTouches.item(i)!
     changedTouches.push({
@@ -207,7 +207,7 @@ function createCustomTouchEvent(currentTarget: HTMLElement, ev: TouchEvent, type
 
   const touch = ev.changedTouches.item(0)!
 
-  const event: NZTouchEvent & NZCustomEvent = {
+  const event: EvokerTouchEvent & EvokerCustomEvent = {
     type: type,
     timestamp: Date.now(),
     target: {
@@ -240,7 +240,7 @@ export function createCustomEvent(
     offsetLeft: currentTarget.offsetLeft,
     offsetTop: currentTarget.offsetTop
   }
-  const event: NZCustomEvent = {
+  const event: EvokerCustomEvent = {
     type: type,
     timestamp: Date.now(),
     target,
@@ -250,13 +250,13 @@ export function createCustomEvent(
   return event
 }
 
-interface NZEventTarget {
+interface EvokerEventTarget {
   id: string
   offsetLeft: number
   offsetTop: number
 }
 
-interface NZTouch {
+interface EvokerTouch {
   identifier: number
   clientX: number
   clientY: number
@@ -265,18 +265,18 @@ interface NZTouch {
   pageY: number
 }
 
-interface NZBaseEvent {
+interface EvokerBaseEvent {
   type: string
   timestamp: number
-  target: NZEventTarget
-  currentTarget: NZEventTarget
+  target: EvokerEventTarget
+  currentTarget: EvokerEventTarget
 }
 
-interface NZTouchEvent extends NZBaseEvent {
-  touches: NZTouch[]
-  changedTouches: NZTouch[]
+interface EvokerTouchEvent extends EvokerBaseEvent {
+  touches: EvokerTouch[]
+  changedTouches: EvokerTouch[]
 }
 
-interface NZCustomEvent extends NZBaseEvent {
+interface EvokerCustomEvent extends EvokerBaseEvent {
   detail: Record<string, any>
 }

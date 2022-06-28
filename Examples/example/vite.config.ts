@@ -1,5 +1,5 @@
 import { defineConfig } from "vite"
-import nzoth from "@nzoth/vite-plugin"
+import evoker from "@evoker/vite-plugin"
 import styleImport, { VantResolve } from "vite-plugin-style-import"
 import { resolve } from "path"
 
@@ -12,11 +12,10 @@ export default defineConfig(({ mode }) => {
       }
     },
     plugins: [
-      nzoth({
+      evoker({
         mode,
         devtools: {
-          host: true,
-          devSDK: { root: resolve(__dirname, "../../packages") }
+          host: true
         }
       }),
       styleImport({

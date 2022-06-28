@@ -91,7 +91,7 @@ function createConfig(format, output, plugins = []) {
   const external = []
 
   if (isWebView) {
-    output.assetFileNames = () => "nzoth-built-in.css"
+    output.assetFileNames = () => "evoker-built-in.css"
 
     // @ts-ignore
     plugins.push(require("rollup-plugin-styles")({ mode: "extract" }))
@@ -104,7 +104,7 @@ function createConfig(format, output, plugins = []) {
           [
             "@vue/babel-plugin-jsx",
             {
-              isCustomElement: tag => tag.startsWith("nz-")
+              isCustomElement: tag => tag.startsWith("ev-")
             }
           ]
         ]
@@ -123,7 +123,7 @@ function createConfig(format, output, plugins = []) {
         hook: "writeBundle"
       })
     )
-  } else if (name === "nzoth" && isGlobalBuild) {
+  } else if (name === "evoker" && isGlobalBuild) {
     external.push("vue")
     output.globals = { vue: "Vue" }
   } else {
@@ -179,7 +179,7 @@ function createRollupDtsConfig(output) {
   output.exports = "named"
 
   const plugins = [dts()]
-  if (name === "nzoth") {
+  if (name === "evoker") {
     plugins.push(
       // @ts-ignore
       require("rollup-plugin-copy")({

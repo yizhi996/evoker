@@ -1,16 +1,16 @@
 import type { BuildOptions, Plugin } from "vite"
 import vue from "@vitejs/plugin-vue"
 import type { Options as VueOptions } from "@vitejs/plugin-vue"
-import devtools from "./vite-plugin-nzoth-devtools"
-import type { Options as DevtoolsOptions } from "./vite-plugin-nzoth-devtools"
-import router from "./vite-plugin-nzoth-router"
-import assets from "./vite-plugin-nzoth-assets"
-import buildConfig from "./vite-plugin-nzoth-config"
+import devtools from "./vite-plugin-evoker-devtools"
+import type { Options as DevtoolsOptions } from "./vite-plugin-evoker-devtools"
+import router from "./vite-plugin-evoker-router"
+import assets from "./vite-plugin-evoker-assets"
+import buildConfig from "./vite-plugin-evoker-config"
 import { isHTMLTag, isSVGTag } from "@vue/shared"
 import compiler, { baseParse, transformModel, RootNode, CompilerOptions } from "@vue/compiler-core"
 import copy from "rollup-plugin-copy"
 import { resolve } from "path"
-import { isBuiltInComponent } from "@nzoth/shared"
+import { isBuiltInComponent } from "@evoker/shared"
 
 export interface Options {
   mode?: string

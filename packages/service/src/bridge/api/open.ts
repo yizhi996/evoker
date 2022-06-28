@@ -9,7 +9,7 @@ import {
   openAuthorizationView,
   getAuthorize,
   AuthorizationStatus
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 import { innerAppData } from "../../app"
 import { extend } from "@vue/shared"
 

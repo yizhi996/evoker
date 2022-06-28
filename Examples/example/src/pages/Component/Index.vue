@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { reactive } from "vue"
-import { usePage } from "nzoth"
+import { usePage } from "evoker"
 import NPageIndex from "../../components/NPageIndex.vue"
 
 const list = reactive([

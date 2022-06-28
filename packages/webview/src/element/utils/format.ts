@@ -1,4 +1,4 @@
-import { isNumber } from "@nzoth/shared"
+import { isNumber } from "@evoker/shared"
 
 export function zeroPad(nr: number, base: number) {
   var len = String(base).length - String(nr).length + 1

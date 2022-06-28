@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
 
-const observer = nz.createIntersectionObserver()
+const observer = ev.createIntersectionObserver()
 
 const appear = ref(false)
 

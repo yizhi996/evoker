@@ -23,7 +23,7 @@ import {
   clearStorageSync,
   getStorageInfo,
   getStorageInfoSync
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 import {
   showModal,
   showToast,
@@ -31,15 +31,15 @@ import {
   showActionSheet,
   hideLoading,
   hideToast
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 import {
   setNavigationBarTitle,
   showNavigationBarLoading,
   hideNavigationBarLoading,
   setNavigationBarColor,
   hideHomeButton
-} from "@nzoth/bridge"
-import { startPullDownRefresh, stopPullDownRefresh } from "@nzoth/bridge"
+} from "@evoker/bridge"
+import { startPullDownRefresh, stopPullDownRefresh } from "@evoker/bridge"
 import {
   previewImage,
   chooseImage,
@@ -50,30 +50,30 @@ import {
   saveVideoToPhotosAlbum,
   getVideoInfo,
   compressVideo
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 import { createCameraContext } from "./api/media/camera"
-import { createInnerAudioContext, setInnerAudioOption } from "@nzoth/bridge"
-import { vibrateShort, vibrateLong } from "@nzoth/bridge"
+import { createInnerAudioContext, setInnerAudioOption } from "@evoker/bridge"
+import { vibrateShort, vibrateLong } from "@evoker/bridge"
 import {
   getNetworkType,
   getLocalIPAddress,
   onNetworkStatusChange,
   offNetworkStatusChange
-} from "@nzoth/bridge"
-import { scanCode } from "@nzoth/bridge"
+} from "@evoker/bridge"
+import { scanCode } from "@evoker/bridge"
 import {
   getScreenBrightness,
   setScreenBrightness,
   onUserCaptureScreen,
   offUserCaptureScreen,
   setKeepScreenOn
-} from "@nzoth/bridge"
-import { getClipboardData, setClipboardData } from "@nzoth/bridge"
-import { makePhoneCall } from "@nzoth/bridge"
-import { getRandomValues, rsa } from "@nzoth/bridge"
+} from "@evoker/bridge"
+import { getClipboardData, setClipboardData } from "@evoker/bridge"
+import { makePhoneCall } from "@evoker/bridge"
+import { getRandomValues, rsa } from "@evoker/bridge"
 import { createSelectorQuery } from "./api/html/selector"
-import { getBatteryInfo } from "@nzoth/bridge"
-import { onKeyboardHeighChange, offKeyboardHeighChange, hideKeyboard } from "@nzoth/bridge"
+import { getBatteryInfo } from "@evoker/bridge"
+import { onKeyboardHeighChange, offKeyboardHeighChange, hideKeyboard } from "@evoker/bridge"
 import {
   setTabBarBadge,
   hideTabBarRedDot,
@@ -81,7 +81,7 @@ import {
   setTabBarStyle,
   showTabBarRedDot,
   removeTabBarBadge
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 import { request, downloadFile, uploadFile } from "./api/request"
 import { createAnimation } from "./api/ui/animation"
 import { pageScrollTo } from "./api/ui/scroll"
@@ -94,12 +94,12 @@ import {
   offLocationChange,
   onLocationChangeError,
   offLocationChangeError
-} from "@nzoth/bridge"
-import { getRecorderManager } from "@nzoth/bridge"
-import { getSetting, authorize } from "@nzoth/bridge"
+} from "@evoker/bridge"
+import { getRecorderManager } from "@evoker/bridge"
+import { getSetting, authorize } from "@evoker/bridge"
 import { getUserProfile, getUserInfo } from "./api/open"
 import { openSetting } from "./api/auth"
-import { login, checkSession } from "@nzoth/bridge"
+import { login, checkSession } from "@evoker/bridge"
 import { showTabBar, hideTabBar } from "../bridge/api/ui/tabBar"
 import { createIntersectionObserver } from "./api/html/intersection"
 import {

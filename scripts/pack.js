@@ -5,18 +5,18 @@ const archiver = require("archiver")
 
 const root = resolve(__dirname, "../packages/")
 
-const nzothDir = resolve(root, "nzoth")
-const version = require(resolve(nzothDir, "package.json")).version
+const evokerDir = resolve(root, "evoker")
+const version = require(resolve(evokerDir, "package.json")).version
 
 const include = {
-  nzoth: ["nzoth.global.prod.js"],
-  webview: ["webview.global.prod.js", "nzoth-built-in.css", "index.html"],
+  evoker: ["evoker.global.prod.js"],
+  webview: ["webview.global.prod.js", "evoker-built-in.css", "index.html"],
   vue: ["vue.runtime.global.prod.js"]
 }
 
 const dir = resolve(__dirname, "../temp")
 
-const fileName = `nzoth-sdk-${version}.nzpkg`
+const fileName = `evoker-sdk-${version}.evpkg`
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir)
 }
@@ -33,7 +33,7 @@ stream.on("finish", () => {
   const stat = fs.statSync(output)
   console.log(`${fileName} - ${toKiB(totalSize)} - zip ${toKiB(stat.size)}`)
 
-  fs.copyFileSync(output, resolve(__dirname, `../iOS/NZoth/Sources/Resources/SDK/nzoth-sdk.nzpkg`))
+  fs.copyFileSync(output, resolve(__dirname, `../iOS/Evoker/Sources/Resources/SDK/evoker-sdk.evpkg`))
 })
 
 const toKiB = n => {

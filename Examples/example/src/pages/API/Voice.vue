@@ -12,7 +12,7 @@ const recording = ref(false)
 
 const tempFilePath = ref("")
 
-const recorderManager = nz.getRecorderManager()
+const recorderManager = ev.getRecorderManager()
 
 recorderManager.onStart(() => {
   recording.value = true
@@ -42,7 +42,7 @@ const stopRecord = () => {
   recorderManager.stop()
 }
 
-const audioContext = nz.createInnerAudioContext()
+const audioContext = ev.createInnerAudioContext()
 
 const playing = ref(false)
 

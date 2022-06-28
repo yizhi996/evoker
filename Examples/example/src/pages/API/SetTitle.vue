@@ -12,6 +12,6 @@ import { ref } from "vue"
 const title = ref("")
 
 const onSetTitle = () => {
-  nz.setNavigationBarTitle({ title: title.value })
+  ev.setNavigationBarTitle({ title: title.value })
 }
 </script>

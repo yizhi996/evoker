@@ -17,7 +17,7 @@ import { ref } from "vue"
 const systemInfo = ref({})
 
 const onClick = async () => {
-  const res = await nz.getSystemInfo()
+  const res = await ev.getSystemInfo()
   systemInfo.value = res
 }
 </script>

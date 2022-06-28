@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => {
           "@vue/compiler-core",
           "rollup-plugin-copy",
           "picocolors",
-          "@nzoth/shared",
+          "@evoker/shared",
           "esbuild"
         ]
       }

@@ -18,6 +18,6 @@ import { ref } from "vue"
 const phoneNumber = ref("")
 
 const onCall = () => {
-  nz.makePhoneCall({ phoneNumber: phoneNumber.value })
+  ev.makePhoneCall({ phoneNumber: phoneNumber.value })
 }
 </script>

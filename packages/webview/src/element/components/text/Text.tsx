@@ -5,13 +5,13 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-text",
+  name: "ev-text",
   props,
   setup() {
     return () => (
-      <nz-text>
-        <span class="nz-text-content"></span>
-      </nz-text>
+      <ev-text>
+        <span class="ev-text-content"></span>
+      </ev-text>
     )
   }
 })

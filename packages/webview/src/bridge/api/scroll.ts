@@ -1,4 +1,4 @@
-import NZJSBridge from "../bridge"
+import JSBridge from "../bridge"
 
 interface PageScrollToOptions {
   scrollTop?: number
@@ -19,7 +19,7 @@ export function pageScrollTo(options: PageScrollToOptions) {
     top = scrollTop
   }
   if (top > -1) {
-    NZJSBridge.invoke("pageScrollTo", { top, duration })
+    JSBridge.invoke("pageScrollTo", { top, duration })
   }
   return Promise.resolve({})
 }

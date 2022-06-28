@@ -1,6 +1,6 @@
 {
-  "NZothAsyncAPI": {
-    "prefix": "nzapi",
+  "EvokerAsyncAPI": {
+    "prefix": "evapi",
     "body": [
       "interface $1Options {",
       "  success?: $1SuccessCallback",

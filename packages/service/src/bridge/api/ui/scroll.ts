@@ -1,4 +1,4 @@
-import { AsyncReturn, GeneralCallbackResult, invokeSuccess, wrapperAsyncAPI } from "@nzoth/bridge"
+import { AsyncReturn, GeneralCallbackResult, invokeSuccess, wrapperAsyncAPI } from "@evoker/bridge"
 import { invokeWebViewMethod } from "../../fromWebView"
 
 interface PageScrollToOptions {

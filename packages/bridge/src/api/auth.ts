@@ -109,7 +109,7 @@ export function openAuthorizationView(scope: string): Promise<boolean> {
   }
 
   return new Promise((resolve, reject) => {
-    const { appName, appIcon = "" } = globalThis.__NZConfig
+    const { appName, appIcon = "" } = globalThis.__Config
     invoke<{ authorized: boolean }>(
       Events.OPEN_AUTHORIZATION_VIEW,
       { appName, appIcon, title },

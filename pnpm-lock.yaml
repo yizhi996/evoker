@@ -78,38 +78,38 @@ importers:
 
   packages/bridge:
     specifiers:
-      '@nzoth/shared': 0.1.0
+      '@evoker/shared': 0.1.0
       '@vue/shared': ^3.2.37
       vue: ^3.2.37
     dependencies:
-      '@nzoth/shared': link:../shared
+      '@evoker/shared': link:../shared
       '@vue/shared': 3.2.37
       vue: 3.2.37
 
-  packages/nzoth:
+  packages/evoker:
     specifiers:
-      '@nzoth/service': workspace:^0.1.0
-      '@nzoth/vite-plugin': workspace:^0.1.0
-      '@nzoth/webview': workspace:^0.1.0
+      '@evoker/service': workspace:^0.1.0
+      '@evoker/vite-plugin': workspace:^0.1.0
+      '@evoker/webview': workspace:^0.1.0
       vite: ^2.9.9
       vue: ^3.2.37
     dependencies:
-      '@nzoth/service': link:../service
-      '@nzoth/webview': link:../webview
+      '@evoker/service': link:../service
+      '@evoker/webview': link:../webview
       vue: 3.2.37
     devDependencies:
-      '@nzoth/vite-plugin': link:../vite-plugin
+      '@evoker/vite-plugin': link:../vite-plugin
       vite: 2.9.12
 
   packages/service:
     specifiers:
-      '@nzoth/bridge': workspace:^0.1.0
-      '@nzoth/shared': workspace:^0.1.0
+      '@evoker/bridge': workspace:^0.1.0
+      '@evoker/shared': workspace:^0.1.0
       '@vue/shared': ^3.2.37
       vue: ^3.2.37
     dependencies:
-      '@nzoth/bridge': link:../bridge
-      '@nzoth/shared': link:../shared
+      '@evoker/bridge': link:../bridge
+      '@evoker/shared': link:../shared
       '@vue/shared': 3.2.37
       vue: 3.2.37
 
@@ -121,7 +121,7 @@ importers:
 
   packages/vite-plugin:
     specifiers:
-      '@nzoth/shared': workspace:^0.1.0
+      '@evoker/shared': workspace:^0.1.0
       '@types/archiver': ^5.3.1
       '@types/tmp': ^0.2.3
       '@types/ws': ^8.5.3
@@ -135,7 +135,7 @@ importers:
       tmp: ^0.2.1
       vue: ^3.2.37
     dependencies:
-      '@nzoth/shared': link:../shared
+      '@evoker/shared': link:../shared
       '@vitejs/plugin-vue': 2.3.3_vue@3.2.37
       '@vue/compiler-core': 3.2.37
       '@vue/shared': 3.2.37
@@ -160,8 +160,8 @@ importers:
 
   packages/webview:
     specifiers:
-      '@nzoth/bridge': workspace:^0.1.0
-      '@nzoth/shared': workspace:^0.1.0
+      '@evoker/bridge': workspace:^0.1.0
+      '@evoker/shared': workspace:^0.1.0
       '@tweenjs/tween.js': ^18.6.4
       '@types/lodash.throttle': ^4.1.7
       '@vitejs/plugin-vue': ^2.3.3
@@ -180,8 +180,8 @@ importers:
       rollup-plugin-copy: ^3.4.0
       vue: ^3.2.37
     dependencies:
-      '@nzoth/bridge': link:../bridge
-      '@nzoth/shared': link:../shared
+      '@evoker/bridge': link:../bridge
+      '@evoker/shared': link:../shared
       '@tweenjs/tween.js': 18.6.4
       '@vue/runtime-core': 3.2.37
       '@vue/shared': 3.2.37

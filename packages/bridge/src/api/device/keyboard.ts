@@ -1,4 +1,4 @@
-import { addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
+import { addEvent, removeEvent, dispatchEvent } from "@evoker/shared"
 import {
   invokeCallback,
   GeneralCallbackResult,

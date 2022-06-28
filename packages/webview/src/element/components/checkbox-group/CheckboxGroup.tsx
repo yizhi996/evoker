@@ -7,7 +7,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-checkbox-group",
+  name: "ev-checkbox-group",
   props,
   emits: ["change"],
   setup(_, { emit, expose }) {
@@ -42,6 +42,6 @@ export default defineComponent({
       }
     })
 
-    return () => <nz-checkbox-group></nz-checkbox-group>
+    return () => <ev-checkbox-group></ev-checkbox-group>
   }
 })

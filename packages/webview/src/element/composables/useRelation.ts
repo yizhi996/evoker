@@ -1,5 +1,5 @@
 import { reactive, provide, InjectionKey, ComponentInternalInstance } from "vue"
-import { isNZothElement } from "../../dom/element"
+import { isEvokerElement } from "../../dom/element"
 import { extend } from "@vue/shared"
 
 export type ParentProvide<T> = T & {
@@ -16,7 +16,7 @@ function getParent<T>(container: HTMLElement, key: InjectionKey<ParentProvide<T>
   let parentInstance: ComponentInstance | undefined
   let parent: any = container
   while ((parent = parent && parent.parentNode)) {
-    if (isNZothElement(parent)) {
+    if (isEvokerElement(parent)) {
       const instance = parent.__instance as ComponentInstance
       const provides = instance.provides
       if (provides) {

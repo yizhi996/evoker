@@ -1,8 +1,8 @@
 import { getCurrentWebViewId } from "../../../app"
 import { randomId } from "../../../utils"
-import { SyncFlags } from "@nzoth/shared"
+import { SyncFlags } from "@evoker/shared"
 import { extend } from "@vue/shared"
-import { sync } from "@nzoth/bridge"
+import { sync } from "@evoker/bridge"
 
 type ObserverCallback = (result: ObserverCallbackResult) => void
 

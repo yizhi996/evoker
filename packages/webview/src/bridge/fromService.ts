@@ -1,8 +1,8 @@
-import NZJSBridge from "./bridge"
-import type { InvokeCallback } from "@nzoth/bridge"
+import JSBridge from "./bridge"
+import type { InvokeCallback } from "@evoker/bridge"
 import { pageScrollTo } from "./api/scroll"
 import { loadFontFace } from "./api/font"
-import { isNZothElement, nodes } from "../dom/element"
+import { isEvokerElement, nodes } from "../dom/element"
 
 let callbackId = 0
 
@@ -21,7 +21,7 @@ export function invokeAppServiceMethod<T = unknown>(
   callback?: InvokeCallback<T>
 ) {
   const cbId = callbackId++
-  NZJSBridge.publish(
+  JSBridge.publish(
     Events.INVOKE_APP_SERVICE,
     {
       event,
@@ -35,7 +35,7 @@ export function invokeAppServiceMethod<T = unknown>(
   }
 }
 
-NZJSBridge.subscribe<{ callbackId: number; result: any }>(Events.CALLBACK_APP_SERVICE, message => {
+JSBridge.subscribe<{ callbackId: number; result: any }>(Events.CALLBACK_APP_SERVICE, message => {
   const { callbackId, result } = message
   const callback = callbacks.get(callbackId)
   if (callback) {
@@ -52,7 +52,7 @@ interface OperateContextOptions {
 
 const operateContext = (options: OperateContextOptions) => {
   const node = nodes.get(options.nodeId)
-  if (node && isNZothElement(node.el)) {
+  if (node && isEvokerElement(node.el)) {
     node.el.__instance!.exposed!.operate(options)
   }
   return Promise.resolve({})
@@ -64,13 +64,13 @@ const methods: Record<string, Function> = {
   operateContext
 }
 
-NZJSBridge.subscribe<{ callbackId: number; event: string; params: any[] }>(
+JSBridge.subscribe<{ callbackId: number; event: string; params: any[] }>(
   Events.INVOKE_WEB_VIEW,
   message => {
     const { callbackId, event, params } = message
     const method = methods[event]
     const publish = (result: any) => {
-      NZJSBridge.publish(Events.CALLBACK_WEB_VIEW, { result, callbackId }, window.webViewId)
+      JSBridge.publish(Events.CALLBACK_WEB_VIEW, { result, callbackId }, window.webViewId)
     }
     if (method) {
       method

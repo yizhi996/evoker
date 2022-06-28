@@ -1,5 +1,5 @@
 import { defineComponent, PropType, ref, watch } from "vue"
-import { clamp } from "@nzoth/shared"
+import { clamp } from "@evoker/shared"
 import { Easing } from "@tweenjs/tween.js"
 import { unitToPx } from "../../utils/format"
 import { useJSAnimation } from "../../composables/useJSAnimation"
@@ -18,7 +18,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-progress",
+  name: "ev-progress",
   props,
   emits: ["activeend"],
   setup(props, { emit }) {
@@ -65,7 +65,7 @@ export default defineComponent({
 
       return (
         <div
-          class="nz-progress__track"
+          class="ev-progress__track"
           style={{
             height: `${unitToPx(props.strokeWidth)}px`,
             "background-color": props.backgroundColor,
@@ -73,7 +73,7 @@ export default defineComponent({
           }}
         >
           <div
-            class="nz-progress__active"
+            class="ev-progress__active"
             style={{
               width: `${clamp(currentPercent.value, 0, 100)}%`,
               "background-color": props.activeColor,
@@ -89,17 +89,17 @@ export default defineComponent({
         return
       }
       return (
-        <span class="nz-progress__value" style={{ "font-size": `${unitToPx(props.fontSize)}px` }}>
+        <span class="ev-progress__value" style={{ "font-size": `${unitToPx(props.fontSize)}px` }}>
           {props.percent}%
         </span>
       )
     }
 
     return () => (
-      <nz-progress>
+      <ev-progress>
         {renderTrack()}
         {renderValut()}
-      </nz-progress>
+      </ev-progress>
     )
   }
 })

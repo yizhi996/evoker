@@ -6,7 +6,7 @@ interface Base64 {
   arrayBufferToBase64(buffer: ArrayBuffer): string
 }
 
-export interface NZAppServiceNativeSDK {
+export interface AppServiceNativeSDK {
   timer: NativeTimer
 
   messageChannel: MessageChannel
@@ -140,7 +140,7 @@ interface TabBarItem {
   path: string
 }
 
-interface NZConfig {
+interface Config {
   appId: string
   appName: string
   appIcon: string
@@ -150,8 +150,8 @@ interface NZConfig {
 
 declare global {
   var webkit: WebKit
-  var __NZAppServiceNativeSDK: NZAppServiceNativeSDK
-  var __NZConfig: NZConfig
+  var __AppServiceNativeSDK: AppServiceNativeSDK
+  var __Config: Config
 }
 
 export {}

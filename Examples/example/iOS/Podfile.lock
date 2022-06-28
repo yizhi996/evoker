@@ -10,6 +10,28 @@ PODS:
   - Bugly (2.5.91)
   - CocoaAsyncSocket (7.6.5)
   - CryptoSwift (1.4.3)
+  - Evoker (0.1.0):
+    - Evoker/Core (= 0.1.0)
+    - Evoker/Resources (= 0.1.0)
+  - Evoker/Core (0.1.0):
+    - Alamofire (~> 5.4)
+    - CryptoSwift (~> 1.4.1)
+    - JXPhotoBrowser (~> 3.0)
+    - KTVHTTPCache (~> 2.0.0)
+    - MJRefresh
+    - PureLayout
+    - SDWebImage (~> 5.0)
+    - SDWebImageWebPCoder
+    - SQLite.swift (~> 0.13.2)
+    - SwiftyRSA
+    - Telegraph
+    - Zip (~> 2.1)
+    - ZLPhotoBrowser
+  - Evoker/Map (0.1.0):
+    - AMap3DMap
+    - AMapLocation
+    - AMapSearch
+  - Evoker/Resources (0.1.0)
   - HTTPParserC (2.9.4)
   - JXPhotoBrowser (3.1.3)
   - KTVCocoaHTTPServer (1.0.0):
@@ -26,28 +48,6 @@ PODS:
     - libwebp/demux
   - libwebp/webp (1.2.1)
   - MJRefresh (3.7.5)
-  - NZoth (0.1.0):
-    - NZoth/Core (= 0.1.0)
-    - NZoth/Resources (= 0.1.0)
-  - NZoth/Core (0.1.0):
-    - Alamofire (~> 5.4)
-    - CryptoSwift (~> 1.4.1)
-    - JXPhotoBrowser (~> 3.0)
-    - KTVHTTPCache (~> 2.0.0)
-    - MJRefresh
-    - PureLayout
-    - SDWebImage (~> 5.0)
-    - SDWebImageWebPCoder
-    - SQLite.swift (~> 0.13.2)
-    - SwiftyRSA
-    - Telegraph
-    - Zip (~> 2.1)
-    - ZLPhotoBrowser
-  - NZoth/Map (0.1.0):
-    - AMap3DMap
-    - AMapLocation
-    - AMapSearch
-  - NZoth/Resources (0.1.0)
   - PureLayout (3.1.9)
   - SDWebImage (5.12.6):
     - SDWebImage/Core (= 5.12.6)
@@ -71,8 +71,8 @@ PODS:
 
 DEPENDENCIES:
   - Bugly
-  - NZoth (from `../../../iOS`)
-  - NZoth/Map (from `../../../iOS`)
+  - Evoker (from `../../../iOS`)
+  - Evoker/Map (from `../../../iOS`)
 
 SPEC REPOS:
   trunk:
@@ -100,7 +100,7 @@ SPEC REPOS:
     - ZLPhotoBrowser
 
 EXTERNAL SOURCES:
-  NZoth:
+  Evoker:
     :path: "../../../iOS"
 
 SPEC CHECKSUMS:
@@ -112,13 +112,13 @@ SPEC CHECKSUMS:
   Bugly: afe841bba2ea6de6d432a3c125240a5e75949c55
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CryptoSwift: a0799ee936271bd2253a006f1e4523df21845000
+  Evoker: 84f43adf11ff29a206b4a91a88987d70fcb330d3
   HTTPParserC: aea14c3d2d4ac5beb3988781daa36dfa62e0d9ef
   JXPhotoBrowser: d32e94e1226d43bf5ed83164e3f5b651fed625e0
   KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
   KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961
-  NZoth: 762abfd54f18217fa027a9ac7112861894a7b937
   PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
   SDWebImage: a47aea9e3d8816015db4e523daff50cfd294499d
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
@@ -128,6 +128,6 @@ SPEC CHECKSUMS:
   Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
   ZLPhotoBrowser: fbd03a797675cca8f7a85e0f539eef28eb742bf6
 
-PODFILE CHECKSUM: 2dcae5619955db8c56b10d0c488988b684043015
+PODFILE CHECKSUM: 6986de5fad240b6a7713051d113e370a42e5b200
 
 COCOAPODS: 1.11.2

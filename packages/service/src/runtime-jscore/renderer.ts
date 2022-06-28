@@ -1,17 +1,17 @@
 import { createRenderer, RendererOptions } from "vue"
 import { extend } from "@vue/shared"
-import { NZothElement } from "../dom/element"
-import { NZothNode } from "../dom/node"
-import { NZothHTMLElement } from "../dom/html"
-import { NZothSVGElement } from "../dom/svg"
-import { NZothPage } from "../dom/page"
-import { NZothText } from "../dom/text"
-import { NZothComment } from "../dom/comment"
+import { EvokerElement } from "../dom/element"
+import { EvokerNode } from "../dom/node"
+import { EvokerHTMLElement } from "../dom/html"
+import { EvokerSVGElement } from "../dom/svg"
+import { EvokerPage } from "../dom/page"
+import { EvokerText } from "../dom/text"
+import { EvokerComment } from "../dom/comment"
 import { patchProp } from "./patchProp"
 
 export const svgNS = "http://www.w3.org/2000/svg"
 
-const nodeOps: Omit<RendererOptions<NZothNode, NZothElement>, "patchProp"> = {
+const nodeOps: Omit<RendererOptions<EvokerNode, EvokerElement>, "patchProp"> = {
   insert: (child, parent, anchor) => {
     parent.insertBefore(child, anchor || null)
   },
@@ -24,22 +24,22 @@ const nodeOps: Omit<RendererOptions<NZothNode, NZothElement>, "patchProp"> = {
   },
 
   /** @ts-ignore */
-  createElement: (tag, isSVG, is, props, container): NZothElement => {
-    const page = container.page as NZothPage
-    const el = isSVG ? new NZothSVGElement(svgNS, tag, page) : new NZothHTMLElement(tag, page)
+  createElement: (tag, isSVG, is, props, container): EvokerElement => {
+    const page = container.page as EvokerPage
+    const el = isSVG ? new EvokerSVGElement(svgNS, tag, page) : new EvokerHTMLElement(tag, page)
     return el
   },
 
   /** @ts-ignore */
   createText: (text, container) => {
-    const page = container.page as NZothPage
-    return new NZothText(text, page)
+    const page = container.page as EvokerPage
+    return new EvokerText(text, page)
   },
 
   /** @ts-ignore */
   createComment: (text, container) => {
-    const page = container.page as NZothPage
-    return new NZothComment(text, page)
+    const page = container.page as EvokerPage
+    return new EvokerComment(text, page)
   },
 
   setText: (node, text) => {
@@ -50,7 +50,7 @@ const nodeOps: Omit<RendererOptions<NZothNode, NZothElement>, "patchProp"> = {
     el.textContent = text
   },
 
-  parentNode: node => node.parentNode as NZothElement | null,
+  parentNode: node => node.parentNode as EvokerElement | null,
 
   nextSibling: node => node.nextSibling,
 
@@ -66,7 +66,7 @@ const nodeOps: Omit<RendererOptions<NZothNode, NZothElement>, "patchProp"> = {
     return cloned
   },
 
-  forcePatchProp(el: NZothElement, key: string) {
+  forcePatchProp(el: EvokerElement, key: string) {
     const keys = forcePatchProp[el.tagName]
     return keys && keys.includes(key)
   }

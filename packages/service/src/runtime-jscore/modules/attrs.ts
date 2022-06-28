@@ -1,11 +1,11 @@
 import { ComponentInternalInstance } from "vue"
 import { includeBooleanAttr, isSpecialBooleanAttr } from "@vue/shared"
-import { NZothElement } from "../../dom/element"
+import { EvokerElement } from "../../dom/element"
 
 export const xlinkNS = "http://www.w3.org/1999/xlink"
 
 export function patchAttr(
-  el: NZothElement,
+  el: EvokerElement,
   key: string,
   value: any,
   isSVG: boolean,

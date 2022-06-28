@@ -11,7 +11,7 @@ import { unitToPx } from "../../utils/format"
 import { useJSAnimation } from "../../composables/useJSAnimation"
 import { Easing } from "@tweenjs/tween.js"
 import { useTongceng } from "../../composables/useTongceng"
-import { NZJSBridge } from "../../../bridge"
+import { JSBridge } from "../../../bridge"
 import { classNames } from "../../utils"
 
 const props = {
@@ -32,7 +32,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-scroll-view",
+  name: "ev-scroll-view",
   props,
   emits: ["scrolltoupper", "scrolltolower", "scroll", "dragstart", "dragging", "dragend"],
   setup(props, { emit }) {
@@ -148,7 +148,7 @@ export default defineComponent({
     })
 
     watchEffect(() => {
-      NZJSBridge.invoke("operateScrollView", {
+      JSBridge.invoke("operateScrollView", {
         parentId: tongcengKey,
         scrollViewId,
         bounces: props.bounces,
@@ -160,7 +160,7 @@ export default defineComponent({
 
     const operateScrollView = () => {
       if (props.enhanced) {
-        NZJSBridge.invoke("operateScrollView", {
+        JSBridge.invoke("operateScrollView", {
           parentId: tongcengKey,
           scrollViewId,
           bounces: props.bounces,
@@ -293,16 +293,16 @@ export default defineComponent({
     return () => {
       const { scrollX, enableFlex } = props
       return (
-        <nz-scroll-view>
+        <ev-scroll-view>
           <div
             class={classNames(
-              "nz-scroll-view__wrapper",
-              scrollX ? "nz-scroll-view__wrapper--horizontal" : "nz-scroll-view__wrapper--vertical"
+              "ev-scroll-view__wrapper",
+              scrollX ? "ev-scroll-view__wrapper--horizontal" : "ev-scroll-view__wrapper--vertical"
             )}
           >
             <div
               ref={tongcengRef}
-              class="nz-scroll-view__wrapper"
+              class="ev-scroll-view__wrapper"
               id={tongcengKey}
               style={scrollX ? "overflow: auto hidden" : "overflow: hidden auto;"}
             >
@@ -312,7 +312,7 @@ export default defineComponent({
               ></div>
             </div>
           </div>
-        </nz-scroll-view>
+        </ev-scroll-view>
       )
     }
   }

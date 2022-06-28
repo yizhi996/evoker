@@ -1,4 +1,4 @@
-import nz from "./bridge"
+import global from "./bridge"
 import useApp from "./lifecycle/useApp"
 import usePage from "./lifecycle/usePage"
 import "./native"
@@ -8,7 +8,7 @@ import { extend } from "@vue/shared"
 export { useApp, usePage }
 export { createApp } from "./app"
 export { defineRouter } from "./router"
-export { nz }
+export { global }
 export * from "./bridge"
 
 function hijack() {

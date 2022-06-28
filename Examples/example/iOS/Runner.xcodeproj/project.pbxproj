@@ -394,7 +394,7 @@
 					"-l\"c++\"",
 					"-l\"z\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.nozthdev.runner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.evokerdev.runner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -430,7 +430,7 @@
 					"-l\"c++\"",
 					"-l\"z\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.nozthdev.runner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.evokerdev.runner;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;

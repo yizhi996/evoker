@@ -18,9 +18,9 @@ const src = ref("")
 const progress = ref(0)
 
 const onDownload = () => {
-  const task = nz.downloadFile({
+  const task = ev.downloadFile({
     url,
-    filePath: nz.env.USER_DATA_PATH + "/test_img.jpg",
+    filePath: ev.env.USER_DATA_PATH + "/test_img.jpg",
     success: res => {
       src.value = res.filePath
     },

@@ -1,5 +1,5 @@
 import { computed, defineComponent, PropType, VNode, watch, withDirectives } from "vue"
-import { NZJSBridge } from "../../../bridge"
+import { JSBridge } from "../../../bridge"
 import { vTap } from "../../directive/tap"
 import { isObject } from "@vue/shared"
 
@@ -19,7 +19,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-picker",
+  name: "ev-picker",
   props,
   emits: ["change", "columnchange", "cancel"],
   setup(props, { emit, expose }) {
@@ -79,7 +79,7 @@ export default defineComponent({
       }
       if (props.mode === "time" || props.mode === "date") {
         isShow = true
-        NZJSBridge.invoke<{ value: string }>(
+        JSBridge.invoke<{ value: string }>(
           "showDatePickerView",
           {
             start: props.start,
@@ -98,7 +98,7 @@ export default defineComponent({
         )
       } else if (props.mode === "selector") {
         isShow = true
-        NZJSBridge.invoke<{ value: number }>(
+        JSBridge.invoke<{ value: number }>(
           "showPickerView",
           {
             columns: formatData.value,
@@ -116,7 +116,7 @@ export default defineComponent({
         )
       } else if (props.mode === "multiSelector") {
         isShow = true
-        NZJSBridge.invoke<{ value: number[] | string }>(
+        JSBridge.invoke<{ value: number[] | string }>(
           "showMultiPickerView",
           {
             columns: formatData.value,
@@ -132,7 +132,7 @@ export default defineComponent({
             }
           }
         )
-        NZJSBridge.subscribe<{ column: number; value: number }>(
+        JSBridge.subscribe<{ column: number; value: number }>(
           "WEBVIEW_MULTI_PICKER_COLUMN_CHANGE",
           result => {
             if (isShow) {
@@ -145,7 +145,7 @@ export default defineComponent({
 
     const updateMultiPickerView = (data: Record<string, any>) => {
       if (props.mode === "multiSelector" && isShow) {
-        NZJSBridge.invoke("updateMultiPickerView", data)
+        JSBridge.invoke("updateMultiPickerView", data)
       }
     }
 
@@ -166,7 +166,7 @@ export default defineComponent({
     })
 
     return () => {
-      const node = <nz-picker></nz-picker>
+      const node = <ev-picker></ev-picker>
 
       return withDirectives(node as VNode, [[vTap, onClick]])
     }

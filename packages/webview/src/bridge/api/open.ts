@@ -1,4 +1,4 @@
-import NZJSBridge from "../bridge"
+import JSBridge from "../bridge"
 
 import {
   invokeCallback,
@@ -8,7 +8,7 @@ import {
   SuccessResult,
   wrapperAsyncAPI,
   requestAuthorization
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 
 const enum Events {
   GET_USER_INFO = "getUserInfo"
@@ -37,7 +37,7 @@ export function getUserInfo<T extends GetUserInfoOptions = GetUserInfoOptions>(
       const scope = "scope.userInfo"
       requestAuthorization(scope, false)
         .then(() => {
-          NZJSBridge.invoke<SuccessResult<T>>(event, options, result => {
+          JSBridge.invoke<SuccessResult<T>>(event, options, result => {
             invokeCallback(event, options, result)
           })
         })

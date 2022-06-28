@@ -7,7 +7,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-loading",
+  name: "ev-loading",
   props,
   setup(props) {
     const size = computed(() => {
@@ -15,8 +15,8 @@ export default defineComponent({
     })
 
     return () => (
-      <div class="nz-loading" style={{ width: size.value, height: size.value, color: props.color }}>
-        <svg class="nz-loading__circle" viewBox="25 25 50 50">
+      <div class="ev-loading" style={{ width: size.value, height: size.value, color: props.color }}>
+        <svg class="ev-loading__circle" viewBox="25 25 50 50">
           <circle cx="50" cy="50" r="20" fill="none" />
         </svg>
       </div>

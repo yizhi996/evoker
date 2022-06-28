@@ -1,9 +1,9 @@
 import { getCurrentPages } from "../../../app"
-import { NZothPage } from "../../../dom/page"
-import { SyncFlags } from "@nzoth/shared"
+import { EvokerPage } from "../../../dom/page"
+import { SyncFlags } from "@evoker/shared"
 import { isFunction } from "@vue/shared"
 import { randomId } from "../../../utils"
-import { sync } from "@nzoth/bridge"
+import { sync } from "@evoker/bridge"
 import { createVideoContextInstance } from "../media/video"
 
 const selectorQueryCallbacks = new Map<string, Function>()
@@ -28,7 +28,7 @@ class SelectorQuery {
 
   private queueCb: (Function | null)[] = []
 
-  private page: NZothPage
+  private page: EvokerPage
 
   constructor() {
     const pages = getCurrentPages()
@@ -177,7 +177,7 @@ function createContextInstance(context: ContextInfo) {
   const { tagName } = context
 
   switch (tagName) {
-    case "NZ-VIDEO":
+    case "EV-VIDEO":
       return createVideoContextInstance(context)
     default:
       break

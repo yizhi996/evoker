@@ -8,9 +8,9 @@ import {
 } from "./event"
 import { nodes, createElement, ElementWithTransition } from "./element"
 import { restoreNode } from "./vnode"
-import { isNZothElement, EL } from "./element"
+import { isEvokerElement, EL } from "./element"
 import { toHandlerKey } from "@vue/shared"
-import { SyncFlags } from "@nzoth/shared"
+import { SyncFlags } from "@evoker/shared"
 
 export function insertBefore(data: any[]) {
   const [_, childData, parentData, anchorData] = data
@@ -30,7 +30,7 @@ export function insertBefore(data: any[]) {
     anchorEl = createElement(anchorData)
   }
   if (parentEl && childEL) {
-    const target = (isNZothElement(parentEl) && parentEl.__slot) || parentEl
+    const target = (isEvokerElement(parentEl) && parentEl.__slot) || parentEl
     target.insertBefore(childEL, anchorEl)
   }
 }
@@ -69,7 +69,7 @@ export function setText(data: any[]) {
   const [_, nodeId, textContent] = data
   const node = nodes.get(nodeId)
   if (node && node.el) {
-    const target = (isNZothElement(node.el) && node.el.__slot) || node.el
+    const target = (isEvokerElement(node.el) && node.el.__slot) || node.el
     target.textContent = textContent
   }
 }
@@ -79,7 +79,7 @@ export function setDisplay(data: any[]) {
   const node = nodes.get(nodeId)
   if (node && node.el) {
     const { el, props } = node
-    if (isNZothElement(el)) {
+    if (isEvokerElement(el)) {
       const style = props!.style || (props!.style = {})
       style.display = value
     } else if (value) {
@@ -105,7 +105,7 @@ export function addEventListener(data: any[]) {
     } else if (tapEvents.includes(type)) {
       addTapEvent(nodeId, el, type, { options, modifiers })
     } else {
-      if (isNZothElement(el)) {
+      if (isEvokerElement(el)) {
         const eventName = toHandlerKey(type)
         props![eventName] = (...args: any[]) => {
           const ev = {
@@ -132,7 +132,7 @@ export function updateProp(data: any[]) {
   const node = nodes.get(nodeId)
   if (node && node.el) {
     const { el, props } = node
-    if (isNZothElement(el)) {
+    if (isEvokerElement(el)) {
       props![name] = value
     } else if (name === "id") {
       el.id = value
@@ -150,7 +150,7 @@ export function updateProp(data: any[]) {
     } else if (name === "style") {
       const style = value as Record<string, string>
       if (value) {
-        if (isNZothElement(el)) {
+        if (isEvokerElement(el)) {
           if (props!.style || (props!.style = {})) {
             for (const [property, value] of Object.entries<string>(style)) {
               props!.style[property] = value
@@ -162,7 +162,7 @@ export function updateProp(data: any[]) {
           }
         }
       } else {
-        isNZothElement(el) ? (props!.style = null) : (el.style = null)
+        isEvokerElement(el) ? (props!.style = null) : (el.style = null)
       }
     } else {
       if (value == null) {

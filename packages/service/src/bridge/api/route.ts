@@ -9,7 +9,7 @@ import {
   wrapperAsyncAPI,
   errorMessage,
   ErrorCodes
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 import { innerAppData } from "../../app"
 
 function parseURL(url: string) {
@@ -38,9 +38,9 @@ function queryToObject(queryString: string) {
 }
 
 export function pathIsTabBar(path: string) {
-  if (globalThis.__NZConfig.tabBar) {
+  if (globalThis.__Config.tabBar) {
     return (
-      globalThis.__NZConfig.tabBar.list.find(item => {
+      globalThis.__Config.tabBar.list.find(item => {
         return item.path == path
       }) !== undefined
     )
@@ -50,7 +50,7 @@ export function pathIsTabBar(path: string) {
 
 export function pathIsExist(path: string) {
   return (
-    globalThis.__NZConfig.pages.find(page => {
+    globalThis.__Config.pages.find(page => {
       return page.path === path
     }) !== undefined
   )
@@ -227,7 +227,7 @@ export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
 
     const { path, query } = parseURL(options.url)
 
-    const exist = globalThis.__NZConfig.pages.find(page => {
+    const exist = globalThis.__Config.pages.find(page => {
       return page.path === path
     })
 
@@ -270,9 +270,9 @@ export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
       return
     }
 
-    if (globalThis.__NZConfig.tabBar) {
+    if (globalThis.__Config.tabBar) {
       const { path } = parseURL(options.url)
-      const exist = globalThis.__NZConfig.tabBar.list.find(item => {
+      const exist = globalThis.__Config.tabBar.list.find(item => {
         return item.path === path
       })
       if (exist === undefined) {

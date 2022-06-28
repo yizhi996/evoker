@@ -9,7 +9,7 @@ import {
 } from "vue"
 import { unitToPx } from "../../utils/format"
 import { useTouch } from "../../composables/useTouch"
-import { clamp } from "@nzoth/shared"
+import { clamp } from "@evoker/shared"
 
 const props = {
   value: { type: Number, default: 0 },
@@ -26,7 +26,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-slider",
+  name: "ev-slider",
   props,
   emits: ["update:value", "change", "changing"],
   setup(props, { emit, expose }) {
@@ -119,32 +119,32 @@ export default defineComponent({
         return
       }
       return (
-        <span class="nz-slider__value" style={{ width: valueWidth.value }}>
+        <span class="ev-slider__value" style={{ width: valueWidth.value }}>
           {props.value}
         </span>
       )
     }
 
     return () => (
-      <nz-slider>
-        <div class="nz-slider__wrapper">
-          <div class="nz-slider__input">
+      <ev-slider>
+        <div class="ev-slider__wrapper">
+          <div class="ev-slider__input">
             <div
-              class="nz-slider__input__bar"
+              class="ev-slider__input__bar"
               ref={barRef}
               style={{ "background-color": props.backgroundColor }}
             >
-              <div class="nz-slider__input__handle" ref={handleRef} style={handleStyle.value}></div>
-              <div class="nz-slider__input__thumb" style={handleStyle.value}></div>
+              <div class="ev-slider__input__handle" ref={handleRef} style={handleStyle.value}></div>
+              <div class="ev-slider__input__thumb" style={handleStyle.value}></div>
               <div
-                class="nz-slider__input__track"
+                class="ev-slider__input__track"
                 style={{ width: width.value, "background-color": props.activeColor }}
               ></div>
             </div>
           </div>
           {renderValue()}
         </div>
-      </nz-slider>
+      </ev-slider>
     )
   }
 })

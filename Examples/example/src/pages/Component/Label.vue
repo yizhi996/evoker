@@ -73,6 +73,6 @@ const onChangeRadio = e => {
 }
 
 const onClick = () => {
-  nz.showToast({ title: "Click" })
+  ev.showToast({ title: "Click" })
 }
 </script>

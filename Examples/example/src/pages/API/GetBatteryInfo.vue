@@ -15,7 +15,7 @@ const info = reactive({
 })
 
 const getBatteryInfo = async () => {
-  const res = await nz.getBatteryInfo()
+  const res = await ev.getBatteryInfo()
   info.level = res.level + ""
   info.isCharging = res.isCharging ? "充电中" : "使用电池中"
 }

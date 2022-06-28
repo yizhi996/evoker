@@ -1,7 +1,7 @@
 import { watch, onMounted, defineComponent } from "vue"
 import { useTongceng } from "../../composables/useTongceng"
 import { useMap } from "../../composables/useMap"
-import { NZJSBridge } from "../../../bridge"
+import { JSBridge } from "../../../bridge"
 
 const props = {
   longitude: { type: Number, required: true },
@@ -22,7 +22,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-map",
+  name: "ev-map",
   props,
   emits: ["updated", "tap", "tappoi", "regionchange"],
   setup(props, { emit }) {
@@ -159,7 +159,7 @@ export default defineComponent({
     const insert = () => {
       insertContainer(success => {
         if (success) {
-          NZJSBridge.invoke("insertMap", {
+          JSBridge.invoke("insertMap", {
             parentId: tongcengKey,
             mapId,
             longitude: props.longitude,
@@ -183,20 +183,20 @@ export default defineComponent({
     }
 
     const update = (params: Record<string, any>) => {
-      NZJSBridge.invoke("updateMap", params)
+      JSBridge.invoke("updateMap", params)
     }
 
     return () => (
-      <nz-map>
+      <ev-map>
         <div
           ref={tongcengRef}
-          class="nz-native__tongceng"
+          class="ev-native__tongceng"
           style="position: absolute"
           id={tongcengKey}
         >
           <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
-      </nz-map>
+      </ev-map>
     )
   }
 })

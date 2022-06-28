@@ -24,7 +24,7 @@ export function runWebSocketServer(options: RunWssOptions) {
   }
   const port = options.port || 8800
 
-  console.log(`[NZoth devServer] run: ${host}:${port}`)
+  console.log(`[Evoker devServer] run: ${host}:${port}`)
 
   websocketServer = new ws.Server({
     host: host,
@@ -32,19 +32,19 @@ export function runWebSocketServer(options: RunWssOptions) {
   })
 
   websocketServer.on("connection", (client: Client) => {
-    console.log("\n[NZoth devServer] client connected")
+    console.log("\n[Evoker devServer] client connected")
 
     client._id = Date.now()
 
     isFunction(options.onConnect) && options.onConnect(client)
 
     client.on("close", () => {
-      console.log("[NZoth devServer] client close connection")
+      console.log("[Evoker devServer] client close connection")
       isFunction(options.onDisconnect) && options.onDisconnect(client)
     })
 
     client.on("error", error => {
-      console.log("NZoth devServer] client connection error", error)
+      console.log("Evoker devServer] client connection error", error)
       isFunction(options.onDisconnect) && options.onDisconnect(client)
     })
 
@@ -54,7 +54,7 @@ export function runWebSocketServer(options: RunWssOptions) {
   })
 
   websocketServer.on("error", error => {
-    console.warn(`NZoth devServer] error: ${error}`)
+    console.warn(`Evoker devServer] error: ${error}`)
   })
 }
 

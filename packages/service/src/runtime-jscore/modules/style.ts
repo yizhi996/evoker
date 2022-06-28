@@ -1,13 +1,13 @@
 import { camelize } from "vue"
 import { isString, hyphenate, capitalize, isArray } from "@vue/shared"
-import { NZothHTMLElement } from "../../dom/html"
-import { NZothElement } from "../../dom/element"
-import { NZothCSSStyleDeclaration } from "../../dom/style"
+import { EvokerHTMLElement } from "../../dom/html"
+import { EvokerElement } from "../../dom/element"
+import { EvokerCSSStyleDeclaration } from "../../dom/style"
 
 type Style = string | Record<string, string | string[]> | null
 
-export function patchStyle(el: NZothElement, prev: Style, next: Style) {
-  const style = (el as NZothHTMLElement).style
+export function patchStyle(el: EvokerElement, prev: Style, next: Style) {
+  const style = (el as EvokerHTMLElement).style
   const isCssString = isString(next)
   if (next && !isCssString) {
     for (const key in next) {
@@ -43,7 +43,7 @@ export function patchStyle(el: NZothElement, prev: Style, next: Style) {
 
 const importantRE = /\s*!important$/
 
-function setStyle(style: NZothCSSStyleDeclaration, name: string, val: string | string[]) {
+function setStyle(style: EvokerCSSStyleDeclaration, name: string, val: string | string[]) {
   if (isArray(val)) {
     val.forEach(v => setStyle(style, name, v))
   } else {
@@ -65,7 +65,7 @@ function setStyle(style: NZothCSSStyleDeclaration, name: string, val: string | s
 const prefixes = ["Webkit", "Moz", "ms"]
 const prefixCache: Record<string, string> = {}
 
-function autoPrefix(style: NZothCSSStyleDeclaration, rawName: string): string {
+function autoPrefix(style: EvokerCSSStyleDeclaration, rawName: string): string {
   const cached = prefixCache[rawName]
   if (cached) {
     return cached

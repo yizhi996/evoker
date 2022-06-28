@@ -1,9 +1,9 @@
 import { ComponentInternalInstance, callWithAsyncErrorHandling } from "vue"
 import { hyphenate, isArray } from "@vue/shared"
-import { NZothElement } from "../../dom/element"
-import { NZothEvent, NZothEventListener } from "../../dom/eventTarget"
+import { EvokerElement } from "../../dom/element"
+import { EvokerEvent, EvokerEventListener } from "../../dom/eventTarget"
 
-interface Invoker extends NZothEventListener {
+interface Invoker extends EvokerEventListener {
   value: EventValue
   attached: number
 }
@@ -23,9 +23,9 @@ const reset = () => {
 const getNow = () => cachedNow || (p.then(reset), (cachedNow = _getNow()))
 
 export function addEventListener(
-  el: NZothElement,
+  el: EvokerElement,
   event: string,
-  handler: NZothEventListener,
+  handler: EvokerEventListener,
   options?: EventListenerOptions,
   modifiers?: string[]
 ) {
@@ -33,16 +33,16 @@ export function addEventListener(
 }
 
 export function removeEventListener(
-  el: NZothElement,
+  el: EvokerElement,
   event: string,
-  handler: NZothEventListener,
+  handler: EvokerEventListener,
   options?: EventListenerOptions
 ) {
   el.removeEventListener(event, handler)
 }
 
 export function patchEvent(
-  el: NZothElement & { _vei?: Record<string, Invoker | undefined> },
+  el: EvokerElement & { _vei?: Record<string, Invoker | undefined> },
   rawName: string,
   prevValue: EventValue | null,
   nextValue: EventValue | null,
@@ -86,7 +86,7 @@ function parseName(name: string): [string, EventListenerOptions | undefined] {
 }
 
 function createInvoker(initialValue: EventValue, instance: ComponentInternalInstance | null) {
-  const invoker: Invoker = (e: NZothEvent) => {
+  const invoker: Invoker = (e: EvokerEvent) => {
     // async edge case #6566: inner click event triggers patch, event handler
     // attached to outer element during patch, and triggered again. This
     // happens because browsers fire microtask ticks between event propagation.
@@ -111,7 +111,7 @@ function createInvoker(initialValue: EventValue, instance: ComponentInternalInst
   return invoker
 }
 
-function patchStopImmediatePropagation(e: NZothEvent, value: EventValue): EventValue {
+function patchStopImmediatePropagation(e: EvokerEvent, value: EventValue): EventValue {
   if (isArray(value)) {
     const originalStop = e.stopImmediatePropagation
     e.stopImmediatePropagation = () => {

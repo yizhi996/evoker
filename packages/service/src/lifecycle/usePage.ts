@@ -9,7 +9,7 @@ export default function usePage() {
   const instance = getCurrentInstance()
   if (!instance) {
     console.warn(
-      "[NZoth] usePage 必须在 setup 或 生命周期中使用，查看 https://v3.vuejs.org/api/composition-api.html#getcurrentinstance"
+      "[Evoker] usePage 必须在 setup 或 生命周期中使用，查看 https://v3.vuejs.org/api/composition-api.html#getcurrentinstance"
     )
   }
 

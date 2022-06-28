@@ -10,7 +10,7 @@ export default getViteConfig(
     output: {
       assetFileNames: asset => {
         if (asset.name === "style.css") {
-          return "nzoth-built-in.css"
+          return "evoker-built-in.css"
         }
         return asset.name
       }
@@ -28,7 +28,7 @@ export default getViteConfig(
       hook: "writeBundle"
     }),
     jsx({
-      isCustomElement: tag => tag.startsWith("nz-")
+      isCustomElement: tag => tag.startsWith("ev-")
     })
   ]
 )

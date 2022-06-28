@@ -12,7 +12,7 @@ const result = ref("")
 const type = ref("")
 
 const toScan = () => {
-  nz.scanCode().then(res => {
+  ev.scanCode().then(res => {
     result.value = res.result
     type.value = res.scanType
   })

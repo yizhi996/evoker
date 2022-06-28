@@ -3,7 +3,7 @@ import { SWIPE_KEY, SwipeProvide } from "../swiper/constant"
 import { useParent, ParentProvide } from "../../composables/useRelation"
 
 export default defineComponent({
-  name: "nz-swiper-item",
+  name: "ev-swiper-item",
   setup(_, { expose }) {
     const instance = getCurrentInstance()!
 
@@ -36,6 +36,6 @@ export default defineComponent({
       }
     })
 
-    return () => <nz-swiper-item style={style}></nz-swiper-item>
+    return () => <ev-swiper-item style={style}></ev-swiper-item>
   }
 })

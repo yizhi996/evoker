@@ -1,5 +1,5 @@
 import { InnerJSBridge } from "../bridge/bridge"
-import { dispatchEvent } from "@nzoth/shared"
+import { dispatchEvent } from "@evoker/shared"
 import { isFunction } from "@vue/shared"
 import { unmountPage } from "../app"
 import { decodeURL } from "../router"

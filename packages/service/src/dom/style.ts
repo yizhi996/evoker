@@ -1,11 +1,11 @@
-import { NZothHTMLElement } from "./html"
+import { EvokerHTMLElement } from "./html"
 
-export class NZothCSSStyleDeclaration {
-  element: NZothHTMLElement
+export class EvokerCSSStyleDeclaration {
+  element: EvokerHTMLElement
 
   _style: Record<string, string>
 
-  constructor(element: NZothHTMLElement) {
+  constructor(element: EvokerHTMLElement) {
     this.element = element
     this._style = Object.create(null)
   }

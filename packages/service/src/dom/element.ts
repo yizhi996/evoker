@@ -1,7 +1,7 @@
-import { NZothPage } from "./page"
-import { NZothNode } from "./node"
+import { EvokerPage } from "./page"
+import { EvokerNode } from "./node"
 
-export class NZothElement extends NZothNode {
+export class EvokerElement extends EvokerNode {
   id = ""
 
   readonly tagName: string
@@ -10,7 +10,7 @@ export class NZothElement extends NZothNode {
 
   attributes: Record<string, unknown> = Object.create(null)
 
-  constructor(tagName: string, page: NZothPage) {
+  constructor(tagName: string, page: EvokerPage) {
     super(page)
     this.tagName = tagName
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="m-2.5 text-sm text-gray-500">
-    getUserProfile 和 getUserInfo 接口需要根据自生业务在 native 端自行实现。具体请查看 NZEngineHooks
+    getUserProfile 和 getUserInfo 接口需要根据自生业务在 native 端自行实现。具体请查看 EngineConfig.hooks
     的 openAPI。
   </div>
   <div class="flex flex-col items-center justify-center">
@@ -20,7 +20,7 @@ import { reactive } from "vue"
 let userInfo = reactive({ nickname: "", avatar: "" })
 
 const getUserProfile = async () => {
-  const res = await nz.getUserProfile({
+  const res = await ev.getUserProfile({
     desc: "用于完善会员资料"
   })
   userInfo.nickname = res.userInfo.nickName

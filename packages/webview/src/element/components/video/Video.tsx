@@ -11,14 +11,14 @@ import {
   withDirectives,
   VNode
 } from "vue"
-import { NZJSBridge } from "../../../bridge"
+import { JSBridge } from "../../../bridge"
 import { useTongceng } from "../../composables/useTongceng"
 import { vTap } from "../../directive/tap"
 import { useVideo } from "../../composables/useVideo"
 import { secondsToDuration } from "../../utils/format"
 import { Touch } from "../../composables/useTouch"
-import { clamp } from "@nzoth/shared"
-import { getVolume, setVolume, setScreenBrightness, getScreenBrightness } from "@nzoth/bridge"
+import { clamp } from "@evoker/shared"
+import { getVolume, setVolume, setScreenBrightness, getScreenBrightness } from "@evoker/bridge"
 import { classNames } from "../../utils"
 import Loading from "../loading"
 import VideoProgress from "./VideoProgress"
@@ -65,7 +65,7 @@ const emits = [
 ]
 
 export default defineComponent({
-  name: "nz-video",
+  name: "ev-video",
   props,
   emits,
   setup(props, { emit, expose }) {
@@ -163,7 +163,7 @@ export default defineComponent({
     }
 
     const operateVideoPlayer = (method: Methods, data: Record<string, any> = {}) => {
-      NZJSBridge.invoke("operateVideoPlayer", {
+      JSBridge.invoke("operateVideoPlayer", {
         videoPlayerId,
         method,
         data
@@ -290,7 +290,7 @@ export default defineComponent({
     const insert = () => {
       insertContainer(success => {
         if (success) {
-          NZJSBridge.invoke(
+          JSBridge.invoke(
             "insertVideoPlayer",
             {
               parentId: tongcengKey,
@@ -666,8 +666,8 @@ export default defineComponent({
           (
             <div
               v-show={!isLocked.value}
-              class={classNames("nz-video__control__bar", {
-                "nz-video__control__bar--fullscreen": videoData.fullscreen
+              class={classNames("ev-video__control__bar", {
+                "ev-video__control__bar--fullscreen": videoData.fullscreen
               })}
             >
               {props.showPlayBtn && props.playBtnPosition === "bottom" ? (
@@ -695,7 +695,7 @@ export default defineComponent({
 
       const rightButtons = () => {
         return (
-          <div class="nz-video__control__bar__right">
+          <div class="ev-video__control__bar__right">
             {props.showMuteBtn ? (
               <VideoButton
                 type={videoData.muted ? "mute-on" : "mute-off"}
@@ -715,16 +715,16 @@ export default defineComponent({
       }
 
       return (
-        <div v-show={isShowControl.value} class="nz-video__control">
+        <div v-show={isShowControl.value} class="ev-video__control">
           <VideoButton
             v-show={videoData.fullscreen && props.showScreenLockButton}
-            class="nz-video__control__lock"
+            class="ev-video__control__lock"
             type={isLocked.value ? "lock" : "unlock"}
             onClick={controlsLock}
           ></VideoButton>
-          <div v-show={videoData.fullscreen && !isLocked.value} class="nz-video__control__bar__top">
+          <div v-show={videoData.fullscreen && !isLocked.value} class="ev-video__control__bar__top">
             <VideoButton type="back" onClick={fullScreenSwitch}></VideoButton>
-            <div class="nz-video__title">{props.title}</div>
+            <div class="ev-video__title">{props.title}</div>
           </div>
           {centerPlayButton()}
           {bottomBar()}
@@ -735,7 +735,7 @@ export default defineComponent({
     const renderTongceng = () => {
       return (
         <div
-          class="nz-native__tongceng nz-video__native"
+          class="ev-native__tongceng ev-video__native"
           ref={tongcengRef}
           id={tongcengKey}
           style={tongcengSize.value}
@@ -748,12 +748,12 @@ export default defineComponent({
     const renderCover = () => {
       if (props.showCenterPlayBtn && showCenterPlayCover.value) {
         return (
-          <div class="nz-video__cover">
+          <div class="ev-video__cover">
             {withDirectives(
-              (<div class="nz-video__cover__play nz-video__icon--play"></div>) as VNode,
+              (<div class="ev-video__cover__play ev-video__icon--play"></div>) as VNode,
               [[vTap, clickCenterPlayButton, "", { stop: true }]]
             )}
-            <span class="nz-video__cover__duration">{secondsToDuration(videoData.duration)}</span>
+            <span class="ev-video__cover__duration">{secondsToDuration(videoData.duration)}</span>
           </div>
         )
       } else if (props.controls) {
@@ -763,19 +763,19 @@ export default defineComponent({
 
     const renderWrapper = () => {
       return (
-        <div class="nz-video__wrapper" style={tongcengSize.value}>
+        <div class="ev-video__wrapper" style={tongcengSize.value}>
           {isBufferLoading.value ? (
-            <Loading class="nz-video__loading" size="50px" color="white" />
+            <Loading class="ev-video__loading" size="50px" color="white" />
           ) : null}
           {props.poster && videoData.showPoster && (
-            <img class="nz-video__poster" src={props.poster} />
+            <img class="ev-video__poster" src={props.poster} />
           )}
           {renderCover()}
           <VideoScreenBrightness
             v-show={isShowScreenBrightnessToast.value}
             value={screenBrightness.value}
           ></VideoScreenBrightness>
-          <div v-show={isShowSeekTime.value} class="nz-video__seektime">
+          <div v-show={isShowSeekTime.value} class="ev-video__seektime">
             {secondsToDuration(currentTime.value)}
           </div>
         </div>
@@ -785,7 +785,7 @@ export default defineComponent({
     return () => {
       return withDirectives(
         (
-          <nz-video
+          <ev-video
             ref={viewRef}
             onTouchstart={onStartPanGesture}
             onTouchmove={onMovePanGesture}
@@ -794,8 +794,8 @@ export default defineComponent({
           >
             {renderTongceng()}
             {renderWrapper()}
-            <div class="nz-video__slot" style={tongcengSize.value}></div>
-          </nz-video>
+            <div class="ev-video__slot" style={tongcengSize.value}></div>
+          </ev-video>
         ) as VNode,
         [[vTap, showOrHideControl, "", { stop: true }]]
       )

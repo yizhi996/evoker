@@ -5,10 +5,10 @@
 
 <script setup lang="ts">
 const long = () => {
-  nz.vibrateLong()
+  ev.vibrateLong()
 }
 
 const short = () => {
-  nz.vibrateShort({ type: "light" })
+  ev.vibrateShort({ type: "light" })
 }
 </script>

@@ -1,7 +1,14 @@
 {
-  "name": "@nzoth/bridge",
+  "name": "@evoker/bridge",
   "version": "0.1.0",
-  "description": "nzoth js bridge",
+  "description": "evoker js bridge",
+  "author": "yizhi996",
+  "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/bridge",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yizhi996/evoker.git"
+  },
+  "license": "MIT",
   "main": "dist/bridge.cjs.js",
   "module": "dist/bridge.es.js",
   "types": "dist/bridge.d.ts",
@@ -16,7 +23,7 @@
     "dist"
   ],
   "dependencies": {
-    "@nzoth/shared": "0.1.0",
+    "@evoker/shared": "0.1.0",
     "vue": "^3.2.37",
     "@vue/shared": "^3.2.37"
   }

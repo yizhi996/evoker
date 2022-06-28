@@ -10,7 +10,7 @@ import {
 import { useTongceng } from "../../composables/useTongceng"
 import { useKeyboard } from "../../composables/useKeyboard"
 import { getInputStyle, getInputPlaceholderStyle } from "../../utils/style"
-import { NZJSBridge } from "../../../bridge"
+import { JSBridge } from "../../../bridge"
 import { classNames } from "../../utils"
 
 const props = {
@@ -19,7 +19,7 @@ const props = {
   password: { type: Boolean, default: false },
   placeholder: { type: String, default: "" },
   placeholderStyle: { type: String, required: false },
-  placeholderClass: { type: String, default: "nz-input__placeholder" },
+  placeholderClass: { type: String, default: "ev-input__placeholder" },
   disabled: { type: Boolean, default: false },
   maxlength: { type: Number, default: 140 },
   cursorSpacing: { type: Number, default: 0 },
@@ -37,7 +37,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-input",
+  name: "ev-input",
   props,
   emits: ["focus", "blur", "input", "confirm", "keyboard-height-change", "update:value"],
   setup(props, { emit, expose }) {
@@ -98,7 +98,7 @@ export default defineComponent({
     const insert = () => {
       insertContainer(success => {
         if (success) {
-          NZJSBridge.invoke("insertInput", {
+          JSBridge.invoke("insertInput", {
             parentId: tongcengKey,
             inputId,
             text: props.value,
@@ -133,7 +133,7 @@ export default defineComponent({
     }
 
     const operateInput = (method: OperateMethods, data: Record<string, any> = {}) => {
-      NZJSBridge.invoke("operateInput", { inputId, method, data })
+      JSBridge.invoke("operateInput", { inputId, method, data })
     }
 
     watch(
@@ -209,16 +209,16 @@ export default defineComponent({
     })
 
     return () => (
-      <nz-input ref={container}>
-        <div ref={tongcengRef} class="nz-native__tongceng" id={tongcengKey}>
+      <ev-input ref={container}>
+        <div ref={tongcengRef} class="ev-native__tongceng" id={tongcengKey}>
           <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
         <p
           ref={placeholderEl}
-          class={classNames("nz-input__placeholder", props.placeholderClass)}
+          class={classNames("ev-input__placeholder", props.placeholderClass)}
           style={props.placeholderStyle}
         ></p>
-      </nz-input>
+      </ev-input>
     )
   }
 })

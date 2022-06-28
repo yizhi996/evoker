@@ -21,7 +21,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-image",
+  name: "ev-image",
   props,
   emits: ["load", "error"],
   setup(props, { emit }) {
@@ -148,9 +148,9 @@ export default defineComponent({
     }
 
     return () => (
-      <nz-image ref={container}>
+      <ev-image ref={container}>
         <div ref={imageEl} style={style.value}></div>
-      </nz-image>
+      </ev-image>
     )
   }
 })

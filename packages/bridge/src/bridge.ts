@@ -23,13 +23,13 @@ export function invoke<T = unknown>(
     callbacks.set(cbId, callback)
   }
 
-  if (globalThis.__NZAppServiceNativeSDK) {
+  if (globalThis.__AppServiceNativeSDK) {
     const msg = {
       event,
       params: JSON.stringify(params),
       callbackId: cbId
     }
-    globalThis.__NZAppServiceNativeSDK.messageChannel.invokeHandler.postMessage(msg)
+    globalThis.__AppServiceNativeSDK.messageChannel.invokeHandler.postMessage(msg)
   } else if (globalThis.webkit) {
     const msg = {
       event,
@@ -58,8 +58,8 @@ export type SubscribeCallback<T> = (result: T, webViewId: number) => void
 const subscribes = new Map<string, SubscribeCallback<any>>()
 
 export function publish(event: string, params: Record<string, any> = {}, webViewId: number) {
-  if (globalThis.__NZAppServiceNativeSDK) {
-    globalThis.__NZAppServiceNativeSDK.messageChannel.publishHandler.postMessage({
+  if (globalThis.__AppServiceNativeSDK) {
+    globalThis.__AppServiceNativeSDK.messageChannel.publishHandler.postMessage({
       event,
       params: JSON.stringify(params),
       webViewId: webViewId

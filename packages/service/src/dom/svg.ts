@@ -1,12 +1,12 @@
-import { NZothElement } from "./element"
-import { NZothPage } from "./page"
+import { EvokerElement } from "./element"
+import { EvokerPage } from "./page"
 
-export class NZothSVGElement extends NZothElement {
+export class EvokerSVGElement extends EvokerElement {
   isSVG = true
 
   namespaceURI: string
 
-  constructor(namespaceURI: string, tagName: string, page: NZothPage) {
+  constructor(namespaceURI: string, tagName: string, page: EvokerPage) {
     super(tagName, page)
 
     this.namespaceURI = namespaceURI

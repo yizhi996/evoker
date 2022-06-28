@@ -1,4 +1,4 @@
-import { NZJSBridge } from "../../bridge"
+import { JSBridge } from "../../bridge"
 
 export interface ImageLoadResult {
   src: string
@@ -48,7 +48,7 @@ export function loadImage(src: string): Promise<ImageLoadResult> {
     } else if (/^\s*data:image\//.test(src)) {
       image.src = src
     } else {
-      NZJSBridge.invoke<{ src: string }>("getLocalImage", { path: src }, result => {
+      JSBridge.invoke<{ src: string }>("getLocalImage", { path: src }, result => {
         if (result.errMsg) {
           reject(result.errMsg)
         } else {

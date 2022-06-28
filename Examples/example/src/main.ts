@@ -1,4 +1,4 @@
-import { createApp } from "nzoth"
+import { createApp } from "evoker"
 import { createPinia } from "pinia"
 import App from "./App.vue"
 import { CellGroup, Cell } from "vant"

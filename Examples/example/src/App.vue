@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useApp } from "nzoth"
+import { useApp } from "evoker"
 
 const { onLaunch, onShow, onHide, onError, onThemeChange } = useApp()
 

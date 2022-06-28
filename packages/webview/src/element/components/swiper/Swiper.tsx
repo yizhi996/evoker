@@ -38,7 +38,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-swiper",
+  name: "ev-swiper",
   props,
   emits: ["change", "transition", "animationfinish"],
   setup(props, { emit }) {
@@ -427,24 +427,24 @@ export default defineComponent({
     }
 
     return () => (
-      <nz-swiper ref={container}>
-        <div class="nz-swiper__wrapper">
-          <div class="nz-swiper__slide" style={slideMargin.value}>
+      <ev-swiper ref={container}>
+        <div class="ev-swiper__wrapper">
+          <div class="ev-swiper__slide" style={slideMargin.value}>
             <div
-              class="nz-swiper__slide__frame"
+              class="ev-swiper__slide__frame"
               style={{ width: "100%", height: "100%", transform: transform.value }}
             ></div>
             {props.indicatorDots ? (
               <div
-                class={classNames("nz-swiper__indicators", {
-                  "nz-swiper__indicators--vertical": props.vertical
+                class={classNames("ev-swiper__indicators", {
+                  "ev-swiper__indicators--vertical": props.vertical
                 })}
               >
                 {[...Array(itemCount.value).keys()].map(i => {
                   return (
                     <i
-                      class={classNames("nz-swiper__indicators__item", {
-                        "nz-swiper__indicators__item--vertical": props.vertical
+                      class={classNames("ev-swiper__indicators__item", {
+                        "ev-swiper__indicators__item--vertical": props.vertical
                       })}
                       style={{
                         "background-color":
@@ -459,7 +459,7 @@ export default defineComponent({
             ) : null}
           </div>
         </div>
-      </nz-swiper>
+      </ev-swiper>
     )
   }
 })

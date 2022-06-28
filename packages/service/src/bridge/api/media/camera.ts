@@ -5,7 +5,7 @@ import {
   invokeCallback,
   wrapperAsyncAPI,
   AsyncReturn
-} from "@nzoth/bridge"
+} from "@evoker/bridge"
 import { getCurrentWebViewId } from "../../../app"
 
 interface CameraContextTakePhotoOptions {

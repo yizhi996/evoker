@@ -7,7 +7,7 @@ import {
   getCurrentInstance,
   defineComponent
 } from "vue"
-import { NZJSBridge } from "../../../bridge"
+import { JSBridge } from "../../../bridge"
 import { useTongceng } from "../../composables/useTongceng"
 import { useKeyboard } from "../../composables/useKeyboard"
 import { useTextArea } from "../../composables/useTextarea"
@@ -18,7 +18,7 @@ const props = {
   value: { type: String, default: "" },
   placeholder: { type: String, default: "" },
   placeholderStyle: { type: String, required: false },
-  placeholderClass: { type: String, default: "nz-textarea__placeholder" },
+  placeholderClass: { type: String, default: "ev-textarea__placeholder" },
   disabled: { type: Boolean, default: false },
   maxlength: { type: Number, default: 140 },
   focus: { type: Boolean, default: false },
@@ -40,7 +40,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-textarea",
+  name: "ev-textarea",
   props,
   emits: [
     "focus",
@@ -118,7 +118,7 @@ export default defineComponent({
     const insert = () => {
       insertContainer(success => {
         if (success) {
-          NZJSBridge.invoke<{ height: number; lineCount: number }>(
+          JSBridge.invoke<{ height: number; lineCount: number }>(
             "insertTextArea",
             {
               parentId: tongcengKey,
@@ -165,7 +165,7 @@ export default defineComponent({
     }
 
     const operateInput = (method: OperateMethods, data: Record<string, any> = {}) => {
-      NZJSBridge.invoke("operateInput", { inputId, method, data })
+      JSBridge.invoke("operateInput", { inputId, method, data })
     }
 
     watch(
@@ -243,16 +243,16 @@ export default defineComponent({
     })
 
     return () => (
-      <nz-textarea ref={container}>
-        <div ref={tongcengRef} class="nz-native__tongceng" id={tongcengKey}>
+      <ev-textarea ref={container}>
+        <div ref={tongcengRef} class="ev-native__tongceng" id={tongcengKey}>
           <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
         <p
           ref={placeholderEl}
-          class={classNames("nz-textarea__placeholder", props.placeholderClass)}
+          class={classNames("ev-textarea__placeholder", props.placeholderClass)}
           style={props.placeholderStyle}
         ></p>
-      </nz-textarea>
+      </ev-textarea>
     )
   }
 })

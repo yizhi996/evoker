@@ -1,4 +1,4 @@
-import { clamp, addEvent, removeEvent, dispatchEvent } from "@nzoth/shared"
+import { clamp, addEvent, removeEvent, dispatchEvent } from "@evoker/shared"
 import { invoke, subscribe } from "../../../bridge"
 import {
   wrapperAsyncAPI,
@@ -203,11 +203,11 @@ class InnerAudioContext {
 
   play() {
     if (this.destroyed) {
-      console.log("[NZoth] InnerAudioContext is destroyed")
+      console.log("[Evoker] InnerAudioContext is destroyed")
       return
     }
     if (!this.src) {
-      console.error("[NZoth] InnerAudioContext src cannot be empty")
+      console.error("[Evoker] InnerAudioContext src cannot be empty")
       return
     }
     this.operate(Methods.PLAY, {

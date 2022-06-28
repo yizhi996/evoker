@@ -1,3 +1,3 @@
-export const NZFILE_SCHEME = "nzfile://"
+export const EVFILE_SCHEME = "evfile://"
 
-export const env = { USER_DATA_PATH: NZFILE_SCHEME + "usr" }
+export const env = { USER_DATA_PATH: EVFILE_SCHEME + "usr" }

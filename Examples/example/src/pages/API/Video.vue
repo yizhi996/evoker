@@ -74,7 +74,7 @@ const onChangeDuration = e => {
 }
 
 const onChoose = async () => {
-  const res = await nz.chooseVideo({
+  const res = await ev.chooseVideo({
     maxDuration: parseInt(duration.range[duration.value]),
     camera: ["front", "back"][camera.value],
     sourceType: [["camera"], ["album"], ["camera", "album"]][sourceType.value],

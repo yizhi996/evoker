@@ -1,4 +1,4 @@
-import { AsyncReturn, GeneralCallbackResult, invokeSuccess, wrapperAsyncAPI } from "@nzoth/bridge"
+import { AsyncReturn, GeneralCallbackResult, invokeSuccess, wrapperAsyncAPI } from "@evoker/bridge"
 import { extend } from "@vue/shared"
 
 interface SystemSetting {
@@ -9,7 +9,7 @@ interface SystemSetting {
 }
 
 export function getSystemSetting(): SystemSetting {
-  return globalThis.__NZAppServiceNativeSDK.system.getSystemSetting()
+  return globalThis.__AppServiceNativeSDK.system.getSystemSetting()
 }
 
 interface DeviceInfo {
@@ -20,7 +20,7 @@ interface DeviceInfo {
 }
 
 export function getDeviceInfo(): DeviceInfo {
-  return globalThis.__NZAppServiceNativeSDK.system.getDeviceInfo()
+  return globalThis.__AppServiceNativeSDK.system.getDeviceInfo()
 }
 
 interface WindowInfo {
@@ -44,7 +44,7 @@ interface SafeArea {
 }
 
 export function getWindowInfo(): WindowInfo {
-  return globalThis.__NZAppServiceNativeSDK.system.getWindowInfo()
+  return globalThis.__AppServiceNativeSDK.system.getWindowInfo()
 }
 
 interface AppBaseInfo {
@@ -56,7 +56,7 @@ interface AppBaseInfo {
 }
 
 export function getAppBaseInfo(): AppBaseInfo {
-  return globalThis.__NZAppServiceNativeSDK.system.getAppBaseInfo()
+  return globalThis.__AppServiceNativeSDK.system.getAppBaseInfo()
 }
 
 type AuthorizedStatus = "authorized" | "denied" | "not determined"
@@ -75,7 +75,7 @@ interface AppAuthorizedSetting {
 }
 
 export function getAppAuthorizeSetting(): AppAuthorizedSetting {
-  return globalThis.__NZAppServiceNativeSDK.system.getAppAuthorizeSetting()
+  return globalThis.__AppServiceNativeSDK.system.getAppAuthorizeSetting()
 }
 
 export function getSystemInfoSync() {

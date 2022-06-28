@@ -1,32 +1,32 @@
-import { NZothPage } from "./page"
-import { NZothEventTarget } from "./eventTarget"
-import { NZothHTMLElement } from "./html"
-import { NZothCSSStyleDeclaration } from "./style"
+import { EvokerPage } from "./page"
+import { EvokerEventTarget } from "./eventTarget"
+import { EvokerHTMLElement } from "./html"
+import { EvokerCSSStyleDeclaration } from "./style"
 import { extend } from "@vue/shared"
 
-export class NZothNode extends NZothEventTarget {
-  page: NZothPage
+export class EvokerNode extends EvokerEventTarget {
+  page: EvokerPage
 
   nodeId: number = 0
 
-  parentNode?: NZothNode
-  anchorNode?: NZothNode | null
+  parentNode?: EvokerNode
+  anchorNode?: EvokerNode | null
 
-  childNodes: NZothNode[]
+  childNodes: EvokerNode[]
 
   isMounted = false
 
   private _textContent: string | null = null
   private _nodeValue: string | null = null
 
-  constructor(page: NZothPage) {
+  constructor(page: EvokerPage) {
     super()
     this.page = page
     this.page.appendChildNode(this)
     this.childNodes = []
   }
 
-  insertBefore(child: NZothNode, anchor?: NZothNode | null): NZothNode {
+  insertBefore(child: EvokerNode, anchor?: EvokerNode | null): EvokerNode {
     child.parentNode = this
     child.anchorNode = anchor
     if (anchor) {
@@ -44,7 +44,7 @@ export class NZothNode extends NZothEventTarget {
     return child
   }
 
-  removeChild(child: NZothNode): NZothNode {
+  removeChild(child: EvokerNode): EvokerNode {
     child.parentNode = undefined
     const i = this.childNodes.indexOf(child)
     if (i > -1) {
@@ -55,8 +55,8 @@ export class NZothNode extends NZothEventTarget {
     return child
   }
 
-  cloneNode(deep?: boolean): NZothNode {
-    const clone = extend(Object.create(Object.getPrototypeOf(this)), this) as NZothHTMLElement
+  cloneNode(deep?: boolean): EvokerNode {
+    const clone = extend(Object.create(Object.getPrototypeOf(this)), this) as EvokerHTMLElement
     clone.isMounted = false
 
     const { attributes, style } = clone
@@ -66,7 +66,7 @@ export class NZothNode extends NZothEventTarget {
     }
 
     if (style) {
-      clone.style = new NZothCSSStyleDeclaration(clone)
+      clone.style = new EvokerCSSStyleDeclaration(clone)
       clone.style._style = extend(Object.create(null), style._style)
     }
 
@@ -77,15 +77,15 @@ export class NZothNode extends NZothEventTarget {
     return clone
   }
 
-  get firstChild(): NZothNode | null {
+  get firstChild(): EvokerNode | null {
     return this.childNodes[0]
   }
 
-  get lastChild(): NZothNode | null {
+  get lastChild(): EvokerNode | null {
     return this.childNodes[this.childNodes.length - 1]
   }
 
-  get nextSibling(): NZothNode | null {
+  get nextSibling(): EvokerNode | null {
     if (this.parentNode) {
       const { childNodes } = this.parentNode
       return childNodes[childNodes.indexOf(this) + 1]
@@ -93,7 +93,7 @@ export class NZothNode extends NZothEventTarget {
     return null
   }
 
-  get previousSibling(): NZothNode | null {
+  get previousSibling(): EvokerNode | null {
     if (this.parentNode) {
       const { childNodes } = this.parentNode
       return childNodes[childNodes.indexOf(this) - 1]
@@ -120,6 +120,6 @@ export class NZothNode extends NZothEventTarget {
   }
 }
 
-export function isNZothNode(value: any): value is NZothNode {
+export function isEvokerNode(value: any): value is EvokerNode {
   return "page" in value
 }

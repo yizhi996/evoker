@@ -26,7 +26,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "nz-movable-view",
+  name: "ev-movable-view",
   props,
   emits: ["update:x", "update:y", "change", "scale"],
   setup(props, { emit, expose }) {
@@ -223,14 +223,14 @@ export default defineComponent({
     })
 
     return () => (
-      <nz-movable-view
+      <ev-movable-view
         ref={container}
         style={{
           "transform-origin": "center",
           "will-change": isTouching ? "transform" : "auto",
           transform: transform.value
         }}
-      ></nz-movable-view>
+      ></ev-movable-view>
     )
   }
 })
