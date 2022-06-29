@@ -7,6 +7,8 @@ import { getAppConfig } from "./utils"
 
 let config: ResolvedConfig
 
+let input: string
+
 const cache = new Map<string, string>()
 
 export default function vitePluginEvokerAssets(): Plugin {
@@ -17,6 +19,7 @@ export default function vitePluginEvokerAssets(): Plugin {
 
     configResolved(reslovedConfig) {
       config = reslovedConfig
+      input = (config.build.lib && config.build.lib.entry) || ""
     },
 
     async load(id) {
@@ -72,7 +75,7 @@ export const FS_PREFIX = `/@fs/`
 
 function emitTabBarIcon(iconPath: string, pluginContext: PluginContext) {
   if (!cache.has(iconPath)) {
-    const dir = path.posix.dirname(config.build.rollupOptions.input!.toString())
+    const dir = path.posix.dirname(input)
 
     const file = cleanUrl(path.posix.join(dir, iconPath))
 
@@ -112,7 +115,7 @@ function fileToUrl(id: string, config: ResolvedConfig, pluginContext: PluginCont
 
   const file = cleanUrl(id)
 
-  const dir = path.posix.dirname(config.build.rollupOptions.input!.toString())
+  const dir = path.posix.dirname(input)
 
   const fileName = path.posix.relative(dir, file)
 
