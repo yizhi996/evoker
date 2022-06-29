@@ -1,6 +1,6 @@
 {
   "name": "@evoker/vite-plugin",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "evoker vite plugins",
   "author": "yizhi996",
   "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/vite-plugin",
@@ -20,7 +20,7 @@
     ]
   },
   "dependencies": {
-    "@evoker/shared": "0.1.2",
+    "@evoker/shared": "0.1.3",
     "@vitejs/plugin-vue": "^2.3.3",
     "@vue/compiler-core": "^3.2.37",
     "archiver": "^5.3.1",

@@ -1,6 +1,6 @@
 {
   "name": "evoker",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "The Vue mini program engine",
   "author": "yizhi996",
   "homepage": "https://github.com/yizhi996/evoker",
@@ -29,11 +29,11 @@
   },
   "dependencies": {
     "vue": "^3.2.37",
-    "@evoker/service": "0.1.2",
-    "@evoker/webview": "0.1.2"
+    "@evoker/service": "0.1.3",
+    "@evoker/webview": "0.1.3"
   },
   "devDependencies": {
-    "@evoker/vite-plugin": "0.1.2",
+    "@evoker/vite-plugin": "0.1.3",
     "vite": "^2.9.9"
   },
   "files": [

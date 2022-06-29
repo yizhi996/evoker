@@ -82,7 +82,7 @@ importers:
 
   packages/bridge:
     specifiers:
-      '@evoker/shared': 0.1.2
+      '@evoker/shared': 0.1.3
       '@vue/shared': ^3.2.37
       vue: ^3.2.37
     dependencies:
@@ -92,9 +92,9 @@ importers:
 
   packages/evoker:
     specifiers:
-      '@evoker/service': 0.1.2
-      '@evoker/vite-plugin': 0.1.2
-      '@evoker/webview': 0.1.2
+      '@evoker/service': 0.1.3
+      '@evoker/vite-plugin': 0.1.3
+      '@evoker/webview': 0.1.3
       vite: ^2.9.9
       vue: ^3.2.37
     dependencies:
@@ -107,8 +107,8 @@ importers:
 
   packages/service:
     specifiers:
-      '@evoker/bridge': 0.1.2
-      '@evoker/shared': 0.1.2
+      '@evoker/bridge': 0.1.3
+      '@evoker/shared': 0.1.3
       '@vue/shared': ^3.2.37
       vue: ^3.2.37
     dependencies:
@@ -125,7 +125,7 @@ importers:
 
   packages/vite-plugin:
     specifiers:
-      '@evoker/shared': 0.1.2
+      '@evoker/shared': 0.1.3
       '@types/archiver': ^5.3.1
       '@types/tmp': ^0.2.3
       '@types/ws': ^8.5.3
@@ -164,8 +164,8 @@ importers:
 
   packages/webview:
     specifiers:
-      '@evoker/bridge': 0.1.2
-      '@evoker/shared': 0.1.2
+      '@evoker/bridge': 0.1.3
+      '@evoker/shared': 0.1.3
       '@tweenjs/tween.js': ^18.6.4
       '@types/lodash.throttle': ^4.1.7
       '@vitejs/plugin-vue': ^2.3.3
