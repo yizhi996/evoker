@@ -75,15 +75,11 @@ struct Constant {
     }
     
     static var nativeSDKVersion: String {
-        return bundle.infoDictionary!["CFBundleShortVersionString"] as! String
+        return assetsBundle.infoDictionary!["CFBundleShortVersionString"] as! String
     }
     
     static var hostVersion: String {
         return Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
-    }
-    
-    static var jsSDKVersion: String {
-        return "0.1.0"
     }
     
     static var hostName: String {

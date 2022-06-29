@@ -1,7 +1,8 @@
 // @ts-check
 const { resolve } = require("path")
+const fs = require("fs")
 
-export function getViteConfig(target, rollupOptions, plugins = []) {
+exports.getViteConfig = function (target, rollupOptions, plugins = []) {
   const pkgDir = resolve(`packages/${target}`)
   const pkg = require(resolve(`${pkgDir}/package.json`))
 
@@ -30,4 +31,18 @@ export function getViteConfig(target, rollupOptions, plugins = []) {
       }
     }
   })
+}
+
+exports.allPakcages = function () {
+  return fs.readdirSync("packages").filter(pkg => {
+    return (
+      fs.statSync(`packages/${pkg}`).isDirectory() && require(`../packages/${pkg}/package.json`)
+    )
+  })
+}
+
+exports.evokerPkg = function evokerPkg() {
+  const pkgDir = resolve("packages/evoker")
+  const pkg = require(resolve(`${pkgDir}/package.json`))
+  return pkg
 }

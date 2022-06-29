@@ -4,24 +4,17 @@ const execa = require("execa")
 const fs = require("fs")
 const { gzipSync } = require("zlib")
 const colors = require("picocolors")
+const { allPakcages } = require("./utils")
 
 const args = require("minimist")(process.argv.slice(2))
 
 const target = args._[0]
 
+const targets = allPakcages().filter(p => p !== "vue")
+
 const rmdir = path => fs.rmSync(path, { recursive: true, force: true })
 
-function allTargets() {
-  return fs.readdirSync("packages").filter(package => {
-    return (
-      package !== "vue" &&
-      fs.statSync(`packages/${package}`).isDirectory() &&
-      require(`../packages/${package}/package.json`)
-    )
-  })
-}
-
-async function buildAll(targets) {
+async function buildAll() {
   const promises = targets.map(target => {
     return build(target)
   })
@@ -53,7 +46,7 @@ const toKiB = n => {
   return (n / 1024).toFixed(2) + " KiB"
 }
 
-function checkAllTargetSize(targets) {
+function checkAllTargetSize() {
   targets.forEach(checkProdFileSize)
 }
 
@@ -91,9 +84,8 @@ function checkFileSize(filePath) {
 ;(async function () {
   rmdir(resolve(__dirname, "../node_modules/.rts2_cache"))
   if (!target) {
-    const targets = allTargets()
-    await buildAll(targets)
-    checkAllTargetSize(targets)
+    await buildAll()
+    checkAllTargetSize()
   } else {
     await build(target)
     checkProdFileSize(target)

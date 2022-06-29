@@ -1,6 +1,11 @@
+require "json"
+
+package = JSON.parse(File.read(File.join(__dir__, "../packages/evoker/package.json")))
+version = package['version']
+
 Pod::Spec.new do |s|
     s.name                    = 'Evoker'
-    s.version                 = '0.1.0'
+    s.version                 = version
     s.summary                 = 'Evoker'
   
     s.homepage                = 'https://evokerdev.com'

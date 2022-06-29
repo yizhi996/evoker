@@ -21,7 +21,7 @@ public class VersionManager {
         if Engine.shared.config.dev.useDevJSSDK {
             return "dev"
         }
-        let version = Constant.jsSDKVersion
+        let version = Constant.nativeSDKVersion
         if let currentVersion = UserDefaults.standard.string(forKey: jsSDKVersionkey), !version.isEmpty {
             let orderd = version.compare(currentVersion, options: .numeric)
             if orderd == .orderedDescending {
@@ -56,7 +56,7 @@ public class VersionManager {
     }
     
     func unpackBudleSDK() throws {
-        let version = Constant.jsSDKVersion
+        let version = Constant.nativeSDKVersion
         let filePath = Constant.assetsBundle.url(forResource: "evoker-sdk", withExtension: "evpkg")!
         try unpackLocalSDK(filePath: filePath, version: version)
     }

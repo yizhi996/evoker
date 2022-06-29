@@ -10,10 +10,10 @@ PODS:
   - Bugly (2.5.91)
   - CocoaAsyncSocket (7.6.5)
   - CryptoSwift (1.4.3)
-  - Evoker (0.1.0):
-    - Evoker/Core (= 0.1.0)
-    - Evoker/Resources (= 0.1.0)
-  - Evoker/Core (0.1.0):
+  - Evoker (0.1.2):
+    - Evoker/Core (= 0.1.2)
+    - Evoker/Resources (= 0.1.2)
+  - Evoker/Core (0.1.2):
     - Alamofire (~> 5.4)
     - CryptoSwift (~> 1.4.1)
     - JXPhotoBrowser (~> 3.0)
@@ -27,11 +27,11 @@ PODS:
     - Telegraph
     - Zip (~> 2.1)
     - ZLPhotoBrowser
-  - Evoker/Map (0.1.0):
+  - Evoker/Map (0.1.2):
     - AMap3DMap
     - AMapLocation
     - AMapSearch
-  - Evoker/Resources (0.1.0)
+  - Evoker/Resources (0.1.2)
   - HTTPParserC (2.9.4)
   - JXPhotoBrowser (3.1.3)
   - KTVCocoaHTTPServer (1.0.0):
@@ -112,7 +112,7 @@ SPEC CHECKSUMS:
   Bugly: afe841bba2ea6de6d432a3c125240a5e75949c55
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CryptoSwift: a0799ee936271bd2253a006f1e4523df21845000
-  Evoker: 84f43adf11ff29a206b4a91a88987d70fcb330d3
+  Evoker: a922ca183dfbe8e14a7ceac7cfd3c7b0869c864b
   HTTPParserC: aea14c3d2d4ac5beb3988781daa36dfa62e0d9ef
   JXPhotoBrowser: d32e94e1226d43bf5ed83164e3f5b651fed625e0
   KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
