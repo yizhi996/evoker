@@ -1,6 +1,6 @@
 {
   "name": "create-evoker",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "evoker creator",
   "author": "yizhi996",
   "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/create-evoker",
@@ -10,9 +10,12 @@
   },
   "license": "MIT",
   "main": "index.js",
-  "bin": "index.js",
+  "type": "module",
+  "bin": {
+    "create-evoker": "index.js"
+  },
   "dependencies": {
-    "inquirer": "^8.0.0",
+    "inquirer": "^9.0.0",
     "which-pm-runs": "^1.1.0"
   },
   "files": [

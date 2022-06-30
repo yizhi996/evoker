@@ -1,11 +1,14 @@
+#!/usr/bin/env node
+
 // @ts-check
+import path from "node:path"
+import fs from "node:fs"
+import { createPromptModule } from "inquirer"
+import { fileURLToPath } from "node:url"
+import whichPMRuns from "which-pm-runs"
+import minimist from "minimist"
 
-const { prompt } = require("inquirer")
-const path = require("path")
-const fs = require("fs")
-const whichPMRuns = require("which-pm-runs")
-
-const args = require("minimist")(process.argv.slice(2))
+const args = minimist(process.argv.slice(2))
 
 const TEMPLATES = ["empty-ts"]
 
@@ -70,6 +73,7 @@ async function main() {
   })
 
   if (prompts.length) {
+    const prompt = createPromptModule()
     const result = await prompt(prompts)
     if (result.projectName) {
       projectName = result.projectName
@@ -92,7 +96,9 @@ async function main() {
     fs.mkdirSync(dest, { recursive: true })
   }
 
-  const templateDir = path.resolve(`template-${template}`)
+  const root = path.resolve(fileURLToPath(import.meta.url), "..")
+
+  const templateDir = path.resolve(root, `template-${template}`)
   let files = fs.readdirSync(templateDir).filter(f => f !== "package.json")
   if (!PLATFORMS.includes(platform)) {
     PLATFORMS.forEach(p => {
@@ -105,7 +111,7 @@ async function main() {
     copy(filePath, path.resolve(dest, file))
   })
 
-  copy(path.resolve("_gitignore"), path.resolve(dest, ".gitignore"))
+  copy(path.resolve(root, "_gitignore"), path.resolve(dest, ".gitignore"))
 
   const pkgString = fs.readFileSync(path.resolve(templateDir, "package.json"), {
     encoding: "utf-8"
