@@ -1,6 +1,6 @@
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "../packages/evoker/package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "packages/evoker/package.json")))
 version = package['version']
 
 Pod::Spec.new do |s|
@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
     s.default_subspecs = "Core", "Resources"
 
     s.subspec 'Core' do |ss|
-      ss.source_files = ['Evoker/Sources/**/*.swift']
+      ss.source_files = ['iOS/Evoker/Sources/**/*.swift']
 
       ss.dependency 'Alamofire', '~> 5.4'
       ss.dependency 'SDWebImage', '~> 5.0'
@@ -53,15 +53,17 @@ Pod::Spec.new do |s|
     
     s.subspec 'Resources' do |ss|
       ss.resource_bundles = {'Evoker' => [
-        'Evoker/Sources/Resources/Image.xcassets',
-        'Evoker/Sources/Resources/Sound/**/*',
-        'Evoker/Sources/Resources/SDK/**/*']
+        'iOS/Evoker/Sources/Resources/Image.xcassets',
+        'iOS/Evoker/Sources/Resources/Sound/**/*',
+        'iOS/Evoker/Sources/Resources/SDK/**/*']
       }
     end
 
     s.subspec 'Map' do |ss|
-      ss.source_files = ['EvokerMap/Sources/**/*.swift']
+      ss.source_files = ['iOS/EvokerMap/Sources/**/*.swift']
 
+      ss.dependency 'Evoker/Core'
+      ss.dependency 'PureLayout'
       ss.dependency 'AMap3DMap'
       ss.dependency 'AMapSearch'
       ss.dependency 'AMapLocation'
