@@ -53,7 +53,7 @@ const currentVersion = mainPkg.version
     return
   }
 
-  const packages = allPakcages()
+  const packages = allPakcages().filter(p => p !== "create-evoker")
   console.log(colors.bold(colors.cyan("modify package version")))
   packages.forEach(p => updatePackageVersion(p, targetVersion))
 

@@ -10,7 +10,7 @@ const args = require("minimist")(process.argv.slice(2))
 
 const target = args._[0]
 
-const targets = allPakcages().filter(p => p !== "vue")
+const targets = allPakcages().filter(p => p !== "vue" && p !== "create-evoker")
 
 const rmdir = path => fs.rmSync(path, { recursive: true, force: true })
 

@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
     s.summary                 = 'Evoker'
   
     s.homepage                = 'https://evokerdev.com'
-    s.license                 = { :type => 'MIT', :file => '../LICENSE' }
+    s.license                 = { :type => 'MIT', :file => 'LICENSE' }
     s.authors                 = 'yizhi996'
   
     s.source                  = {
@@ -62,7 +62,7 @@ Pod::Spec.new do |s|
     s.subspec 'Map' do |ss|
       ss.source_files = ['iOS/EvokerMap/Sources/**/*.swift']
 
-      ss.dependency 'Evoker/Core'
+      ss.dependency 'Evoker/Core', version
       ss.dependency 'PureLayout'
       ss.dependency 'AMap3DMap'
       ss.dependency 'AMapSearch'

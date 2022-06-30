@@ -1,0 +1,23 @@
+{
+  "name": "create-evoker",
+  "version": "0.1.0",
+  "description": "evoker creator",
+  "author": "yizhi996",
+  "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/create-evoker",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yizhi996/evoker.git"
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "bin": "index.js",
+  "dependencies": {
+    "inquirer": "^8.0.0",
+    "which-pm-runs": "^1.1.0"
+  },
+  "files": [
+    "index.js",
+    "_gitignore",
+    "template-*"
+  ]
+}

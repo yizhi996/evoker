@@ -1,0 +1,17 @@
+{
+  "appId": "com.evokerdev.hello-world",
+  "version": "1.0.0",
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Evoker",
+    "navigationStyle": "default",
+    "backgroundColor": "#f3f4f6"
+  },
+  "pages": [
+    {
+      "component": "components/HelloWorld.vue",
+      "path": "hello-world"
+    }
+  ]
+}
