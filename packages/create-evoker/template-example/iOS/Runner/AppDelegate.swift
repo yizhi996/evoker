@@ -7,7 +7,6 @@
 
 import UIKit
 import Evoker
-import Bugly
 import AMapFoundationKit
 
 @main
@@ -16,8 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        Bugly.start(withAppId: "c175518c9c")
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window!.makeKeyAndVisible()
@@ -75,9 +72,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             bridge.invokeCallbackSuccess(args: args, result: ["userInfo": userInfo])
         }
         
-//        config.dev.useDevJSSDK = true
         config.dev.useDevServer = true
-        DevServer.shared.connect(host: "192.168.0.105")
+        DevServer.shared.connect()
         
         VersionManager.shared.updateJSSDK { _ in
             Engine.shared.preload()

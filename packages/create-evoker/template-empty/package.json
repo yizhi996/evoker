@@ -16,5 +16,9 @@
     "typescript": "^4.7.4",
     "vite": "^2.9.13",
     "vue-tsc": "^0.34.17"
-  }
+  },
+  "browserslist": [
+    "iOS >= 11",
+    "Android >= 7.0"
+  ]
 }

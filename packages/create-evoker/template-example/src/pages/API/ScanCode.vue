@@ -1,7 +1,7 @@
 <template>
-  <van-cell-group :title="'扫码结果: ' + type">
-    <van-cell class="break-all min-h-10" :value="result" />
-  </van-cell-group>
+  <n-cell-group>
+    <n-cell class="break-all min-h-10" title="扫码结果">{{ result }}</n-cell>
+  </n-cell-group>
   <button type="primary" @click="toScan">扫一扫</button>
 </template>
 
@@ -9,12 +9,10 @@
 import { ref } from "vue"
 
 const result = ref("")
-const type = ref("")
 
 const toScan = () => {
   ev.scanCode().then(res => {
     result.value = res.result
-    type.value = res.scanType
   })
 }
 </script>

@@ -19,12 +19,8 @@ class LaunchpadViewController: UIViewController {
     }
     
     static let apps = [
-        App(appId: "com.evokerdev.example",
-            appName: "小程序示例",
-            appIcon: "",
-            envVersion: .develop),
-        App(appId: "com.evokerdev.pdd",
-            appName: "拼多多",
+        App(appId: "com.evokerdev.runner",
+            appName: "Hello World",
             appIcon: "",
             envVersion: .develop)
     ]

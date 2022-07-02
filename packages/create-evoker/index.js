@@ -10,7 +10,7 @@ import minimist from "minimist"
 
 const args = minimist(process.argv.slice(2))
 
-const TEMPLATES = ["empty-ts"]
+const TEMPLATES = ["empty", "example"]
 
 const PLATFORMS = ["iOS"]
 

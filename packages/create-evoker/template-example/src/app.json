@@ -1,7 +1,6 @@
 {
   "appId": "com.evokerdev.example",
   "version": "1.0.0",
-  "mode": "miniProgram",
   "window": {
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
@@ -17,12 +16,6 @@
       {
         "path": "component",
         "text": "组件",
-        "iconPath": "assets/icon_component.png",
-        "selectedIconPath": "assets/icon_component_HL.png"
-      },
-      {
-        "path": "extension",
-        "text": "扩展能力",
         "iconPath": "assets/icon_component.png",
         "selectedIconPath": "assets/icon_component_HL.png"
       },
@@ -215,16 +208,6 @@
       "component": "pages/API/Audio.vue",
       "path": "audio",
       "style": { "navigationBarTitleText": "音频" }
-    },
-    {
-      "component": "pages/Extension/Index.vue",
-      "path": "extension",
-      "style": { "navigationBarTitleText": "小程序扩展能力展示" }
-    },
-    {
-      "component": "pages/Extension/Icon.vue",
-      "path": "extension/icon",
-      "style": { "navigationBarTitleText": "Icon" }
     },
     {
       "component": "pages/API/Request.vue",
