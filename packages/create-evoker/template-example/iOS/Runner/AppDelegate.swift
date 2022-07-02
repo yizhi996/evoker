@@ -2,8 +2,6 @@
 //  AppDelegate.swift
 //  Runner
 //
-//  Created by yizhi996 on 2022/3/3.
-//
 
 import UIKit
 import Evoker
@@ -19,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window!.makeKeyAndVisible()
         
-        window?.rootViewController = UINavigationController(rootViewController: LaunchpadViewController())
+        window!.rootViewController = UINavigationController(rootViewController: LaunchpadViewController())
         
         DispatchQueue.main.async {
             self.launchEvokerEngine()

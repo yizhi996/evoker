@@ -2,8 +2,6 @@
 //  LaunchpadViewController.swift
 //  Runner
 //
-//  Created by yizhi996 on 2022/3/3.
-//
 
 import Foundation
 import UIKit
@@ -19,8 +17,8 @@ class LaunchpadViewController: UIViewController {
     }
     
     static let apps = [
-        App(appId: "com.evokerdev.example",
-            appName: "Example",
+        App(appId: "com.evokerdev.runner",
+            appName: "Runner",
             appIcon: "",
             envVersion: .develop)
     ]
