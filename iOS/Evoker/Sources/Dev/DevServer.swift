@@ -50,10 +50,20 @@ public class DevServer: WebSocket {
         }
     }
     
-    public override func connect(host: String = "127.0.0.1", port: UInt16 = 8800) {
+    public override func connect(host: String = "", port: UInt16 = 8800) {
         guard Engine.shared.config.dev.useDevServer else { return }
-        super.connect(host: host, port: port)
+        var ip = host
+        if ip.isEmpty,
+           let ipFile = Bundle.main.url(forResource: "IP", withExtension: "txt"),
+           let _ip = try? String(contentsOf: ipFile).split(separator: "\n").first {
+            ip = String(_ip)
+        }
+        if ip.isEmpty {
+            ip = "127.0.0.1"
+        }
+        super.connect(host: ip, port: port)
     }
+
 }
 
 private extension DevServer {

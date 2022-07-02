@@ -112,6 +112,7 @@
 				8698282B26D8D90B009BA84B /* Embed Frameworks */,
 				E03B1208D264F0339802CCE2 /* [CP] Embed Pods Frameworks */,
 				6CB0E9C9CF1929FDECD43624 /* [CP] Copy Pods Resources */,
+				8679B851286FE87100BF28BF /* Get Local IP Address */,
 			);
 			buildRules = (
 			);
@@ -185,6 +186,24 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		8679B851286FE87100BF28BF /* Get Local IP Address */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Get Local IP Address";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$CONFIGURATION\" = *Debug* ]]; then\n    IP=$(ipconfig getifaddr en0)\n    DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\n    echo \"$IP\" > \"$DEST/IP.txt\"\nfi\n";
 		};
 		8F6AD7DD5D72D7E915110EC7 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
