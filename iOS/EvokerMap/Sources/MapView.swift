@@ -15,8 +15,8 @@ class MapView: UIView {
     struct Params: Decodable {
         let parentId: String
         let mapId: Int
-        let longitude: Double
-        let latitude: Double
+        let longitude: Double?
+        let latitude: Double?
         let scale: CGFloat
         let minScale: CGFloat
         let maxScale: CGFloat
@@ -85,7 +85,9 @@ class MapView: UIView {
         mapView.isShowTraffic = params.enableTraffic
         mapView.isShowsBuildings = params.enable3D
         
-        mapView.setCenter(CLLocationCoordinate2D(latitude: params.latitude, longitude: params.longitude), animated: false)
+        if let latitude = params.latitude, let longitude = params.longitude {
+            mapView.setCenter(CLLocationCoordinate2D(latitude: latitude, longitude: longitude), animated: false)
+        }
         
         addSubview(mapView)
         mapView.autoPinEdgesToSuperviewEdges()
