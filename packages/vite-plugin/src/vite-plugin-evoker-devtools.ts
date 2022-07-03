@@ -161,7 +161,7 @@ function update(clients: Client[]) {
         files.push("app")
       }
 
-      if (files.length) {
+      if (files.length && clients.length) {
         const message = JSON.stringify({
           appId,
           files,
@@ -206,7 +206,7 @@ function loadSDKFiles(root: string) {
   const allFiles: string[] = []
   const pkgsDir = path.resolve(root)
   pkgs.forEach(pkg => {
-    const pkgDir = path.resolve(pkgsDir, `${pkg}/dist`)
+    const pkgDir = path.resolve(pkgsDir, `packages/${pkg}/dist`)
     const files = include[pkg].map(file => path.join(pkgDir, file))
     allFiles.push(...files)
   })

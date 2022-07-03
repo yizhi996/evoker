@@ -24,8 +24,7 @@ export default getViteConfig(
           src: resolve(__dirname, "src/index.html"),
           dest: resolve(__dirname, "dist/")
         }
-      ],
-      hook: "writeBundle"
+      ]
     }),
     jsx({
       isCustomElement: tag => tag.startsWith("ev-")
