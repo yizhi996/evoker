@@ -19,7 +19,6 @@ exports.getViteConfig = function (target, rollupOptions, plugins = []) {
             return f === "global" ? "iife" : f
           })
         },
-        plugins: [...plugins],
         rollupOptions: rollupOptions || {
           external: [...Object.keys(pkg.dependencies || {})],
           output: {
@@ -28,7 +27,8 @@ exports.getViteConfig = function (target, rollupOptions, plugins = []) {
             }
           }
         }
-      }
+      },
+      plugins
     }
   })
 }
