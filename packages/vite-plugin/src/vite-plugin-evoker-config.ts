@@ -1,6 +1,7 @@
-import type { Plugin, BuildOptions, ResolvedConfig } from "vite"
+import type { Plugin, ResolvedConfig } from "vite"
 import { resolve } from "path"
 import fs from "fs"
+import { Options } from "./index"
 
 let config: ResolvedConfig
 
@@ -18,32 +19,36 @@ function getEntry() {
   throw new Error("lib entry cannot be empty")
 }
 
-export default function vitePluginEvokerConfig(options: BuildOptions = {}): Plugin {
+export default function vitePluginEvokerConfig(options: Options = {}): Plugin {
   return {
     name: "vite:evoker-config",
     enforce: "pre",
 
-    config: config => ({
-      build: {
-        minify: config.mode === "development" ? false : "terser",
-        assetsInlineLimit: 0,
-        lib: {
-          entry: (options.lib && options.lib.entry) || getEntry(),
-          name: "AppService",
-          fileName: () => "app-service.js",
-          formats: ["iife"]
-        },
-        rollupOptions: {
-          external: ["evoker", "vue"],
-          output: {
-            globals: {
-              evoker: "Evoker",
-              vue: "Vue"
+    config: config => {
+      const DEV = config.mode === "development"
+      return {
+        build: {
+          minify: DEV ? false : "terser",
+          assetsInlineLimit: 0,
+          lib: {
+            entry: (options.build!.lib && options.build!.lib.entry) || getEntry(),
+            name: "AppService",
+            fileName: () => "app-service.js",
+            formats: ["iife"]
+          },
+          rollupOptions: {
+            external: ["evoker", "vue"],
+            output: {
+              globals: {
+                evoker: "Evoker",
+                vue: "Vue"
+              }
             }
-          }
+          },
+          watch: DEV ? {} : null
         }
       }
-    }),
+    },
 
     configResolved: _config => {
       config = _config

@@ -3,6 +3,7 @@ import colors from "picocolors"
 import path from "path"
 import { getDirAllFiles, getFileHash, getAppId, zip } from "./utils"
 import { runWebSocketServer, createMessage, createFileMessage, Client } from "./webSocket"
+import fg from "fast-glob"
 
 let firstBuildFinished = false
 
@@ -32,6 +33,7 @@ export interface Options {
 
 export default function vitePluginEvokerDevtools(options: Options = {}): Plugin {
   createWebSocketServer(options)
+
   return {
     name: "vite:evoker-devtools",
 
@@ -39,6 +41,16 @@ export default function vitePluginEvokerDevtools(options: Options = {}): Plugin 
 
     configResolved(reslovedConfig) {
       config = reslovedConfig
+    },
+
+    async buildStart(this, _) {
+      if (options.devSDK?.root) {
+        const fp = path.resolve(options.devSDK.root, "packages/*/dist/*")
+        const files = await fg(fp)
+        files.forEach(f => {
+          this.addWatchFile(f)
+        })
+      }
     },
 
     writeBundle() {

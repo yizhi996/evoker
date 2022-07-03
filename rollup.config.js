@@ -130,7 +130,7 @@ function createConfig(format, output, plugins = []) {
     external.push(...Object.keys(pkg.dependencies || {}))
 
     if (name === "vite-plugin") {
-      external.push(...["ws", "zlib", "path", "fs", "os", "crypto"])
+      external.push(...["zlib", "path", "fs", "os", "crypto"])
     }
   }
 

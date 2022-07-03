@@ -20,8 +20,16 @@ export interface Options {
 }
 
 export default function plugins(options: Options = {}) {
+  const _options = Object.assign(
+    {
+      mode: "development",
+      build: {}
+    },
+    options
+  )
+
   let plugins: Plugin[] = [
-    buildConfig(options.build),
+    buildConfig(_options),
     assets(),
     router(),
     copy({
@@ -54,8 +62,8 @@ export default function plugins(options: Options = {}) {
   }
   plugins.push(vue(rawVueOptions))
 
-  if (options.mode === "development") {
-    plugins.push(devtools(options.devtools))
+  if (_options.mode === "development") {
+    plugins.push(devtools(_options.devtools))
   }
 
   return plugins
