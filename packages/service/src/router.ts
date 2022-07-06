@@ -1,4 +1,4 @@
-import { DefineComponent, onMounted } from "vue"
+import { DefineComponent } from "vue"
 import { InnerJSBridge } from "./bridge/bridge"
 import { LifecycleHooks } from "./lifecycle/hooks"
 
