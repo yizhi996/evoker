@@ -6,6 +6,7 @@ import type { Options as DevtoolsOptions } from "./vite-plugin-evoker-devtools"
 import router from "./vite-plugin-evoker-router"
 import assets from "./vite-plugin-evoker-assets"
 import buildConfig from "./vite-plugin-evoker-config"
+import pack from "./vite-plugin-evoker-pack"
 import { isHTMLTag, isSVGTag } from "@vue/shared"
 import compiler, { baseParse, transformModel, RootNode, CompilerOptions } from "@vue/compiler-core"
 import copy from "rollup-plugin-copy"
@@ -28,7 +29,7 @@ export default function plugins(options: Options = {}) {
     options
   )
 
-  let plugins: Plugin[] = [
+  const plugins: Plugin[] = [
     buildConfig(_options),
     assets(),
     router(),
@@ -64,6 +65,8 @@ export default function plugins(options: Options = {}) {
 
   if (_options.mode === "development") {
     plugins.push(devtools(_options.devtools))
+  } else {
+    plugins.push(pack())
   }
 
   return plugins

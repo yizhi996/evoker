@@ -8,7 +8,7 @@ interface Options {
   targetFilename: string
 }
 
-export function vitePluginEvokerIIFECSS(options: Options): Plugin {
+export default function vitePluginEvokerIIFECSS(options: Options): Plugin {
   return {
     apply: "build",
 
