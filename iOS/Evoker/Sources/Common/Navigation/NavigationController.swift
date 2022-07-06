@@ -38,7 +38,9 @@ open class NavigationController: UINavigationController {
         
         if #available(iOS 13.0, *) {
             if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-                themeChangeHandler?(traitCollection.userInterfaceStyle == .dark ? "dark" : "light")
+                if UIApplication.shared.applicationState != .background {
+                    themeChangeHandler?(traitCollection.userInterfaceStyle == .dark ? "dark" : "light")
+                }
             }
         }
     }
@@ -76,7 +78,7 @@ extension NavigationController: UINavigationControllerDelegate {
                         webPage.publishOnUnload()
                     }
                     if let webPage = viewController.page as? WebPage {
-                        webPage.publishOnShow(publish: true)
+                        webPage.publishOnShow()
                     }
                     viewController.page.appService?.currentPage = viewController.page
                 }
