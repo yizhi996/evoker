@@ -220,7 +220,7 @@ final public class Engine {
             if webPage.webView.state == .terminate {
                 webPage.reload()
             } else {
-                webPage.show(publish: true)
+                webPage.publishOnShow()
             }
         }
     }
@@ -229,7 +229,7 @@ final public class Engine {
         guard let currentApp = currentApp else { return }
         currentApp.publishAppOnHide()
         if let webPage = currentApp.currentPage as? WebPage {
-            webPage.hide()
+            webPage.publishOnHide()
         }
     }
     
@@ -249,6 +249,12 @@ final public class Engine {
 //MARK: App
 extension Engine {
     
+    /// 打开应用
+    /// - Parameters:
+    ///     - appId: 应用唯一标识
+    ///     - launchOptions: 应用启动参数
+    ///     - presentTo: 打开在目标 ViewController
+    ///     - completionHandler: 打开完成时调用
     public func openApp(appId: String,
                         launchOptions: AppLaunchOptions = AppLaunchOptions(),
                         presentTo viewController: UIViewController? = nil,
@@ -268,6 +274,13 @@ extension Engine {
             showOptions.path = launchOptions.path
             showOptions.referrerInfo = launchOptions.referrerInfo
             appService.publishAppOnShow(options: showOptions)
+            if let webPage = appService.currentPage as? WebPage {
+                if webPage.webView.state == .terminate {
+                    webPage.reload()
+                } else {
+                    webPage.publishOnShow()
+                }
+            }
             if !launchOptions.path.isEmpty, let error = appService.reLaunch(url: launchOptions.path) {
                 completionHandler?(error)
                 return
@@ -381,6 +394,7 @@ extension Engine {
 
 extension Engine {
     
+    /// 注入 Module
     public func injectModule(_ module: Module.Type) {
         guard !extraModules.contains(where: { $0.name == module.name }) else { return }
         extraModules.append(module)
@@ -391,6 +405,7 @@ extension Engine {
         return builtInModules + extraModules
     }
     
+    /// 注册 API，根据 name 可以覆盖内置 API 或者 注册新的 API
     public func registAPI(_ name: String, api: API) {
         extraAPIs[name] = api
     }

@@ -61,7 +61,6 @@ open class WebPage: Page {
         webView.page = self
         webView.backgroundColor = backgroundColor
         webView.runAfterLoad { [unowned self] in
-            self.setPageInfo()
             self.mount()
         }
         return webView
@@ -125,7 +124,6 @@ open class WebPage: Page {
             appService.loadAppCSS(to: webView)
         }
         webView.runAfterLoad { [unowned self] in
-            self.setPageInfo()
             self.mount()
         }
     }
@@ -134,7 +132,7 @@ open class WebPage: Page {
         return WebPageViewController(page: self)
     }
     
-    func setPageInfo() {
+    func mount() {
         guard let appService = appService else { return }
         
         var js = """
@@ -151,44 +149,53 @@ open class WebPage: Page {
             js += "window.__Config.userInfo = {};"
         }
         webView.evaluateJavaScript(js)
-    }
-    
-    func mount() {
-        guard let appService = appService else { return }
-        appService.bridge.subscribeHandler(method:WebPage.beginMountSubscribeKey, data: ["pageId": pageId,
-                                                                                           "path": url])
+        
+        appService.bridge.subscribeHandler(method:WebPage.beginMountSubscribeKey, data: ["pageId": pageId, "path": url])
+        Engine.shared.config.hooks.pageLifeCycle.onLoad?(self)
         appService.modules.values.forEach { $0.onLoad(self) }
     }
-    
-    func show(publish: Bool) {
+
+    func publishOnShow() {
         guard let appService = appService else { return }
-        if publish {
-            appService.bridge.subscribeHandler(method:WebPage.onShowSubscribeKey, data: ["pageId": pageId])
-        }
+        appService.bridge.subscribeHandler(method:WebPage.onShowSubscribeKey, data: ["pageId": pageId])
+        Engine.shared.config.hooks.pageLifeCycle.onShow?(self)
         appService.modules.values.forEach { $0.onShow(self) }
     }
     
-    func hide() {
+    func publishOnReady() {
+        guard let appService = appService else { return }
+        appService.bridge.subscribeHandler(method:WebPage.onReadySubscribeKey, data: ["pageId": pageId])
+        Engine.shared.config.hooks.pageLifeCycle.onReady?(self)
+        appService.modules.values.forEach { $0.onReady(self) }
+    }
+    
+    func publishOnHide() {
         guard let appService = appService else { return }
         appService.bridge.subscribeHandler(method:WebPage.onHideSubscribeKey, data: ["pageId": pageId])
+        Engine.shared.config.hooks.pageLifeCycle.onHide?(self)
         appService.modules.values.forEach { $0.onHide(self) }
     }
     
-    func unload() {
+    func publishOnUnload(recycle: Bool = false) {
         guard let appService = appService else { return }
-        
         if state == .loaded {
             Logger.debug("\(appService.appId) - \(route) onUnload")
             
             state = .unloaded
             appService.bridge.subscribeHandler(method: WebPage.onUnloadSubscribeKey, data: ["pageId": pageId])
-            appService.recycle(webView: webView)
+            Engine.shared.config.hooks.pageLifeCycle.onUnload?(self)
+            appService.modules.values.forEach { $0.onUnload(self) }
+            
+            if recycle {
+                appService.recycle(webView: webView)
+            }
         }
         
         if let index = appService.pages.firstIndex(where: { $0.pageId == pageId }) {
             appService.pages.remove(at: index)
         }
     }
+        
 }
 
 extension WebPage {
@@ -241,6 +248,8 @@ extension WebPage {
     public static let onLoadSubscribeKey = SubscribeKey("PAGE_ON_LOAD")
 
     public static let onShowSubscribeKey = SubscribeKey("PAGE_ON_SHOW")
+    
+    public static let onReadySubscribeKey = SubscribeKey("PAGE_ON_READY")
     
     public static let onHideSubscribeKey = SubscribeKey("PAGE_ON_HIDE")
     

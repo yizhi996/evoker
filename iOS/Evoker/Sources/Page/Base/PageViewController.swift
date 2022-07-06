@@ -15,8 +15,6 @@ open class PageViewController: UIViewController {
     
     public private(set) var page: Page
     
-    var isFirstLoad = true
-    
     var loadCompletedHandler: EmptyBlock?
     
     open override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -41,6 +39,8 @@ open class PageViewController: UIViewController {
         
         page.isVisible = true
         
+        addInteractivePopGesture()
+        
         setupNavigationBar()
     }
     
@@ -48,18 +48,15 @@ open class PageViewController: UIViewController {
         super.viewWillAppear(animated)
         
         page.isVisible = true
-        addInteractivePopGesture()
+        
         addNavigationBarTransitionAnimate()
     }
     
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
+        
         addInteractivePopGesture()
-        
-        guard let appService = page.appService else { return }
-        appService.currentPage = page
-        
+                
         loadCompletedHandler?()
         loadCompletedHandler = nil
     }
@@ -70,8 +67,9 @@ open class PageViewController: UIViewController {
         page.isVisible = false
     }
     
-    @objc func onBack() {
-        navigationController?.popViewController(animated: true)
+    @objc
+    open func onBack() {
+        page.appService?.pop()
     }
     
     func addNavigationBarTransitionAnimate() {
@@ -119,12 +117,13 @@ open class PageViewController: UIViewController {
     }
     
     func addInteractivePopGesture() {
-        if let navigationController = navigationController, navigationController.viewControllers.count > 1 {
+        if let navigationController = navigationController,
+           navigationController.viewControllers.count > 1 {
             navigationController.interactivePopGestureRecognizer?.delegate = self
             
             if page.navigationStyle == .default {
                 navigationBar.addBackButton() { [unowned self] in
-                    self.navigationController?.popViewController(animated: true)
+                    self.onBack()
                 }
             }
         }

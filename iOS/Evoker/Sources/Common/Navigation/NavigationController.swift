@@ -56,9 +56,31 @@ open class NavigationController: UINavigationController {
         setNavigationBarHidden(true, animated: false)
         
         view.backgroundColor = .white
+        
+        delegate = self
     }
     
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension NavigationController: UINavigationControllerDelegate {
+    
+    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if let coordinator = navigationController.topViewController?.transitionCoordinator {
+            coordinator.notifyWhenInteractionChanges { context in
+                if !context.isCancelled {
+                    let viewController = viewController as! PageViewController
+                    if let webPage = viewController.page.appService?.currentPage as? WebPage {
+                        webPage.publishOnUnload()
+                    }
+                    if let webPage = viewController.page as? WebPage {
+                        webPage.publishOnShow(publish: true)
+                    }
+                    viewController.page.appService?.currentPage = viewController.page
+                }
+            }
+        }
     }
 }

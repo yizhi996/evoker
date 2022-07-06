@@ -16,9 +16,9 @@ public protocol Module {
     
     init(appService: AppService)
     
-    func onLaunch(_ service: AppService)
+    func onLaunch(_ service: AppService, options: AppLaunchOptions)
     
-    func onShow(_ service: AppService)
+    func onShow(_ service: AppService, options: AppShowOptions)
     
     func onHide(_ service: AppService)
     
@@ -27,6 +27,8 @@ public protocol Module {
     func onLoad(_ page: Page)
     
     func onShow(_ page: Page)
+    
+    func onReady(_ page: Page)
     
     func onHide(_ page: Page)
     
@@ -37,9 +39,9 @@ public protocol Module {
 
 public extension Module {
     
-    func onLaunch(_ service: AppService) { }
+    func onLaunch(_ service: AppService, options: AppLaunchOptions) { }
     
-    func onShow(_ service: AppService) { }
+    func onShow(_ service: AppService, options: AppShowOptions) { }
     
     func onHide(_ service: AppService) { }
     
@@ -48,6 +50,8 @@ public extension Module {
     func onLoad(_ page: Page) { }
     
     func onShow(_ page: Page) { }
+    
+    func onReady(_ page: Page) { }
     
     func onHide(_ page: Page) { }
     

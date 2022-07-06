@@ -62,37 +62,8 @@ open class WebPageViewController: PageViewController {
         }
     }
     
-    open override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
-        if webPage.state == .loaded {
-            webPage.show(publish: !isFirstLoad)
-        }
-        
-        isFirstLoad = false
-    }
-    
-    open override func viewDidDisappear(_ animated: Bool) {
-        webPage.hide()
-        if isMovingFromParent {
-            if !page.isTabBarPage {
-                webPage.unload()
-            }
-        }
-        super.viewDidDisappear(animated)
-    }
-    
-    open override func didMove(toParent parent: UIViewController?) {
-        if parent == nil {
-            if !page.isTabBarPage {
-                webPage.unload()
-            }
-        }
-        super.didMove(toParent: parent)
-    }
-    
     deinit {
-        webPage.unload()
+        webPage.publishOnUnload()
     }
     
     @objc open func scrollToTop() {

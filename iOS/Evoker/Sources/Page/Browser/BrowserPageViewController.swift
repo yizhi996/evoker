@@ -57,7 +57,7 @@ open class BrowserPageViewController: PageViewController {
         super.viewWillAppear(animated)
     }
     
-    override func onBack() {
+    open override func onBack() {
         if webView.canGoBack {
             webView.goBack()
         } else {

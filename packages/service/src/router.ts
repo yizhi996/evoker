@@ -50,10 +50,6 @@ function wrapper(component: DefineComponent) {
 
     InnerJSBridge.subscribeHandler(LifecycleHooks.PAGE_ON_SHOW, { pageId })
 
-    onMounted(() => {
-      InnerJSBridge.subscribeHandler(LifecycleHooks.PAGE_ON_READY, { pageId })
-    })
-
     return render
   }
   return component

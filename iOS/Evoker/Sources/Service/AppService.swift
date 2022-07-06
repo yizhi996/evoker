@@ -109,7 +109,7 @@ final public class AppService {
         }
         
         uiControl.capsuleView.clickCloseHandler = { [unowned self] in
-            self.close()
+            self.supend()
         }
         
         uiControl.capsuleView.clickMoreHandler = { [unowned self] in
@@ -171,6 +171,11 @@ final public class AppService {
     func launch(to viewController: UIViewController? = nil) -> EVError? {
         let path = launchOptions.path
         guard let info = generateFirstViewController(with: path) else { return .appLaunchPathNotFound(path) }
+        
+        if let error = loadAppPackage() {
+            return error
+        }
+        
         if haveTabBar {
             setupTabBar(current: info.tabBarSelectedIndex)
             if info.page.isTabBarPage {
@@ -178,8 +183,12 @@ final public class AppService {
             }
             tabBarPages = info.tabBarPages
         }
+        
+        currentPage = info.page
         pages.append(info.page)
-        loadAppPackage()
+        
+        waitPageFirstRendered(page: info.page) { }
+        
         publishAppOnLaunch(options: launchOptions)
         
         let navigationController = NavigationController(rootViewController: info.viewController)
@@ -188,6 +197,7 @@ final public class AppService {
             info.viewController.navigationBar.showGotoHomeButton()
         }
         rootViewController = navigationController
+        
         let presentViewController = viewController ?? UIViewController.visibleViewController()
         presentViewController?.present(navigationController, animated: true)
         if info.page.isTabBarPage {
@@ -202,11 +212,12 @@ final public class AppService {
         return nil
     }
     
-    func loadAppPackage() {
+    func loadAppPackage() -> EVError? {
         let dist = FilePath.appDist(appId: appId, envVersion: launchOptions.envVersion)
-        let appServiceURL = dist.appendingPathComponent("app-service.js")
+        let fileName = "app-service.js"
+        let appServiceURL = dist.appendingPathComponent(fileName)
         if let js = try? String(contentsOfFile: appServiceURL.path) {
-            context.evaluateScript(js, name: "app-service.js")
+            context.evaluateScript(js, name: fileName)
             var cfgjs = """
             globalThis.__Config.appName = '\(appInfo.appName)';
             globalThis.__Config.appIcon = '\(appInfo.appIconURL)';
@@ -219,7 +230,9 @@ final public class AppService {
             context.evaluateScript(cfgjs)
         } else {
             Logger.error("load app code failed: \(appServiceURL.path) file not exist")
+            return EVError.appServiceBundleNotFound
         }
+        return nil
     }
     
     func genPageId() -> Int {
@@ -261,7 +274,8 @@ final public class AppService {
     @objc
     private func killApp() {
         cleanKillTimer()
-        unloadAllPages()
+        pages.filter(ofType: WebPage.self).reversed().forEach { $0.publishOnUnload() }
+        pages = []
         rootViewController = nil
         if haveTabBar {
             tabBarPages = []
@@ -279,21 +293,6 @@ final public class AppService {
         if Engine.shared.currentApp === self {
             Engine.shared.currentApp = nil
         }
-    }
-    
-    func unloadPage(_ page: Page) {
-        modules.values.forEach { $0.onUnload(page) }
-        if let webPage = page as? WebPage {
-            webPage.unload()
-        }
-        if let index = pages.firstIndex(where: { $0.pageId == page.pageId }) {
-            pages.remove(at: index)
-        }
-    }
-    
-    func unloadAllPages() {
-        pages.forEach { unloadPage($0) }
-        pages = []
     }
     
     func cleanKillTimer() {
@@ -419,6 +418,7 @@ extension AppService {
             let exec: () -> Void = {
                 if !isRendered {
                     isRendered = true
+                    webPage.publishOnReady()
                     finishHandler()
                 }
             }
@@ -443,6 +443,16 @@ extension AppService {
         if !pages.contains(where: { $0.pageId == page.pageId }) {
             pages.append(page)
         }
+        
+        if currentPage === page {
+            return
+        }
+        
+        if let prevPage = currentPage as? WebPage {
+            prevPage.publishOnHide()
+        }
+        currentPage = page
+        
         let viewController = page.viewController ?? page.generateViewController()
         uiControl.tabBarViewControllers[page.url] = viewController
         
@@ -457,6 +467,9 @@ extension AppService {
         if !viewController.isViewLoaded {
             waitPageFirstRendered(page: page, finishHandler: switchTo)
         } else {
+            if let webPage = page as? WebPage {
+                webPage.publishOnShow()
+            }
             switchTo()
         }
     }
@@ -472,10 +485,10 @@ extension AppService {
     /// 返回到首页，如果有 TabBar，将返回到第一个 Tab，不然就返回 config.pages 的第一个 page。
     public func gotoHomePage() {
         if let firstTabBar = config.tabBar?.list.first, let info = generateFirstViewController(with: firstTabBar.path) {
-            let allpages = pages
+            pages.filter(ofType: WebPage.self).reversed().forEach { $0.publishOnUnload() }
             pages = [info.page]
+            currentPage = info.page
             waitPageFirstRendered(page: info.page) {
-                allpages.forEach { self.unloadPage($0) }
                 self.setupTabBar(current: info.tabBarSelectedIndex)
                 self.uiControl.tabBarViewControllers[info.page.url] = info.viewController
                 self.tabBarPages = info.tabBarPages
@@ -484,18 +497,20 @@ extension AppService {
             }
         } else if let firstPage = config.pages.first,
                   let page = createWebPage(url: firstPage.path) {
-            let allpages = pages
+            pages.filter(ofType: WebPage.self).reversed().forEach { $0.publishOnUnload() }
             pages = [page]
+            currentPage = page
             let viewController = page.generateViewController()
             waitPageFirstRendered(page: page) {
-                allpages.forEach { self.unloadPage($0) }
-                self.rootViewController?.viewControllers = [viewController]
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.rootViewController?.viewControllers = [viewController]
+                }
             }
         }
     }
     
     /// 隐藏小程序到后台，如果 15 分钟内没有进如前台，小程序将退出。
-    public func close() {
+    public func supend() {
         dismiss()
         cleanKillTimer()
         state = .suspend
@@ -593,23 +608,23 @@ extension AppService {
     
     func publishAppOnLaunch(options: AppLaunchOptions) {
         bridge.subscribeHandler(method: AppService.onLaunchSubscribeKey, data: setEnterOptions(options: options))
-        Engine.shared.config.hooks.app.lifeCycle.onLaunch?(self, options)
-        modules.values.forEach { $0.onLaunch(self) }
+        Engine.shared.config.hooks.appLifeCycle.onLaunch?(self, options)
+        modules.values.forEach { $0.onLaunch(self, options: options) }
     }
     
     func publishAppOnShow(options: AppShowOptions) {
         UIApplication.shared.isIdleTimerDisabled = keepScreenOn
         cleanKillTimer()
         bridge.subscribeHandler(method: AppService.onShowSubscribeKey, data: setEnterOptions(options: options))
-        Engine.shared.config.hooks.app.lifeCycle.onShow?(self, options)
-        modules.values.forEach { $0.onShow(self) }
+        Engine.shared.config.hooks.appLifeCycle.onShow?(self, options)
+        modules.values.forEach { $0.onShow(self, options: options) }
     }
     
     @objc
     func publishAppOnHide() {
         UIApplication.shared.isIdleTimerDisabled = false
         bridge.subscribeHandler(method: AppService.onHideSubscribeKey, data: [:])
-        Engine.shared.config.hooks.app.lifeCycle.onHide?(self)
+        Engine.shared.config.hooks.appLifeCycle.onHide?(self)
         modules.values.forEach { $0.onHide(self) }
     }
 }
@@ -630,6 +645,11 @@ public extension AppService {
     func push(_ page: Page, animated: Bool = true, completedHandler: EmptyBlock? = nil) {
         pages.append(page)
         
+        if let prevPage = currentPage as? WebPage {
+            prevPage.publishOnHide()
+        }
+        currentPage = page
+        
         let viewController = page.generateViewController()
         viewController.loadCompletedHandler = {
             completedHandler?()
@@ -644,21 +664,28 @@ public extension AppService {
     }
     
     func redirectTo(_ url: String) -> EVError? {
-        guard config.tabBar?.list.contains(where: { $0.path == url }) == false else {
+        let (path, _) = url.decodeURL()
+        
+        if let tabBar = config.tabBar, tabBar.list.contains(where: { $0.path == path }) {
             return .bridgeFailed(reason: .cannotToTabbarPage)
         }
+        
         guard let rootViewController = rootViewController else {
             return .appRootViewControllerNotFound
         }
+        
         guard let info = generateFirstViewController(with: url) else {
-            return .appLaunchPathNotFound(url)
+            return .appLaunchPathNotFound(path)
         }
-        if let currentPage = currentPage {
-            if currentPage.isTabBarPage {
-                let allpages = pages
+        
+        if let prevPage = currentPage {
+            if prevPage.isTabBarPage {
+                pages.filter(ofType: WebPage.self).reversed().forEach { $0.publishOnUnload() }
+                
                 pages = [info.page]
+                
+                currentPage = info.page
                 waitPageFirstRendered(page: info.page) {
-                    allpages.forEach { self.unloadPage($0) }
                     self.uiControl.tabBarViewControllers = [:]
                     rootViewController.viewControllers = [info.viewController]
                     if info.needAddGotoHomeButton {
@@ -666,12 +693,17 @@ public extension AppService {
                     }
                 }
             } else {
+                if let webPage = prevPage as? WebPage {
+                    webPage.publishOnUnload()
+                }
                 pages.append(info.page)
+                currentPage = info.page
                 waitPageFirstRendered(page: info.page) {
-                    self.unloadPage(currentPage)
-                    rootViewController.viewControllers[rootViewController.viewControllers.count - 1] = info.viewController
-                    if self.pages.count == 1 {
-                        info.viewController.navigationBar.showGotoHomeButton()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        rootViewController.viewControllers[rootViewController.viewControllers.count - 1] = info.viewController
+                        if self.pages.count == 1 {
+                            info.viewController.navigationBar.showGotoHomeButton()
+                        }
                     }
                 }
             }
@@ -681,17 +713,44 @@ public extension AppService {
     
     func pop(delta: Int = 1, animated: Bool = true) {
         guard let rootViewController = rootViewController else { return }
+        
+        guard rootViewController.viewControllers.count > 1 else { return }
+        
         if delta <= 1 {
+            if let lastViewController = rootViewController.viewControllers.last as? WebPageViewController {
+                lastViewController.webPage.publishOnUnload()
+            }
+            
+            let index = rootViewController.viewControllers.count - 2
+            currentPage = (rootViewController.viewControllers[index] as! PageViewController).page
             rootViewController.popViewController(animated: true)
-        } else if rootViewController.viewControllers.count >= delta {
-            let viewController = rootViewController.viewControllers.reversed()[delta]
-            rootViewController.popToViewController(viewController, animated: animated)
+        } else if rootViewController.viewControllers.count > delta {
+            let viewControllers = Array(rootViewController.viewControllers.reversed())
+            let viewController = viewControllers[delta]
+            Array(viewControllers[0..<delta])
+                .filter(ofType: WebPageViewController.self)
+                .forEach { $0.webPage.publishOnUnload() }
+            
+            currentPage = (viewController as! PageViewController).page
+            rootViewController.popToViewController(viewController, animated: true)
         } else {
-            rootViewController.popToRootViewController(animated: animated)
+            Array(rootViewController.viewControllers[1..<rootViewController.viewControllers.count].reversed())
+                .filter(ofType: WebPageViewController.self)
+                .forEach { $0.webPage.publishOnUnload() }
+            
+            currentPage = (rootViewController.viewControllers[0] as! PageViewController).page
+            rootViewController.popToRootViewController(animated: true)
+        }
+        
+        if let webPage = currentPage as? WebPage {
+            webPage.publishOnShow()
         }
     }
     
     func dismiss(animated: Bool = true, completion: EmptyBlock? = nil) {
+        if let webPage = currentPage as? WebPage {
+            webPage.publishOnHide()
+        }
         publishAppOnHide()
         rootViewController?.dismiss(animated: animated, completion: completion)
     }
@@ -701,7 +760,6 @@ public extension AppService {
         guard let info = generateFirstViewController(with: url) else { return .appLaunchPathNotFound(url) }
         
         currentPage = nil
-        unloadAllPages()
         
         if haveTabBar {
             setupTabBar(current: info.tabBarSelectedIndex)
@@ -710,15 +768,24 @@ public extension AppService {
             }
             tabBarPages = info.tabBarPages
         }
-        pages.append(info.page)
         
-        rootViewController.viewControllers = [info.viewController]
-        if info.page.isTabBarPage {
-            uiControl.tabBarView.add(to: info.viewController.view)
+        pages.filter(ofType: WebPage.self).reversed().forEach { $0.publishOnUnload() }
+        pages = [info.page]
+        currentPage = info.page
+        
+        waitPageFirstRendered(page: info.page) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                rootViewController.viewControllers = [info.viewController]
+                
+                if info.page.isTabBarPage {
+                    self.uiControl.tabBarView.add(to: info.viewController.view)
+                }
+                if info.needAddGotoHomeButton {
+                    info.viewController.navigationBar.showGotoHomeButton()
+                }
+            }
         }
-        if info.needAddGotoHomeButton {
-            info.viewController.navigationBar.showGotoHomeButton()
-        }
+        
         return nil
     }
     

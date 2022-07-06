@@ -89,14 +89,6 @@ enum RouteAPI: String, CaseIterableAPI {
             return
         }
         
-        let (path, _) = params.url.decodeURL()
-        
-        let isTab = appService.config.tabBar?.list.contains(where: { $0.path == path })
-        if isTab == true {
-            bridge.invokeCallbackSuccess(args: args)
-            return
-        }
-        
         if let error = appService.redirectTo(params.url) {
             bridge.invokeCallbackFail(args: args, error: error)
         } else {

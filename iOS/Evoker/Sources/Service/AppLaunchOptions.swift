@@ -34,7 +34,8 @@ public protocol AppEnterOptions {
 }
 
 public struct AppLaunchOptions: AppEnterOptions {
-        
+    
+    /// 应用打开的路径
     public var path: String = ""
     
     public var referrerInfo: AppEnterReferrerInfo?

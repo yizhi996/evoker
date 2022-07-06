@@ -30,7 +30,7 @@ class LocationModule: Module {
         
     }
     
-    func onShow(_ service: AppService) {
+    func onShow(_ service: AppService, options: AppShowOptions) {
         if isStartUpdatingLocation {
             locationManager.locationManager.startUpdatingLocation()
         }

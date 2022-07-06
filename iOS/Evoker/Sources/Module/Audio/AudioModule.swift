@@ -84,7 +84,7 @@ class AudioModule: NSObject, Module {
         try? session.setCategory(cateory, mode: .default, options: options)
     }
     
-    func onShow(_ service: AppService) {
+    func onShow(_ service: AppService, options: AppShowOptions) {
         setAudioCategory()
     }
     

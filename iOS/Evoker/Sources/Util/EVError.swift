@@ -12,6 +12,8 @@ public enum EVError: Error {
     
     case loadAppConfigFailed
     
+    case appServiceBundleNotFound
+    
     case appLaunchPathNotFound(String)
     
     case appRootViewControllerNotFound
@@ -173,6 +175,8 @@ extension EVError: LocalizedError {
         switch self {
         case .loadAppConfigFailed:
             return "load app.json failed"
+        case .appServiceBundleNotFound:
+            return "app-service.js not found"
         case .appLaunchPathNotFound(let path):
             return "app launch failed, path: \(path) not found"
         case .appRootViewControllerNotFound:
