@@ -45,8 +45,10 @@ export default function vitePluginEvokerAssets(): Plugin {
       if (appConfig.tabBar && appConfig.tabBar.list) {
         const tabBars = appConfig.tabBar.list
         tabBars.forEach((info: any) => {
-          emitTabBarIcon(info.iconPath, this)
-          emitTabBarIcon(info.selectedIconPath, this)
+          if (info.iconPath && info.selectedIconPath) {
+            emitTabBarIcon(info.iconPath, this)
+            emitTabBarIcon(info.selectedIconPath, this)
+          }
         })
       }
       cache.clear()
