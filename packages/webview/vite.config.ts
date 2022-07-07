@@ -2,9 +2,9 @@ import vue from "@vitejs/plugin-vue"
 import copy from "rollup-plugin-copy"
 import { resolve } from "path"
 import jsx from "@vitejs/plugin-vue-jsx"
-import { getViteConfig } from "../../scripts/utils"
+import { createViteConfig } from "../../scripts/utils"
 
-export default getViteConfig({
+export default createViteConfig({
   target: "webview",
   resolve: {
     alias: {

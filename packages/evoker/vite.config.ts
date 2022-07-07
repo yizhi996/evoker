@@ -1,10 +1,13 @@
-import { getViteConfig } from "../../scripts/utils"
+import { createViteConfig } from "../../scripts/utils"
 
-export default getViteConfig("evoker", {
-  external: ["vue"],
-  output: {
-    globals: {
-      vue: "Vue"
+export default createViteConfig({
+  target: "evoker",
+  rollupOptions: {
+    external: ["vue"],
+    output: {
+      globals: {
+        vue: "Vue"
+      }
     }
   }
 })

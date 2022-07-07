@@ -1,3 +1,3 @@
-import { getViteConfig } from "../../scripts/utils"
+import { createViteConfig } from "../../scripts/utils"
 
-export default getViteConfig("service")
+export default createViteConfig({ target: "service" })

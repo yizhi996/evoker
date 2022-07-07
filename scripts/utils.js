@@ -2,17 +2,27 @@
 const { resolve } = require("path")
 const fs = require("fs")
 
-exports.getViteConfig = function (target, rollupOptions, plugins = []) {
-  const pkgDir = resolve(`packages/${target}`)
-  const pkg = require(resolve(`${pkgDir}/package.json`))
+const getPkgDir = target => resolve(__dirname, `../packages/${target}`)
+
+exports.getPkgDir = getPkgDir
+
+const getPkg = target => require(resolve(`${getPkgDir(target)}/package.json`))
+
+exports.getPkg = getPkg
+
+exports.createViteConfig = function (options) {
+  const { target, resolve: _resolve, rollupOptions, plugins, test } = options
+
+  const pkg = getPkg(target)
 
   const { defineConfig } = require("vite")
 
   return defineConfig(() => {
     return {
+      resolve: _resolve,
       build: {
         lib: {
-          entry: resolve(pkgDir, "src/index.ts"),
+          entry: resolve(getPkgDir(target), "src/index.ts"),
           name: pkg.buildOptions.name,
           fileName: foramt => `${target}.${foramt === "iife" ? "global" : foramt}.js`,
           formats: pkg.buildOptions.formats.map(f => {
@@ -28,21 +38,21 @@ exports.getViteConfig = function (target, rollupOptions, plugins = []) {
           }
         }
       },
-      plugins
+      plugins,
+      test
     }
   })
 }
 
 exports.allPakcages = function () {
-  return fs.readdirSync("packages").filter(pkg => {
+  const root = resolve(__dirname, "../packages")
+  return fs.readdirSync(root).filter(pkg => {
     return (
-      fs.statSync(`packages/${pkg}`).isDirectory() && require(`../packages/${pkg}/package.json`)
+      fs.statSync(resolve(root, pkg)).isDirectory() && require(resolve(root, `${pkg}/package.json`))
     )
   })
 }
 
 exports.evokerPkg = function evokerPkg() {
-  const pkgDir = resolve("packages/evoker")
-  const pkg = require(resolve(`${pkgDir}/package.json`))
-  return pkg
+  return getPkg("evoker")
 }

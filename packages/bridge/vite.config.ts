@@ -1,4 +1,4 @@
-import { getViteConfig } from "../../scripts/utils"
+import { createViteConfig } from "../../scripts/utils"
 
 // https://vitejs.dev/config/
-export default getViteConfig("bridge")
+export default createViteConfig({ target: "bridge" })
