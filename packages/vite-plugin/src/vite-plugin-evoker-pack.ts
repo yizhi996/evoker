@@ -19,7 +19,7 @@ export default function vitePluginEvokerPack(): Plugin {
       config = reslovedConfig
     },
 
-    writeBundle() {
+    closeBundle() {
       pack()
     }
   }

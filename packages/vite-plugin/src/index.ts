@@ -34,7 +34,8 @@ export default function plugins(options: Options = {}) {
     assets(),
     router(),
     copy({
-      targets: [{ src: resolve("src/app.json"), dest: resolve("dist/") }]
+      targets: [{ src: resolve("src/app.json"), dest: resolve("dist/") }],
+      hook: "writeBundle"
     })
   ]
 
