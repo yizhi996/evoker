@@ -1,6 +1,10 @@
 import ws from "ws"
 import { isString, isFunction } from "@vue/shared"
 
+const log = msg => console.log(`[Evoker devServer] ${msg}`)
+
+const warn = msg => console.warn(`[Evoker devServer] ${msg}`)
+
 let websocketServer: ws.Server
 
 export type Client = ws & { _id: number }
@@ -24,7 +28,7 @@ export function runWebSocketServer(options: RunWssOptions) {
   }
   const port = options.port || 8800
 
-  console.log(`[Evoker devServer] run: ${host}:${port}`)
+  log(`run: ${host}:${port}`)
 
   websocketServer = new ws.Server({
     host: host,
@@ -32,19 +36,20 @@ export function runWebSocketServer(options: RunWssOptions) {
   })
 
   websocketServer.on("connection", (client: Client) => {
-    console.log("\n[Evoker devServer] client connected")
+    console.log()
+    log("client connected")
 
     client._id = Date.now()
 
     isFunction(options.onConnect) && options.onConnect(client)
 
     client.on("close", () => {
-      console.log("[Evoker devServer] client close connection")
+      log("client close connection")
       isFunction(options.onDisconnect) && options.onDisconnect(client)
     })
 
     client.on("error", error => {
-      console.log("Evoker devServer] client connection error", error)
+      warn(`client connection error: ${error}`)
       isFunction(options.onDisconnect) && options.onDisconnect(client)
     })
 
@@ -54,7 +59,7 @@ export function runWebSocketServer(options: RunWssOptions) {
   })
 
   websocketServer.on("error", error => {
-    console.warn(`Evoker devServer] error: ${error}`)
+    warn(`error: ${error}`)
   })
 }
 

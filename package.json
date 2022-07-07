@@ -23,7 +23,6 @@
     "@vue/babel-plugin-jsx": "^1.1.1",
     "archiver": "^5.3.1",
     "autoprefixer": "^10.4.7",
-    "esbuild": "^0.14.43",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
