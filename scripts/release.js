@@ -2,11 +2,11 @@
 
 const semver = require("semver")
 const { prompt } = require("inquirer")
-const { evokerPkg, allPakcages } = require("./utils")
+const { evokerPkg, allPakcages, getPkgDir } = require("./utils")
 const colors = require("picocolors")
-const { resolve } = require("path")
 const fs = require("fs")
 const execa = require("execa")
+const { resolve } = require("path")
 
 const mainPkg = evokerPkg()
 
@@ -61,11 +61,16 @@ const currentVersion = mainPkg.version
   for (const package of packages) {
     await publish(package)
   }
+
+  await execa("pnpm", ["i"], { stdio: "inherit" })
+
+  removeCreateTemplateNodeModules()
+
   console.log(colors.bold(colors.cyan(`completed release to ${targetVersion}!`)))
 })()
 
 function updatePackageVersion(package, targetVersion) {
-  const pkgDir = resolve(`packages/${package}/package.json`)
+  const pkgDir = getPkgDir(package)
   const pkg = JSON.parse(fs.readFileSync(pkgDir, { encoding: "utf-8" }))
   pkg.version = targetVersion
   updatePackageDependencitsVersion(pkg.dependencies, targetVersion)
@@ -86,7 +91,7 @@ function updatePackageDependencitsVersion(dependencies, targetVersion) {
 }
 
 async function publish(package) {
-  const pkgDir = resolve(`packages/${package}`)
+  const pkgDir = getPkgDir(package)
   try {
     await execa("npm", ["publish", "--access", "public"], { stdio: "inherit", cwd: pkgDir })
     console.log(colors.bold(colors.cyan("publish success")))
@@ -94,4 +99,16 @@ async function publish(package) {
     console.log(colors.bold(colors.red(`publish fail: ${e}`)))
     throw e
   }
+}
+
+function removeCreateTemplateNodeModules() {
+  const create = getPkgDir("create-evoker")
+  fs.readdirSync(create)
+    .filter(f => f.startsWith("template-"))
+    .forEach(f => {
+      const fp = resolve(create, `${f}/node_modules`)
+      if (fs.existsSync(fp)) {
+        fs.rmdirSync(fp)
+      }
+    })
 }

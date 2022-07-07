@@ -82,7 +82,7 @@ function pack() {
   }
 
   fs.readdirSync(root)
-    .filter(file => file !== "app-service.evpkg")
+    .filter(file => file !== fileName)
     .forEach(file => {
       append(resolve(root, file), file)
     })
