@@ -45,7 +45,7 @@ const builtInComponent: Record<string, BuiltInComponent> = {
   image: { component: Image },
   swiper: { component: Swiper, slot: ".ev-swiper__slide__frame" },
   "swiper-item": { component: SwiperItem },
-  button: { component: Button, slot: "#content" },
+  button: { component: Button, slot: ".ev-button__text" },
   video: { component: Video, slot: ".ev-video__slot" },
   progress: { component: Progress },
   slider: { component: Slider },

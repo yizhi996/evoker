@@ -4,9 +4,15 @@ import { resolve } from "path"
 import jsx from "@vitejs/plugin-vue-jsx"
 import { getViteConfig } from "../../scripts/utils"
 
-export default getViteConfig(
-  "webview",
-  {
+export default getViteConfig({
+  target: "webview",
+  resolve: {
+    alias: {
+      "@evoker/shared": resolve("../shared/src/index.ts"),
+      "@evoker/bridge": resolve("../bridge/src/index.ts")
+    }
+  },
+  rollupOptions: {
     output: {
       assetFileNames: asset => {
         if (asset.name === "style.css") {
@@ -16,7 +22,7 @@ export default getViteConfig(
       }
     }
   },
-  [
+  plugins: [
     vue(),
     copy({
       targets: [
@@ -29,5 +35,12 @@ export default getViteConfig(
     jsx({
       isCustomElement: tag => tag.startsWith("ev-")
     })
-  ]
-)
+  ],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    transformMode: {
+      web: [/.[tj]sx$/]
+    }
+  }
+})

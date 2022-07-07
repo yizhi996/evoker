@@ -1,31 +1,39 @@
 import { ImageLoadState, ImageLoadResult, loadImage, imageLazyLoadInfos } from "./loader"
 
-const observer = new IntersectionObserver(
-  entries => {
-    entries.forEach(entry => {
-      const { target, isIntersecting } = entry
-      if (isIntersecting) {
-        const info = imageLazyLoadInfos.find(info => info.el === target)
-        if (info) {
-          if (info.state === ImageLoadState.COMPLETED) {
-            removeIntersectionObserve(info.el)
-            return
+let observer: IntersectionObserver | null
+
+const getObserver = () => {
+  return observer || (observer = createObserver())
+}
+
+function createObserver() {
+  return new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        const { target, isIntersecting } = entry
+        if (isIntersecting) {
+          const info = imageLazyLoadInfos.find(info => info.el === target)
+          if (info) {
+            if (info.state === ImageLoadState.COMPLETED) {
+              removeIntersectionObserve(info.el)
+              return
+            }
+            loadImage(info.src).then(result => {
+              info.state = ImageLoadState.COMPLETED
+              removeIntersectionObserve(info.el)
+              info.callback(result)
+            })
           }
-          loadImage(info.src).then(result => {
-            info.state = ImageLoadState.COMPLETED
-            removeIntersectionObserve(info.el)
-            info.callback(result)
-          })
         }
-      }
-    })
-  },
-  {
-    root: null,
-    rootMargin: "0px",
-    threshold: 0.01
-  }
-)
+      })
+    },
+    {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.01
+    }
+  )
+}
 
 export function addIntersectionObserve(
   el: HTMLElement,
@@ -41,7 +49,7 @@ export function addIntersectionObserve(
     attempt: 0,
     callback
   })
-  observer.observe(el)
+  getObserver().observe(el)
 }
 
 export function removeIntersectionObserve(el: HTMLElement) {
@@ -49,5 +57,5 @@ export function removeIntersectionObserve(el: HTMLElement) {
   if (i > -1) {
     imageLazyLoadInfos.splice(i, 1)
   }
-  observer.unobserve(el)
+  getObserver().unobserve(el)
 }

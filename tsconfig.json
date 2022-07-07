@@ -21,7 +21,6 @@
       "dom"
     ],
     "types": [
-      "jest",
       "node"
     ],
     "rootDir": ".",

@@ -196,7 +196,7 @@ export default defineComponent({
       <ev-button ref={container} class={classes.value} style={styleses.value}>
         <div class="ev-button__content">
           {renderLoading()}
-          <div id="content"></div>
+          <div class="ev-button__text"></div>
         </div>
       </ev-button>
     )

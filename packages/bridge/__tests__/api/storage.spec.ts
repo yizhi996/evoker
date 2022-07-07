@@ -1,36 +1,41 @@
 import { invokeCallbackHandler } from "../../src/bridge"
 import { getStorage } from "../../src/api/storage"
+import { describe, test, expect } from "vitest"
 
 let cbId = 0
 
-function mock(event: string, result: any) {
+function cb(event: string, result: any, errMsg: string = "") {
   invokeCallbackHandler({
     id: cbId++,
     event,
-    errMsg: "",
+    errMsg: errMsg,
     data: result
   })
 }
 
+function success(event: string, result: any) {
+  cb(event, result)
+}
+
+function fail(event: string, errMsg: string) {
+  cb(event, null, errMsg)
+}
+
 describe("getStorage", () => {
   test("get string", () => {
-    expect.assertions(1)
-
     getStorage({ key: "test" }).then(res => {
       expect(res.data).toBe("test string")
     })
 
-    mock("getStorage", { data: "test string", dataType: "String" })
+    success("getStorage", { data: "test string", dataType: "String" })
   })
 
   test("get object", () => {
-    expect.assertions(1)
-
     getStorage({ key: "test" }).then(res => {
       expect(res.data).toEqual({ a: 1, b: "2" })
     })
 
-    mock("getStorage", {
+    success("getStorage", {
       data: JSON.stringify({ a: 1, b: "2" }),
       dataType: "Object"
     })
