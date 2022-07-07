@@ -75,6 +75,8 @@ final public class Engine {
     private var isLaunch = false
     
     private init() {
+        try? PackageManager.shared.unpackBudleSDK()
+        
         setupBuiltInAPIs()
         setupBuiltInModules()
         setupKTVHTTPCache()
@@ -295,7 +297,7 @@ extension Engine {
             }
             
             if let checkAppUpdateHandler = Engine.shared.config.hooks.app.checkAppUpdate {
-                let localVersion = VersionManager.shared.localAppVersion(appId: appId,
+                let localVersion = PackageManager.shared.localAppVersion(appId: appId,
                                                                            envVersion: launchOptions.envVersion)
                 checkAppUpdateHandler(appId,
                                       launchOptions.envVersion,
@@ -425,7 +427,7 @@ public extension Engine {
         
         let rect = CGRect(x: -Constant.windowWidth, y: 0, width: Constant.windowWidth, height: Constant.windowHeight)
         let webView = WebView(frame: rect, configuration: config)
-        let version = VersionManager.shared.localJSSDKVersion
+        let version = PackageManager.shared.localJSSDKVersion
         let jsSDKDir = FilePath.jsSDK(version: version)
         let indexHTMLFileURL = jsSDKDir.appendingPathComponent("index.html")
         webView.loadFileURL(indexHTMLFileURL, allowingReadAccessTo: FilePath.documentDirectory())

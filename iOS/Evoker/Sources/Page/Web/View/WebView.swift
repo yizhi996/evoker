@@ -58,7 +58,7 @@ final public class WebView: WKWebView {
         configuration.userContentController.add(scriptMessageHandler, name: Self.loadedHandlerName)
         
         if Engine.shared.userAgent.isEmpty, let userAgent = value(forKey: "userAgent") as? String {
-            let jsVersion = VersionManager.shared.localJSSDKVersion
+            let jsVersion = PackageManager.shared.localJSSDKVersion
             Engine.shared.userAgent = userAgent + " Evoker/\(Constant.nativeSDKVersion)(\(jsVersion))"
         }
     }

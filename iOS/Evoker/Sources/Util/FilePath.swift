@@ -155,14 +155,17 @@ extension FilePath {
     public static func appPackage(appId: String, envVersion: AppEnvVersion, version: String) -> URL {
         return app(appId: appId).appendingPathComponent("packages/\(envVersion)/\(version).evpkg")
     }
+    
     /// Document/com.evokerdev/app/{appId}/dist/{envVersion}/
     public static func appDist(appId: String, envVersion: AppEnvVersion) -> URL {
         return app(appId: appId).appendingPathComponent("dist/\(envVersion)/")
     }
+    
     /// Document/com.evokerdev/app/{appId}/dist/{envVersion}/index.html
     public static func appIndexHTMLPath(appId: String, envVersion: AppEnvVersion) -> URL {
         return appDist(appId: appId, envVersion: envVersion).appendingPathComponent("index.html")
     }
+    
     /// Document/com.evokerdev/app/{appId}/dist/{envVersion}/{src}
     public static func appStaticFilePath(appId: String, envVersion: AppEnvVersion, src: String) -> URL {
         var path = src

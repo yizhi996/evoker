@@ -10,6 +10,8 @@ import Foundation
 
 public enum EVError: Error {
     
+    case packNotIntegrity(String)
+    
     case loadAppConfigFailed
     
     case appServiceBundleNotFound
@@ -173,6 +175,8 @@ extension EVError: LocalizedError {
     
     public var errorDescription: String? {
         switch self {
+        case .packNotIntegrity(let path):
+            return "pack: \(path) not integrity, missing files"
         case .loadAppConfigFailed:
             return "load app.json failed"
         case .appServiceBundleNotFound:

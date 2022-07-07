@@ -33,7 +33,10 @@ stream.on("finish", () => {
   const stat = fs.statSync(output)
   console.log(`${fileName} - ${toKiB(totalSize)} - zip ${toKiB(stat.size)}`)
 
-  fs.copyFileSync(output, resolve(__dirname, `../iOS/Evoker/Sources/Resources/SDK/evoker-sdk.evpkg`))
+  fs.copyFileSync(
+    output,
+    resolve(__dirname, `../iOS/Evoker/Sources/Resources/SDK/evoker-sdk.evpkg`)
+  )
 })
 
 const toKiB = n => {
@@ -47,6 +50,8 @@ archive
   })
   .pipe(stream)
 
+const files = []
+
 Object.keys(include).forEach(pkg => {
   const dir = resolve(root, `${pkg}/dist`)
   include[pkg].forEach(file => {
@@ -54,9 +59,13 @@ Object.keys(include).forEach(pkg => {
 
     archive.file(fp, { name: file })
 
+    files.push(file)
+
     const stat = fs.statSync(fp)
     totalSize += stat.size
   })
 })
+
+archive.append(files.join("\n"), { name: "files" })
 
 archive.finalize()

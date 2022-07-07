@@ -97,7 +97,7 @@ import CoreLocation
             }
         }
         return [
-            "SDKVersion": VersionManager.shared.localJSSDKVersion,
+            "SDKVersion": PackageManager.shared.localJSSDKVersion,
             "enableDebug": false,
             "language": Locale.preferredLanguages.first!,
             "version": Constant.hostVersion,

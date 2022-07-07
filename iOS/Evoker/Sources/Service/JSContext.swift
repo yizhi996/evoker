@@ -87,7 +87,7 @@ public class JSContext {
         """
         context.evaluateScript(disableEval)
         
-        let version = VersionManager.shared.localJSSDKVersion
+        let version = PackageManager.shared.localJSSDKVersion
         let jsSDKDir = FilePath.jsSDK(version: version)
         let ext = Engine.shared.config.dev.useDevJSSDK ? ".js" : ".prod.js"
         loadSDKFile(url: jsSDKDir.appendingPathComponent("vue.runtime.global" + ext), name: "Vue.js")

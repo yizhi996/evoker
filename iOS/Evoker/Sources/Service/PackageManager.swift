@@ -1,5 +1,5 @@
 //
-//  VersionManager.swift
+//  PackageManager.swift
 //
 //  Copyright (c) Evoker. All rights reserved. (https://evokerdev.com)
 //
@@ -11,9 +11,9 @@ import UIKit
 import Alamofire
 import Zip
 
-public class VersionManager {
+public class PackageManager {
     
-    public static let shared = VersionManager()
+    public static let shared = PackageManager()
     
     private let jsSDKVersionkey = "evoker:version:js-sdk"
     
@@ -34,6 +34,10 @@ public class VersionManager {
         return version
     }
     
+    init() {
+        Zip.addCustomFileExtension("evpkg")
+    }
+    
     func setLocalJSSDKVersion(_ version: String) {
         UserDefaults.standard.set(version, forKey: jsSDKVersionkey)
     }
@@ -47,31 +51,54 @@ public class VersionManager {
     }
     
     public func updateJSSDK(resultHandler handler: @escaping BoolBlock) {
-        try? unpackBudleSDK()
         if Engine.shared.config.dev.useDevJSSDK {
             handler(false)
         } else {
+            // TODO
             handler(false)
         }
     }
     
-    func unpackBudleSDK() throws {
+    public func unpackBudleSDK() throws {
         let version = Constant.nativeSDKVersion
         let filePath = Constant.assetsBundle.url(forResource: "evoker-sdk", withExtension: "evpkg")!
         try unpackLocalSDK(filePath: filePath, version: version)
     }
     
-    func unpackLocalSDK(filePath: URL, version: String) throws {
-        Zip.addCustomFileExtension("evpkg")
-        
+    public func unpackLocalSDK(filePath: URL, version: String) throws {
         let dest = FilePath.jsSDK(version: version)
         
-        if FileManager.default.fileExists(atPath: dest.appendingPathComponent("index.html").path) {
+        if checkPackIntegrity(filePath: dest) {
             return
         }
         
-        try FileManager.default.createDirectory(at: dest, withIntermediateDirectories: true, attributes: nil)
-        try Zip.unzipFile(filePath, destination: dest, overwrite: true, password: nil)
+        try unpack(src: filePath, dest: dest)
     }
-
+    
+    public func unpackAppService(appId: String, envVersion: AppEnvVersion, filePath: URL) throws {
+        let dest = FilePath.appDist(appId: appId, envVersion: envVersion)
+        try unpack(src: filePath, dest: dest)
+    }
+    
+    func unpack(src: URL, dest: URL) throws {
+        try FileManager.default.createDirectory(at: dest, withIntermediateDirectories: true, attributes: nil)
+        try Zip.unzipFile(src, destination: dest, overwrite: true, password: nil)
+        if !checkPackIntegrity(filePath: dest) {
+            throw EVError.packNotIntegrity(dest.path)
+        }
+    }
+    
+    public func checkPackIntegrity(filePath: URL) -> Bool {
+        guard let string = try? String(contentsOf: filePath.appendingPathComponent("files")) else { return false }
+        let files = string.split(separator: "\n")
+        var exists = false
+        for file in files {
+            exists = FileManager.default.fileExists(atPath: filePath.appendingPathComponent(String(file)).path)
+            if !exists {
+                return exists
+            }
+        }
+        return exists
+    }
+    
 }

@@ -51,7 +51,7 @@ function pack() {
     )
   })
 
-  const toKiB = n => {
+  const toKiB = (n: number) => {
     return (n / 1024).toFixed(2) + " KiB"
   }
 
@@ -63,18 +63,21 @@ function pack() {
     })
     .pipe(stream)
 
-  const append = (filePath, file) => {
+  const files: string[] = []
+
+  const append = (filePath: string, file: string) => {
     if (fs.statSync(filePath).isDirectory()) {
       appendDirectory(filePath)
     } else {
       archive.file(filePath, { name: file })
+      files.push(file)
 
       const stat = fs.statSync(filePath)
       totalSize += stat.size
     }
   }
 
-  const appendDirectory = dir => {
+  const appendDirectory = (dir: string) => {
     fs.readdirSync(dir).forEach(file => {
       const fp = resolve(dir, file)
       append(fp, getRelativeFilePath(root, fp))
@@ -86,6 +89,8 @@ function pack() {
     .forEach(file => {
       append(resolve(root, file), file)
     })
+
+  archive.append(files.join("\n"), { name: "files" })
 
   archive.finalize()
 }

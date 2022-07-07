@@ -71,7 +71,7 @@ private extension DevServer {
     func checkVersion(_ body: Data) {
         guard let message = body.toDict(),
               let appId = message["appId"] as? String else { return }
-        let version = VersionManager.shared.localAppVersion(appId: appId, envVersion: .develop)
+        let version = PackageManager.shared.localAppVersion(appId: appId, envVersion: .develop)
         if let msg = ["event": "version", "data": ["version": version]].toJSONString() {
             send(msg)
         }
@@ -79,7 +79,7 @@ private extension DevServer {
     
     func update(_ body: Data) {
         guard let options: AppUpdateOptions = body.toModel() else { return }
-        VersionManager.shared.setLocalAppVersion(appId: options.appId,
+        PackageManager.shared.setLocalAppVersion(appId: options.appId,
                                                    envVersion: .develop,
                                                    version: options.version)
         lock.lock()
