@@ -6,6 +6,41 @@
 
 [evokerdev.com](https://evokerdev.com)
 
+## Getting Started
+
+1. Create project with template
+
+- use [hello world](https://github.com/yizhi996/evoker/blob/main/packages/create-evoker/template-blank)
+```
+pnpm create evoker my-app --template blank --platform iOS
+```
+
+- use [example](https://github.com/yizhi996/evoker/blob/main/packages/create-evoker/template-example)
+```
+pnpm create evoker my-app --template example --platform iOS
+```
+
+2. Install dependencies
+
+```
+cd my-app
+
+pnpm install
+
+cd iOS
+
+pod install --repo-update
+```
+
+3. Run
+
+```
+pnpm dev
+```
+
+open iOS/Myapp.xcworkspace
+
+
 ## Licenses
 
 All source code is licensed under the [MIT License](https://github.com/yizhi996/evoker/blob/main/LICENSE).
