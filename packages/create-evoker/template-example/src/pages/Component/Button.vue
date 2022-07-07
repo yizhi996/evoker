@@ -49,7 +49,7 @@ onUnmounted(() => {
 })
 
 const onClick = () => {
-  ev.showToast({
+  ek.showToast({
     title: "CLICK",
     icon: "none"
   })

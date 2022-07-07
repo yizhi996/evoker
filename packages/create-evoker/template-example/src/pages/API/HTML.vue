@@ -33,7 +33,7 @@ onReady(() => {
 })
 
 const getNodeInfo = () => {
-  const query = ev.createSelectorQuery()
+  const query = ek.createSelectorQuery()
   query
     .select(".target")
     .boundingClientRect(res => {

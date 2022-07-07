@@ -11,10 +11,10 @@ import { usePage } from "evoker"
 const { onPullDownRefresh } = usePage()
 
 onPullDownRefresh(() => {
-  ev.showToast({ title: "Loading...", icon: "none" })
+  ek.showToast({ title: "Loading...", icon: "none" })
 })
 
 const onStop = () => {
-  ev.stopPullDownRefresh()
+  ek.stopPullDownRefresh()
 }
 </script>

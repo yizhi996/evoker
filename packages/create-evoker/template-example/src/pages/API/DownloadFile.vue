@@ -18,9 +18,9 @@ const src = ref("")
 const progress = ref(0)
 
 const onDownload = () => {
-  const task = ev.downloadFile({
+  const task = ek.downloadFile({
     url,
-    filePath: ev.env.USER_DATA_PATH + "/test_img.jpg",
+    filePath: ek.env.USER_DATA_PATH + "/test_img.jpg",
     success: res => {
       src.value = res.filePath
     },

@@ -11,7 +11,7 @@ import { ref } from "vue"
 const result = ref("")
 
 const toScan = () => {
-  ev.scanCode().then(res => {
+  ek.scanCode().then(res => {
     result.value = res.result
   })
 }

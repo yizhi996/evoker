@@ -1,7 +1,7 @@
 export * from "@evoker/service"
 
 declare global {
-  var ev: typeof import("@evoker/service").global
+  var ek: typeof import("@evoker/service").global
 }
 
 import {

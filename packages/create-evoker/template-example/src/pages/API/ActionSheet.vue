@@ -8,13 +8,13 @@
 const onShow = async () => {
   const items = ["item 1", "item 2", "item 3", "item 4"]
   try {
-    const result = await ev.showActionSheet({ itemList: items })
-    ev.showToast({
+    const result = await ek.showActionSheet({ itemList: items })
+    ek.showToast({
       title: `选择了 ${items[result.tapIndex]}`,
       icon: "none"
     })
   } catch {
-    ev.showToast({
+    ek.showToast({
       title: "cancel",
       icon: "none"
     })

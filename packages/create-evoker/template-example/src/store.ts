@@ -11,10 +11,10 @@ export const useLocalStore = defineStore("local", () => {
     if (deviceId.value === "") {
       const init = () => {
         deviceId.value = ramdomString(12)
-        ev.setStorage({ key: KEY, data: deviceId.value })
+        ek.setStorage({ key: KEY, data: deviceId.value })
       }
       try {
-        const res = await ev.getStorage({ key: KEY })
+        const res = await ek.getStorage({ key: KEY })
         if (res.data) {
           deviceId.value = res.data
         } else {

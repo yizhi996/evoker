@@ -9,18 +9,18 @@
 
 <script setup lang="ts">
 const showToast = () => {
-  ev.showToast({ title: "默认" })
+  ek.showToast({ title: "默认" })
 }
 
 const showToastThreeSeconds = () => {
-  ev.showToast({
+  ek.showToast({
     title: "duration 3000",
     duration: 3000
   })
 }
 
 const showToastLoading = () => {
-  ev.showToast({
+  ek.showToast({
     title: "loading",
     icon: "loading",
     duration: 5000
@@ -28,6 +28,6 @@ const showToastLoading = () => {
 }
 
 const hideToast = () => {
-  ev.hideToast()
+  ek.hideToast()
 }
 </script>

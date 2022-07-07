@@ -17,7 +17,7 @@ const progress = ref(0)
 let filename = ""
 
 const onChooseImage = async () => {
-  const result = await ev.chooseImage({
+  const result = await ek.chooseImage({
     count: 1,
     sizeType: ["compressed"],
     sourceType: ["album"]
@@ -29,7 +29,7 @@ const onChooseImage = async () => {
   const filePath = result.tempFilePaths[0]
   const key = dir + filePath.substr(filePath.lastIndexOf("/") + 1)
   filename = key
-  const task = ev.uploadFile({
+  const task = ek.uploadFile({
     url,
     name: "file",
     filePath: result.tempFilePaths[0],
@@ -54,7 +54,7 @@ const onChooseImage = async () => {
 
 const getAuthToken = () => {
   return new Promise((resolve, reject) => {
-    ev.request({
+    ek.request({
       url: "https://lilithvue.com/api/cos/upload-token",
       method: "POST",
       success: res => {
@@ -69,7 +69,7 @@ const getAuthToken = () => {
 
 const deleteImage = () => {
   if (filename) {
-    ev.request({
+    ek.request({
       url: "https://lilithvue.com/api/cos/delete",
       method: "POST",
       data: { name: filename }

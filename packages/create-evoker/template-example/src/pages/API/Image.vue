@@ -73,7 +73,7 @@ const onChangeLimit = e => {
 }
 
 const onChoose = async () => {
-  const res = await ev.chooseImage({
+  const res = await ek.chooseImage({
     count: parseInt(limit.range[limit.value]),
     sizeType: [["compressed"], ["original"], ["original", "compressed"]][sizeType.value],
     sourceType: [["camera"], ["album"], ["camera", "album"]][sourceType.value]
@@ -82,6 +82,6 @@ const onChoose = async () => {
 }
 
 const onPreview = (idx: number) => {
-  ev.previewImage({ urls: images.value, current: idx })
+  ek.previewImage({ urls: images.value, current: idx })
 }
 </script>

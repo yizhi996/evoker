@@ -42,12 +42,12 @@ const recordTimeDisplay = computed(() => {
   return recordTime.value > 0 ? (recordTime.value / 1000).toFixed(2) + " s" : ""
 })
 
-const ctx = ev.createCameraContext()
+const ctx = ek.createCameraContext()
 
 const takePohto = async () => {
   const result = await ctx.takePhoto({ quality: "high" })
   photoPath.value = result.tempImagePath
-  ev.showToast({ title: result.tempImagePath, icon: "none" })
+  ek.showToast({ title: result.tempImagePath, icon: "none" })
 }
 
 const startRecord = async () => {

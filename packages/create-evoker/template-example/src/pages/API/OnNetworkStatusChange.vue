@@ -9,13 +9,13 @@ import { ref, onMounted, onUnmounted } from "vue"
 const networkType = ref("")
 
 onMounted(async () => {
-  const res = await ev.getNetworkType()
+  const res = await ek.getNetworkType()
   networkType.value = res.networkType
-  ev.onNetworkStatusChange(onChange)
+  ek.onNetworkStatusChange(onChange)
 })
 
 onUnmounted(() => {
-  ev.offNetworkStatusChange(onChange)
+  ek.offNetworkStatusChange(onChange)
 })
 
 const onChange = ({ networkType: _networkType }) => {

@@ -27,10 +27,10 @@ const isSetTabBarBadge = ref(false)
 const setTabBarBadge = () => {
   if (isSetTabBarBadge.value) {
     isSetTabBarBadge.value = false
-    ev.removeTabBarBadge({ index: 2 })
+    ek.removeTabBarBadge({ index: 2 })
   } else {
     isSetTabBarBadge.value = true
-    ev.setTabBarBadge({
+    ek.setTabBarBadge({
       index: 2,
       text: "1"
     })
@@ -42,10 +42,10 @@ const isShowTabBarRedDot = ref(false)
 const showTabBarRedDot = () => {
   if (isShowTabBarRedDot.value) {
     isShowTabBarRedDot.value = false
-    ev.hideTabBarRedDot({ index: 2 })
+    ek.hideTabBarRedDot({ index: 2 })
   } else {
     isShowTabBarRedDot.value = true
-    ev.showTabBarRedDot({ index: 2 })
+    ek.showTabBarRedDot({ index: 2 })
   }
 }
 
@@ -54,14 +54,14 @@ const isSetTabBarStyle = ref(false)
 const setTabBarStyle = () => {
   if (isSetTabBarStyle.value) {
     isSetTabBarStyle.value = false
-    ev.setTabBarStyle({
+    ek.setTabBarStyle({
       color: "#86868b",
       selectedColor: "#1989fa",
       backgroundColor: "#ffffff"
     })
   } else {
     isSetTabBarStyle.value = true
-    ev.setTabBarStyle({
+    ek.setTabBarStyle({
       color: "#fff",
       selectedColor: "#1989fa",
       backgroundColor: "#000"
@@ -74,10 +74,10 @@ const isSetTabBarItem = ref(false)
 const setTabBarItem = () => {
   if (isSetTabBarItem.value) {
     isSetTabBarItem.value = false
-    ev.setTabBarItem({ index: 2, text: "接口", selectedIconPath: "assets/icon_API_HL.png" })
+    ek.setTabBarItem({ index: 2, text: "接口", selectedIconPath: "assets/icon_API_HL.png" })
   } else {
     isSetTabBarItem.value = true
-    ev.setTabBarItem({
+    ek.setTabBarItem({
       index: 2,
       text: "API",
       selectedIconPath:
@@ -91,10 +91,10 @@ const isShowTabBar = ref(false)
 const hideTabBar = () => {
   if (isShowTabBar.value) {
     isShowTabBar.value = false
-    ev.showTabBar({})
+    ek.showTabBar({})
   } else {
     isShowTabBar.value = true
-    ev.hideTabBar({})
+    ek.hideTabBar({})
   }
 }
 

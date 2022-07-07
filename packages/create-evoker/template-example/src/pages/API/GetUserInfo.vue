@@ -20,7 +20,7 @@ import { reactive } from "vue"
 let userInfo = reactive({ nickname: "", avatar: "" })
 
 const getUserProfile = async () => {
-  const res = await ev.getUserProfile({
+  const res = await ek.getUserProfile({
     desc: "用于完善会员资料"
   })
   userInfo.nickname = res.userInfo.nickName

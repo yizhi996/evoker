@@ -22,7 +22,7 @@ const header = ref<Record<string, string>>({})
 const onRequest = async () => {
   const deviceId = await getDeviceId()
 
-  ev.request({
+  ek.request({
     url: url.value,
     method: "POST",
     data: { deviceId },

@@ -21,12 +21,12 @@ const value = ref("")
 
 const setStorage = () => {
   if (key.value.length) {
-    ev.setStorage({ key: key.value, data: value.value })
-    ev.showModal({
+    ek.setStorage({ key: key.value, data: value.value })
+    ek.showModal({
       title: "存储数据成功"
     })
   } else {
-    ev.showModal({
+    ek.showModal({
       title: "保存数据失败",
       content: "key 不能为空"
     })
@@ -36,20 +36,20 @@ const setStorage = () => {
 const getStorage = async () => {
   if (key.value.length) {
     try {
-      const res = await ev.getStorage({ key: key.value })
+      const res = await ek.getStorage({ key: key.value })
       value.value = res.data
-      ev.showModal({
+      ek.showModal({
         title: "读取数据成功",
         content: `${res.data}`
       })
     } catch (error) {
-      ev.showModal({
+      ek.showModal({
         title: "读取数据失败",
         content: error.errMsg
       })
     }
   } else {
-    ev.showModal({
+    ek.showModal({
       title: "读取数据失败",
       content: "key 不能为空"
     })
@@ -57,6 +57,6 @@ const getStorage = async () => {
 }
 
 const clearStorage = () => {
-  ev.clearStorage()
+  ek.clearStorage()
 }
 </script>

@@ -22,7 +22,7 @@ const slide = ref(0)
 
 let isSliding = false
 
-const ctx = ev.createInnerAudioContext()
+const ctx = ek.createInnerAudioContext()
 
 ctx.onTimeUpdate(() => {
   currentTime.value = ctx.currentTime

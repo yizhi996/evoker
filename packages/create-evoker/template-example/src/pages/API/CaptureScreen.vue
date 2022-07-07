@@ -11,11 +11,11 @@ import { ref, onMounted, onUnmounted } from "vue"
 const captured = ref(false)
 
 onMounted(() => {
-  ev.onUserCaptureScreen(onCapture)
+  ek.onUserCaptureScreen(onCapture)
 })
 
 onUnmounted(() => {
-  ev.offUserCaptureScreen(onCapture)
+  ek.offUserCaptureScreen(onCapture)
 })
 
 const onCapture = () => {

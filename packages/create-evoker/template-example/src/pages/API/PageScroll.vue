@@ -6,13 +6,13 @@
 
 <script setup lang="ts">
 const onScrollToBottom = () => {
-  ev.pageScrollTo({
+  ek.pageScrollTo({
     scrollTop: 3000
   })
 }
 
 const onScrollToTop = () => {
-  ev.pageScrollTo({
+  ek.pageScrollTo({
     scrollTop: 0
   })
 }

@@ -37,7 +37,7 @@ const { onReady } = usePage()
 let ctx: VideoContext | null
 
 onReady(() => {
-  ev.createSelectorQuery()
+  ek.createSelectorQuery()
     .select("#my-video")
     .context(res => {
       ctx = res.context

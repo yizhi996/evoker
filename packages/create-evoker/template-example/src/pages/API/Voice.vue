@@ -12,7 +12,7 @@ const recording = ref(false)
 
 const tempFilePath = ref("")
 
-const recorderManager = ev.getRecorderManager()
+const recorderManager = ek.getRecorderManager()
 
 recorderManager.onStart(() => {
   recording.value = true
@@ -42,7 +42,7 @@ const stopRecord = () => {
   recorderManager.stop()
 }
 
-const audioContext = ev.createInnerAudioContext()
+const audioContext = ek.createInnerAudioContext()
 
 const playing = ref(false)
 

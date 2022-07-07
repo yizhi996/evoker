@@ -13,7 +13,7 @@ import { ref } from "vue"
 const code = ref("")
 
 const login = async () => {
-  const res = await ev.login({})
+  const res = await ek.login({})
   code.value = res.code
 }
 </script>

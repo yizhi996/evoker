@@ -12,6 +12,6 @@ import { ref } from "vue"
 const title = ref("")
 
 const onSetTitle = () => {
-  ev.setNavigationBarTitle({ title: title.value })
+  ek.setNavigationBarTitle({ title: title.value })
 }
 </script>

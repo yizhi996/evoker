@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
 
-const anim = ev.createAnimation({ duration: 1000 })
+const anim = ek.createAnimation({ duration: 1000 })
 
 const animData = ref(null)
 

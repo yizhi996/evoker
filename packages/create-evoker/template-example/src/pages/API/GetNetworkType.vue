@@ -10,7 +10,7 @@ import { ref } from "vue"
 const networkType = ref("未获取")
 
 const onClick = async () => {
-  const res = await ev.getNetworkType()
+  const res = await ek.getNetworkType()
   networkType.value = res.networkType
 }
 </script>
