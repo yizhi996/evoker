@@ -70,7 +70,7 @@ const currentVersion = mainPkg.version
 })()
 
 function updatePackageVersion(package, targetVersion) {
-  const pkgDir = getPkgDir(package)
+  const pkgDir = resolve(getPkgDir(package), "package.json")
   const pkg = JSON.parse(fs.readFileSync(pkgDir, { encoding: "utf-8" }))
   pkg.version = targetVersion
   updatePackageDependencitsVersion(pkg.dependencies, targetVersion)
@@ -108,7 +108,7 @@ function removeCreateTemplateNodeModules() {
     .forEach(f => {
       const fp = resolve(create, `${f}/node_modules`)
       if (fs.existsSync(fp)) {
-        fs.rmdirSync(fp)
+        fs.rmSync(fp, { recursive: true, force: true })
       }
     })
 }

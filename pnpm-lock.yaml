@@ -76,7 +76,7 @@ importers:
 
   packages/bridge:
     specifiers:
-      '@evoker/shared': 0.2.0
+      '@evoker/shared': 0.3.0
       '@vue/shared': ^3.2.37
       vue: ^3.2.37
     dependencies:
@@ -96,18 +96,18 @@ importers:
 
   packages/create-evoker/template-blank:
     specifiers:
-      '@evoker/vite-plugin': ^0.1.4
+      '@evoker/vite-plugin': ^0.3.0
       '@vitejs/plugin-vue': ^2.3.3
-      evoker: ^0.1.4
+      evoker: ^0.3.0
       typescript: ^4.7.4
       vite: ^2.9.13
       vue: ^3.2.37
       vue-tsc: ^0.34.17
     dependencies:
-      evoker: 0.1.5
+      evoker: link:../../evoker
       vue: 3.2.37
     devDependencies:
-      '@evoker/vite-plugin': 0.1.5_vite@2.9.13
+      '@evoker/vite-plugin': link:../../vite-plugin
       '@vitejs/plugin-vue': 2.3.3_vite@2.9.13+vue@3.2.37
       typescript: 4.7.4
       vite: 2.9.13
@@ -115,12 +115,12 @@ importers:
 
   packages/create-evoker/template-example:
     specifiers:
-      '@evoker/vite-plugin': ^0.1.4
+      '@evoker/vite-plugin': ^0.3.0
       '@vitejs/plugin-vue': ^2.3.3
       '@vue/compiler-core': ^3.2.26
       '@vue/shared': ^3.2.26
       autoprefixer: ^10.4.2
-      evoker: ^0.1.4
+      evoker: ^0.3.0
       pinia: ^2.0.14
       postcss: ^8.4.5
       tailwindcss: ^3.0.15
@@ -131,12 +131,12 @@ importers:
     dependencies:
       '@vue/compiler-core': 3.2.37
       '@vue/shared': 3.2.37
-      evoker: 0.1.5
+      evoker: link:../../evoker
       pinia: 2.0.14_j6bzmzd4ujpabbp5objtwxyjp4
       tailwindcss: 3.1.5
       vue: 3.2.37
     devDependencies:
-      '@evoker/vite-plugin': 0.1.5_vite@2.9.13
+      '@evoker/vite-plugin': link:../../vite-plugin
       '@vitejs/plugin-vue': 2.3.3_vite@2.9.13+vue@3.2.37
       autoprefixer: 10.4.7_postcss@8.4.14
       postcss: 8.4.14
@@ -146,9 +146,9 @@ importers:
 
   packages/evoker:
     specifiers:
-      '@evoker/service': 0.2.0
-      '@evoker/vite-plugin': 0.2.0
-      '@evoker/webview': 0.2.0
+      '@evoker/service': 0.3.0
+      '@evoker/vite-plugin': 0.3.0
+      '@evoker/webview': 0.3.0
       vite: ^2.9.9
       vue: ^3.2.37
     dependencies:
@@ -161,8 +161,8 @@ importers:
 
   packages/service:
     specifiers:
-      '@evoker/bridge': 0.2.0
-      '@evoker/shared': 0.2.0
+      '@evoker/bridge': 0.3.0
+      '@evoker/shared': 0.3.0
       '@vue/shared': ^3.2.37
       vue: ^3.2.37
     dependencies:
@@ -179,7 +179,7 @@ importers:
 
   packages/vite-plugin:
     specifiers:
-      '@evoker/shared': 0.2.0
+      '@evoker/shared': 0.3.0
       '@types/archiver': ^5.3.1
       '@types/tmp': ^0.2.3
       '@types/ws': ^8.5.3
@@ -220,8 +220,8 @@ importers:
 
   packages/webview:
     specifiers:
-      '@evoker/bridge': 0.2.0
-      '@evoker/shared': 0.2.0
+      '@evoker/bridge': 0.3.0
+      '@evoker/shared': 0.3.0
       '@tweenjs/tween.js': ^18.6.4
       '@types/lodash.throttle': ^4.1.7
       '@vitejs/plugin-vue': ^2.3.3
@@ -1687,61 +1687,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /@evoker/bridge/0.1.5:
-    resolution: {integrity: sha512-KWFhpHoLp61RYxpZjsJKEppOmypXY98qRUnT/ZlcDqhJ0ep+4JqSbPV2DrG/0fEa6zi+AyUrn89tcB55tdUxkA==}
-    dependencies:
-      '@evoker/shared': 0.1.5
-      '@vue/shared': 3.2.37
-      vue: 3.2.37
-    dev: false
-
-  /@evoker/service/0.1.5:
-    resolution: {integrity: sha512-+61iVk/sC8+Hh5C6AD4fEtiQZz3l8kQeHAUkDlRpqYCCZAFmL1RYxC6kwdraiHPMG38FknBzhNUXO/qO+60+iQ==}
-    dependencies:
-      '@evoker/bridge': 0.1.5
-      '@evoker/shared': 0.1.5
-      '@vue/shared': 3.2.37
-      vue: 3.2.37
-    dev: false
-
-  /@evoker/shared/0.1.5:
-    resolution: {integrity: sha512-n0ASaybepXXu4YllYdrTlHe9agX5plCGoBHJ1gdxf+6nVWIzoOXgdCoSAXb8cnv2ibQ21hn38viT30sAvDuRlQ==}
-    dependencies:
-      '@vue/shared': 3.2.37
-
-  /@evoker/vite-plugin/0.1.5_vite@2.9.13:
-    resolution: {integrity: sha512-3u5k04w+s6WzJWz7xjNCJR69SzzYqVemuxP9SWXK2mMnJcxfZa8x/CvkORgM4NHIZXqIjyeVwPJYUJWqpAuzXQ==}
-    dependencies:
-      '@evoker/shared': 0.1.5
-      '@vitejs/plugin-vue': 2.3.3_vite@2.9.13+vue@3.2.37
-      '@vue/compiler-core': 3.2.37
-      '@vue/shared': 3.2.37
-      archiver: 5.3.1
-      esbuild: 0.14.48
-      picocolors: 1.0.0
-      rollup-plugin-copy: 3.4.0
-      tmp: 0.2.1
-      vue: 3.2.37
-      ws: 8.8.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-      - vite
-    dev: true
-
-  /@evoker/webview/0.1.5:
-    resolution: {integrity: sha512-umJB6z6SZ34EGvO8jyOhxUDli7Hcd1C2zcwKv1JoMQoX37jcDPM1Zkd06ZpA7+GuQ+KRgOfmZ5kYfukVy09fgA==}
-    dependencies:
-      '@evoker/bridge': 0.1.5
-      '@evoker/shared': 0.1.5
-      '@tweenjs/tween.js': 18.6.4
-      '@vue/runtime-core': 3.2.37
-      '@vue/shared': 3.2.37
-      intersection-observer: 0.12.2
-      lodash.throttle: 4.1.1
-      vue: 3.2.37
-    dev: false
 
   /@humanwhocodes/config-array/0.9.5:
     resolution: {integrity: sha512-ObyMyWxZiCu/yTisA7uzx81s40xR2fD5Cg/2Kq7G02ajkNubJf6BopgDTmDyc3U7sXpNKM8cYOw7s7Tyr+DnCw==}
@@ -3644,14 +3589,6 @@ packages:
   /eventemitter3/4.0.7:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
     dev: true
-
-  /evoker/0.1.5:
-    resolution: {integrity: sha512-zvPmZpb0trPe8q0biCaXxiNCremgGP34x6rkTT4wzXxF3BZ0bGBhvTmUwfz+pkbhi86Ymn7laiZPGsNtmhR+OA==}
-    dependencies:
-      '@evoker/service': 0.1.5
-      '@evoker/webview': 0.1.5
-      vue: 3.2.37
-    dev: false
 
   /execa/5.1.1:
     resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}
@@ -5757,6 +5694,7 @@ packages:
     engines: {node: '>=8.17.0'}
     dependencies:
       rimraf: 3.0.2
+    dev: false
 
   /to-fast-properties/2.0.0:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}

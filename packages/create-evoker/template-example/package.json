@@ -7,7 +7,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "evoker": "^0.1.4",
+    "evoker": "^0.3.0",
     "vue": "^3.2.37",
     "@vue/compiler-core": "^3.2.26",
     "@vue/shared": "^3.2.26",
@@ -15,7 +15,7 @@
     "tailwindcss": "^3.0.15"
   },
   "devDependencies": {
-    "@evoker/vite-plugin": "^0.1.4",
+    "@evoker/vite-plugin": "^0.3.0",
     "@vitejs/plugin-vue": "^2.3.3",
     "autoprefixer": "^10.4.2",
     "postcss": "^8.4.5",
