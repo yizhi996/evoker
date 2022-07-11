@@ -5,7 +5,7 @@ import { LifecycleHooks } from "./lifecycle/hooks"
 export const routes = new Map<string, DefineComponent>()
 
 export function defineRouter(path: string, component: DefineComponent) {
-  routes.set(path, wrapper(component))
+  routes.set(path, component.isWrapper ? component : wrapper(component))
 }
 
 export function getPageComponentFormRoute(route: string) {
@@ -29,8 +29,9 @@ export function decodeURL(url: string) {
 }
 
 function wrapper(component: DefineComponent) {
-  const { setup } = component
+  const { setup: setup } = component
   component.inheritAttrs = false
+  component.isWrapper = true
   component.setup = (props, ctx) => {
     const { __pageId: pageId, __query: query } = ctx.attrs as {
       __pageId: number
@@ -49,7 +50,6 @@ function wrapper(component: DefineComponent) {
     })
 
     InnerJSBridge.subscribeHandler(LifecycleHooks.PAGE_ON_SHOW, { pageId })
-
     return render
   }
   return component
