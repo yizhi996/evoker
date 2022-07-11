@@ -1,4 +1,4 @@
-import { Component, AppContext, reactive, createVNode, App } from "vue"
+import { Component, AppContext, createVNode, App } from "vue"
 import { renderer } from "./runtime-jscore/renderer"
 import { InnerJSBridge } from "./bridge/bridge"
 import { EvokerPage } from "./dom/page"

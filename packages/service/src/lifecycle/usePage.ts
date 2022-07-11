@@ -1,5 +1,4 @@
 import { getCurrentInstance } from "vue"
-import { innerAppData } from "../app"
 import { LifecycleHooks, createHook } from "./hooks"
 
 interface PageScrollObject {
