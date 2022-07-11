@@ -29,7 +29,7 @@ export function decodeURL(url: string) {
 }
 
 function wrapper(component: DefineComponent) {
-  const { setup: setup } = component
+  const { setup } = component
   component.inheritAttrs = false
   component.isWrapper = true
   component.setup = (props, ctx) => {

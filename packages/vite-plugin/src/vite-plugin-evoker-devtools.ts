@@ -53,7 +53,7 @@ export default function vitePluginEvokerDevtools(options: Options = {}): Plugin 
       }
     },
 
-    writeBundle() {
+    closeBundle() {
       firstBuildFinished = true
       serviceVersion = Date.now()
       update(clients)
