@@ -34,6 +34,8 @@ open class WebPage: Page {
     
     public var isShowTabBar = true
     
+    public var tabIndex: UInt8 = 0
+    
     public var isVisible = false
     
     public internal(set) var state: State = .none
@@ -45,6 +47,8 @@ open class WebPage: Page {
     var isFullscreenVideoPlayer = false
     
     var isSubscribeOnPageScroll = false
+    
+    var isFromTabItemTap = false
     
     public lazy var webView: WebView = {
         assert(appService != nil, "AppService 不能为空")
@@ -150,7 +154,16 @@ open class WebPage: Page {
         }
         webView.evaluateJavaScript(js)
         
-        appService.bridge.subscribeHandler(method:WebPage.beginMountSubscribeKey, data: ["pageId": pageId, "path": url])
+        var tabText = ""
+        if isFromTabItemTap {
+            tabText = appService.uiControl.tabBarView.tabBarItems[Int(tabIndex)].title(for: .normal) ?? ""
+        }
+        
+        appService.bridge.subscribeHandler(method:WebPage.beginMountSubscribeKey, data: ["pageId": pageId,
+                                                                                         "tabIndex": tabIndex,
+                                                                                         "fromTabItemTap": isFromTabItemTap,
+                                                                                         "tabText": tabText,
+                                                                                         "path": url])
         Engine.shared.config.hooks.pageLifeCycle.onLoad?(self)
         appService.modules.values.forEach { $0.onLoad(self) }
     }
@@ -258,5 +271,7 @@ extension WebPage {
     public static let onPageScrollSubscribeKey = SubscribeKey("PAGE_ON_SCROLL")
     
     public static let onPullDownRefreshSubscribeKey = SubscribeKey("PAGE_ON_PULL_DOWN_REFRESH")
+    
+    public static let onTabItemTapSubscribeKey = SubscribeKey("PAGE_ON_TAB_ITEM_TAP")
 
 }

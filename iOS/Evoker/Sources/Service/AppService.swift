@@ -355,6 +355,7 @@ extension AppService {
                 
                 if let page = createWebPage(url: pagePath) {
                     page.isTabBarPage = true
+                    page.tabIndex = UInt8(i)
                     tabBarPages.append(page)
                 }
             }
@@ -432,16 +433,25 @@ extension AppService {
     func setupTabBar(current index: Int) {
         uiControl.tabBarView.load(config: config, envVersion: envVersion)
         uiControl.tabBarView.didSelectTabBarItemHandler = { [unowned self] index in
-            self.didSelectTabBarItem(at: index)
+            self.didSelectTabBarItem(at: index, fromTap: true)
         }
         uiControl.tabBarView.setTabItemSelected(index)
         uiControl.tabBarViewControllers = [:]
     }
     
-    func didSelectTabBarItem(at index: Int) {
+    func didSelectTabBarItem(at index: Int, fromTap: Bool) {
         let page = tabBarPages[index]
         if !pages.contains(where: { $0.pageId == page.pageId }) {
             pages.append(page)
+        }
+        
+        if let webPage = page as? WebPage, page.viewController != nil {
+            let text = self.uiControl.tabBarView.tabBarItems[index].titleLabel?.text ?? ""
+            self.bridge.subscribeHandler(method: WebPage.onTabItemTapSubscribeKey, data: ["pageId": webPage.pageId,
+                                                                                          "index": index,
+                                                                                          "pagePath": webPage.route,
+                                                                                          "text": text,
+                                                                                          "fromTap": fromTap])
         }
         
         if currentPage === page {
@@ -465,6 +475,9 @@ extension AppService {
         }
         
         if !viewController.isViewLoaded {
+            if let webPage = page as? WebPage {
+                webPage.isFromTabItemTap = fromTap
+            }
             waitPageFirstRendered(page: page, finishHandler: switchTo)
         } else {
             if let webPage = page as? WebPage {
@@ -791,7 +804,7 @@ public extension AppService {
     
     func switchTo(url: String) {
         if let index = tabBarPages.filter(ofType: WebPage.self).firstIndex(where: { $0.url == url }) {
-            didSelectTabBarItem(at: index)
+            didSelectTabBarItem(at: index, fromTap: false)
         }
     }
 }

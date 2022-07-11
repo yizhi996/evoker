@@ -25,6 +25,8 @@ open class BrowserPage: Page {
     
     public var isShowTabBar = true
     
+    public var tabIndex: UInt8 = 0
+    
     public var isVisible: Bool = false
     
     public required init(appService: AppService, url: String) {

@@ -2,6 +2,8 @@ export * from "@evoker/service"
 
 declare global {
   var ek: typeof import("@evoker/service").global
+  var getApp: typeof import("@evoker/service").getApp
+  var getCurrentPages: typeof import("@evoker/service").getCurrentPages
 }
 
 import {

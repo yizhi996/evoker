@@ -1,7 +1,7 @@
 import { InnerJSBridge } from "../bridge/bridge"
 import { dispatchEvent } from "@evoker/shared"
 import { isFunction } from "@vue/shared"
-import { unmountPage } from "../app"
+import { innerAppData, mountPage, unmountPage } from "../app"
 import { decodeURL } from "../router"
 import { AppLaunchOptions } from "./useApp"
 
@@ -14,6 +14,7 @@ export const enum LifecycleHooks {
   APP_ON_AUDIO_INTERRUPTION_BEGIN = "APP_ON_AUDIO_INTERRUPTION_BEGIN",
   APP_ON_AUDIO_INTERRUPTION_END = "APP_ON_AUDIO_INTERRUPTION_END",
 
+  PAGE_BEGIN_MOUNT = "PAGE_BEGIN_MOUNT",
   PAGE_ON_LOAD = "PAGE_ON_LOAD",
   PAGE_ON_SHOW = "PAGE_ON_SHOW",
   PAGE_ON_READY = "PAGE_ON_READY",
@@ -137,6 +138,8 @@ InnerJSBridge.subscribe(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_END, message =>
   dispatchEvent(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_END, message)
 })
 
+InnerJSBridge.subscribe(LifecycleHooks.PAGE_BEGIN_MOUNT, mountPage)
+
 InnerJSBridge.subscribe<{ pageId: number; query: Record<string, any> }>(
   LifecycleHooks.PAGE_ON_LOAD,
   message => {
@@ -185,9 +188,16 @@ InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_RESIZE, messa
   invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId)
 })
 
-InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_TAB_ITEM_TAP, message => {
-  invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId, message)
-})
+InnerJSBridge.subscribe<{ pageId: number; index: number; fromTap: boolean }>(
+  LifecycleHooks.PAGE_ON_TAB_ITEM_TAP,
+  message => {
+    innerAppData.currentTabIndex = message.index
+    if (message.fromTap) {
+      delete (message as any).fromTap
+      invokePageHook(LifecycleHooks.PAGE_ON_TAB_ITEM_TAP, message.pageId, message)
+    }
+  }
+)
 
 InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE, message => {
   invokePageHook(LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE, message.pageId, message)

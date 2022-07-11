@@ -6,7 +6,7 @@ import Vue from "vue"
 import { extend } from "@vue/shared"
 
 export { useApp, usePage }
-export { createApp } from "./app"
+export { createApp, getApp, getCurrentPages } from "./app"
 export { defineRouter } from "./router"
 export { global }
 export * from "./bridge"

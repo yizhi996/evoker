@@ -25,6 +25,8 @@ public protocol Page: AnyObject {
     
     var isShowTabBar: Bool { get set }
     
+    var tabIndex: UInt8 { get set }
+    
     var isVisible: Bool { get set }
     
     init(appService: AppService, url: String)

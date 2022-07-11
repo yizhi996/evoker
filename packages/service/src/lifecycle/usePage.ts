@@ -1,4 +1,5 @@
 import { getCurrentInstance } from "vue"
+import { innerAppData } from "../app"
 import { LifecycleHooks, createHook } from "./hooks"
 
 interface PageScrollObject {
@@ -43,7 +44,7 @@ export default function usePage() {
     onResize: (hook: () => void) => {
       return createHook(LifecycleHooks.PAGE_ON_RESIZE, hook, pageId)
     },
-    onTabItemTap: (hook: () => void) => {
+    onTabItemTap: (hook: (object: { index: number; pagePath: string; text: string }) => void) => {
       return createHook(LifecycleHooks.PAGE_ON_TAB_ITEM_TAP, hook, pageId)
     },
     onSaveExitState: (hook: () => void) => {

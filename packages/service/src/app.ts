@@ -10,22 +10,23 @@ import { SyncFlags } from "@evoker/shared"
 import { invokeSelectorQuery } from "./bridge/api/html/selector"
 import { intersectionObserverEntry } from "./bridge/api/html/intersection"
 import { invokeAppOnError } from "./lifecycle/global"
+import { LifecycleHooks } from "./lifecycle/hooks"
 
 export const enum AppState {
   FORE_GROUND = 0,
   BACK_GROUND
 }
 
-export const innerAppData = reactive({
+export const innerAppData = {
   appState: AppState.FORE_GROUND,
-  currentPageId: 0,
   globalData: {},
   pages: new Map<number, EvokerPage>(),
+  pageStack: new Map<number, EvokerPage[]>(),
   currentTabIndex: 0,
   query: {},
   routerLock: false,
   eventFromUserClick: false
-})
+}
 
 let vueContext: AppContext
 
@@ -52,12 +53,7 @@ export function createApp(
 }
 
 export function getCurrentPages() {
-  const currentTabIndex = innerAppData.currentTabIndex
-  const pages: EvokerPage[] = []
-  innerAppData.pages.forEach(page => page.tabIndex === currentTabIndex && pages.push(page))
-  return pages.sort((left, right) => {
-    return left.pageId < right.pageId ? -1 : 1
-  })
+  return innerAppData.pageStack.get(innerAppData.currentTabIndex) || []
 }
 
 export function getCurrentWebViewId() {
@@ -73,17 +69,35 @@ export function getApp() {
   return { globalData: innerAppData.globalData }
 }
 
-export function mountPage(pageId: number, route: string, query: {}) {
+interface MountOptions {
+  pageId: number
+  path: string
+  tabIndex: number
+  fromTabItemTap: boolean
+  tabText: string
+}
+
+export function mountPage(options: MountOptions) {
+  const { pageId, path, tabIndex, fromTabItemTap, tabText } = options
+  const { path: route, query } = decodeURL(path)
+
   const component = getPageComponentFormRoute(route)
   if (!component) {
     console.error(`${route} 未定义，请在 app.json 的 pages 中定义`)
     return
   }
 
-  const page = new EvokerPage(pageId, route, innerAppData.currentTabIndex)
+  innerAppData.currentTabIndex = tabIndex
 
+  const page = new EvokerPage(pageId, route, tabIndex)
+
+  const stack = innerAppData.pageStack.get(tabIndex)
+  if (stack) {
+    stack.push(page)
+  } else {
+    innerAppData.pageStack.set(tabIndex, [page])
+  }
   innerAppData.pages.set(pageId, page)
-  innerAppData.currentPageId = pageId
 
   const vnode = createVNode(component, {
     __pageId: pageId,
@@ -99,6 +113,16 @@ export function mountPage(pageId: number, route: string, query: {}) {
   const root = new EvokerHTMLElement("div", page)
   root.id = "app"
   renderer.render(vnode, root)
+
+  if (fromTabItemTap) {
+    InnerJSBridge.subscribeHandler(LifecycleHooks.PAGE_ON_TAB_ITEM_TAP, {
+      pageId,
+      index: tabIndex,
+      pagePath: route,
+      text: tabText,
+      fromTap: fromTabItemTap
+    })
+  }
 }
 
 export function unmountPage(pageId: number) {
@@ -106,14 +130,14 @@ export function unmountPage(pageId: number) {
   if (page) {
     page.onUnmounted()
     innerAppData.pages.delete(pageId)
+
+    const stack = innerAppData.pageStack.get(page.tabIndex)
+    if (stack) {
+      const i = stack.findIndex(p => p.pageId === pageId)
+      i > -1 && stack.splice(i, 1)
+    }
   }
 }
-
-InnerJSBridge.subscribe<{ pageId: number; path: string }>("PAGE_BEGIN_MOUNT", message => {
-  const { pageId, path } = message
-  const { path: route, query } = decodeURL(path)
-  mountPage(pageId, route, query)
-})
 
 onSync(messages => {
   messages.forEach(message => {

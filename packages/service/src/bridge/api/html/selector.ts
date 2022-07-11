@@ -1,5 +1,4 @@
-import { getCurrentPages } from "../../../app"
-import { EvokerPage } from "../../../dom/page"
+import { getCurrentWebViewId } from "../../../app"
 import { SyncFlags } from "@evoker/shared"
 import { isFunction } from "@vue/shared"
 import { randomId } from "../../../utils"
@@ -28,11 +27,10 @@ class SelectorQuery {
 
   private queueCb: (Function | null)[] = []
 
-  private page: EvokerPage
+  private pageId: number
 
   constructor() {
-    const pages = getCurrentPages()
-    this.page = pages[pages.length - 1]
+    this.pageId = getCurrentWebViewId()
   }
 
   select(selector: string) {
@@ -50,7 +48,7 @@ class SelectorQuery {
   exec(callback: Function) {
     const id = randomId()
     const message = [SyncFlags.SELECTOR, id, this.queue]
-    sync(message, this.page.pageId)
+    sync(message, this.pageId)
 
     const result = (res: any) => {
       for (let i = 0; i < this.queueCb.length; i++) {
