@@ -1,5 +1,5 @@
 //
-//  EVError.swift
+//  EKError.swift
 //
 //  Copyright (c) Evoker. All rights reserved. (https://evokerdev.com)
 //
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum EVError: Error {
+public enum EKError: Error {
     
     case packNotIntegrity(String)
     
@@ -97,7 +97,7 @@ public enum EVError: Error {
     }
 }
 
-extension EVError.StorageFailureReason {
+extension EKError.StorageFailureReason {
     
     var localizedDescription: String {
         switch self {
@@ -123,7 +123,7 @@ extension EVError.StorageFailureReason {
     }
 }
 
-extension EVError.BridgeFailureReason {
+extension EKError.BridgeFailureReason {
     
     var localizedDescription: String {
         switch self {
@@ -171,7 +171,7 @@ extension EVError.BridgeFailureReason {
     }
 }
 
-extension EVError: LocalizedError {
+extension EKError: LocalizedError {
     
     public var errorDescription: String? {
         switch self {

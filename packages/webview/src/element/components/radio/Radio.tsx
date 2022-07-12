@@ -20,7 +20,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-radio",
+  name: "ek-radio",
   props,
   setup(props, { expose }) {
     const instance = getCurrentInstance()!
@@ -64,10 +64,10 @@ export default defineComponent({
 
     return () => {
       const node = (
-        <ev-radio class={{ "ev-radio--disabled": props.disabled }}>
+        <ek-radio class={{ "ek-radio--disabled": props.disabled }}>
           <Icon type={props.checked ? "success" : "circle"} color={props.color} />
-          <span class="ev-radio__label"></span>
-        </ev-radio>
+          <span class="ek-radio__label"></span>
+        </ek-radio>
       )
       return withDirectives(node as VNode, [[vTap, onClick, "", { stop: true }]])
     }

@@ -84,7 +84,7 @@ public class PackageManager {
         try FileManager.default.createDirectory(at: dest, withIntermediateDirectories: true, attributes: nil)
         try Zip.unzipFile(src, destination: dest, overwrite: true, password: nil)
         if !checkPackIntegrity(filePath: dest) {
-            throw EVError.packNotIntegrity(dest.path)
+            throw EKError.packNotIntegrity(dest.path)
         }
     }
     

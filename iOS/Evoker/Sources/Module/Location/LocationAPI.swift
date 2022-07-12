@@ -29,20 +29,20 @@ enum LocationAPI: String, CaseIterableAPI {
             
     private func getLocation(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let module: LocationModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(LocationModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(LocationModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: OnceLocationManager.GetLocationParams = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         module.onceLocationManager.getLocation(params: params) { data, error in
             if let error = error {
-                let error = EVError.bridgeFailed(reason: .custom(error.localizedDescription))
+                let error = EKError.bridgeFailed(reason: .custom(error.localizedDescription))
                 bridge.invokeCallbackFail(args: args, error: error)
             } else {
                 bridge.invokeCallbackSuccess(args: args, result: data)
@@ -56,13 +56,13 @@ enum LocationAPI: String, CaseIterableAPI {
         }
         
         guard let module: LocationModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(LocationModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(LocationModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -82,7 +82,7 @@ enum LocationAPI: String, CaseIterableAPI {
     
     private func stopLocationUpdate(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {    
         guard let module: LocationModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(LocationModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(LocationModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

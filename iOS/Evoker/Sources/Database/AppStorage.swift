@@ -80,7 +80,7 @@ public class AppStorage {
 
 extension AppStorage {
     
-    public func getAllAuthorization() -> ([String: Bool], EVError?) {
+    public func getAllAuthorization() -> ([String: Bool], EKError?) {
         guard let database = database else {
             return ([:], .storageFailed(reason: .connectFailed))
         }
@@ -95,7 +95,7 @@ extension AppStorage {
             }
             return (all, nil)
         } catch {
-            return ([:], EVError.storageFailed(reason: .getFailed))
+            return ([:], EKError.storageFailed(reason: .getFailed))
         }
     }
     
@@ -105,7 +105,7 @@ extension AppStorage {
         case notDetermined
     }
     
-    public func getAuthorization(_ scope: String) -> (AuthorizationStatus, EVError?) {
+    public func getAuthorization(_ scope: String) -> (AuthorizationStatus, EKError?) {
         guard let database = database else {
             return (.notDetermined, .storageFailed(reason: .connectFailed))
         }
@@ -118,11 +118,11 @@ extension AppStorage {
             }
             return (.notDetermined, nil)
         } catch {
-            return (.notDetermined, EVError.storageFailed(reason: .getFailed))
+            return (.notDetermined, EKError.storageFailed(reason: .getFailed))
         }
     }
     
-    public func setAuthorization(_ scope: String, authorized: Bool) -> EVError? {
+    public func setAuthorization(_ scope: String, authorized: Bool) -> EKError? {
         guard let database = database else {
             return .storageFailed(reason: .connectFailed)
         }
@@ -133,27 +133,27 @@ extension AppStorage {
             try database.run(insert)
             return nil
         } catch {
-            return EVError.storageFailed(reason: .setFailed)
+            return EKError.storageFailed(reason: .setFailed)
         }
     }
     
-    public func clearAuthorization() -> EVError? {
+    public func clearAuthorization() -> EKError? {
         guard let database = database else {
-            return EVError.storageFailed(reason: .connectFailed)
+            return EKError.storageFailed(reason: .connectFailed)
         }
         do {
             let delete = authorizationTable.table.delete()
             try database.run(delete)
             return nil
         } catch {
-            return EVError.storageFailed(reason: .clearFailed)
+            return EKError.storageFailed(reason: .clearFailed)
         }
     }
 }
 
 extension AppStorage {
     
-    public func info() -> (([String], Int, Int)?, EVError?) {
+    public func info() -> (([String], Int, Int)?, EKError?) {
         guard let database = database else {
             return (nil, .storageFailed(reason: .connectFailed))
         }
@@ -168,9 +168,9 @@ extension AppStorage {
         }
     }
     
-    public func get(key: String) -> ((String, String)?, EVError?) {
+    public func get(key: String) -> ((String, String)?, EKError?) {
         guard let database = database else {
-            return (nil, EVError.storageFailed(reason: .connectFailed))
+            return (nil, EKError.storageFailed(reason: .connectFailed))
         }
         do {
             let query = localStorageTable.table.select(localStorageTable.data, localStorageTable.dataType)
@@ -180,24 +180,24 @@ extension AppStorage {
                 let dataType = try row.get(localStorageTable.dataType)
                 return ((data, dataType), nil)
             }
-            return (nil, EVError.storageFailed(reason: .keyNotExist(key)))
+            return (nil, EKError.storageFailed(reason: .keyNotExist(key)))
         } catch {
-            return (nil, EVError.storageFailed(reason: .getFailed))
+            return (nil, EKError.storageFailed(reason: .getFailed))
         }
     }
     
-    public func set(key: String, data: String, dataType: String) -> EVError? {
+    public func set(key: String, data: String, dataType: String) -> EKError? {
         guard let database = database else {
-            return EVError.storageFailed(reason: .connectFailed)
+            return EKError.storageFailed(reason: .connectFailed)
         }
         do {
             let length = key.lengthOfBytes(using: .utf8) + data.lengthOfBytes(using: .utf8)
             if length > 1024 * 1024 {
-                return EVError.storageFailed(reason: .singleKeySizeLimit)
+                return EKError.storageFailed(reason: .singleKeySizeLimit)
             }
             let size = try database.scalar(localStorageTable.table.select(localStorageTable.length.sum)) ?? 0
             if size + length > 1024 * 1024 * 10 {
-                return EVError.storageFailed(reason: .sizeLimited)
+                return EKError.storageFailed(reason: .sizeLimited)
             }
             let insert = localStorageTable.table.insert(or: OnConflict.replace,
                                                         localStorageTable.key <- key,
@@ -208,33 +208,33 @@ extension AppStorage {
             try database.run(insert)
             return nil
         } catch {
-            return EVError.storageFailed(reason: .setFailed)
+            return EKError.storageFailed(reason: .setFailed)
         }
     }
     
-    public func remove(key: String) -> EVError? {
+    public func remove(key: String) -> EKError? {
         guard let database = database else {
-            return EVError.storageFailed(reason: .connectFailed)
+            return EKError.storageFailed(reason: .connectFailed)
         }
         do {
             let delete = localStorageTable.table.filter(localStorageTable.key == key).delete()
             try database.run(delete)
             return nil
         } catch {
-            return EVError.storageFailed(reason: .removeFailed)
+            return EKError.storageFailed(reason: .removeFailed)
         }
     }
     
-    public func clear() -> EVError? {
+    public func clear() -> EKError? {
         guard let database = database else {
-            return EVError.storageFailed(reason: .connectFailed)
+            return EKError.storageFailed(reason: .connectFailed)
         }
         do {
             let delete = localStorageTable.table.delete()
             try database.run(delete)
             return nil
         } catch {
-            return EVError.storageFailed(reason: .clearFailed)
+            return EKError.storageFailed(reason: .clearFailed)
         }
     }
 }

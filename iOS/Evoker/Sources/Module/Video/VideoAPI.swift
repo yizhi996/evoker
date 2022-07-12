@@ -26,37 +26,37 @@ enum VideoAPI: String, CaseIterableAPI {
     
     private func insertVideoPlayer(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = webView.page else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard var params: VideoPlayerViewParams = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let container = webView.findTongCengContainerView(tongcengId: params.parentId) else {
-            let error = EVError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
+            let error = EKError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let module: VideoModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(VideoModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(VideoModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         if !params.url.isEmpty {
-            params._url = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: params.url) ?? URL(string: params.url)
+            params._url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: params.url) ?? URL(string: params.url)
         }
         
         let playerView = VideoPlayerView(params: params)
@@ -194,31 +194,31 @@ enum VideoAPI: String, CaseIterableAPI {
         }
 
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = webView.page else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let module: VideoModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(VideoModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(VideoModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let playerView = module.playerViews.get(page.pageId, params.videoPlayerId) else {
-            let error = EVError.bridgeFailed(reason: .videoPlayerIdNotFound(params.videoPlayerId))
+            let error = EKError.bridgeFailed(reason: .videoPlayerIdNotFound(params.videoPlayerId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -260,7 +260,7 @@ enum VideoAPI: String, CaseIterableAPI {
                 playerView.params.objectFit = data.objectFit
                 playerView.params.muted = data.muted
                 if !src.isEmpty {
-                    if let url = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: src) ?? URL(string: src) {
+                    if let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: src) ?? URL(string: src) {
                         playerView.setURL(url)
                     }
                 } else {

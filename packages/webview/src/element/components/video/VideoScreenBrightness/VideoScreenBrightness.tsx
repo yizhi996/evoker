@@ -11,13 +11,13 @@ export default defineComponent({
     })
     return () => {
       const indicator = [...Array(count.value).keys()].map(i => (
-        <i key={i} class="ev-video__screen-brightness__value__block"></i>
+        <i key={i} class="ek-video__screen-brightness__value__block"></i>
       ))
       return (
-        <div class="ev-video__screen-brightness">
+        <div class="ek-video__screen-brightness">
           <div>亮度</div>
-          <div class="ev-video__screen-brightness__icon"></div>
-          <div class="ev-video__screen-brightness__value">{indicator}</div>
+          <div class="ek-video__screen-brightness__icon"></div>
+          <div class="ek-video__screen-brightness__value">{indicator}</div>
         </div>
       )
     }

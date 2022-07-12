@@ -36,19 +36,19 @@ enum ScrollAPI: String, CaseIterableAPI {
         }
         
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let scrollView = webView.findWKChildScrollView(tongcengId: params.parentId) else {
-            let error = EVError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
+            let error = EKError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -69,13 +69,13 @@ enum ScrollAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

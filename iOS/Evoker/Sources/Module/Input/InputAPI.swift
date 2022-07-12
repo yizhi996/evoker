@@ -56,31 +56,31 @@ enum InputAPI: String, CaseIterableAPI {
         }
         
         guard let inputModule: InputModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(InputModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(InputModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = webView.page else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let container = webView.findTongCengContainerView(tongcengId: params.parentId) else {
-            let error = EVError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
+            let error = EKError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -187,31 +187,31 @@ enum InputAPI: String, CaseIterableAPI {
         }
         
         guard let inputModule: InputModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(InputModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(InputModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
 
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = webView.page else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let container = webView.findTongCengContainerView(tongcengId: params.parentId) else {
-            let error = EVError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
+            let error = EKError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -301,31 +301,31 @@ enum InputAPI: String, CaseIterableAPI {
         }
         
         guard let inputModule: InputModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(InputModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(InputModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
 
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = webView.page else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let input = inputModule.inputs.get(page.pageId, params.inputId) else {
-            let error = EVError.bridgeFailed(reason: .inputNotFound(params.inputId))
+            let error = EKError.bridgeFailed(reason: .inputNotFound(params.inputId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -453,7 +453,7 @@ enum InputAPI: String, CaseIterableAPI {
     
     private func hideKeyboard(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let module: InputModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(InputModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(InputModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

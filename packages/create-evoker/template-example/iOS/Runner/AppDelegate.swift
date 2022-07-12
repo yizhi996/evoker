@@ -42,7 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if let app = LaunchpadViewController.apps.first(where: { $0.appId == appId }) {
                 completionHandler(AppInfo(appName: app.appName, appIconURL: app.appIcon), nil)
             } else {
-                completionHandler(nil, EVError.custom("appId is invalid"))
+                completionHandler(nil, EKError.custom("appId is invalid"))
             }
         }
         

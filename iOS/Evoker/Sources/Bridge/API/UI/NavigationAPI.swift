@@ -36,19 +36,19 @@ enum NavigationAPI: String, CaseIterableAPI {
     
     private func setNavigationBarTitle(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let title = params["title"] as? String else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("title"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("title"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let webPage = appService.currentPage as? WebPage else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -59,7 +59,7 @@ enum NavigationAPI: String, CaseIterableAPI {
     
     private func showNavigationBarLoading(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let viewController = appService.currentPage?.viewController as? WebPageViewController else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -69,7 +69,7 @@ enum NavigationAPI: String, CaseIterableAPI {
     
     private func hideNavigationBarLoading(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let viewController = appService.currentPage?.viewController else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -111,19 +111,19 @@ enum NavigationAPI: String, CaseIterableAPI {
         }
         
         guard let page = appService.currentPage else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let viewController = appService.currentPage?.viewController else {
-            let error = EVError.bridgeFailed(reason: .visibleViewControllerNotFound)
+            let error = EKError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

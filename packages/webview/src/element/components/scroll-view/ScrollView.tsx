@@ -32,7 +32,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-scroll-view",
+  name: "ek-scroll-view",
   props,
   emits: ["scrolltoupper", "scrolltolower", "scroll", "dragstart", "dragging", "dragend"],
   setup(props, { emit }) {
@@ -293,16 +293,16 @@ export default defineComponent({
     return () => {
       const { scrollX, enableFlex } = props
       return (
-        <ev-scroll-view>
+        <ek-scroll-view>
           <div
             class={classNames(
-              "ev-scroll-view__wrapper",
-              scrollX ? "ev-scroll-view__wrapper--horizontal" : "ev-scroll-view__wrapper--vertical"
+              "ek-scroll-view__wrapper",
+              scrollX ? "ek-scroll-view__wrapper--horizontal" : "ek-scroll-view__wrapper--vertical"
             )}
           >
             <div
               ref={tongcengRef}
-              class="ev-scroll-view__wrapper"
+              class="ek-scroll-view__wrapper"
               id={tongcengKey}
               style={scrollX ? "overflow: auto hidden" : "overflow: hidden auto;"}
             >
@@ -312,7 +312,7 @@ export default defineComponent({
               ></div>
             </div>
           </div>
-        </ev-scroll-view>
+        </ek-scroll-view>
       )
     }
   }

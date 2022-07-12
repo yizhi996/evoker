@@ -28,7 +28,7 @@ enum PullDownRefreshAPI: String, CaseIterableAPI {
     
     private func startPullDownRefresh(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = (appService.currentPage as? WebPage)?.webView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -39,7 +39,7 @@ enum PullDownRefreshAPI: String, CaseIterableAPI {
     
     private func stopPullDownRefresh(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = (appService.currentPage as? WebPage)?.webView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

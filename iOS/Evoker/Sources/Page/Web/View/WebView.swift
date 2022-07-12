@@ -136,7 +136,7 @@ extension WebView {
     
     private func findUserSelectRegionView(view: UIView) -> UIView? {
         let cls: AnyClass = NSClassFromString("WKCompositingView")!
-        if view.isKind(of: cls) && view.description.contains("__ev_selectable_region") {
+        if view.isKind(of: cls) && view.description.contains("ek__selectable-region") {
             return view
         }
         var selectRegion: UIView?

@@ -3,7 +3,7 @@ import { useChildren } from "../../composables/useRelation"
 import { MOVABLE_KEY } from "./constant"
 
 export default defineComponent({
-  name: "ev-movable-area",
+  name: "ek-movable-area",
   setup() {
     const container = ref<HTMLElement>()
 
@@ -24,6 +24,6 @@ export default defineComponent({
       }
     )
 
-    return () => <ev-movable-area ref={container}></ev-movable-area>
+    return () => <ek-movable-area ref={container}></ek-movable-area>
   }
 })

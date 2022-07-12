@@ -107,7 +107,7 @@ private extension DevServer {
         }
 
         do {
-            let (_, filePath) =  FilePath.generateTmpEVFilePath(ext: "zip")
+            let (_, filePath) =  FilePath.generateTmpEKFilePath(ext: "zip")
             try FilePath.createDirectory(at: filePath.deletingLastPathComponent())
             
             if FileManager.default.createFile(atPath: filePath.path, contents: body, attributes: nil) {

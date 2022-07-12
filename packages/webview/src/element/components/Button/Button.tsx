@@ -34,7 +34,7 @@ const props = {
   },
   hoverClass: {
     type: String,
-    default: "ev-button--hover"
+    default: "ek-button--hover"
   },
   hoverStopPropagation: {
     type: Boolean,
@@ -59,7 +59,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-button",
+  name: "ek-button",
   props,
   emits: ["getuserinfo"],
   setup(props, { emit, expose }) {
@@ -68,14 +68,14 @@ export default defineComponent({
     const { finalHoverClass } = useHover(container, props)
 
     const classes = computed(() => {
-      let cls = "ev-button "
-      cls += `ev-button--${props.type} `
-      cls += `ev-button--size-${props.size} `
+      let cls = "ek-button "
+      cls += `ek-button--${props.type} `
+      cls += `ek-button--size-${props.size} `
       if (isTrue(props.disabled)) {
-        cls += "ev-button--disabled "
+        cls += "ek-button--disabled "
       }
       if (props.plain) {
-        cls += `ev-button--${props.type}--plain `
+        cls += `ek-button--${props.type}--plain `
       }
       cls += `${finalHoverClass.value}`
       return cls
@@ -93,7 +93,7 @@ export default defineComponent({
     const findForm = (el: HTMLElement): EvokerElement | undefined => {
       const parent = el.parentElement
       if (parent) {
-        if (parent.tagName === "EV-FORM") {
+        if (parent.tagName === "EK-FORM") {
           return parent as EvokerElement
         }
         return findForm(parent)
@@ -193,12 +193,12 @@ export default defineComponent({
     }
 
     return () => (
-      <ev-button ref={container} class={classes.value} style={styleses.value}>
-        <div class="ev-button__content">
+      <ek-button ref={container} class={classes.value} style={styleses.value}>
+        <div class="ek-button__content">
           {renderLoading()}
-          <div class="ev-button__text"></div>
+          <div class="ek-button__text"></div>
         </div>
-      </ev-button>
+      </ek-button>
     )
   }
 })

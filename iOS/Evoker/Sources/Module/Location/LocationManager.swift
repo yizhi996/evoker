@@ -28,7 +28,7 @@ class LocationManager: NSObject {
     
     let locationManager = CLLocationManager()
     
-    var getLocationHandler: ((LocationData?, EVError?) -> Void)?
+    var getLocationHandler: ((LocationData?, EKError?) -> Void)?
     
     var type: LocationType = .wgs84
     
@@ -38,7 +38,7 @@ class LocationManager: NSObject {
         locationManager.delegate = self
     }
     
-    func startLocationUpdate(type: LocationType, completionHandler: @escaping (LocationData?, EVError?) -> Void) {
+    func startLocationUpdate(type: LocationType, completionHandler: @escaping (LocationData?, EKError?) -> Void) {
         self.type = type
         getLocationHandler = completionHandler
         locationManager.startUpdatingLocation()
@@ -58,7 +58,7 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        getLocationHandler?(nil, EVError.custom(error.localizedDescription))
+        getLocationHandler?(nil, EKError.custom(error.localizedDescription))
     }
 
 }
@@ -86,7 +86,7 @@ class OnceLocationManager: NSObject {
     func getLocation(params: GetLocationParams, completionHandler: @escaping (LocationData?, Error?) -> Void) {
         locationManager.stopUpdatingLocation()
         if let getLocationHandler = getLocationHandler {
-            getLocationHandler(nil, EVError.custom("stop"))
+            getLocationHandler(nil, EKError.custom("stop"))
         }
         
         getLocationHandler = completionHandler
@@ -99,7 +99,7 @@ class OnceLocationManager: NSObject {
                     if let location = self.locationManager.location {
                         self.getLocationHandler?(location.toData(type: self.type), nil)
                     } else {
-                        self.getLocationHandler?(nil, EVError.custom("not location"))
+                        self.getLocationHandler?(nil, EKError.custom("not location"))
                     }
                     self.getLocationHandler = nil
                 }

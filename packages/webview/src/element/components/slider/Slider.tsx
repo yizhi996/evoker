@@ -26,7 +26,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-slider",
+  name: "ek-slider",
   props,
   emits: ["update:value", "change", "changing"],
   setup(props, { emit, expose }) {
@@ -119,32 +119,32 @@ export default defineComponent({
         return
       }
       return (
-        <span class="ev-slider__value" style={{ width: valueWidth.value }}>
+        <span class="ek-slider__value" style={{ width: valueWidth.value }}>
           {props.value}
         </span>
       )
     }
 
     return () => (
-      <ev-slider>
-        <div class="ev-slider__wrapper">
-          <div class="ev-slider__input">
+      <ek-slider>
+        <div class="ek-slider__wrapper">
+          <div class="ek-slider__input">
             <div
-              class="ev-slider__input__bar"
+              class="ek-slider__input__bar"
               ref={barRef}
               style={{ "background-color": props.backgroundColor }}
             >
-              <div class="ev-slider__input__handle" ref={handleRef} style={handleStyle.value}></div>
-              <div class="ev-slider__input__thumb" style={handleStyle.value}></div>
+              <div class="ek-slider__input__handle" ref={handleRef} style={handleStyle.value}></div>
+              <div class="ek-slider__input__thumb" style={handleStyle.value}></div>
               <div
-                class="ev-slider__input__track"
+                class="ek-slider__input__track"
                 style={{ width: width.value, "background-color": props.activeColor }}
               ></div>
             </div>
           </div>
           {renderValue()}
         </div>
-      </ev-slider>
+      </ek-slider>
     )
   }
 })

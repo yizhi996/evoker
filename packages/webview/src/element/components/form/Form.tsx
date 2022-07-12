@@ -2,16 +2,16 @@ import { defineComponent, ref } from "vue"
 import { isEvokerElement } from "../../../dom/element"
 
 const validTags = [
-  "EV-INPUT",
-  "EV-SWITCH",
-  "EV-SLIDER",
-  "EV-RADIO-GROUP",
-  "EV-CHECKBOX-GROUP",
-  "EV-PICKER"
+  "EK-INPUT",
+  "EK-SWITCH",
+  "EK-SLIDER",
+  "EK-RADIO-GROUP",
+  "EK-CHECKBOX-GROUP",
+  "EK-PICKER"
 ]
 
 export default defineComponent({
-  name: "ev-form",
+  name: "ek-form",
   emits: ["submit", "reset"],
   setup(_, { emit, expose }) {
     const container = ref<HTMLElement>()
@@ -61,6 +61,6 @@ export default defineComponent({
       }
     })
 
-    return () => <ev-form ref={container}></ev-form>
+    return () => <ek-form ref={container}></ek-form>
   }
 })

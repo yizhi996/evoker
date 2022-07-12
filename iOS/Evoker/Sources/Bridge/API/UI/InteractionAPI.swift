@@ -32,13 +32,13 @@ enum InteractionAPI: String, CaseIterableAPI {
     
     private func showModal(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params: Alert.Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let viewController = appService.pages.last?.viewController else {
-            let error = EVError.bridgeFailed(reason: .visibleViewControllerNotFound)
+            let error = EKError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -59,13 +59,13 @@ enum InteractionAPI: String, CaseIterableAPI {
     
     private func showToast(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params: Toast.Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let viewController = appService.currentPage?.viewController else {
-            let error = EVError.bridgeFailed(reason: .visibleViewControllerNotFound)
+            let error = EKError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -84,13 +84,13 @@ enum InteractionAPI: String, CaseIterableAPI {
     
     private func showActionSheet(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params: ActionSheet.Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let viewController = appService.currentPage?.viewController else {
-            let error = EVError.bridgeFailed(reason: .visibleViewControllerNotFound)
+            let error = EKError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -99,7 +99,7 @@ enum InteractionAPI: String, CaseIterableAPI {
         let cover = CoverView.init(contentView: actionSheet)
         cover.clickHandler = {
             cover.hide()
-            bridge.invokeCallbackFail(args: args, error: EVError.bridgeFailed(reason: .cancel))
+            bridge.invokeCallbackFail(args: args, error: EKError.bridgeFailed(reason: .cancel))
         }
         actionSheet.confirmHandler = { selected in
             cover.hide()
@@ -107,7 +107,7 @@ enum InteractionAPI: String, CaseIterableAPI {
         }
         actionSheet.cancelHandler = {
             cover.hide()
-            bridge.invokeCallbackFail(args: args, error: EVError.bridgeFailed(reason: .cancel))
+            bridge.invokeCallbackFail(args: args, error: EKError.bridgeFailed(reason: .cancel))
         }
         cover.show(to: viewController.view)
     }

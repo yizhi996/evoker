@@ -12,7 +12,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-camera",
+  name: "ek-camera",
   props,
   emits: ["initdone", "scancode", "error", "stop"],
   setup(props, { emit }) {
@@ -99,11 +99,11 @@ export default defineComponent({
     }
 
     return () => (
-      <ev-camera>
-        <div ref={tongcengRef} class="ev-native__tongceng" id={tongcengKey}>
+      <ek-camera>
+        <div ref={tongcengRef} class="ek-native__tongceng" id={tongcengKey}>
           <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
-      </ev-camera>
+      </ek-camera>
     )
   }
 })

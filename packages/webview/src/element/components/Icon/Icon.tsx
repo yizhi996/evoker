@@ -21,7 +21,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-icon",
+  name: "ek-icon",
   props,
   setup(props) {
     const iconSize = computed(() => {
@@ -29,12 +29,12 @@ export default defineComponent({
     })
 
     return () => (
-      <ev-icon>
+      <ek-icon>
         <i
-          class={"ev-icon--" + props.type}
+          class={"ek-icon--" + props.type}
           style={{ width: iconSize.value, height: iconSize.value, color: props.color }}
         ></i>
-      </ev-icon>
+      </ek-icon>
     )
   }
 })

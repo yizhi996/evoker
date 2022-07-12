@@ -11,7 +11,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-picker-view",
+  name: "ek-picker-view",
   props,
   emits: ["pickstart", "pickend", "change"],
   setup(props, { emit, expose }) {
@@ -114,9 +114,9 @@ export default defineComponent({
     })
 
     return () => (
-      <ev-picker-view ref={container}>
-        <div class="ev-picker-view__wrapper"></div>
-      </ev-picker-view>
+      <ek-picker-view ref={container}>
+        <div class="ek-picker-view__wrapper"></div>
+      </ek-picker-view>
     )
   }
 })

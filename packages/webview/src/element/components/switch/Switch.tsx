@@ -13,7 +13,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-switch",
+  name: "ek-switch",
   props,
   emits: ["update:checked", "change"],
   setup(props, { emit, expose }) {
@@ -49,16 +49,16 @@ export default defineComponent({
         return <Icon type={checked ? "success" : "circle"} color={color} />
       } else {
         return (
-          <div class="ev-switch__wrapper">
+          <div class="ek-switch__wrapper">
             <div
-              class={classNames("ev-switch__input", { "ev-switch__input--checked": checked })}
+              class={classNames("ek-switch__input", { "ek-switch__input--checked": checked })}
               style={{
                 "border-color": checked ? color : "#dfdfdf",
                 "background-color": checked ? color : "#fff"
               }}
             >
-              <div class="ev-switch__input__background"></div>
-              <div class="ev-switch__input__handle"></div>
+              <div class="ek-switch__input__background"></div>
+              <div class="ek-switch__input__handle"></div>
             </div>
           </div>
         )
@@ -67,10 +67,10 @@ export default defineComponent({
 
     return () => {
       const node = (
-        <ev-switch class={{ "ev-switch--disabled": props.disabled }}>
+        <ek-switch class={{ "ek-switch--disabled": props.disabled }}>
           {renderType()}
-          <span class="ev-switch__label"></span>
-        </ev-switch>
+          <span class="ek-switch__label"></span>
+        </ek-switch>
       )
       return withDirectives(node as VNode, [[vTap, onClick, "", { stop: true }]])
     }

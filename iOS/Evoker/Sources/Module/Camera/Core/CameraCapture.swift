@@ -367,7 +367,7 @@ extension CameraCapture {
         case .authorized:
             guard isSessionRunning, let connection = movieFileOutput.connection(with: .video) else { return }
             connection.videoScaleAndCropFactor = 1
-            let (_, filePath) = FilePath.generateTmpEVFilePath(ext: "mp4")
+            let (_, filePath) = FilePath.generateTmpEKFilePath(ext: "mp4")
             movieFileOutput.startRecording(to: filePath, recordingDelegate: self)
         case .notDetermined:
             PrivacyPermission.requestMicrophone {
@@ -538,16 +538,16 @@ extension CameraCapture: AVCaptureFileOutputRecordingDelegate {
         }
         
         processingQueue.async {
-            let (videoEVFile, videoFilePath) = FilePath.generateTmpEVFilePath(ext: "mp4")
+            let (videoEKFile, videoFilePath) = FilePath.generateTmpEKFilePath(ext: "mp4")
             VideoUtil.cropVideo(url: outputFileURL,
                                 destURL: videoFilePath,
                                 compressed: self.videoOutputCompressed,
                                 size: self.previewLayer.frame.size) {
                 try? FileManager.default.removeItem(at: outputFileURL)
                 let posterData = VideoUtil.videoPosterImage(url: videoFilePath)?.jpegData(compressionQuality: 0.8)
-                let (posterEVFile, posterFilePath) = FilePath.generateTmpEVFilePath(ext: "jpg")
+                let (posterEKFile, posterFilePath) = FilePath.generateTmpEKFilePath(ext: "jpg")
                 FileManager.default.createFile(atPath: posterFilePath.path, contents: posterData, attributes: nil)
-                self.delegate?.cameraCapture(self, didFinishRecord: videoEVFile, posterFilePath: posterEVFile)
+                self.delegate?.cameraCapture(self, didFinishRecord: videoEKFile, posterFilePath: posterEKFile)
             }
         }
     }
@@ -584,18 +584,18 @@ extension CameraCapture: AVCapturePhotoCaptureDelegate {
             image = image.sd_resizedImage(with: targetRect, scaleMode: .aspectFill) ?? image
             data = image.jpegData(compressionQuality: self.photoQuality) ?? data
             
-            let (evfile, filePath) = FilePath.generateTmpEVFilePath(ext: "jpg")
+            let (ekfile, filePath) = FilePath.generateTmpEKFilePath(ext: "jpg")
             do {
                 try FilePath.createDirectory(at: filePath.deletingLastPathComponent())
             } catch {
-                self.delegate?.cameraCapture(self, didFinishTakePhoto: .generateEVFileFail)
+                self.delegate?.cameraCapture(self, didFinishTakePhoto: .generateEKFileFail)
                 return
             }
             
             if FileManager.default.createFile(atPath: filePath.path, contents: data, attributes: nil) {
-                self.delegate?.cameraCapture(self, didFinishTakePhoto: evfile)
+                self.delegate?.cameraCapture(self, didFinishTakePhoto: ekfile)
             } else {
-                self.delegate?.cameraCapture(self, didFinishTakePhoto: .generateEVFileFail)
+                self.delegate?.cameraCapture(self, didFinishTakePhoto: .generateEKFileFail)
             }
         }
     }
@@ -607,7 +607,7 @@ protocol CameraCaptureDelegate: NSObjectProtocol {
     func cameraCapture(_ cameraCapture: CameraCapture, didCompleteInit maxZoom: CGFloat)
     
     // take photo
-    func cameraCapture(_ cameraCapture: CameraCapture, didFinishTakePhoto evfile: String)
+    func cameraCapture(_ cameraCapture: CameraCapture, didFinishTakePhoto ekfile: String)
     
     func cameraCapture(_ cameraCapture: CameraCapture, didFinishTakePhoto error: CameraCaptureError)
     
@@ -632,7 +632,7 @@ public enum CameraCaptureError: Error {
     
     case pixelBufferToDataFail
     
-    case generateEVFileFail
+    case generateEKFileFail
     
     case recordFail(String)
     

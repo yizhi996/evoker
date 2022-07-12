@@ -19,7 +19,7 @@ const props = {
   password: { type: Boolean, default: false },
   placeholder: { type: String, default: "" },
   placeholderStyle: { type: String, required: false },
-  placeholderClass: { type: String, default: "ev-input__placeholder" },
+  placeholderClass: { type: String, default: "ek-input__placeholder" },
   disabled: { type: Boolean, default: false },
   maxlength: { type: Number, default: 140 },
   cursorSpacing: { type: Number, default: 0 },
@@ -37,7 +37,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-input",
+  name: "ek-input",
   props,
   emits: ["focus", "blur", "input", "confirm", "keyboard-height-change", "update:value"],
   setup(props, { emit, expose }) {
@@ -209,16 +209,16 @@ export default defineComponent({
     })
 
     return () => (
-      <ev-input ref={container}>
-        <div ref={tongcengRef} class="ev-native__tongceng" id={tongcengKey}>
+      <ek-input ref={container}>
+        <div ref={tongcengRef} class="ek-native__tongceng" id={tongcengKey}>
           <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
         <p
           ref={placeholderEl}
-          class={classNames("ev-input__placeholder", props.placeholderClass)}
+          class={classNames("ek-input__placeholder", props.placeholderClass)}
           style={props.placeholderStyle}
         ></p>
-      </ev-input>
+      </ek-input>
     )
   }
 })

@@ -3,7 +3,7 @@ import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } fr
 import { isString } from "@vue/shared"
 import { Events, MAX_TIMEOUT, headerValueToString } from "./util"
 import { Task } from "./task"
-import { EVFILE_SCHEME } from "../const"
+import { EKFILE_SCHEME } from "../const"
 
 const uploadTasks: Map<string, UploadTask> = new Map()
 
@@ -108,7 +108,7 @@ export function uploadFile<T extends UploadFileOptions = UploadFileOptions>(
     return
   }
 
-  if (!filePath || !isString(filePath) || !filePath.startsWith(EVFILE_SCHEME)) {
+  if (!filePath || !isString(filePath) || !filePath.startsWith(EKFILE_SCHEME)) {
     invokeFailure(event, options, "upload filePath invalid")
     return
   }

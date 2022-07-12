@@ -34,7 +34,7 @@ enum OpenAPI: String, CaseIterableAPI {
         if let hook = Engine.shared.config.hooks.openAPI.login {
             hook(appService, bridge, args)
         } else {
-            let error = EVError.bridgeFailed(reason: .apiHookNotImplemented)
+            let error = EKError.bridgeFailed(reason: .apiHookNotImplemented)
             bridge.invokeCallbackFail(args: args, error: error)
         }
     }
@@ -43,7 +43,7 @@ enum OpenAPI: String, CaseIterableAPI {
         if let hook = Engine.shared.config.hooks.openAPI.checkSession {
             hook(appService, bridge, args)
         } else {
-            let error = EVError.bridgeFailed(reason: .apiHookNotImplemented)
+            let error = EKError.bridgeFailed(reason: .apiHookNotImplemented)
             bridge.invokeCallbackFail(args: args, error: error)
         }
     }
@@ -52,7 +52,7 @@ enum OpenAPI: String, CaseIterableAPI {
         if let hook = Engine.shared.config.hooks.openAPI.getUserInfo {
             hook(appService, bridge, args)
         } else {
-            let error = EVError.bridgeFailed(reason: .apiHookNotImplemented)
+            let error = EKError.bridgeFailed(reason: .apiHookNotImplemented)
             bridge.invokeCallbackFail(args: args, error: error)
         }
     }
@@ -61,7 +61,7 @@ enum OpenAPI: String, CaseIterableAPI {
         if let hook = Engine.shared.config.hooks.openAPI.getUserProfile {
             hook(appService, bridge, args)
         } else {
-            let error = EVError.bridgeFailed(reason: .apiHookNotImplemented)
+            let error = EKError.bridgeFailed(reason: .apiHookNotImplemented)
             bridge.invokeCallbackFail(args: args, error: error)
         }
     }

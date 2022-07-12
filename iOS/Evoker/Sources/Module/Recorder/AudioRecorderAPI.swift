@@ -35,13 +35,13 @@ enum AudioRecorderAPI: String, CaseIterableAPI {
         }
         
         guard let module: AudioRecorderModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(AudioRecorderModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(AudioRecorderModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

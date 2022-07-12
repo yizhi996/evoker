@@ -214,8 +214,8 @@ extension CameraEngine: CameraCaptureDelegate {
         }
     }
     
-    func cameraCapture(_ cameraCapture: CameraCapture, didFinishTakePhoto evfile: String) {
-        takePhotoCompletionHandler?(evfile, nil)
+    func cameraCapture(_ cameraCapture: CameraCapture, didFinishTakePhoto ekfile: String) {
+        takePhotoCompletionHandler?(ekfile, nil)
     }
     
     func cameraCapture(_ cameraCapture: CameraCapture, didFinishTakePhoto error: CameraCaptureError) {

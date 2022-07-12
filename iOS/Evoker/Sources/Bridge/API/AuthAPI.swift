@@ -35,13 +35,13 @@ enum AuthAPI: String, CaseIterableAPI {
             
     private func openAuthorizationView(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let viewController = appService.rootViewController else {
-            let error = EVError.bridgeFailed(reason: .visibleViewControllerNotFound)
+            let error = EKError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: AuthorizationView.Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -72,7 +72,7 @@ enum AuthAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -92,7 +92,7 @@ enum AuthAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

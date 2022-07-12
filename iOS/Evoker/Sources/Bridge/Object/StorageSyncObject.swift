@@ -43,7 +43,7 @@ import JavaScriptCore
                 return ["errMsg": error.localizedDescription]
             }
         }
-        return ["errMsg": EVError.bridgeFailed(reason: .appServiceNotFound).localizedDescription]
+        return ["errMsg": EKError.bridgeFailed(reason: .appServiceNotFound).localizedDescription]
     }
     
     public func setStorageSync(_ key: String, _ data: String, _ dataType: String) -> [String: Any] {
@@ -54,7 +54,7 @@ import JavaScriptCore
                 return [:]
             }
         }
-        return ["errMsg": EVError.bridgeFailed(reason: .appServiceNotFound).localizedDescription]
+        return ["errMsg": EKError.bridgeFailed(reason: .appServiceNotFound).localizedDescription]
     }
     
     public func getStorageInfoSync() -> [String: Any] {
@@ -66,7 +66,7 @@ import JavaScriptCore
                 return ["errMsg": error.localizedDescription]
             }
         }
-        return ["errMsg": EVError.bridgeFailed(reason: .appServiceNotFound).localizedDescription]
+        return ["errMsg": EKError.bridgeFailed(reason: .appServiceNotFound).localizedDescription]
     }
     
     public func removeStorageSync(_ key: String) -> [String: Any] {
@@ -77,7 +77,7 @@ import JavaScriptCore
             }
             return [:]
         }
-        return ["errMsg": EVError.bridgeFailed(reason: .appServiceNotFound).localizedDescription]
+        return ["errMsg": EKError.bridgeFailed(reason: .appServiceNotFound).localizedDescription]
     }
     
     public func clearStorageSync() -> [String: Any] {
@@ -88,6 +88,6 @@ import JavaScriptCore
             }
             return [:]
         }
-        return ["errMsg": EVError.bridgeFailed(reason: .appServiceNotFound).localizedDescription]
+        return ["errMsg": EKError.bridgeFailed(reason: .appServiceNotFound).localizedDescription]
     }
 }

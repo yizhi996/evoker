@@ -46,7 +46,7 @@ public extension JSBridge {
         } else if let event = Engine.shared.builtInAPIs[args.eventName] {
             event.onInvoke(appService: appService, bridge: self, args: args)
         } else {
-            let error = EVError.bridgeFailed(reason: .eventNotDefined)
+            let error = EKError.bridgeFailed(reason: .eventNotDefined)
             invokeCallbackFail(args: args, error: error)
         }
     }
@@ -107,7 +107,7 @@ public extension JSBridge {
                        data: result?.toJSONString())
     }
     
-    func invokeCallbackFail(args: JSBridge.InvokeArgs, error: EVError) {
+    func invokeCallbackFail(args: JSBridge.InvokeArgs, error: EKError) {
         invokeCallback(event: args.eventName,
                        callbackId: args.callbackId,
                        errMsg: error.localizedDescription,

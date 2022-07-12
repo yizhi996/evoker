@@ -10,7 +10,7 @@ describe("button", () => {
       }
     })
 
-    expect(button.classes("ev-button--primary")).toBe(true)
+    expect(button.classes("ek-button--primary")).toBe(true)
   })
 
   it("size", () => {
@@ -20,7 +20,7 @@ describe("button", () => {
       }
     })
 
-    expect(button.classes("ev-button--size-mini")).toBe(true)
+    expect(button.classes("ek-button--size-mini")).toBe(true)
   })
 
   it("color", () => {
@@ -51,6 +51,6 @@ describe("button", () => {
       }
     })
 
-    expect(button.find(".ev-loading").exists()).toBe(true)
+    expect(button.find(".ek-loading").exists()).toBe(true)
   })
 })

@@ -28,25 +28,25 @@ enum CryptoAPI: String, CaseIterableAPI {
     
     private func rsa(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let action = params["action"] as? String else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("action"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("action"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let key = params["key"] as? String, !key.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("key"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("key"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let text = params["text"] as? String, !text.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("text"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("text"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -58,7 +58,7 @@ enum CryptoAPI: String, CaseIterableAPI {
                 let encrypted = try clear.encrypted(with: publicKey, padding: .PKCS1)
                 bridge.invokeCallbackSuccess(args: args, result: ["text": encrypted.base64String])
             } catch {
-                let error = EVError.bridgeFailed(reason: .custom(error.localizedDescription))
+                let error = EKError.bridgeFailed(reason: .custom(error.localizedDescription))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         } else if action == "decrypt" {
@@ -69,7 +69,7 @@ enum CryptoAPI: String, CaseIterableAPI {
                 let string = try clear.string(encoding: .utf8)
                 bridge.invokeCallbackSuccess(args: args, result: ["text": string])
             } catch {
-                let error = EVError.bridgeFailed(reason: .custom(error.localizedDescription))
+                let error = EKError.bridgeFailed(reason: .custom(error.localizedDescription))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         }
@@ -77,13 +77,13 @@ enum CryptoAPI: String, CaseIterableAPI {
     
     private func getRandomValues(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let length = params["length"] as? Int else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("length"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("length"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

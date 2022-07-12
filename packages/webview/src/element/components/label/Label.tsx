@@ -7,18 +7,18 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-label",
+  name: "ek-label",
   props,
   setup(props) {
     const container = ref<HTMLElement>()
 
     const validTags = [
-      "EV-BUTTON",
-      "EV-INPUT",
-      "EV-TEXTAREA",
-      "EV-SWITCH",
-      "EV-RADIO",
-      "EV-CHECKBOX"
+      "EK-BUTTON",
+      "EK-INPUT",
+      "EK-TEXTAREA",
+      "EK-SWITCH",
+      "EK-RADIO",
+      "EK-CHECKBOX"
     ]
 
     const onTap = () => {
@@ -47,7 +47,7 @@ export default defineComponent({
     }
 
     return () => {
-      return withDirectives((<ev-label ref={container}></ev-label>) as VNode, [[vTap, onTap]])
+      return withDirectives((<ek-label ref={container}></ek-label>) as VNode, [[vTap, onTap]])
     }
   }
 })

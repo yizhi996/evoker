@@ -10,7 +10,7 @@ describe("progress", () => {
       }
     })
 
-    expect(progress.find(".ev-progress__active").attributes("style")).toContain("width: 50%")
+    expect(progress.find(".ek-progress__active").attributes("style")).toContain("width: 50%")
   })
 
   it("showInfo", () => {
@@ -21,7 +21,7 @@ describe("progress", () => {
       }
     })
 
-    expect(progress.find(".ev-progress__value").text()).toContain("50%")
+    expect(progress.find(".ek-progress__value").text()).toContain("50%")
   })
 
   it("borderRadius", () => {
@@ -31,7 +31,7 @@ describe("progress", () => {
       }
     })
 
-    expect(progress.find(".ev-progress__track").attributes("style")).toContain(
+    expect(progress.find(".ek-progress__track").attributes("style")).toContain(
       "border-radius: 10px"
     )
   })
@@ -44,7 +44,7 @@ describe("progress", () => {
       }
     })
 
-    expect(progress.find(".ev-progress__value").attributes("style")).toContain("font-size: 14px")
+    expect(progress.find(".ek-progress__value").attributes("style")).toContain("font-size: 14px")
   })
 
   it("strokeWidth", () => {
@@ -54,7 +54,7 @@ describe("progress", () => {
       }
     })
 
-    expect(progress.find(".ev-progress__track").attributes("style")).toContain("height: 5px")
+    expect(progress.find(".ek-progress__track").attributes("style")).toContain("height: 5px")
   })
 
   it("activeColor", () => {
@@ -64,7 +64,7 @@ describe("progress", () => {
       }
     })
 
-    expect(progress.find(".ev-progress__active").attributes("style")).toContain(
+    expect(progress.find(".ek-progress__active").attributes("style")).toContain(
       "background-color: orange"
     )
   })
@@ -76,7 +76,7 @@ describe("progress", () => {
       }
     })
 
-    expect(progress.find(".ev-progress__track").attributes("style")).toContain(
+    expect(progress.find(".ek-progress__track").attributes("style")).toContain(
       "background-color: orange"
     )
   })

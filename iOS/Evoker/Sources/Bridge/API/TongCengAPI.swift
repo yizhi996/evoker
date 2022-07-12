@@ -44,25 +44,25 @@ enum TongCengAPI: String, CaseIterableAPI {
     
     private func insertContainer(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: ContainerParams = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
               
         guard !params.tongcengId.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("tongcengId"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("tongcengId"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let scrollView = webView.findWKChildScrollView(tongcengId: params.tongcengId) else {
-            let error = EVError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.tongcengId))
+            let error = EKError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.tongcengId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -80,25 +80,25 @@ enum TongCengAPI: String, CaseIterableAPI {
     
     private func updateContainer(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: ContainerParams = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
               
         guard !params.tongcengId.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("tongcengId"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("tongcengId"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let container = webView.findTongCengContainerView(tongcengId: params.tongcengId) else {
-            let error = EVError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.tongcengId))
+            let error = EKError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.tongcengId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -110,19 +110,19 @@ enum TongCengAPI: String, CaseIterableAPI {
     
     private func removeContainer(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params = args.paramsString.toDict() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
               
         guard let tongcengId = params["tongcengId"] as? String, !tongcengId.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("tongcengId"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("tongcengId"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

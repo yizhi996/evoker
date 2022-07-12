@@ -7,7 +7,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-radio-group",
+  name: "ek-radio-group",
   props,
   emits: ["change"],
   setup(_, { emit, expose }) {
@@ -41,6 +41,6 @@ export default defineComponent({
       }
     })
 
-    return () => <ev-radio-group></ev-radio-group>
+    return () => <ek-radio-group></ek-radio-group>
   }
 })

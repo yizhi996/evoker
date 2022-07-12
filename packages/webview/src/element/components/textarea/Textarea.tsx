@@ -18,7 +18,7 @@ const props = {
   value: { type: String, default: "" },
   placeholder: { type: String, default: "" },
   placeholderStyle: { type: String, required: false },
-  placeholderClass: { type: String, default: "ev-textarea__placeholder" },
+  placeholderClass: { type: String, default: "ek-textarea__placeholder" },
   disabled: { type: Boolean, default: false },
   maxlength: { type: Number, default: 140 },
   focus: { type: Boolean, default: false },
@@ -40,7 +40,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-textarea",
+  name: "ek-textarea",
   props,
   emits: [
     "focus",
@@ -243,16 +243,16 @@ export default defineComponent({
     })
 
     return () => (
-      <ev-textarea ref={container}>
-        <div ref={tongcengRef} class="ev-native__tongceng" id={tongcengKey}>
+      <ek-textarea ref={container}>
+        <div ref={tongcengRef} class="ek-native__tongceng" id={tongcengKey}>
           <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
         <p
           ref={placeholderEl}
-          class={classNames("ev-textarea__placeholder", props.placeholderClass)}
+          class={classNames("ek-textarea__placeholder", props.placeholderClass)}
           style={props.placeholderStyle}
         ></p>
-      </ev-textarea>
+      </ek-textarea>
     )
   }
 })

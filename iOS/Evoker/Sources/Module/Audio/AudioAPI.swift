@@ -94,19 +94,19 @@ enum AudioAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = appService.currentPage as? WebPage else {
-            let error = EVError.bridgeFailed(reason: .appServiceNotFound)
+            let error = EKError.bridgeFailed(reason: .appServiceNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let module: AudioModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(AudioModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(AudioModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -115,7 +115,7 @@ enum AudioAPI: String, CaseIterableAPI {
         case .play:
             if case .play(var data) = params.data {
                 let src = data.src
-                data._url = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: src) ?? URL(string: src)
+                data._url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: src) ?? URL(string: src)
                 if let player = module.players.get(page.pageId, params.audioId) {
                     player.params = data
                     player.play()
@@ -197,7 +197,7 @@ enum AudioAPI: String, CaseIterableAPI {
             guard let player = module.players.get(page.pageId, params.audioId) else { break }
             if case .setSrc(let data) = params.data {
                 let src = data.src
-                let url = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: src) ?? URL(string: src)
+                let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: src) ?? URL(string: src)
                 player.params?._url = url
             }
         case .setPlaybackRate:
@@ -223,13 +223,13 @@ enum AudioAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let module: AudioModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(AudioModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(AudioModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

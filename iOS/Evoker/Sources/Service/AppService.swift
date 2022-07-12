@@ -168,7 +168,7 @@ final public class AppService {
         Engine.shared.allModules().forEach { modules[$0.name] = $0.init(appService: self) }
     }
     
-    func launch(to viewController: UIViewController? = nil) -> EVError? {
+    func launch(to viewController: UIViewController? = nil) -> EKError? {
         let path = launchOptions.path
         guard let info = generateFirstViewController(with: path) else { return .appLaunchPathNotFound(path) }
         
@@ -212,7 +212,7 @@ final public class AppService {
         return nil
     }
     
-    func loadAppPackage() -> EVError? {
+    func loadAppPackage() -> EKError? {
         let dist = FilePath.appDist(appId: appId, envVersion: launchOptions.envVersion)
         let fileName = "app-service.js"
         let appServiceURL = dist.appendingPathComponent(fileName)
@@ -230,7 +230,7 @@ final public class AppService {
             context.evaluateScript(cfgjs)
         } else {
             Logger.error("load app code failed: \(appServiceURL.path) file not exist")
-            return EVError.appServiceBundleNotFound
+            return EKError.appServiceBundleNotFound
         }
         return nil
     }
@@ -676,7 +676,7 @@ public extension AppService {
         }
     }
     
-    func redirectTo(_ url: String) -> EVError? {
+    func redirectTo(_ url: String) -> EKError? {
         let (path, _) = url.decodeURL()
         
         if let tabBar = config.tabBar, tabBar.list.contains(where: { $0.path == path }) {
@@ -768,7 +768,7 @@ public extension AppService {
         rootViewController?.dismiss(animated: animated, completion: completion)
     }
     
-    func reLaunch(url: String) -> EVError? {
+    func reLaunch(url: String) -> EKError? {
         guard let rootViewController = rootViewController else { return .appRootViewControllerNotFound }
         guard let info = generateFirstViewController(with: url) else { return .appLaunchPathNotFound(url) }
         

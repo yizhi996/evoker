@@ -17,7 +17,7 @@ class WebPSchemeHandler: NSObject, WKURLSchemeHandler {
     
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
         guard let url = urlSchemeTask.request.url else {
-            urlSchemeTask.didFailWithError(EVError.createURLFailed(urlSchemeTask.request.url?.absoluteString ?? ""))
+            urlSchemeTask.didFailWithError(EKError.createURLFailed(urlSchemeTask.request.url?.absoluteString ?? ""))
             return
         }
         
@@ -30,7 +30,7 @@ class WebPSchemeHandler: NSObject, WKURLSchemeHandler {
         }
         
         guard let newURL = URL(string: urlstr) else {
-            urlSchemeTask.didFailWithError(EVError.createURLFailed(urlstr))
+            urlSchemeTask.didFailWithError(EKError.createURLFailed(urlstr))
             return
         }
         
@@ -56,7 +56,7 @@ class WebPSchemeHandler: NSObject, WKURLSchemeHandler {
             } else if let image = image, let data = image.sd_imageData() {
                 self.responseImage(newURL, data: data, urlSchemeTask: urlSchemeTask)
             } else {
-                urlSchemeTask.didFailWithError(EVError.httpRequestFailed)
+                urlSchemeTask.didFailWithError(EKError.httpRequestFailed)
             }
         }
     }

@@ -25,7 +25,7 @@ public typealias FloatBlock = (Float) -> Void
 
 public typealias URLBlock = (URL) -> Void
 
-public typealias EVErrorBlock = (EVError?) -> Void
+public typealias EKErrorBlock = (EKError?) -> Void
 
 struct Constant {
     

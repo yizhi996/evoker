@@ -65,7 +65,7 @@ const emits = [
 ]
 
 export default defineComponent({
-  name: "ev-video",
+  name: "ek-video",
   props,
   emits,
   setup(props, { emit, expose }) {
@@ -666,8 +666,8 @@ export default defineComponent({
           (
             <div
               v-show={!isLocked.value}
-              class={classNames("ev-video__control__bar", {
-                "ev-video__control__bar--fullscreen": videoData.fullscreen
+              class={classNames("ek-video__control__bar", {
+                "ek-video__control__bar--fullscreen": videoData.fullscreen
               })}
             >
               {props.showPlayBtn && props.playBtnPosition === "bottom" ? (
@@ -695,7 +695,7 @@ export default defineComponent({
 
       const rightButtons = () => {
         return (
-          <div class="ev-video__control__bar__right">
+          <div class="ek-video__control__bar__right">
             {props.showMuteBtn ? (
               <VideoButton
                 type={videoData.muted ? "mute-on" : "mute-off"}
@@ -715,16 +715,16 @@ export default defineComponent({
       }
 
       return (
-        <div v-show={isShowControl.value} class="ev-video__control">
+        <div v-show={isShowControl.value} class="ek-video__control">
           <VideoButton
             v-show={videoData.fullscreen && props.showScreenLockButton}
-            class="ev-video__control__lock"
+            class="ek-video__control__lock"
             type={isLocked.value ? "lock" : "unlock"}
             onClick={controlsLock}
           ></VideoButton>
-          <div v-show={videoData.fullscreen && !isLocked.value} class="ev-video__control__bar__top">
+          <div v-show={videoData.fullscreen && !isLocked.value} class="ek-video__control__bar__top">
             <VideoButton type="back" onClick={fullScreenSwitch}></VideoButton>
-            <div class="ev-video__title">{props.title}</div>
+            <div class="ek-video__title">{props.title}</div>
           </div>
           {centerPlayButton()}
           {bottomBar()}
@@ -735,7 +735,7 @@ export default defineComponent({
     const renderTongceng = () => {
       return (
         <div
-          class="ev-native__tongceng ev-video__native"
+          class="ek-native__tongceng ek-video__native"
           ref={tongcengRef}
           id={tongcengKey}
           style={tongcengSize.value}
@@ -748,12 +748,12 @@ export default defineComponent({
     const renderCover = () => {
       if (props.showCenterPlayBtn && showCenterPlayCover.value) {
         return (
-          <div class="ev-video__cover">
+          <div class="ek-video__cover">
             {withDirectives(
-              (<div class="ev-video__cover__play ev-video__icon--play"></div>) as VNode,
+              (<div class="ek-video__cover__play ek-video__icon--play"></div>) as VNode,
               [[vTap, clickCenterPlayButton, "", { stop: true }]]
             )}
-            <span class="ev-video__cover__duration">{secondsToDuration(videoData.duration)}</span>
+            <span class="ek-video__cover__duration">{secondsToDuration(videoData.duration)}</span>
           </div>
         )
       } else if (props.controls) {
@@ -763,19 +763,19 @@ export default defineComponent({
 
     const renderWrapper = () => {
       return (
-        <div class="ev-video__wrapper" style={tongcengSize.value}>
+        <div class="ek-video__wrapper" style={tongcengSize.value}>
           {isBufferLoading.value ? (
-            <Loading class="ev-video__loading" size="50px" color="white" />
+            <Loading class="ek-video__loading" size="50px" color="white" />
           ) : null}
           {props.poster && videoData.showPoster && (
-            <img class="ev-video__poster" src={props.poster} />
+            <img class="ek-video__poster" src={props.poster} />
           )}
           {renderCover()}
           <VideoScreenBrightness
             v-show={isShowScreenBrightnessToast.value}
             value={screenBrightness.value}
           ></VideoScreenBrightness>
-          <div v-show={isShowSeekTime.value} class="ev-video__seektime">
+          <div v-show={isShowSeekTime.value} class="ek-video__seektime">
             {secondsToDuration(currentTime.value)}
           </div>
         </div>
@@ -785,7 +785,7 @@ export default defineComponent({
     return () => {
       return withDirectives(
         (
-          <ev-video
+          <ek-video
             ref={viewRef}
             onTouchstart={onStartPanGesture}
             onTouchmove={onMovePanGesture}
@@ -794,8 +794,8 @@ export default defineComponent({
           >
             {renderTongceng()}
             {renderWrapper()}
-            <div class="ev-video__slot" style={tongcengSize.value}></div>
-          </ev-video>
+            <div class="ek-video__slot" style={tongcengSize.value}></div>
+          </ek-video>
         ) as VNode,
         [[vTap, showOrHideControl, "", { stop: true }]]
       )

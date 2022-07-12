@@ -56,7 +56,7 @@ extension FilePath {
 
 public extension FilePath {
     
-    typealias EVFile = String
+    typealias EKFile = String
     
     /// Document/com.evokerdev/sandbox/{userId}
     static func sandbox(userId: String = Engine.shared.userId) -> URL {
@@ -100,20 +100,20 @@ public extension FilePath {
             .appendingPathComponent("storage.db")
     }
     
-    static func generateStoreEVFilePath(appId: String, userId: String = Engine.shared.userId, ext: String) -> (EVFile, URL) {
+    static func generateStoreEKFilePath(appId: String, userId: String = Engine.shared.userId, ext: String) -> (EKFile, URL) {
         let id = UUID().uuidString.md5()
         let filename = "store_\(id).\(ext)"
-        return ("evfile://\(filename)", FilePath.store(appId: appId, userId: userId, filename: filename))
+        return ("ekfile://\(filename)", FilePath.store(appId: appId, userId: userId, filename: filename))
     }
     
-    static func generateTmpEVFilePath(ext: String) -> (EVFile, URL) {
+    static func generateTmpEKFilePath(ext: String) -> (EKFile, URL) {
         let id = UUID().uuidString.md5()
         let filename = "tmp_\(id).\(ext)"
-        return ("evfile://\(filename)", FilePath.tmp(filename: filename))
+        return ("ekfile://\(filename)", FilePath.tmp(filename: filename))
     }
     
-    static func evFilePathToRealFilePath(appId: String, userId: String = Engine.shared.userId, filePath: String) -> URL? {
-        let scheme = "evfile://"
+    static func ekFilePathToRealFilePath(appId: String, userId: String = Engine.shared.userId, filePath: String) -> URL? {
+        let scheme = "ekfile://"
         let usr = scheme + "usr"
         let store = scheme + "store_"
         let tmp = scheme + "tmp_"

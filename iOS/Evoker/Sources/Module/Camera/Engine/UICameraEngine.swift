@@ -102,7 +102,7 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
                                 quality: compressed ? .medium : .high,
                                 bitrate: nil,
                                 fps: nil,
-                                resolution: nil) { evfile, fileSize, size, error in
+                                resolution: nil) { ekfile, fileSize, size, error in
             if error != nil {
                 guard let track = asset.tracks(withMediaType: .video).first else {
                     self.errorHandler?("get video track failed")
@@ -112,10 +112,10 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
                 
                 let size = track.naturalSize.applying(track.preferredTransform)
                 let ext = url.pathExtension.lowercased()
-                let (evfile, destination) = FilePath.generateTmpEVFilePath(ext: ext)
+                let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: ext)
                 do {
                     try FileManager.default.moveItem(at: url, to: destination)
-                    let videoData = VideoData(tempFilePath: evfile,
+                    let videoData = VideoData(tempFilePath: ekfile,
                                               duration: duration,
                                               size: destination.fileSize,
                                               width: abs(size.width),
@@ -127,7 +127,7 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
                 completionHandler()
             } else {
                 try? FileManager.default.removeItem(at: url)
-                let videoData = VideoData(tempFilePath: evfile,
+                let videoData = VideoData(tempFilePath: ekfile,
                                           duration: duration,
                                           size: fileSize,
                                           width: abs(size.width),
@@ -147,13 +147,13 @@ extension UICameraEngine: UIImagePickerControllerDelegate {
         if mediaType == String(kUTTypeImage) {
             if let image = info[.originalImage] as? UIImage,
                let imageData = image.jpegData(compressionQuality: compressed ? 0.7 : 1.0) {
-                let (evfile, destination) = FilePath.generateTmpEVFilePath(ext: "jpg")
+                let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: "jpg")
                 let success = FileManager.default.createFile(atPath: destination.path,
                                                              contents: imageData,
                                                              attributes: nil)
                 if success {
-                    let data = PhotoData(tempFilePath: evfile,
-                                         tempFile: PhotoData.File(path: evfile, size: imageData.count))
+                    let data = PhotoData(tempFilePath: ekfile,
+                                         tempFile: PhotoData.File(path: ekfile, size: imageData.count))
                     takePhotoHandler?(data)
                 } else {
                     errorHandler?("save image to disk fail")

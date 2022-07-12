@@ -18,7 +18,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-progress",
+  name: "ek-progress",
   props,
   emits: ["activeend"],
   setup(props, { emit }) {
@@ -65,7 +65,7 @@ export default defineComponent({
 
       return (
         <div
-          class="ev-progress__track"
+          class="ek-progress__track"
           style={{
             height: `${unitToPx(props.strokeWidth)}px`,
             "background-color": props.backgroundColor,
@@ -73,7 +73,7 @@ export default defineComponent({
           }}
         >
           <div
-            class="ev-progress__active"
+            class="ek-progress__active"
             style={{
               width: `${clamp(currentPercent.value, 0, 100)}%`,
               "background-color": props.activeColor,
@@ -89,17 +89,17 @@ export default defineComponent({
         return
       }
       return (
-        <span class="ev-progress__value" style={{ "font-size": `${unitToPx(props.fontSize)}px` }}>
+        <span class="ek-progress__value" style={{ "font-size": `${unitToPx(props.fontSize)}px` }}>
           {props.percent}%
         </span>
       )
     }
 
     return () => (
-      <ev-progress>
+      <ek-progress>
         {renderTrack()}
         {renderValut()}
-      </ev-progress>
+      </ek-progress>
     )
   }
 })

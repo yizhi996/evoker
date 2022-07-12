@@ -40,7 +40,7 @@ export function selector(data: any[]) {
 
     if (fields.context) {
       if (isEvokerElement(el)) {
-        if (["EV-VIDEO"].includes(el.tagName)) {
+        if (["EK-VIDEO"].includes(el.tagName)) {
           const instance = el.__instance
           const contextId = instance.exposed!.getContextId()
           res.context = {

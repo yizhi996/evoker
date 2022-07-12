@@ -35,13 +35,13 @@ enum StorageAPI: String, CaseIterableAPI {
     
     private func getStorage(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let key = params["key"] as? String, !key.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("key"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("key"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -56,25 +56,25 @@ enum StorageAPI: String, CaseIterableAPI {
     
     private func setStorage(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let key = params["key"] as? String, !key.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("key"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("key"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let data = params["data"] as? String else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("data"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("data"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let dataType = params["dataType"] as? String, !dataType.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("dataType"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("dataType"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -88,13 +88,13 @@ enum StorageAPI: String, CaseIterableAPI {
     
     private func removeStorage(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let key = params["key"] as? String, !key.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("key"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("key"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

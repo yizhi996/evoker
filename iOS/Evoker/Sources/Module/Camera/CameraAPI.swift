@@ -43,25 +43,25 @@ enum CameraAPI: String, CaseIterableAPI {
         }
 
         guard let webView = bridge.container as? WebView, let page = webView.page else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let module: CameraModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(CameraModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(CameraModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let container = webView.findTongCengContainerView(tongcengId: params.parentId) else {
-            let error = EVError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
+            let error = EKError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -92,7 +92,7 @@ enum CameraAPI: String, CaseIterableAPI {
         }
         
         let denied = {
-            let error = EVError.bridgeFailed(reason: .custom("insertCamera: fail auth deny"))
+            let error = EKError.bridgeFailed(reason: .custom("insertCamera: fail auth deny"))
             bridge.subscribeHandler(method: CameraEngine.onErrorSubscribeKey,
                                     data: ["cameraId": params.cameraId, "error": error.localizedDescription])
         }
@@ -121,25 +121,25 @@ enum CameraAPI: String, CaseIterableAPI {
         }
 
         guard let webView = bridge.container as? WebView, let page = webView.page else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let module: CameraModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(CameraModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(CameraModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let camera = module.cameras[page.pageId] else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(CameraModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(CameraModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -220,25 +220,25 @@ enum CameraAPI: String, CaseIterableAPI {
         }
 
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = appService.currentPage as? WebPage else {
-            let error = EVError.bridgeFailed(reason: .appServiceNotFound)
+            let error = EKError.bridgeFailed(reason: .appServiceNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let module: CameraModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(CameraModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(CameraModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let cameraEngine = module.cameras[page.pageId] else {
-            let error = EVError.bridgeFailed(reason: .cameraNotFound(params.cameraId))
+            let error = EKError.bridgeFailed(reason: .cameraNotFound(params.cameraId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -246,12 +246,12 @@ enum CameraAPI: String, CaseIterableAPI {
         switch params.method {
         case .takePhoto:
             if case .takePhoto(let data) = params.data {
-                cameraEngine.takePhoto(quality: data.quality.toNumber()) { evfile, error in
+                cameraEngine.takePhoto(quality: data.quality.toNumber()) { ekfile, error in
                     if let error = error {
-                        let error = EVError.bridgeFailed(reason: .custom(error.localizedDescription))
+                        let error = EKError.bridgeFailed(reason: .custom(error.localizedDescription))
                         bridge.invokeCallbackFail(args: args, error: error)
-                    } else if let evfile = evfile {
-                        bridge.invokeCallbackSuccess(args: args, result: ["tempImagePath": evfile])
+                    } else if let ekfile = ekfile {
+                        bridge.invokeCallbackSuccess(args: args, result: ["tempImagePath": ekfile])
                     } else {
                         bridge.invokeCallbackFail(args: args, error: .custom("take photo fail"))
                     }
@@ -260,7 +260,7 @@ enum CameraAPI: String, CaseIterableAPI {
         case .startRecord:
             cameraEngine.startRecording { error in
                 if let error = error {
-                    let error = EVError.bridgeFailed(reason: .custom(error.localizedDescription))
+                    let error = EKError.bridgeFailed(reason: .custom(error.localizedDescription))
                     bridge.invokeCallbackFail(args: args, error: error)
                 } else {
                     bridge.invokeCallbackSuccess(args: args)
@@ -270,7 +270,7 @@ enum CameraAPI: String, CaseIterableAPI {
             if case .stopRecord(let data) = params.data {
                 cameraEngine.stopRecord(compressed: data.compressed) { video, poster, error in
                     if let error = error {
-                        let error = EVError.bridgeFailed(reason: .custom(error.localizedDescription))
+                        let error = EKError.bridgeFailed(reason: .custom(error.localizedDescription))
                         bridge.invokeCallbackFail(args: args, error: error)
                     } else {
                         bridge.invokeCallbackSuccess(args: args,
@@ -282,7 +282,7 @@ enum CameraAPI: String, CaseIterableAPI {
             if case .setZoom(let data) = params.data {
                 cameraEngine.setZoom(data.zoom) { error in
                     if let error = error {
-                        let error = EVError.bridgeFailed(reason: .custom(error.localizedDescription))
+                        let error = EKError.bridgeFailed(reason: .custom(error.localizedDescription))
                         bridge.invokeCallbackFail(args: args, error: error)
                     } else {
                         bridge.invokeCallbackSuccess(args: args, result: ["zoom": cameraEngine.zoom])
@@ -326,30 +326,30 @@ enum CameraAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let cameraModule: CameraModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(CameraModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(CameraModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let viewController = appService.rootViewController else {
-            let error = EVError.bridgeFailed(reason: .visibleViewControllerNotFound)
+            let error = EKError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         let camera = cameraModule.uiCamera
         camera.cancelHandler = {
-            let error = EVError.bridgeFailed(reason: .cancel)
+            let error = EKError.bridgeFailed(reason: .cancel)
             bridge.invokeCallbackFail(args: args, error: error)
         }
         camera.errorHandler = { [unowned bridge] errmsg in
-            let error = EVError.bridgeFailed(reason: .custom(errmsg))
+            let error = EKError.bridgeFailed(reason: .custom(errmsg))
             bridge.invokeCallbackFail(args: args, error: error)
         }
         let compressed = params.sizeType.contains(.compressed)

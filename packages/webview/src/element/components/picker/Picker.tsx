@@ -19,7 +19,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-picker",
+  name: "ek-picker",
   props,
   emits: ["change", "columnchange", "cancel"],
   setup(props, { emit, expose }) {
@@ -166,7 +166,7 @@ export default defineComponent({
     })
 
     return () => {
-      const node = <ev-picker></ev-picker>
+      const node = <ek-picker></ek-picker>
 
       return withDirectives(node as VNode, [[vTap, onClick]])
     }

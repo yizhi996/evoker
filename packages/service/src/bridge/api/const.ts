@@ -1,3 +1,3 @@
-export const EVFILE_SCHEME = "evfile://"
+export const EKFILE_SCHEME = "ekfile://"
 
-export const env = { USER_DATA_PATH: EVFILE_SCHEME + "usr" }
+export const env = { USER_DATA_PATH: EKFILE_SCHEME + "usr" }

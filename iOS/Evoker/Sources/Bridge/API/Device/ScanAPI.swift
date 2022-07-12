@@ -24,7 +24,7 @@ enum ScanAPI: String, CaseIterableAPI {
     
     private func scanCode(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {        
         guard let params: ScanCodeViewModel.Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -34,7 +34,7 @@ enum ScanAPI: String, CaseIterableAPI {
             bridge.invokeCallbackSuccess(args: args, result: ["result": value, "scanType": type])
         }
         viewModel.cancelHandler = {
-            let error = EVError.bridgeFailed(reason: .cancel)
+            let error = EKError.bridgeFailed(reason: .cancel)
             bridge.invokeCallbackFail(args: args, error: error)
         }
         let viewController = viewModel.generateViewController()

@@ -9,7 +9,7 @@ import { useJSAnimation } from "../../composables/useJSAnimation"
 import { classNames } from "../../utils"
 
 export default defineComponent({
-  name: "ev-picker-view-column",
+  name: "ek-picker-view-column",
   setup(_, { expose }) {
     const instance = getCurrentInstance()!
 
@@ -207,27 +207,27 @@ export default defineComponent({
     })
 
     return () => (
-      <ev-picker-view-column>
-        <div ref={groupRef} class="ev-picker-view-column__group">
+      <ek-picker-view-column>
+        <div ref={groupRef} class="ek-picker-view-column__group">
           <div
-            class={classNames("ev-picker-view-column__mask", maskClass.value)}
+            class={classNames("ek-picker-view-column__mask", maskClass.value)}
             style={combineMaskStyle.value}
           ></div>
           <div
             ref={indicatorRef}
-            class={classNames("ev-picker-view-column__indicator", indicatorClass.value)}
+            class={classNames("ek-picker-view-column__indicator", indicatorClass.value)}
             style={indicatorStyle.value}
           ></div>
           <div
             ref={contentRef}
-            class="ev-picker-view-column__content"
+            class="ek-picker-view-column__content"
             style={{
               transform: `translate3d(0, ${translateY.value}px, 0)`,
               padding: `${indicatorTop.value}px 0px`
             }}
           ></div>
         </div>
-      </ev-picker-view-column>
+      </ek-picker-view-column>
     )
   }
 })

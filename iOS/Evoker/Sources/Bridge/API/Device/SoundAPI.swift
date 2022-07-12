@@ -24,7 +24,7 @@ enum SoundAPI: String, CaseIterableAPI {
     
     private func playSystemSound(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

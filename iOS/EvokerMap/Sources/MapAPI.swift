@@ -27,31 +27,31 @@ enum MapAPI: String, CaseIterableAPI {
     
     private func insertMap(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = webView.page else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: MapView.Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let container = webView.findTongCengContainerView(tongcengId: params.parentId) else {
-            let error = EVError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
+            let error = EKError.bridgeFailed(reason: .tongCengContainerViewNotFound(params.parentId))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let mapModule: MapModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(MapModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(MapModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -67,25 +67,25 @@ enum MapAPI: String, CaseIterableAPI {
     
     private func updateMap(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = webView.page else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: MapView.UpdateParams = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let mapModule: MapModule = appService.getModule() else {
-            let error = EVError.bridgeFailed(reason: .moduleNotFound(MapModule.name))
+            let error = EKError.bridgeFailed(reason: .moduleNotFound(MapModule.name))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

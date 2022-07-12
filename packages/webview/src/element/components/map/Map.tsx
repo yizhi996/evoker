@@ -22,7 +22,7 @@ const props = {
 }
 
 export default defineComponent({
-  name: "ev-map",
+  name: "ek-map",
   props,
   emits: ["updated", "tap", "tappoi", "regionchange"],
   setup(props, { emit }) {
@@ -187,16 +187,16 @@ export default defineComponent({
     }
 
     return () => (
-      <ev-map>
+      <ek-map>
         <div
           ref={tongcengRef}
-          class="ev-native__tongceng"
+          class="ek-native__tongceng"
           style="position: absolute"
           id={tongcengKey}
         >
           <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
-      </ev-map>
+      </ek-map>
     )
   }
 })

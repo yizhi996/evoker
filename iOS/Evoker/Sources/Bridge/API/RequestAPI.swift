@@ -48,13 +48,13 @@ enum RequestAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard !params.url.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("url"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("url"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -108,12 +108,12 @@ enum RequestAPI: String, CaseIterableAPI {
                                                                       "cookies": cookies,
                                                                       "data": result])
                 case .failure(let error):
-                    let error = EVError.bridgeFailed(reason: .networkError(error.localizedDescription))
+                    let error = EKError.bridgeFailed(reason: .networkError(error.localizedDescription))
                     bridge.invokeCallbackFail(args: args, error: error)
                 }
             })
         } catch {
-            let error = EVError.bridgeFailed(reason: .networkError(error.localizedDescription))
+            let error = EKError.bridgeFailed(reason: .networkError(error.localizedDescription))
             bridge.invokeCallbackFail(args: args, error: error)
         }
     }
@@ -129,7 +129,7 @@ enum RequestAPI: String, CaseIterableAPI {
     private func cancelRequest(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict(),
               let taskId = params["taskId"] as? String else {
-                  let error = EVError.bridgeFailed(reason: .fieldRequired("taskId"))
+                  let error = EKError.bridgeFailed(reason: .fieldRequired("taskId"))
                   bridge.invokeCallbackFail(args: args, error: error)
                   return
               }
@@ -151,12 +151,12 @@ enum RequestAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        var destinationEVFilePath = ""
+        var destinationEKFilePath = ""
         let destination: DownloadRequest.Destination = { temporaryURL, response in
             let fn = response.suggestedFilename!
             var ext = "unknown"
@@ -168,8 +168,8 @@ enum RequestAPI: String, CaseIterableAPI {
             if !params.filePath.isEmpty {
                 dest = FilePath.usr(appId: appService.appId, path: params.filePath)
             } else {
-                let (evfile, filePath) = FilePath.generateTmpEVFilePath(ext: ext)
-                destinationEVFilePath = evfile
+                let (ekfile, filePath) = FilePath.generateTmpEKFilePath(ext: ext)
+                destinationEKFilePath = ekfile
                 dest = filePath
             }
             return (dest, [.removePreviousFile, .createIntermediateDirectories])
@@ -197,12 +197,12 @@ enum RequestAPI: String, CaseIterableAPI {
             case .success(let data):
                 bridge.invokeCallbackSuccess(args: args, result: [
                     "statusCode": response.response!.statusCode,
-                    "tempFilePath": destinationEVFilePath,
+                    "tempFilePath": destinationEKFilePath,
                     "header": response.response!.headers.dictionary,
                     "dataLength": data.count
                 ])
             case .failure(let error):
-                let error = EVError.bridgeFailed(reason: .networkError(error.localizedDescription))
+                let error = EKError.bridgeFailed(reason: .networkError(error.localizedDescription))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         }
@@ -221,13 +221,13 @@ enum RequestAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        guard let filePath = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: params.filePath) else {
-            let error = EVError.bridgeFailed(reason: .filePathNotExist(params.filePath))
+        guard let filePath = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: params.filePath) else {
+            let error = EKError.bridgeFailed(reason: .filePathNotExist(params.filePath))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -269,12 +269,12 @@ enum RequestAPI: String, CaseIterableAPI {
                     ]
                     bridge.invokeCallbackSuccess(args: args, result: callback)
                 case let .failure(error):
-                    let error = EVError.bridgeFailed(reason: .networkError(error.localizedDescription))
+                    let error = EKError.bridgeFailed(reason: .networkError(error.localizedDescription))
                     bridge.invokeCallbackFail(args: args, error: error)
                 }
             }
         } catch {
-            let error = EVError.bridgeFailed(reason: .networkError(error.localizedDescription))
+            let error = EKError.bridgeFailed(reason: .networkError(error.localizedDescription))
             bridge.invokeCallbackFail(args: args, error: error)
         }
     }

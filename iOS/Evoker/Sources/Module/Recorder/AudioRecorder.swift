@@ -99,15 +99,15 @@ class AudioRecorder: NSObject {
                 AVNumberOfChannelsKey: params.numberOfChannels,
                 AVSampleRateKey: params.sampleRate
             ]  as [String : Any]
-            let (evfile, filePath) = FilePath.generateTmpEVFilePath(ext: params.format.toExtension())
-            currentFile = (evfile, filePath)
+            let (ekfile, filePath) = FilePath.generateTmpEKFilePath(ext: params.format.toExtension())
+            currentFile = (ekfile, filePath)
             try recorder = AVAudioRecorder(url: filePath, settings: settings)
             recorder!.delegate = self
             let success = recorder!.record(forDuration: params.duration / 1000)
             if success {
                 onStartHandler?()
             } else {
-                onErrorHandler?(EVError.custom("start record fail"))
+                onErrorHandler?(EKError.custom("start record fail"))
             }
         } catch {
             onErrorHandler?(error)
@@ -133,7 +133,7 @@ class AudioRecorder: NSObject {
             if success {
                 onResumeHandler?()
             } else {
-                onErrorHandler?(EVError.custom("resume record fail"))
+                onErrorHandler?(EKError.custom("resume record fail"))
             }
         }
     }
@@ -173,7 +173,7 @@ extension AudioRecorder: AVAudioRecorderDelegate {
         let session = AVAudioSession.sharedInstance()
         try? session.setActive(false)
         guard let currentFile = currentFile else {
-            onErrorHandler?(EVError.custom("tempFilePath not exist"))
+            onErrorHandler?(EKError.custom("tempFilePath not exist"))
             return
         }
         

@@ -56,7 +56,7 @@ extension EngineConfig.Hooks {
     
     public class App {
         
-        public typealias GetAppInfoCompletionHandler = (AppInfo?, EVError?) -> Void
+        public typealias GetAppInfoCompletionHandler = (AppInfo?, EKError?) -> Void
         
         /// App 在启动时需要获取 App Info
         public var getAppInfo: ((String, AppEnvVersion, GetAppInfoCompletionHandler) -> Void)?

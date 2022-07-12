@@ -116,11 +116,11 @@ struct VideoUtil {
         case high
     }
     
-    typealias CompressVideoCompletionHandler = (FilePath.EVFile, Int, CGSize, EVError?) -> Void
+    typealias CompressVideoCompletionHandler = (FilePath.EKFile, Int, CGSize, EKError?) -> Void
     
     static func compressVideo(url: URL, quality: CompressQuality?, bitrate: Float?, fps: Float?, resolution: CGFloat?, completionHandler handler:  @escaping CompressVideoCompletionHandler) {
         guard FileManager.default.fileExists(atPath: url.path) else {
-            handler("", 0, .zero, EVError.bridgeFailed(reason: .contentNotFound))
+            handler("", 0, .zero, EKError.bridgeFailed(reason: .contentNotFound))
             return
         }
         
@@ -128,7 +128,7 @@ struct VideoUtil {
         
         let videoTracks = asset.tracks(withMediaType: .video)
         guard let videoTrack = videoTracks.first else {
-            handler("", 0, .zero, EVError.bridgeFailed(reason: .custom("video track not found")))
+            handler("", 0, .zero, EKError.bridgeFailed(reason: .custom("video track not found")))
             return
         }
         
@@ -180,12 +180,12 @@ struct VideoUtil {
   
         let type = asset.url.pathExtension.lowercased()
         guard let outputFileType = VideoUtil.pathExtendsionToAVFileType(type) else {
-            let error = EVError.bridgeFailed(reason: .custom("file type not supported, only support mp4, m4v, mov"))
+            let error = EKError.bridgeFailed(reason: .custom("file type not supported, only support mp4, m4v, mov"))
              handler("", 0, .zero, error)
             return
         }
 
-        let (evfile, destination) = FilePath.generateTmpEVFilePath(ext: type)
+        let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: type)
         do {
             let reader = try AVAssetReader(asset: asset)
             let writer = try AVAssetWriter(outputURL: destination, fileType: outputFileType)
@@ -208,7 +208,7 @@ struct VideoUtil {
             if writer.canAdd(videoWriterInput) {
                 writer.add(videoWriterInput)
             } else {
-                handler("", 0, .zero, EVError.custom("cannot add input"))
+                handler("", 0, .zero, EKError.custom("cannot add input"))
                 return
             }
             
@@ -230,7 +230,7 @@ struct VideoUtil {
             if reader.canAdd(videoReaderOutput) {
                 reader.add(videoReaderOutput)
             } else {
-                handler("", 0, .zero, EVError.custom("cannot add output"))
+                handler("", 0, .zero, EKError.custom("cannot add output"))
                 return
             }
             
@@ -249,7 +249,7 @@ struct VideoUtil {
                 if writer.canAdd(audioWriterInput!) {
                     writer.add(audioWriterInput!)
                 } else {
-                    handler("", 0, .zero, EVError.custom("cannot add input"))
+                    handler("", 0, .zero, EKError.custom("cannot add input"))
                     return
                 }
 
@@ -258,18 +258,18 @@ struct VideoUtil {
                 if reader.canAdd(audioReaderOutput!) {
                     reader.add(audioReaderOutput!)
                 } else {
-                    handler("", 0, .zero, EVError.custom("cannot add output"))
+                    handler("", 0, .zero, EKError.custom("cannot add output"))
                     return
                 }
             }
             
             if !reader.startReading() {
-                handler("", 0, .zero, EVError.custom(reader.error?.localizedDescription ?? "reader error"))
+                handler("", 0, .zero, EKError.custom(reader.error?.localizedDescription ?? "reader error"))
                 return
             }
             
             if !writer.startWriting() {
-                handler("", 0, .zero, EVError.custom(writer.error?.localizedDescription ?? "writer error"))
+                handler("", 0, .zero, EKError.custom(writer.error?.localizedDescription ?? "writer error"))
                 return
             }
             
@@ -314,14 +314,14 @@ struct VideoUtil {
             group.notify(queue: DispatchQueue.main) {
                 writer.finishWriting {
                     if let error = error {
-                        handler("", 0, .zero, EVError.custom(error.localizedDescription))
+                        handler("", 0, .zero, EKError.custom(error.localizedDescription))
                     } else {
-                        handler(evfile, destination.fileSize / 1024, targetSize, nil)
+                        handler(ekfile, destination.fileSize / 1024, targetSize, nil)
                     }
                 }
             }
         } catch {
-            handler("", 0, .zero, EVError.custom(error.localizedDescription))
+            handler("", 0, .zero, EKError.custom(error.localizedDescription))
         }
     }
     

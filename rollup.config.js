@@ -104,7 +104,7 @@ function createConfig(format, output, plugins = []) {
           [
             "@vue/babel-plugin-jsx",
             {
-              isCustomElement: tag => tag.startsWith("ev-")
+              isCustomElement: tag => tag.startsWith("ek-")
             }
           ]
         ]

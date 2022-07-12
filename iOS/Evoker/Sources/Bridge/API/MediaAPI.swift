@@ -65,20 +65,20 @@ enum MediaAPI: String, CaseIterableAPI {
     
     private func getLocalImage(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let params = args.paramsString.toDict() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let path = params["path"] as? String else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("path"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("path"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        var filePath = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: path)
-        let isEVFile = filePath != nil
-        if !isEVFile {
+        var filePath = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: path)
+        let isEKFile = filePath != nil
+        if !isEKFile {
             filePath = FilePath.appStaticFilePath(appId: appService.appId,
                                                   envVersion: appService.envVersion,
                                                   src: path)
@@ -86,7 +86,7 @@ enum MediaAPI: String, CaseIterableAPI {
         
         let key = filePath!.absoluteString
         
-        if !isEVFile, let cache = Engine.shared.localImageCache.get(key) {
+        if !isEKFile, let cache = Engine.shared.localImageCache.get(key) {
             bridge.invokeCallbackSuccess(args: args, result: ["src": cache])
             return
         }
@@ -122,7 +122,7 @@ enum MediaAPI: String, CaseIterableAPI {
         
         let base64 = data.base64EncodedString()
         let dataURL = "data:image/\(format);base64, " + base64
-        if !isEVFile {
+        if !isEKFile {
             Engine.shared.localImageCache.put(key: key, value: dataURL, size: dataURL.bytes.count)
         }
         bridge.invokeCallbackSuccess(args: args, result: ["src": dataURL])
@@ -137,19 +137,19 @@ enum MediaAPI: String, CaseIterableAPI {
         guard let appSerivce = bridge.appService else { return }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard !params.urls.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("urls"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("urls"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         let urls = params.urls.compactMap { url in
-            return FilePath.evFilePathToRealFilePath(appId: appSerivce.appId, filePath: url) ?? URL(string: url)
+            return FilePath.ekFilePathToRealFilePath(appId: appSerivce.appId, filePath: url) ?? URL(string: url)
         }
         
         ImagePreview.show(urls: urls, current: params.current)
@@ -175,13 +175,13 @@ enum MediaAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let viewController = appService.rootViewController else {
-            let error = EVError.bridgeFailed(reason: .visibleViewControllerNotFound)
+            let error = EKError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -195,7 +195,7 @@ enum MediaAPI: String, CaseIterableAPI {
         config.maxSelectCount = params.count
         
         ps.cancelBlock = { [unowned bridge] in
-            let error = EVError.bridgeFailed(reason: .cancel)
+            let error = EKError.bridgeFailed(reason: .cancel)
             bridge.invokeCallbackFail(args: args, error: error)
         }
         ps.selectImageBlock = { [unowned bridge] (images, assets, isOriginal) in
@@ -238,18 +238,18 @@ enum MediaAPI: String, CaseIterableAPI {
                         }
                     }
                     
-                    let (evfile, filePath) = FilePath.generateTmpEVFilePath(ext: ext)
-                    filePaths.append(evfile)
+                    let (ekfile, filePath) = FilePath.generateTmpEKFilePath(ext: ext)
+                    filePaths.append(ekfile)
                     
                     FileManager.default.createFile(atPath: filePath.path, contents: imageData, attributes: nil)
-                    files.append(["path": evfile, "size": imageData.count])
+                    files.append(["path": ekfile, "size": imageData.count])
                 }
                 bridge.invokeCallbackSuccess(args: args, result: ["tempFilePaths": filePaths, "tempFiles": files])
             } else if asset.mediaType == .video {
                 let compressed = params.sizeType.contains(.compressed)
                 processVideoAssetData(asset: asset, compressed: compressed) { videoData, error in
                     if let error = error {
-                        let error = EVError.bridgeFailed(reason: .custom(error.localizedDescription))
+                        let error = EKError.bridgeFailed(reason: .custom(error.localizedDescription))
                         bridge.invokeCallbackFail(args: args, error: error)
                     } else if let videoData = videoData {
                         bridge.invokeCallbackSuccess(args: args, result: videoData)
@@ -283,7 +283,7 @@ enum MediaAPI: String, CaseIterableAPI {
             ext = String(fileExtension.takeRetainedValue())
         }
         
-        let (temp, destination) = FilePath.generateTmpEVFilePath(ext: ext)
+        let (temp, destination) = FilePath.generateTmpEKFilePath(ext: ext)
         let options = PHAssetResourceRequestOptions()
         options.isNetworkAccessAllowed = true
         PHAssetResourceManager.default().writeData(for: resource, toFile: destination, options: options) { error in
@@ -303,12 +303,12 @@ enum MediaAPI: String, CaseIterableAPI {
                                             quality: compressed ? .medium : nil,
                                             bitrate: nil,
                                             fps: nil,
-                                            resolution: 1.0) { evfile, fileSize, size, error in
+                                            resolution: 1.0) { ekfile, fileSize, size, error in
                         if error != nil {
                             notCompress()
                         } else {
                             try? FileManager.default.removeItem(at: destination)
-                            let videoData = UICameraEngine.VideoData(tempFilePath: evfile,
+                            let videoData = UICameraEngine.VideoData(tempFilePath: ekfile,
                                                                      duration: asset.duration,
                                                                      size: fileSize,
                                                                      width: size.width,
@@ -339,14 +339,14 @@ enum MediaAPI: String, CaseIterableAPI {
     
     private func saveImageToPhotosAlbum(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let dict = args.paramsString.toDict(), let filePath = dict["filePath"] as? String else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("filePath"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("filePath"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        guard let url = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: filePath),
+        guard let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: filePath),
               let image = UIImage.init(contentsOfFile: url.path) else {
-            let error = EVError.bridgeFailed(reason: .filePathNotExist(filePath))
+            let error = EKError.bridgeFailed(reason: .filePathNotExist(filePath))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -358,13 +358,13 @@ enum MediaAPI: String, CaseIterableAPI {
                 if success {
                     bridge.invokeCallbackSuccess(args: args)
                 } else {
-                    bridge.invokeCallbackFail(args: args, error: EVError.custom(error!.localizedDescription))
+                    bridge.invokeCallbackFail(args: args, error: EKError.custom(error!.localizedDescription))
                 }
             }
         }
         
         func denied() {
-            let error = EVError.bridgeFailed(reason: .custom("auth denied"))
+            let error = EKError.bridgeFailed(reason: .custom("auth denied"))
             bridge.invokeCallbackFail(args: args, error: error)
         }
         
@@ -386,7 +386,7 @@ enum MediaAPI: String, CaseIterableAPI {
     
     private func getImageInfo(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let dict = args.paramsString.toDict(), let src = dict["src"] as? String else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("src"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("src"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -439,7 +439,7 @@ enum MediaAPI: String, CaseIterableAPI {
             ]
         }
         
-        if let url = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: src) {
+        if let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: src) {
             if let image = UIImage(contentsOfFile: url.path) {
                 let result = result(width: image.size.width,
                                     height: image.size.height,
@@ -448,27 +448,27 @@ enum MediaAPI: String, CaseIterableAPI {
                                     path: src)
                 bridge.invokeCallbackSuccess(args: args, result: result)
             } else {
-                let error = EVError.bridgeFailed(reason: .filePathNotExist(src))
+                let error = EKError.bridgeFailed(reason: .filePathNotExist(src))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         } else if let url = URL(string: src), (url.scheme == "http" || url.scheme == "https") {
             SDWebImageManager.shared.loadImage(with: url, options: [.retryFailed], progress: nil) { image, data, error, _, _, _ in
                 if let error = error {
-                    bridge.invokeCallbackFail(args: args, error: EVError.custom(error.localizedDescription))
+                    bridge.invokeCallbackFail(args: args, error: EKError.custom(error.localizedDescription))
                 } else if let image = image {
                     let type = imageForamtToString(image.sd_imageFormat)
                     let ext = type == "jpeg" ? "jpg" : type
-                    let (evfile, destination) = FilePath.generateTmpEVFilePath(ext: ext)
+                    let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: ext)
                     let success = FileManager.default.createFile(atPath: destination.path, contents: data)
                     if success {
                         let result = result(width: image.size.width,
                                             height: image.size.height,
                                             orientation: imageOrientationToString(image.imageOrientation),
                                             type: type,
-                                            path: evfile)
+                                            path: ekfile)
                         bridge.invokeCallbackSuccess(args: args, result: result)
                     } else {
-                        bridge.invokeCallbackFail(args: args, error: EVError.custom("create file failed"))
+                        bridge.invokeCallbackFail(args: args, error: EKError.custom("create file failed"))
                     }
                 }
             }
@@ -477,7 +477,7 @@ enum MediaAPI: String, CaseIterableAPI {
             if let image = UIImage(contentsOfFile: url.path) {
                 let type = imageForamtToString(image.sd_imageFormat)
                 let ext = type == "jpeg" ? "jpg" : type
-                let (evfile, destination) = FilePath.generateTmpEVFilePath(ext: ext)
+                let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: ext)
                 let success = FileManager.default.createFile(atPath: destination.path,
                                                              contents: image.sd_imageData())
                 if success {
@@ -485,13 +485,13 @@ enum MediaAPI: String, CaseIterableAPI {
                                         height: image.size.height,
                                         orientation: imageOrientationToString(image.imageOrientation),
                                         type: type,
-                                        path: evfile)
+                                        path: ekfile)
                     bridge.invokeCallbackSuccess(args: args, result: result)
                 } else {
-                    bridge.invokeCallbackFail(args: args, error: EVError.custom("create file failed"))
+                    bridge.invokeCallbackFail(args: args, error: EKError.custom("create file failed"))
                 }
             } else {
-                let error = EVError.bridgeFailed(reason: .filePathNotExist(src))
+                let error = EKError.bridgeFailed(reason: .filePathNotExist(src))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         }
@@ -504,38 +504,38 @@ enum MediaAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        if let url = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: params.src) {
+        if let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: params.src) {
             if let image = UIImage(contentsOfFile: url.path) {
                 let data = image.jpegData(compressionQuality: CGFloat(params.quality / 100))
-                let (evfile, destination) = FilePath.generateTmpEVFilePath(ext: "jpg")
+                let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: "jpg")
                 let success = FileManager.default.createFile(atPath: destination.path, contents: data)
                 if success {
-                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": evfile])
+                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": ekfile])
                 } else {
-                    bridge.invokeCallbackFail(args: args, error: EVError.custom("create file failed"))
+                    bridge.invokeCallbackFail(args: args, error: EKError.custom("create file failed"))
                 }
             } else {
-                let error = EVError.bridgeFailed(reason: .filePathNotExist(params.src))
+                let error = EKError.bridgeFailed(reason: .filePathNotExist(params.src))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         } else {
             let url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: params.src)
             if let image = UIImage(contentsOfFile: url.path) {
-                let (evfile, destination) = FilePath.generateTmpEVFilePath(ext: "jpg")
+                let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: "jpg")
                 let success = FileManager.default.createFile(atPath: destination.path,
                                                              contents: image.sd_imageData())
                 if success {
-                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": evfile])
+                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": ekfile])
                 } else {
-                    bridge.invokeCallbackFail(args: args, error: EVError.custom("create file failed"))
+                    bridge.invokeCallbackFail(args: args, error: EKError.custom("create file failed"))
                 }
             } else {
-                let error = EVError.bridgeFailed(reason: .filePathNotExist(params.src))
+                let error = EKError.bridgeFailed(reason: .filePathNotExist(params.src))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         }
@@ -543,14 +543,14 @@ enum MediaAPI: String, CaseIterableAPI {
     
     private func saveVideoToPhotosAlbum(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let dict = args.paramsString.toDict(), let filePath = dict["filePath"] as? String else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("filePath"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("filePath"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        guard let url = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: filePath),
+        guard let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: filePath),
               FileManager.default.fileExists(atPath: url.path) else {
-            let error = EVError.bridgeFailed(reason: .filePathNotExist(filePath))
+            let error = EKError.bridgeFailed(reason: .filePathNotExist(filePath))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -562,13 +562,13 @@ enum MediaAPI: String, CaseIterableAPI {
                 if success {
                     bridge.invokeCallbackSuccess(args: args)
                 } else {
-                    bridge.invokeCallbackFail(args: args, error: EVError.custom(error!.localizedDescription))
+                    bridge.invokeCallbackFail(args: args, error: EKError.custom(error!.localizedDescription))
                 }
             }
         }
         
         func denied() {
-            let error = EVError.bridgeFailed(reason: .custom("auth denied"))
+            let error = EKError.bridgeFailed(reason: .custom("auth denied"))
             bridge.invokeCallbackFail(args: args, error: error)
         }
         
@@ -590,14 +590,14 @@ enum MediaAPI: String, CaseIterableAPI {
     
     private func getVideoInfo(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let dict = args.paramsString.toDict(), let src = dict["src"] as? String else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("src"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("src"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         func _getVideoInfo(url: URL) {
             guard FileManager.default.fileExists(atPath: url.path) else {
-                let error = EVError.bridgeFailed(reason: .filePathNotExist(src))
+                let error = EKError.bridgeFailed(reason: .filePathNotExist(src))
                 bridge.invokeCallbackFail(args: args, error: error)
                 return
             }
@@ -605,7 +605,7 @@ enum MediaAPI: String, CaseIterableAPI {
             let asset = AVURLAsset(url: url)
             
             guard let videoTrack = asset.tracks(withMediaType: .video).first else {
-                let error = EVError.bridgeFailed(reason: .custom("video track not found"))
+                let error = EKError.bridgeFailed(reason: .custom("video track not found"))
                 bridge.invokeCallbackFail(args: args, error: error)
                 return
             }
@@ -627,7 +627,7 @@ enum MediaAPI: String, CaseIterableAPI {
                                                              ])
         }
         
-        if let url = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: src) {
+        if let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: src) {
             _getVideoInfo(url: url)
         } else {
             let url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: src)
@@ -645,26 +645,26 @@ enum MediaAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
-        var url = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: params.src)
+        var url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: params.src)
         if url == nil {
             url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: params.src)
         }
         
         if let url = url {
-            VideoUtil.compressVideo(url: url, quality: params.quality, bitrate: params.bitrate, fps: params.fps, resolution: params.resolution) { evfile, fileSize, _, error in
+            VideoUtil.compressVideo(url: url, quality: params.quality, bitrate: params.bitrate, fps: params.fps, resolution: params.resolution) { ekfile, fileSize, _, error in
                 if let error = error {
                     bridge.invokeCallbackFail(args: args, error: error)
                 } else {
-                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": evfile, "size": fileSize])
+                    bridge.invokeCallbackSuccess(args: args, result: ["tempFilePath": ekfile, "size": fileSize])
                 }
             }
         } else {
-            bridge.invokeCallbackFail(args: args, error: EVError.bridgeFailed(reason: .custom("src invalid")))
+            bridge.invokeCallbackFail(args: args, error: EKError.bridgeFailed(reason: .custom("src invalid")))
         }
     }
 }

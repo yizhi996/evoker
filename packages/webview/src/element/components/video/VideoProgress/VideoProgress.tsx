@@ -3,7 +3,7 @@ import { defineComponent, ref } from "vue"
 import { secondsToDuration } from "../../../utils/format"
 
 export default defineComponent({
-  name: "ev-video-progress",
+  name: "ek-video-progress",
   props: {
     currentTime: { type: Number, default: 0 },
     bufferTime: { type: Number, default: 0 },
@@ -21,30 +21,30 @@ export default defineComponent({
     return () => {
       return (
         <>
-          <span class="ev-video__progress__time" style="margin-right: 8px">
+          <span class="ek-video__progress__time" style="margin-right: 8px">
             {secondsToDuration(props.currentTime)}
           </span>
-          <div ref={progressRef} class="ev-video__progress">
+          <div ref={progressRef} class="ek-video__progress">
             <div
-              class="ev-video__progress__buffer"
+              class="ek-video__progress__buffer"
               style={{ width: dutationPercent(props.bufferTime) }}
             ></div>
             <div
-              class="ev-video__progress__played"
+              class="ek-video__progress__played"
               style={{ width: dutationPercent(props.currentTime) }}
             ></div>
             <div
-              class="ev-video__progress__handle"
+              class="ek-video__progress__handle"
               style={{ left: dutationPercent(props.currentTime) }}
               onTouchstart={ev => emit("slideStart", ev)}
               onTouchmove={ev => emit("sliding", ev, progressRef.value)}
               onTouchend={ev => emit("slideEnd", ev)}
               onTouchcancel={ev => emit("slideEnd", ev)}
             >
-              <div class="ev-video__progress__ball"></div>
+              <div class="ek-video__progress__ball"></div>
             </div>
           </div>
-          <span class="ev-video__progress__time" style="margin-left: 8px">
+          <span class="ek-video__progress__time" style="margin-left: 8px">
             {secondsToDuration(props.duration)}
           </span>
         </>

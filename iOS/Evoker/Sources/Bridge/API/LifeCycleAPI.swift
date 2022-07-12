@@ -29,13 +29,13 @@ enum LifeCycleAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let webPage = appService.findWebPage(from: params.pageId) else {
-            let error = EVError.bridgeFailed(reason: .pageNotFound)
+            let error = EKError.bridgeFailed(reason: .pageNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

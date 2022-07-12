@@ -36,19 +36,19 @@ enum PickerAPI: String, CaseIterableAPI {
     
     private func showPickerView(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let viewController = webView.page?.viewController else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: PickerView.PickData = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -78,19 +78,19 @@ enum PickerAPI: String, CaseIterableAPI {
     
     private func showMultiPickerView(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let viewController = webView.page?.viewController else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: MultiPickerView.PickData = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -124,19 +124,19 @@ enum PickerAPI: String, CaseIterableAPI {
     
     private func showDatePickerView(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let viewController = webView.page?.viewController else {
-            let error = EVError.bridgeFailed(reason: .visibleViewControllerNotFound)
+            let error = EKError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: DatePickerView.Data = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -166,25 +166,25 @@ enum PickerAPI: String, CaseIterableAPI {
     
     private func updateMultiPickerView(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let webView = bridge.container as? WebView else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let viewController = webView.page?.viewController else {
-            let error = EVError.bridgeFailed(reason: .webViewNotFound)
+            let error = EKError.bridgeFailed(reason: .webViewNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: MultiPickerView.PickData = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let pickerView = viewController.view.dfsFindSubview(ofType: MultiPickerView.self) else {
-            let error = EVError.bridgeFailed(reason: .custom("picker view not found"))
+            let error = EKError.bridgeFailed(reason: .custom("picker view not found"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }

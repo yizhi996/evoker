@@ -175,7 +175,7 @@ function createContextInstance(context: ContextInfo) {
   const { tagName } = context
 
   switch (tagName) {
-    case "EV-VIDEO":
+    case "EK-VIDEO":
       return createVideoContextInstance(context)
     default:
       break

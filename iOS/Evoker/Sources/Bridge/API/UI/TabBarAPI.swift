@@ -49,13 +49,13 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         guard let viewController = appService.rootViewController?.viewControllers.last as? WebPageViewController else {
-            let error = EVError.bridgeFailed(reason: .visibleViewControllerNotFound)
+            let error = EKError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -83,13 +83,13 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         guard let viewController = appService.rootViewController?.viewControllers.last as? WebPageViewController else {
-            let error = EVError.bridgeFailed(reason: .visibleViewControllerNotFound)
+            let error = EKError.bridgeFailed(reason: .visibleViewControllerNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -121,7 +121,7 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -153,7 +153,7 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -171,7 +171,7 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -190,7 +190,7 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -208,7 +208,7 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -229,7 +229,7 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -241,8 +241,8 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         func setImage(iconPath: String, state: UIControl.State) {
-            if let evfile = FilePath.evFilePathToRealFilePath(appId: appService.appId, filePath: iconPath) {
-                let image = UIImage(contentsOfFile: evfile.path)
+            if let ekfile = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: iconPath) {
+                let image = UIImage(contentsOfFile: ekfile.path)
                 item.setImage(image, for: state)
             } else if let url = URL(string: iconPath), (url.scheme == "http" || url.scheme == "https") {
                 item.sd_setImage(with: url, for: state, placeholderImage: item.image(for: state))

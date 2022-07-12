@@ -27,7 +27,7 @@ enum PhoneAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -37,7 +37,7 @@ enum PhoneAPI: String, CaseIterableAPI {
             UIApplication.shared.open(phoneCallURL)
             bridge.invokeCallbackSuccess(args: args)
         } else {
-            let error = EVError.bridgeFailed(reason: .custom("cannot open url: \(params.phoneNumber)"))
+            let error = EKError.bridgeFailed(reason: .custom("cannot open url: \(params.phoneNumber)"))
             bridge.invokeCallbackFail(args: args, error: error)
         }
     }

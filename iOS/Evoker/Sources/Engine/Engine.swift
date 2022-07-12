@@ -57,7 +57,7 @@ final public class Engine {
     
     public private(set) var extraAPIs: [String: API] = [:]
     
-    private var errorHandler: EVErrorBlock?
+    private var errorHandler: EKErrorBlock?
     
     lazy var volumeSlider: UISlider = {
         let volumeView = MPVolumeView()
@@ -239,7 +239,7 @@ final public class Engine {
         FilePath.cleanTemp()
     }
     
-    public func onError(_ errorHandler: EVErrorBlock?) {
+    public func onError(_ errorHandler: EKErrorBlock?) {
         self.errorHandler = errorHandler
     }
     
@@ -260,7 +260,7 @@ extension Engine {
     public func openApp(appId: String,
                         launchOptions: AppLaunchOptions = AppLaunchOptions(),
                         presentTo viewController: UIViewController? = nil,
-                        completionHandler: ((EVError?) -> Void)? = nil) {
+                        completionHandler: ((EKError?) -> Void)? = nil) {
         assert(!appId.isEmpty, "appId cannot be empty")
         let runningId = runningId(appId: appId, envVersion: launchOptions.envVersion)
         if let appService = runningApp.first(where: { $0.runningId == runningId }) {
@@ -364,7 +364,7 @@ extension Engine {
     func launchApp(appId: String,
                    launchOptions: AppLaunchOptions,
                    presentTo viewController: UIViewController? = nil,
-                   completionHandler handler: @escaping EVErrorBlock) {
+                   completionHandler handler: @escaping EKErrorBlock) {
         assert(!appId.isEmpty, "appId cannot be empty")
         getAppInfo(appId: appId, envVersion: launchOptions.envVersion) { appInfo, error in
             if let error = error {
@@ -385,7 +385,7 @@ extension Engine {
         }
     }
     
-    public func getAppInfo(appId: String, envVersion: AppEnvVersion, completion: (AppInfo?, EVError?) -> Void) {
+    public func getAppInfo(appId: String, envVersion: AppEnvVersion, completion: (AppInfo?, EKError?) -> Void) {
         if let getAppInfoHandler = Engine.shared.config.hooks.app.getAppInfo {
             getAppInfoHandler(appId, envVersion, completion)
         } else {
@@ -461,7 +461,7 @@ public extension Engine {
 
 extension Engine {
     
-    func reportError(_ error: EVError) {
+    func reportError(_ error: EKError) {
         errorHandler?(error)
     }
     

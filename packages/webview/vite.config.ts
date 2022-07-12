@@ -33,7 +33,7 @@ export default createViteConfig({
       ]
     }),
     jsx({
-      isCustomElement: tag => tag.startsWith("ev-")
+      isCustomElement: tag => tag.startsWith("ek-")
     })
   ],
   test: {

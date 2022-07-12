@@ -45,13 +45,13 @@ enum RouteAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = appService.createWebPage(url: params.url) else {
-            let error = EVError.bridgeFailed(reason: .appServiceNotFound)
+            let error = EKError.bridgeFailed(reason: .appServiceNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -68,7 +68,7 @@ enum RouteAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -84,7 +84,7 @@ enum RouteAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -103,7 +103,7 @@ enum RouteAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -119,7 +119,7 @@ enum RouteAPI: String, CaseIterableAPI {
         }
         
         guard let params: Params = args.paramsString.toModel() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
@@ -133,19 +133,19 @@ enum RouteAPI: String, CaseIterableAPI {
     
     private func openBrowser(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {        
         guard let params = args.paramsString.toDict() else {
-            let error = EVError.bridgeFailed(reason: .jsonParseFailed)
+            let error = EKError.bridgeFailed(reason: .jsonParseFailed)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
             
         guard let url = params["url"] as? String, !url.isEmpty else {
-            let error = EVError.bridgeFailed(reason: .fieldRequired("url"))
+            let error = EKError.bridgeFailed(reason: .fieldRequired("url"))
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
         
         guard let page = appService.createBrowserPage(url: url) else {
-            let error = EVError.bridgeFailed(reason: .appServiceNotFound)
+            let error = EKError.bridgeFailed(reason: .appServiceNotFound)
             bridge.invokeCallbackFail(args: args, error: error)
             return
         }
