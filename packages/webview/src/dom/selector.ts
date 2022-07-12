@@ -18,6 +18,7 @@ export function selector(data: any[]) {
     if (fields.id) {
       res.id = el.id
     }
+
     if (fields.rect || fields.size) {
       const rect = el.getBoundingClientRect()
       if (fields.rect) {
@@ -31,6 +32,7 @@ export function selector(data: any[]) {
         res.height = rect.height
       }
     }
+
     if (fields.scrollOffset) {
       res.scrollLeft = el.scrollLeft
       res.scrollTop = el.scrollTop
@@ -48,6 +50,25 @@ export function selector(data: any[]) {
             tagName: el.tagName,
             contextId,
             webViewId: window.webViewId
+          }
+        }
+      }
+    }
+
+    if (fields.node) {
+      if (isEvokerElement(el)) {
+        if (["EK-CANVAS"].includes(el.tagName)) {
+          const rect = el.getBoundingClientRect()
+
+          const instance = el.__instance
+          const canvasId = instance.exposed!.getCanvasId()
+          res.node = {
+            nodeId: el.__nodeId,
+            tagName: el.tagName,
+            canvasId,
+            webViewId: window.webViewId,
+            width: rect.width,
+            height: rect.height
           }
         }
       }

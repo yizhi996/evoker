@@ -4,6 +4,7 @@ import { isFunction } from "@vue/shared"
 import { randomId } from "../../../utils"
 import { sync } from "@evoker/bridge"
 import { createVideoContextInstance } from "../media/video"
+import { createCanvasNodeInstance } from "./canvas/node"
 
 const selectorQueryCallbacks = new Map<string, Function>()
 
@@ -50,14 +51,17 @@ class SelectorQuery {
     const message = [SyncFlags.SELECTOR, id, this.queue]
     sync(message, this.pageId)
 
-    const result = (res: any) => {
+    selectorQueryCallbacks.set(id, (resultList: any) => {
+      resultList.forEach(result => {
+        result.node && (result.node = createNode(result.node))
+        result.context && (result.context = createContextInstance(result.context))
+      })
       for (let i = 0; i < this.queueCb.length; i++) {
         const queueCallback = this.queueCb[i]
-        isFunction(queueCallback) && queueCallback(res[i])
+        isFunction(queueCallback) && queueCallback(resultList[i])
       }
-      isFunction(callback) && callback(res)
-    }
-    selectorQueryCallbacks.set(id, result)
+      isFunction(callback) && callback(resultList)
+    })
   }
 
   /** @internal */
@@ -108,6 +112,10 @@ interface ContextCallbackResult {
   context: any
 }
 
+interface NodeCallbackResult {
+  node: any
+}
+
 class NodesRef {
   query: SelectorQuery
   selector: string
@@ -149,13 +157,13 @@ class NodesRef {
       this.selector,
       this.single,
       { id: true, dataset: true, context: true },
-      (res: ContextCallbackResult) => {
-        if (res.context) {
-          res.context = createContextInstance(res.context)
-        }
-        callback && callback(res)
-      }
+      callback
     )
+    return this.query
+  }
+
+  node(callback?: (res: NodeCallbackResult) => void) {
+    this.query.push(this.selector, this.single, { node: true }, callback)
     return this.query
   }
 }
@@ -177,6 +185,17 @@ function createContextInstance(context: ContextInfo) {
   switch (tagName) {
     case "EK-VIDEO":
       return createVideoContextInstance(context)
+    default:
+      break
+  }
+}
+
+function createNode(node: any) {
+  const { tagName } = node
+
+  switch (tagName) {
+    case "EK-CANVAS":
+      return createCanvasNodeInstance(node)
     default:
       break
   }
