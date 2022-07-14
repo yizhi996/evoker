@@ -459,8 +459,11 @@ enum MediaAPI: String, CaseIterableAPI {
                     let type = imageForamtToString(image.sd_imageFormat)
                     let ext = type == "jpeg" ? "jpg" : type
                     let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: ext)
-                    let success = FileManager.default.createFile(atPath: destination.path, contents: data)
-                    if success {
+                    var _data = data
+                    if _data == nil {
+                        _data = image.sd_imageData()
+                    }
+                    if FileManager.default.createFile(atPath: destination.path, contents: _data) {
                         let result = result(width: image.size.width,
                                             height: image.size.height,
                                             orientation: imageOrientationToString(image.imageOrientation),
@@ -472,15 +475,34 @@ enum MediaAPI: String, CaseIterableAPI {
                     }
                 }
             }
+        } else if src.starts(with: "data:image") {
+            if let start = src.firstIndex(of: ",") {
+                let base64 = String(src[src.index(after: start)..<src.endIndex]).trimmingCharacters(in: .whitespacesAndNewlines)
+                if let data = Data(base64Encoded: base64), let image = UIImage(data: data) {
+                    let type = imageForamtToString(image.sd_imageFormat)
+                    let ext = type == "jpeg" ? "jpg" : type
+                    let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: ext)
+                    if FileManager.default.createFile(atPath: destination.path, contents: data) {
+                        let result = result(width: image.size.width,
+                                            height: image.size.height,
+                                            orientation: imageOrientationToString(image.imageOrientation),
+                                            type: type,
+                                            path: ekfile)
+                        bridge.invokeCallbackSuccess(args: args, result: result)
+                    } else {
+                        bridge.invokeCallbackFail(args: args, error: EKError.custom("create file failed"))
+                    }
+                    return
+                }
+            }
+            bridge.invokeCallbackFail(args: args, error: EKError.custom("base64 image decode failed"))
         } else {
             let url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: src)
             if let image = UIImage(contentsOfFile: url.path) {
                 let type = imageForamtToString(image.sd_imageFormat)
                 let ext = type == "jpeg" ? "jpg" : type
                 let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: ext)
-                let success = FileManager.default.createFile(atPath: destination.path,
-                                                             contents: image.sd_imageData())
-                if success {
+                if FileManager.default.createFile(atPath: destination.path, contents: image.sd_imageData()) {
                     let result = result(width: image.size.width,
                                         height: image.size.height,
                                         orientation: imageOrientationToString(image.imageOrientation),

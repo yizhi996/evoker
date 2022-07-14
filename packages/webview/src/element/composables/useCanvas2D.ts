@@ -1,8 +1,10 @@
 import { Ref } from "vue"
 import { Canvas2DCommands } from "@evoker/shared"
+import { getLocalImage } from "../../bridge/api/image"
 
 const defineCommands = {
   [Canvas2DCommands.ARC]: (ctx: CanvasRenderingContext2D, args: any) => {
+    args[5] == null && (args[5] = undefined)
     ctx.arc.apply(ctx, args)
   },
   [Canvas2DCommands.ARC_TO]: (ctx: CanvasRenderingContext2D, args: any) => {
@@ -18,15 +20,33 @@ const defineCommands = {
     ctx.clearRect.apply(ctx, args)
   },
   [Canvas2DCommands.CLIP]: (ctx: CanvasRenderingContext2D, args: any) => {
+    args[0] ? ctx.clip.apply(ctx, args) : ctx.clip()
+  },
+  [Canvas2DCommands.CLIP_BY_PATH]: (ctx: CanvasRenderingContext2D, args: any) => {
+    args[1] == null && (args[1] = undefined)
     ctx.clip.apply(ctx, args)
   },
   [Canvas2DCommands.CLOSE_PATH]: (ctx: CanvasRenderingContext2D, args: any) => {
     ctx.closePath.apply(ctx, args)
   },
+  [Canvas2DCommands.DRAW_IMAGE]: (ctx: CanvasRenderingContext2D, args: any) => {
+    getLocalImage(args[0]).then(src => {
+      const img = new Image()
+      img.onload = () => {
+        args[0] = img
+        ctx.drawImage.apply(ctx, args)
+      }
+      img.src = src
+    })
+  },
   [Canvas2DCommands.ELLIPSE]: (ctx: CanvasRenderingContext2D, args: any) => {
     ctx.ellipse.apply(ctx, args)
   },
   [Canvas2DCommands.FILL]: (ctx: CanvasRenderingContext2D, args: any) => {
+    args[0] ? ctx.fill.apply(ctx, args) : ctx.fill()
+  },
+  [Canvas2DCommands.FILL_BY_PATH]: (ctx: CanvasRenderingContext2D, args: any) => {
+    args[1] == null && (args[1] = undefined)
     ctx.fill.apply(ctx, args)
   },
   [Canvas2DCommands.FILL_RECT]: (ctx: CanvasRenderingContext2D, args: any) => {

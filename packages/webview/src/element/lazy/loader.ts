@@ -1,4 +1,4 @@
-import { JSBridge } from "../../bridge"
+import { getLocalImage } from "../../bridge/api/image"
 
 export interface ImageLoadResult {
   src: string
@@ -48,13 +48,11 @@ export function loadImage(src: string): Promise<ImageLoadResult> {
     } else if (/^\s*data:image\//.test(src)) {
       image.src = src
     } else {
-      JSBridge.invoke<{ src: string }>("getLocalImage", { path: src }, result => {
-        if (result.errMsg) {
-          reject(result.errMsg)
-        } else {
-          image.src = result.data!.src
-        }
-      })
+      getLocalImage(src)
+        .then(res => {
+          image.src = res
+        })
+        .catch(reject)
     }
   })
 }

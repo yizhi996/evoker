@@ -2,6 +2,7 @@ import { Canvas2DCommands } from "@evoker/shared"
 import { isArray, isString } from "@vue/shared"
 import { queuePostFlushCb } from "vue"
 import { invokeWebViewMethod } from "../../../fromWebView"
+import { Image } from "./image"
 
 type CanvasPatternRepetition = "repeat" | "repeat-x" | "repeat-y" | "no-repeat"
 
@@ -462,8 +463,18 @@ export class CanvasRenderingContext2D {
     this.enqueue([Canvas2DCommands.CLEAR_RECT, x, y, width, height])
   }
 
-  clip(fillRule?: CanvasFillRule) {
-    this.enqueue([Canvas2DCommands.CLIP, fillRule])
+  clip(fillRule?: CanvasFillRule)
+  clip(path?: Path2D, fillRule?: CanvasFillRule)
+  clip(first: unknown, second?: unknown) {
+    if (first) {
+      if (isString(first)) {
+        this.enqueue([Canvas2DCommands.CLIP, first])
+      } else {
+        this.enqueue([Canvas2DCommands.CLIP_BY_PATH, first, second])
+      }
+    } else {
+      this.enqueue([Canvas2DCommands.CLIP])
+    }
   }
 
   closePath() {
@@ -493,8 +504,18 @@ export class CanvasRenderingContext2D {
     ])
   }
 
-  fill(fillRule?: CanvasFillRule) {
-    this.enqueue([Canvas2DCommands.FILL, fillRule])
+  fill(fillRule?: CanvasFillRule)
+  fill(path?: Path2D, fillRule?: CanvasFillRule)
+  fill(first: unknown, second?: unknown) {
+    if (first) {
+      if (isString(first)) {
+        this.enqueue([Canvas2DCommands.FILL, first])
+      } else {
+        this.enqueue([Canvas2DCommands.FILL_BY_PATH, first, second])
+      }
+    } else {
+      this.enqueue([Canvas2DCommands.FILL])
+    }
   }
 
   fillRect(x: number, y: number, w: number, h: number) {
@@ -601,58 +622,45 @@ export class CanvasRenderingContext2D {
     return new CanvasConicGradient(startAngle, x, y)
   }
 
-  resetClip() {
-    this.enqueue(["q"])
+  createImage(): Image {
+    return new Image()
   }
 
   isPointInPath = function (x: number, y: number) {
     throw new Error("not supported yet")
   }
 
+  drawImage(image: Image, dx: number, dy: number)
+  drawImage(image: Image, dx: number, dy: number, dWidth?: number, dHeight?: number)
   drawImage(
-    image: any,
-    sx: number = 0.0,
-    sy: number = 0.0,
-    sw?: number,
-    sh?: number,
-    dx: number = 0.0,
-    dy: number = 0.0,
-    dw?: number,
-    dh?: number
+    image: Image,
+    sx: number,
+    sy: number,
+    sWidth?: number,
+    sHeight?: number,
+    dx?: number,
+    dy?: number,
+    dWidth?: number,
+    dHeight?: number
   ) {
-    const numArgs = arguments.length
-
-    function drawImageCommands() {
-      if (numArgs === 3) {
-        return ["d", image._id, image.width, image.height, sx, sy, image.width, image.height]
-      } else if (numArgs === 5) {
-        return [
-          "d",
-          image._id,
-          image.width,
-          image.height,
-          sx,
-          sy,
-          sw || image.width,
-          sh || image.height
-        ]
-      } else if (numArgs === 9) {
-        return [
-          "d",
-          image._id,
-          sx,
-          sy,
-          sw || image.width,
-          sh || image.height,
-          dx,
-          dy,
-          dw || image.width,
-          dh || image.height
-        ]
-      }
+    const argLen = arguments.length
+    if (argLen === 3) {
+      this.enqueue([Canvas2DCommands.DRAW_IMAGE, image._path, sx, sy])
+    } else if (argLen === 5) {
+      this.enqueue([Canvas2DCommands.DRAW_IMAGE, image._path, sx, sy, sWidth, sHeight])
+    } else if (argLen === 9) {
+      this.enqueue([
+        Canvas2DCommands.DRAW_IMAGE,
+        image._path,
+        sx,
+        sy,
+        sWidth,
+        sHeight,
+        dx,
+        dy,
+        dWidth,
+        dHeight
+      ])
     }
-    this.bindImageTexture(image.src, image._id)
-    const command = drawImageCommands()
-    command && this.enqueue(command)
   }
 }
