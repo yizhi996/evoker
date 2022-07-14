@@ -2,7 +2,8 @@ import JSBridge from "./bridge"
 import type { InvokeCallback } from "@evoker/bridge"
 import { pageScrollTo } from "./api/scroll"
 import { loadFontFace } from "./api/font"
-import { isEvokerElement, nodes } from "../dom/element"
+import { execCanvasCommand, operateCanvas } from "./api/canvas"
+import { operateContext } from "./api/context"
 
 let callbackId = 0
 
@@ -44,24 +45,12 @@ JSBridge.subscribe<{ callbackId: number; result: any }>(Events.CALLBACK_APP_SERV
   }
 })
 
-interface OperateContextOptions {
-  nodeId: number
-  method: string
-  data: Record<string, any>
-}
-
-const operateContext = (options: OperateContextOptions) => {
-  const node = nodes.get(options.nodeId)
-  if (node && isEvokerElement(node.el)) {
-    node.el.__instance!.exposed!.operate(options)
-  }
-  return Promise.resolve({})
-}
-
 const methods: Record<string, Function> = {
   pageScrollTo,
   loadFontFace,
-  operateContext
+  operateContext,
+  execCanvasCommand,
+  operateCanvas
 }
 
 JSBridge.subscribe<{ callbackId: number; event: string; params: any[] }>(

@@ -1,7 +1,6 @@
 import { defineComponent, PropType, ref, watch, computed, nextTick } from "vue"
 import { EvokerElement } from "../../../dom/element"
 import { addClickEvent } from "../../../dom/event"
-import { isTrue } from "../../../utils"
 import { useHover } from "../../composables/useHover"
 import { dispatchEvent } from "../../../dom/event"
 import { getUserInfo } from "../../../bridge/api/open"
@@ -71,7 +70,7 @@ export default defineComponent({
       let cls = "ek-button "
       cls += `ek-button--${props.type} `
       cls += `ek-button--size-${props.size} `
-      if (isTrue(props.disabled)) {
+      if (props.disabled) {
         cls += "ek-button--disabled "
       }
       if (props.plain) {

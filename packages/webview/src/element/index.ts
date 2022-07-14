@@ -23,7 +23,7 @@ import MovableView from "./components/movable-view"
 import TextArea from "./components/textarea"
 import Text from "./components/text"
 import Map from "./components/map"
-// import Canvas from "./components/Canvas.vue"
+import Canvas from "./components/canvas"
 import View from "./components/view"
 import PickerView from "./components/picker-view"
 import PickerViewColumn from "./components/picker-view-column"
@@ -71,7 +71,8 @@ const builtInComponent: Record<string, BuiltInComponent> = {
     slot: ".ek-picker-view-column__content"
   },
   form: { component: Form },
-  label: { component: Label }
+  label: { component: Label },
+  canvas: { component: Canvas }
 }
 
 export function requireBuiltInComponent(tag: string): BuiltInComponent | undefined {

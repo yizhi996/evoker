@@ -23,7 +23,7 @@ import MovableView from "./element/components/movable-view"
 import Textarea from "./element/components/textarea"
 import Text from "./element/components/text"
 import Map from "./element/components/map"
-// import Canvas from "./element/components/Canvas.vue"
+import Canvas from "./element/components/canvas"
 import View from "./element/components/view"
 import PickerView from "./element/components/picker-view"
 import PickerViewColumn from "./element/components/picker-view-column"
@@ -54,7 +54,7 @@ export {
   Textarea,
   Text,
   Map,
-  // Canvas,
+  Canvas,
   View,
   PickerView,
   PickerViewColumn,

@@ -8,8 +8,8 @@ export default createViteConfig({
   target: "webview",
   resolve: {
     alias: {
-      "@evoker/shared": resolve("../shared/src/index.ts"),
-      "@evoker/bridge": resolve("../bridge/src/index.ts")
+      "@evoker/shared": resolve(__dirname, "../shared/src/index.ts"),
+      "@evoker/bridge": resolve(__dirname, "../bridge/src/index.ts")
     }
   },
   rollupOptions: {
