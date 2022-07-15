@@ -112,6 +112,10 @@ public extension FilePath {
         return ("ekfile://\(filename)", FilePath.tmp(filename: filename))
     }
     
+    static func isEKFile(filePath: String) -> Bool {
+        return filePath.starts(with: "ekfile://")
+    }
+    
     static func ekFilePathToRealFilePath(appId: String, userId: String = Engine.shared.userId, filePath: String) -> URL? {
         let scheme = "ekfile://"
         let usr = scheme + "usr"

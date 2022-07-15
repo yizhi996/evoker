@@ -384,6 +384,31 @@ enum MediaAPI: String, CaseIterableAPI {
         }
     }
     
+    private func loadImage(appId: String,
+                           envVersion: AppEnvVersion,
+                           src: String,
+                           completionHandler handler: @escaping (UIImage?) -> Void) {
+        if let url = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: src) {
+            handler(UIImage(contentsOfFile: url.path))
+        } else if let url = URL(string: src), (url.scheme == "http" || url.scheme == "https") {
+            SDWebImageManager.shared.loadImage(with: url, options: [.retryFailed], progress: nil) { image, data, error, _, _, _ in
+                handler(image)
+            }
+        } else if src.starts(with: "data:image") {
+            if let start = src.firstIndex(of: ",") {
+                let base64 = String(src[src.index(after: start)..<src.endIndex]).trimmingCharacters(in: .whitespacesAndNewlines)
+                if let data = Data(base64Encoded: base64) {
+                    handler(UIImage(data: data))
+                    return
+                }
+            }
+            handler(nil)
+        } else {
+            let url = FilePath.appStaticFilePath(appId: appId, envVersion: envVersion, src: src)
+            handler(UIImage(contentsOfFile: url.path))
+        }
+    }
+    
     private func getImageInfo(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         guard let dict = args.paramsString.toDict(), let src = dict["src"] as? String else {
             let error = EKError.bridgeFailed(reason: .fieldRequired("src"))
@@ -429,6 +454,39 @@ enum MediaAPI: String, CaseIterableAPI {
             }
         }
         
+        func imageToBase64(image: UIImage) -> String? {
+            guard var data = image.sd_imageData() else { return nil }
+            var mime = NSData.sd_imageFormat(forImageData: data)
+            if mime == .webP,
+                let image = SDImageWebPCoder.shared.decodedImage(with: data, options: [:]),
+                let newData = image.sd_imageData() {
+                data = newData
+                mime = NSData.sd_imageFormat(forImageData: data)
+            }
+            
+            let format: String
+            switch mime {
+            case .PNG:
+                format = "png"
+            case .JPEG:
+                format = "jpeg"
+            case .SVG:
+                format = "svg+xml"
+            case .webP:
+                format = "webp"
+            case .GIF:
+                format = "gif"
+            case .TIFF:
+                format = "tiff"
+            default:
+                format = "unknown"
+            }
+            
+            let base64 = data.base64EncodedString()
+            let dataURL = "data:image/\(format);base64, " + base64
+            return dataURL
+        }
+        
         func result(width: CGFloat, height: CGFloat, orientation: String, type: String, path: String) -> [String: Any] {
             return [
                 "width": width,
@@ -439,49 +497,29 @@ enum MediaAPI: String, CaseIterableAPI {
             ]
         }
         
-        if let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: src) {
-            if let image = UIImage(contentsOfFile: url.path) {
-                let result = result(width: image.size.width,
-                                    height: image.size.height,
-                                    orientation: imageOrientationToString(image.imageOrientation),
-                                    type: imageForamtToString(image.sd_imageFormat),
-                                    path: src)
-                bridge.invokeCallbackSuccess(args: args, result: result)
-            } else {
-                let error = EKError.bridgeFailed(reason: .filePathNotExist(src))
-                bridge.invokeCallbackFail(args: args, error: error)
-            }
-        } else if let url = URL(string: src), (url.scheme == "http" || url.scheme == "https") {
-            SDWebImageManager.shared.loadImage(with: url, options: [.retryFailed], progress: nil) { image, data, error, _, _, _ in
-                if let error = error {
-                    bridge.invokeCallbackFail(args: args, error: EKError.custom(error.localizedDescription))
-                } else if let image = image {
+        let toBase64 = dict["toBase64"] as? Bool ?? false
+        
+        loadImage(appId: appService.appId, envVersion: appService.envVersion, src: src) { image in
+            if let image = image {
+                if toBase64, let path = imageToBase64(image: image) {
+                    let result = result(width: image.size.width,
+                                        height: image.size.height,
+                                        orientation: imageOrientationToString(image.imageOrientation),
+                                        type: imageForamtToString(image.sd_imageFormat),
+                                        path: path)
+                    bridge.invokeCallbackSuccess(args: args, result: result)
+                } else if FilePath.isEKFile(filePath: src) {
+                    let result = result(width: image.size.width,
+                                        height: image.size.height,
+                                        orientation: imageOrientationToString(image.imageOrientation),
+                                        type: imageForamtToString(image.sd_imageFormat),
+                                        path: src)
+                    bridge.invokeCallbackSuccess(args: args, result: result)
+                } else {
                     let type = imageForamtToString(image.sd_imageFormat)
                     let ext = type == "jpeg" ? "jpg" : type
                     let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: ext)
-                    var _data = data
-                    if _data == nil {
-                        _data = image.sd_imageData()
-                    }
-                    if FileManager.default.createFile(atPath: destination.path, contents: _data) {
-                        let result = result(width: image.size.width,
-                                            height: image.size.height,
-                                            orientation: imageOrientationToString(image.imageOrientation),
-                                            type: type,
-                                            path: ekfile)
-                        bridge.invokeCallbackSuccess(args: args, result: result)
-                    } else {
-                        bridge.invokeCallbackFail(args: args, error: EKError.custom("create file failed"))
-                    }
-                }
-            }
-        } else if src.starts(with: "data:image") {
-            if let start = src.firstIndex(of: ",") {
-                let base64 = String(src[src.index(after: start)..<src.endIndex]).trimmingCharacters(in: .whitespacesAndNewlines)
-                if let data = Data(base64Encoded: base64), let image = UIImage(data: data) {
-                    let type = imageForamtToString(image.sd_imageFormat)
-                    let ext = type == "jpeg" ? "jpg" : type
-                    let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: ext)
+                    let data = image.sd_imageData()
                     if FileManager.default.createFile(atPath: destination.path, contents: data) {
                         let result = result(width: image.size.width,
                                             height: image.size.height,
@@ -492,28 +530,9 @@ enum MediaAPI: String, CaseIterableAPI {
                     } else {
                         bridge.invokeCallbackFail(args: args, error: EKError.custom("create file failed"))
                     }
-                    return
-                }
-            }
-            bridge.invokeCallbackFail(args: args, error: EKError.custom("base64 image decode failed"))
-        } else {
-            let url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: src)
-            if let image = UIImage(contentsOfFile: url.path) {
-                let type = imageForamtToString(image.sd_imageFormat)
-                let ext = type == "jpeg" ? "jpg" : type
-                let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: ext)
-                if FileManager.default.createFile(atPath: destination.path, contents: image.sd_imageData()) {
-                    let result = result(width: image.size.width,
-                                        height: image.size.height,
-                                        orientation: imageOrientationToString(image.imageOrientation),
-                                        type: type,
-                                        path: ekfile)
-                    bridge.invokeCallbackSuccess(args: args, result: result)
-                } else {
-                    bridge.invokeCallbackFail(args: args, error: EKError.custom("create file failed"))
                 }
             } else {
-                let error = EKError.bridgeFailed(reason: .filePathNotExist(src))
+                let error = EKError.bridgeFailed(reason: .custom("load image failed: \(src)"))
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         }

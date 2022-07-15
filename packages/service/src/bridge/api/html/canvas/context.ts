@@ -7,11 +7,11 @@ import { Image } from "./image"
 type CanvasPatternRepetition = "repeat" | "repeat-x" | "repeat-y" | "no-repeat"
 
 class CanvasPattern {
-  image: any
+  image: Image
 
   repetition: CanvasPatternRepetition
 
-  constructor(image: any, repetition: CanvasPatternRepetition) {
+  constructor(image: Image, repetition: CanvasPatternRepetition) {
     this.repetition = repetition ?? "repeat"
     this.image = image
   }
@@ -163,8 +163,6 @@ export class CanvasRenderingContext2D {
     this.commandQueue = []
   }
 
-  private bindImageTexture(src: string, id: string) {}
-
   get direction() {
     return this._direction
   }
@@ -185,8 +183,7 @@ export class CanvasRenderingContext2D {
       this.enqueue([Canvas2DCommands.SET_FILL_STYLE, value])
     } else if (value instanceof CanvasPattern) {
       const image = value.image
-      this.bindImageTexture(image.src, image._id)
-      this.enqueue([Canvas2DCommands.SET_FILL_STYLE_BY_PATTERN, image._id, value.repetition])
+      this.enqueue([Canvas2DCommands.SET_FILL_STYLE_BY_PATTERN, image._path, value.repetition])
     } else if (value instanceof CanvasLinearGradient) {
       const command = [
         Canvas2DCommands.SET_FILL_STYLE_BY_LINEAR_GRADIENT,
@@ -370,8 +367,7 @@ export class CanvasRenderingContext2D {
       this.enqueue([Canvas2DCommands.SET_STROKE_STYLE, value])
     } else if (value instanceof CanvasPattern) {
       const image = value.image
-      this.bindImageTexture(image.src, image._id)
-      this.enqueue([Canvas2DCommands.SET_STROKE_STYLE_BY_PATTERN, image._id, value.repetition])
+      this.enqueue([Canvas2DCommands.SET_STROKE_STYLE_BY_PATTERN, image._path, value.repetition])
     } else if (value instanceof CanvasLinearGradient) {
       const command = [
         Canvas2DCommands.SET_STROKE_STYLE_BY_LINEAR_GRADIENT,
@@ -465,7 +461,7 @@ export class CanvasRenderingContext2D {
 
   clip(fillRule?: CanvasFillRule)
   clip(path?: Path2D, fillRule?: CanvasFillRule)
-  clip(first: unknown, second?: unknown) {
+  clip(first?: unknown, second?: unknown) {
     if (first) {
       if (isString(first)) {
         this.enqueue([Canvas2DCommands.CLIP, first])
@@ -506,7 +502,7 @@ export class CanvasRenderingContext2D {
 
   fill(fillRule?: CanvasFillRule)
   fill(path?: Path2D, fillRule?: CanvasFillRule)
-  fill(first: unknown, second?: unknown) {
+  fill(first?: unknown, second?: unknown) {
     if (first) {
       if (isString(first)) {
         this.enqueue([Canvas2DCommands.FILL, first])
@@ -606,7 +602,7 @@ export class CanvasRenderingContext2D {
     this.enqueue([Canvas2DCommands.TRANSLATE, x, y])
   }
 
-  createPattern(image: any, repetition: CanvasPatternRepetition) {
+  createPattern(image: Image, repetition: CanvasPatternRepetition) {
     return new CanvasPattern(image, repetition)
   }
 

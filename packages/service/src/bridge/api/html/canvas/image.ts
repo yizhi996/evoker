@@ -36,7 +36,7 @@ export class Image {
 
   private loadImage() {
     if (this._src) {
-      getImageInfo({ src: this._src })
+      getImageInfo({ src: this._src, toBase64: true })
         .then(res => {
           this._width = res.width
           this._height = res.height

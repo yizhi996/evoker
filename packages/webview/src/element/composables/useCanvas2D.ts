@@ -1,6 +1,5 @@
-import { Ref } from "vue"
+import { nextTick, Ref } from "vue"
 import { Canvas2DCommands } from "@evoker/shared"
-import { getLocalImage } from "../../bridge/api/image"
 
 const defineCommands = {
   [Canvas2DCommands.ARC]: (ctx: CanvasRenderingContext2D, args: any) => {
@@ -30,13 +29,14 @@ const defineCommands = {
     ctx.closePath.apply(ctx, args)
   },
   [Canvas2DCommands.DRAW_IMAGE]: (ctx: CanvasRenderingContext2D, args: any) => {
-    getLocalImage(args[0]).then(src => {
+    return new Promise<void>(reslove => {
       const img = new Image()
       img.onload = () => {
         args[0] = img
         ctx.drawImage.apply(ctx, args)
+        reslove()
       }
-      img.src = src
+      img.src = args[0]
     })
   },
   [Canvas2DCommands.ELLIPSE]: (ctx: CanvasRenderingContext2D, args: any) => {
@@ -112,8 +112,16 @@ const defineCommands = {
     ctx.fillStyle = args[0]
   },
   [Canvas2DCommands.SET_FILL_STYLE_BY_PATTERN]: (ctx: CanvasRenderingContext2D, args: any) => {
-    const pattern = ctx.createPattern.apply(ctx, args)
-    pattern && (ctx.fillStyle = pattern)
+    return new Promise<void>(reslove => {
+      const img = new Image()
+      img.onload = () => {
+        args[0] = img
+        const pattern = ctx.createPattern.apply(ctx, args)
+        pattern && (ctx.fillStyle = pattern)
+        reslove()
+      }
+      img.src = args[0]
+    })
   },
   [Canvas2DCommands.SET_FILL_STYLE_BY_LINEAR_GRADIENT]: (
     ctx: CanvasRenderingContext2D,
@@ -209,8 +217,16 @@ const defineCommands = {
     ctx.strokeStyle = args[0]
   },
   [Canvas2DCommands.SET_STROKE_STYLE_BY_PATTERN]: (ctx: CanvasRenderingContext2D, args: any) => {
-    const pattern = ctx.createPattern.apply(ctx, args)
-    pattern && (ctx.strokeStyle = pattern)
+    return new Promise<void>(reslove => {
+      const img = new Image()
+      img.onload = () => {
+        args[0] = img
+        const pattern = ctx.createPattern.apply(ctx, args)
+        pattern && (ctx.strokeStyle = pattern)
+        reslove()
+      }
+      img.src = args[0]
+    })
   },
   [Canvas2DCommands.SET_STROKE_STYLE_BY_LINEAR_GRADIENT]: (
     ctx: CanvasRenderingContext2D,
@@ -268,21 +284,28 @@ const defineCommands = {
   }
 }
 
+const isAsyncCommand = cmd =>
+  cmd === Canvas2DCommands.DRAW_IMAGE ||
+  cmd === Canvas2DCommands.SET_FILL_STYLE_BY_PATTERN ||
+  cmd === Canvas2DCommands.SET_STROKE_STYLE_BY_PATTERN
+
 export function useCanvas2D(ctx: Ref<CanvasRenderingContext2D | null | undefined>) {
   return {
-    exec: (commands: any) => {
+    exec: async (commands: any[]) => {
       if (!ctx.value) {
         return
       }
-      commands.forEach(command => {
+
+      for (const command of commands) {
         const [cmd, ...args] = command
-        const fn = defineCommands[cmd]
-        if (fn) {
-          fn(ctx.value, args)
+        if (isAsyncCommand(cmd)) {
+          const fn = defineCommands[cmd]
+          fn && (await fn(ctx.value, args))
         } else {
-          console.log(command)
+          const fn = defineCommands[cmd]
+          fn && fn(ctx.value, args)
         }
-      })
+      }
     }
   }
 }
