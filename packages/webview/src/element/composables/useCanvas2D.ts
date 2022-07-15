@@ -62,6 +62,16 @@ const defineCommands = {
   [Canvas2DCommands.MOVE_TO]: (ctx: CanvasRenderingContext2D, args: any) => {
     ctx.moveTo.apply(ctx, args)
   },
+  [Canvas2DCommands.PUT_IMAGE_DATA]: (ctx: CanvasRenderingContext2D, args: any) => {
+    const imageData = ctx.createImageData(args[0], args[1])
+    const data = args[2]
+    for (let i = 0; i < data.length; i++) {
+      imageData.data[i] = data[i]
+    }
+    const putArgs = args.slice(3)
+    putArgs.unshift(imageData)
+    ctx.putImageData.apply(ctx, putArgs)
+  },
   [Canvas2DCommands.QUADRATIC_CURVE_TO]: (ctx: CanvasRenderingContext2D, args: any) => {
     ctx.quadraticCurveTo.apply(ctx, args)
   },

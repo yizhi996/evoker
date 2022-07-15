@@ -2,7 +2,7 @@ import { Canvas2DCommands } from "@evoker/shared"
 import { isArray, isString } from "@vue/shared"
 import { queuePostFlushCb } from "vue"
 import { invokeWebViewMethod } from "../../../fromWebView"
-import { Image } from "./image"
+import { Image, ImageData } from "./image"
 
 type CanvasPatternRepetition = "repeat" | "repeat-x" | "repeat-y" | "no-repeat"
 
@@ -94,7 +94,7 @@ export class CanvasRenderingContext2D {
 
   _globalCompositeOperation: GlobalCompositeOperation = "source-over"
 
-  _imageSmoothingEnabled = false
+  _imageSmoothingEnabled = true
 
   _imageSmoothingQuality: ImageSmoothingQuality = "low"
 
@@ -534,6 +534,41 @@ export class CanvasRenderingContext2D {
     this.enqueue([Canvas2DCommands.MOVE_TO, x, y])
   }
 
+  putImageData(
+    imageData: ImageData,
+    x: number,
+    y: number,
+    dirtyX?: number,
+    dirtyY?: number,
+    dirtyWidth?: number,
+    dirtyHeight?: number
+  ) {
+    const argLen = arguments.length
+    if (argLen === 3) {
+      this.enqueue([
+        Canvas2DCommands.PUT_IMAGE_DATA,
+        imageData.width,
+        imageData.height,
+        Array.from(imageData.data),
+        x,
+        y
+      ])
+    } else if (argLen === 7) {
+      this.enqueue([
+        Canvas2DCommands.PUT_IMAGE_DATA,
+        imageData.width,
+        imageData.height,
+        Array.from(imageData.data),
+        x,
+        y,
+        dirtyX,
+        dirtyY,
+        dirtyWidth,
+        dirtyHeight
+      ])
+    }
+  }
+
   quadraticCurveTo(cpx: number, cpy: number, x: number, y: number) {
     this.enqueue([Canvas2DCommands.QUADRATIC_CURVE_TO, cpx, cpy, x, y])
   }
@@ -620,6 +655,10 @@ export class CanvasRenderingContext2D {
 
   createImage(): Image {
     return new Image()
+  }
+
+  createImageData(width: number, height: number): ImageData {
+    return new ImageData(width, height)
   }
 
   isPointInPath = function (x: number, y: number) {

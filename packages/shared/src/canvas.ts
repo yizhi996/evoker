@@ -15,6 +15,7 @@ export const enum Canvas2DCommands {
   FILL_TEXT,
   LINE_TO,
   MOVE_TO,
+  PUT_IMAGE_DATA,
   QUADRATIC_CURVE_TO,
   RECT,
   RESET_TRANSFORM,
