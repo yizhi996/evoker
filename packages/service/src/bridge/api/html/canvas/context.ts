@@ -86,58 +86,53 @@ export class CanvasRenderingContext2D {
 
   private flush: () => void
 
-  _direction: CanvasDirection = "inherit"
+  private _direction: CanvasDirection = "inherit"
 
-  _fillStyle: string | CanvasPattern | CanvasGradient = "#000000"
+  private _fillStyle: string | CanvasPattern | CanvasGradient = "#000000"
 
-  _globalAlpha = 1.0
+  private _globalAlpha = 1.0
 
-  _globalCompositeOperation: GlobalCompositeOperation = "source-over"
+  private _globalCompositeOperation: GlobalCompositeOperation = "source-over"
 
-  _imageSmoothingEnabled = true
+  private _imageSmoothingEnabled = true
 
-  _imageSmoothingQuality: ImageSmoothingQuality = "low"
+  private _imageSmoothingQuality: ImageSmoothingQuality = "low"
 
-  _lineCap: CanvasLineCap = "butt"
+  private _lineCap: CanvasLineCap = "butt"
 
-  _lineDashOffset = 0
+  private _lineDashOffset = 0
 
-  _lineJoin: CanvasLineJoin = "miter"
+  private _lineJoin: CanvasLineJoin = "miter"
 
-  _lineWidth = 1
+  private _lineWidth = 1
 
-  _miterLimit = 10
+  private _miterLimit = 10
 
-  _shadowBlur = 0
+  private _shadowBlur = 0
 
-  _strokeStyle: string | CanvasPattern | CanvasGradient = "#000000"
+  private _strokeStyle: string | CanvasPattern | CanvasGradient = "#000000"
 
-  _shadowColor = "#000000"
+  private _shadowColor = "#000000"
 
-  _shadowOffsetX = 0
+  private _shadowOffsetX = 0
 
-  _shadowOffsetY = 0
+  private _shadowOffsetY = 0
 
-  _lineDash: number[] = []
+  private _lineDash: number[] = []
 
-  _textAlign: CanvasTextAlign = "start"
+  private _textAlign: CanvasTextAlign = "start"
 
-  _textBaseline: CanvasTextBaseline = "alphabetic"
+  private _textBaseline: CanvasTextBaseline = "alphabetic"
 
-  _font = "10px sans-serif"
+  private _font = "10px sans-serif"
 
-  _savedGlobalAlpha: number[] = []
+  private _savedGlobalAlpha: number[] = []
 
-  timer = null
+  private nodeId: number
 
-  canvasId: number
-
-  nodeId: number
-
-  webViewId: number
+  private webViewId: number
 
   constructor(canvasId: number, nodeId: number, webViewId: number) {
-    this.canvasId = canvasId
     this.nodeId = nodeId
     this.webViewId = webViewId
 
@@ -157,7 +152,9 @@ export class CanvasRenderingContext2D {
     invokeWebViewMethod(
       "execCanvasCommand",
       { nodeId: this.nodeId, commands: this.commandQueue },
-      undefined,
+      () => {
+        console.log("exec finish")
+      },
       this.webViewId
     )
     this.commandQueue = []
@@ -651,14 +648,6 @@ export class CanvasRenderingContext2D {
 
   createConicGradient(startAngle: number, x: number, y: number) {
     return new CanvasConicGradient(startAngle, x, y)
-  }
-
-  createImage(): Image {
-    return new Image()
-  }
-
-  createImageData(width: number, height: number): ImageData {
-    return new ImageData(width, height)
   }
 
   isPointInPath = function (x: number, y: number) {

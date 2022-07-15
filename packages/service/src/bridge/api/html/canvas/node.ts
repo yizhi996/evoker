@@ -1,7 +1,10 @@
 import { invokeWebViewMethod } from "../../../fromWebView"
 import { CanvasRenderingContext2D } from "./context"
+import { Image, ImageData } from "./image"
 
 const canvasContexts = new Map<number, CanvasRenderingContext2D>()
+
+const FPS_60 = 1000 / 60
 
 export interface CanvasNodeInfo {
   nodeId: number
@@ -24,9 +27,13 @@ export class CanvasNode {
 
   webViewId: number
 
-  _width: number
+  private _width: number
 
-  _height: number
+  private _height: number
+
+  private requestId: number = 0
+
+  private frames = new Map<number, NodeJS.Timeout>()
 
   constructor(node: CanvasNodeInfo) {
     this.nodeId = node.nodeId
@@ -71,6 +78,34 @@ export class CanvasNode {
         canvasContexts.set(this.id, ctx)
       }
       return ctx
+    }
+  }
+
+  createImage(): Image {
+    return new Image()
+  }
+
+  createImageData(width: number, height: number): ImageData {
+    return new ImageData(width, height)
+  }
+
+  requestAnimationFrame(callback: () => void) {
+    const id = this.requestId++
+    this.frames.set(
+      id,
+      setTimeout(() => {
+        callback && callback()
+        this.frames.delete(id)
+      }, FPS_60)
+    )
+    return id
+  }
+
+  cancelAnimationFrame(requestId: number) {
+    const timer = this.frames.get(requestId)
+    if (timer) {
+      clearTimeout(timer)
+      this.frames.delete(requestId)
     }
   }
 }
