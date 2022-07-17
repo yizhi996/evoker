@@ -19,6 +19,9 @@ exports.createViteConfig = function (options) {
 
   return defineConfig(() => {
     return {
+      define: {
+        "process.env.NODE_ENV":  JSON.stringify("development")
+      },
       resolve: _resolve,
       build: {
         lib: {

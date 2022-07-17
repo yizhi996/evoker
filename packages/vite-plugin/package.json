@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@evoker/shared": "0.4.0",
-    "@vitejs/plugin-vue": "^2.3.3",
+    "@vitejs/plugin-vue": "^3.0.0",
     "@vue/compiler-core": "^3.2.37",
     "@vue/shared": "^3.2.37",
     "archiver": "^5.3.1",

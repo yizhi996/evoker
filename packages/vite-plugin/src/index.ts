@@ -14,20 +14,13 @@ import { resolve } from "path"
 import { isBuiltInComponent } from "@evoker/shared"
 
 export interface Options {
-  mode?: string
   devtools?: DevtoolsOptions
   vue?: VueOptions
   build?: BuildOptions
 }
 
 export default function plugins(options: Options = {}) {
-  const _options = Object.assign(
-    {
-      mode: "development",
-      build: {}
-    },
-    options
-  )
+  const _options = Object.assign({ build: {} }, options)
 
   const plugins: Plugin[] = [
     buildConfig(_options),
@@ -64,7 +57,7 @@ export default function plugins(options: Options = {}) {
   }
   plugins.push(vue(rawVueOptions))
 
-  if (_options.mode === "development") {
+  if (process.env.NODE_ENV !== "production") {
     plugins.push(devtools(_options.devtools))
   } else {
     plugins.push(pack())

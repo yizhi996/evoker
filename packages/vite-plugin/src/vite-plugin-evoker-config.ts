@@ -28,7 +28,7 @@ export default function vitePluginEvokerConfig(options: Options = {}): Plugin {
       const DEV = config.mode === "development"
       return {
         build: {
-          minify: DEV ? false : "terser",
+          minify: DEV ? false : "esbuild",
           assetsInlineLimit: 0,
           lib: {
             entry: (options.build!.lib && options.build!.lib.entry) || getEntry(),

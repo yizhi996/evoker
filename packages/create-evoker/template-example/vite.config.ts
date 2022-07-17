@@ -3,7 +3,7 @@ import evoker from "@evoker/vite-plugin"
 import { resolve } from "path"
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
   return {
     resolve: {
       alias: {
@@ -12,7 +12,6 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       evoker({
-        mode,
         devtools: {
           host: true
         }

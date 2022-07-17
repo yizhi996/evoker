@@ -152,9 +152,7 @@ export class CanvasRenderingContext2D {
     invokeWebViewMethod(
       "execCanvasCommand",
       { nodeId: this.nodeId, commands: this.commandQueue },
-      () => {
-        console.log("exec finish")
-      },
+      undefined,
       this.webViewId
     )
     this.commandQueue = []
