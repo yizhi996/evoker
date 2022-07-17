@@ -1,4 +1,4 @@
-import { nextTick, Ref } from "vue"
+import { Ref } from "vue"
 import { Canvas2DCommands } from "@evoker/shared"
 
 const defineCommands = {
