@@ -22,6 +22,8 @@ import JavaScriptCore
     var base64: Base64Object { get }
     
     init()
+    
+    func evalWebView(_ script: String, _ webViewId: Int) -> Any?
 
 }
 
@@ -53,6 +55,24 @@ import JavaScriptCore
     
     override public required init() {
         super.init()
+    }
+    
+    public func evalWebView(_ script: String, _ webViewId: Int) -> Any? {
+        guard let appService = Engine.shared.getAppService(appId: appId, envVersion: envVersion) else { return nil }
+        
+        guard let webPage = appService.findWebPage(from: webViewId) else { return nil }
+        
+        let group = DispatchGroup()
+        group.enter()
+        var result: Any? = nil
+        DispatchQueue.main.async {
+            webPage.webView.evaluateJavaScript(script) { res, _ in
+                result = res
+                group.leave()
+            }
+        }
+        group.wait()
+        return result
     }
     
 }

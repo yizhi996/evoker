@@ -63,6 +63,7 @@ export function selector(data: any[]) {
           const instance = el.__instance
           const canvasId = instance.exposed!.getCanvasId()
           res.node = {
+            id: el.id,
             nodeId: el.__nodeId,
             tagName: el.tagName,
             canvasId,

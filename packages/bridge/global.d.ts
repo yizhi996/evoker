@@ -16,6 +16,8 @@ export interface AppServiceNativeSDK {
   storage: Storage
 
   base64: Base64
+
+  evalWebView(script: string, webviewId: number): any
 }
 
 interface NativeTimer {

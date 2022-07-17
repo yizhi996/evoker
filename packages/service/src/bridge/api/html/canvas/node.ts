@@ -7,6 +7,7 @@ const canvasContexts = new Map<number, CanvasRenderingContext2D>()
 const FPS_60 = 1000 / 60
 
 export interface CanvasNodeInfo {
+  id: string
   nodeId: number
   tagName: string
   canvasId: number
@@ -21,9 +22,11 @@ const enum Methods {
 }
 
 export class CanvasNode {
+  id: string
+
   nodeId: number
 
-  id: number
+  canvasId: number
 
   webViewId: number
 
@@ -36,8 +39,9 @@ export class CanvasNode {
   private frames = new Map<number, NodeJS.Timeout>()
 
   constructor(node: CanvasNodeInfo) {
+    this.id = node.id
     this.nodeId = node.nodeId
-    this.id = node.canvasId
+    this.canvasId = node.canvasId
     this.webViewId = node.webViewId
     this._width = node.width
     this._height = node.height
@@ -72,10 +76,10 @@ export class CanvasNode {
 
   getContext(type: "2d" | "webgl") {
     if (type === "2d") {
-      let ctx = canvasContexts.get(this.id)
+      let ctx = canvasContexts.get(this.canvasId)
       if (!ctx) {
-        ctx = new CanvasRenderingContext2D(this.id, this.nodeId, this.webViewId)
-        canvasContexts.set(this.id, ctx)
+        ctx = new CanvasRenderingContext2D(this.canvasId, this.nodeId, this.webViewId)
+        canvasContexts.set(this.canvasId, ctx)
       }
       return ctx
     }
@@ -107,6 +111,17 @@ export class CanvasNode {
       clearTimeout(timer)
       this.frames.delete(requestId)
     }
+  }
+
+  toDataURL(type: string = "image/png", encoderOptions: number = 1) {
+    const script = `(function() { 
+      const wrapper = document.getElementById("${this.id}")
+      if (wrapper) {
+        const canvas = wrapper.querySelector("canvas")
+        return canvas.toDataURL("${type}", ${encoderOptions})
+      }
+    })()`
+    return globalThis.__AppServiceNativeSDK.evalWebView(script, this.webViewId)
   }
 }
 
