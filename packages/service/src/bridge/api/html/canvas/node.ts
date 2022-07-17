@@ -1,6 +1,7 @@
 import { invokeWebViewMethod } from "../../../fromWebView"
 import { CanvasRenderingContext2D } from "./context"
 import { Image, ImageData } from "./image"
+import { execCanvasFunction } from "./utils"
 
 const canvasContexts = new Map<number, CanvasRenderingContext2D>()
 
@@ -22,13 +23,13 @@ const enum Methods {
 }
 
 export class CanvasNode {
-  id: string
+  private id: string
 
-  nodeId: number
+  private nodeId: number
 
-  canvasId: number
+  private canvasId: number
 
-  webViewId: number
+  private webViewId: number
 
   private _width: number
 
@@ -78,7 +79,7 @@ export class CanvasNode {
     if (type === "2d") {
       let ctx = canvasContexts.get(this.canvasId)
       if (!ctx) {
-        ctx = new CanvasRenderingContext2D(this.canvasId, this.nodeId, this.webViewId)
+        ctx = new CanvasRenderingContext2D(this.id, this.canvasId, this.nodeId, this.webViewId)
         canvasContexts.set(this.canvasId, ctx)
       }
       return ctx
@@ -114,14 +115,11 @@ export class CanvasNode {
   }
 
   toDataURL(type: string = "image/png", encoderOptions: number = 1) {
-    const script = `(function() { 
-      const wrapper = document.getElementById("${this.id}")
-      if (wrapper) {
-        const canvas = wrapper.querySelector("canvas")
-        return canvas.toDataURL("${type}", ${encoderOptions})
-      }
-    })()`
-    return globalThis.__AppServiceNativeSDK.evalWebView(script, this.webViewId)
+    return execCanvasFunction(
+      this.id,
+      this.webViewId,
+      `return canvas.toDataURL("${type}", ${encoderOptions})`
+    )
   }
 }
 

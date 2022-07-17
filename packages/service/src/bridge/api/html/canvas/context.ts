@@ -3,6 +3,7 @@ import { isArray, isString } from "@vue/shared"
 import { queuePostFlushCb } from "vue"
 import { invokeWebViewMethod } from "../../../fromWebView"
 import { Image, ImageData } from "./image"
+import { execCanvas2DContextFunction } from "./utils"
 
 type CanvasPatternRepetition = "repeat" | "repeat-x" | "repeat-y" | "no-repeat"
 
@@ -128,11 +129,14 @@ export class CanvasRenderingContext2D {
 
   private _savedGlobalAlpha: number[] = []
 
+  private id: string
+
   private nodeId: number
 
   private webViewId: number
 
-  constructor(canvasId: number, nodeId: number, webViewId: number) {
+  constructor(id: string, canvasId: number, nodeId: number, webViewId: number) {
+    this.id = id
     this.nodeId = nodeId
     this.webViewId = webViewId
 
@@ -522,7 +526,25 @@ export class CanvasRenderingContext2D {
   }
 
   measureText(text: string) {
-    throw new Error("not supported yet")
+    return execCanvas2DContextFunction(
+      this.id,
+      this.webViewId,
+      `const metrics = ctx.measureText("${text}")
+  return {
+    width: metrics.width,
+    actualBoundingBoxLeft: metrics.actualBoundingBoxLeft,
+    actualBoundingBoxRight: metrics.actualBoundingBoxRight,
+    fontBoundingBoxAscent: metrics.fontBoundingBoxAscent,
+    fontBoundingBoxDescent: metrics.fontBoundingBoxDescent,
+    actualBoundingBoxAscent: metrics.actualBoundingBoxAscent,
+    actualBoundingBoxDescent: metrics.actualBoundingBoxDescent,
+    emHeightAscent: metrics.emHeightAscent,
+    emHeightDescent: metrics.emHeightDescent,
+    hangingBaseline: metrics.hangingBaseline,
+    alphabeticBaseline: metrics.alphabeticBaseline,
+    ideographicBaseline: metrics.ideographicBaseline
+  }`
+    )
   }
 
   moveTo(x: number, y: number) {
