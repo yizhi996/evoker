@@ -15,6 +15,8 @@ const clients: Client[] = []
 
 let config: ResolvedConfig
 
+let isDev = false
+
 interface DevSDKOptions {
   root: string
 }
@@ -32,8 +34,6 @@ export interface Options {
 }
 
 export default function vitePluginEvokerDevtools(options: Options = {}): Plugin {
-  createWebSocketServer(options)
-
   return {
     name: "vite:evoker-devtools",
 
@@ -41,10 +41,14 @@ export default function vitePluginEvokerDevtools(options: Options = {}): Plugin 
 
     configResolved(reslovedConfig) {
       config = reslovedConfig
+      isDev = config.mode === "development"
+      if (isDev) {
+        createWebSocketServer(options)
+      }
     },
 
     async buildStart(this, _) {
-      if (options.devSDK?.root) {
+      if (isDev && options.devSDK?.root) {
         const fp = path.resolve(options.devSDK.root, "packages/*/dist/*")
         const files = await fg(fp)
         files.forEach(f => {
@@ -54,9 +58,11 @@ export default function vitePluginEvokerDevtools(options: Options = {}): Plugin 
     },
 
     closeBundle() {
-      firstBuildFinished = true
-      serviceVersion = Date.now()
-      update(clients)
+      if (isDev) {
+        firstBuildFinished = true
+        serviceVersion = Date.now()
+        update(clients)
+      }
     }
   }
 }

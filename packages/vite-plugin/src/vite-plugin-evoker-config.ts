@@ -26,6 +26,7 @@ export default function vitePluginEvokerConfig(options: Options = {}): Plugin {
 
     config: config => {
       const DEV = config.mode === "development"
+
       return {
         build: {
           minify: DEV ? false : "esbuild",

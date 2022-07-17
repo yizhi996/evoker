@@ -57,11 +57,8 @@ export default function plugins(options: Options = {}) {
   }
   plugins.push(vue(rawVueOptions))
 
-  if (process.env.NODE_ENV !== "production") {
-    plugins.push(devtools(_options.devtools))
-  } else {
-    plugins.push(pack())
-  }
+  plugins.push(devtools(_options.devtools))
+  plugins.push(pack())
 
   return plugins
 }
