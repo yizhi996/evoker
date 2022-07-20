@@ -129,8 +129,9 @@ function createConfig(format, output, plugins = []) {
   } else {
     external.push(...Object.keys(pkg.dependencies || {}))
 
-    if (name === "vite-plugin") {
-      external.push(...["zlib", "path", "fs", "os", "crypto"])
+    if (name === "cli") {
+      const builtinModules = require("builtin-modules")
+      external.push(...builtinModules)
     }
   }
 

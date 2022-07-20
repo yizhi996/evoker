@@ -11,18 +11,16 @@ const getPkg = target => require(resolve(`${getPkgDir(target)}/package.json`))
 exports.getPkg = getPkg
 
 exports.createViteConfig = function (options) {
-  const { target, resolve: _resolve, rollupOptions, plugins, test } = options
+  const { target, vite = {} } = options
 
   const pkg = getPkg(target)
 
-  const { defineConfig } = require("vite")
-
-  return defineConfig(() => {
-    return {
+  const { mergeConfig } = require("vite")
+  const config = mergeConfig(
+    {
       define: {
-        "process.env.NODE_ENV":  JSON.stringify("development")
+        "process.env.NODE_ENV": JSON.stringify("development")
       },
-      resolve: _resolve,
       build: {
         lib: {
           entry: resolve(getPkgDir(target), "src/index.ts"),
@@ -32,19 +30,19 @@ exports.createViteConfig = function (options) {
             return f === "global" ? "iife" : f
           })
         },
-        rollupOptions: rollupOptions || {
-          external: [...Object.keys(pkg.dependencies || {})],
+        rollupOptions: {
+          external: vite.build?.rollupOptions?.external || [...Object.keys(pkg.dependencies || {})],
           output: {
             globals: {
               vue: "Vue"
             }
           }
         }
-      },
-      plugins,
-      test
-    }
-  })
+      }
+    },
+    vite
+  )
+  return config
 }
 
 exports.allPakcages = function () {

@@ -20,9 +20,7 @@ export default function vitePluginEvokerPack(): Plugin {
     },
 
     closeBundle() {
-      if (config.mode === "production") {
-        pack()
-      }
+      pack()
     }
   }
 }

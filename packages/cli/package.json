@@ -1,43 +1,51 @@
 {
-  "name": "@evoker/vite-plugin",
+  "name": "@evoker/cli",
   "version": "0.5.0",
-  "description": "evoker vite plugins",
+  "description": "evoker cli",
   "author": "yizhi996",
-  "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/vite-plugin",
+  "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/cli",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yizhi996/evoker.git"
   },
   "license": "MIT",
-  "main": "dist/vite-plugin.cjs.js",
-  "module": "dist/vite-plugin.es.js",
-  "types": "dist/vite-plugin.d.ts",
-  "sideEffects": false,
+  "main": "dist/cli.cjs.js",
+  "module": "dist/cli.es.js",
+  "types": "dist/cli.d.ts",
+  "bin": {
+    "evoker": "bin/evoker.js"
+  },
   "buildOptions": {
     "formats": [
       "es",
       "cjs"
     ]
   },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "sideEffects": false,
   "dependencies": {
-    "@evoker/shared": "0.5.0",
-    "@vitejs/plugin-vue": "^3.0.0",
+    "@vitejs/plugin-vue": "^3.0.1",
     "@vue/compiler-core": "^3.2.37",
     "@vue/shared": "^3.2.37",
     "archiver": "^5.3.1",
     "fast-glob": "^3.2.11",
+    "minimist": "^1.2.6",
     "picocolors": "^1.0.0",
+    "resolve-from": "^5.0.0",
+    "rollup": "^2.77.0",
     "rollup-plugin-copy": "^3.4.0",
     "tmp": "^0.2.1",
+    "vite": "^3.0.2",
     "vue": "^3.2.37",
     "ws": "^8.8.0"
   },
   "devDependencies": {
     "@types/archiver": "^5.3.1",
     "@types/tmp": "^0.2.3",
-    "@types/ws": "^8.5.3"
-  },
-  "files": [
-    "dist"
-  ]
+    "@types/ws": "^8.5.3",
+    "builtin-modules": "^3.3.0"
+  }
 }

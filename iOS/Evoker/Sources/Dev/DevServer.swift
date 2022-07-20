@@ -50,7 +50,7 @@ public class DevServer: WebSocket {
         }
     }
     
-    public override func connect(host: String = "", port: UInt16 = 8800) {
+    public override func connect(host: String = "", port: UInt16 = 5173) {
         guard Engine.shared.config.dev.useDevServer else { return }
         var ip = host
         if ip.isEmpty,

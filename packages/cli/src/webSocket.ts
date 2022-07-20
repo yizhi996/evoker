@@ -5,11 +5,14 @@ const log = msg => console.log(`[Evoker devServer] ${msg}`)
 
 const warn = msg => console.warn(`[Evoker devServer] ${msg}`)
 
-let websocketServer: ws.Server
-
 export type Client = ws & { _id: number }
 
-interface RunWssOptions {
+const enum HeartBeatMessage {
+  PING = "ping",
+  PONG = "pong"
+}
+
+interface CreateWebSockerServerOptions {
   host?: string | boolean
   port?: number
   onConnect?: (client: Client) => void
@@ -17,8 +20,9 @@ interface RunWssOptions {
   onRecv?: (client: Client, message: string) => void
 }
 
-export function runWebSocketServer(options: RunWssOptions) {
+export function createWebSocketServer(options: CreateWebSockerServerOptions) {
   let host = "127.0.0.1"
+
   if (options.host) {
     if (isString(options.host) && options.host.length) {
       host = options.host
@@ -26,20 +30,16 @@ export function runWebSocketServer(options: RunWssOptions) {
       host = "0.0.0.0"
     }
   }
-  const port = options.port || 8800
+
+  let port = options.port ?? 5173
 
   log(`run: ${host}:${port}`)
 
-  websocketServer = new ws.Server({
-    host: host,
-    port: port
-  })
+  let webSocketServer = new ws.WebSocketServer({ host, port })
 
-  websocketServer.on("connection", (client: Client) => {
+  webSocketServer.on("connection", (client: Client) => {
     console.log()
     log("client connected")
-
-    client._id = Date.now()
 
     isFunction(options.onConnect) && options.onConnect(client)
 
@@ -54,13 +54,28 @@ export function runWebSocketServer(options: RunWssOptions) {
     })
 
     client.on("message", (message: string) => {
-      options.onRecv && options.onRecv(client, message)
+      if (message === HeartBeatMessage.PING) {
+        client.send(HeartBeatMessage.PONG)
+      } else {
+        options.onRecv && options.onRecv(client, message)
+      }
     })
   })
 
-  websocketServer.on("error", error => {
-    warn(`error: ${error}`)
+  webSocketServer.on("error", (error: Error & { code?: string }) => {
+    if (error.code === "EADDRINUSE") {
+      log(`port: ${port} is already in use`)
+      webSocketServer = new ws.WebSocketServer({ host, port: ++port })
+      log(`run: ${host}:${port}`)
+    } else {
+      warn(`error: ${error}`)
+    }
   })
+
+  return {
+    wss: webSocketServer,
+    clients: () => Array.from(webSocketServer.clients)
+  }
 }
 
 export function createMessage(header: string, data: any) {

@@ -1,4 +1,3 @@
-export * from "./tag"
 export * from "./event"
 export { SyncFlags } from "./syncFlags"
 export * from "./canvas"

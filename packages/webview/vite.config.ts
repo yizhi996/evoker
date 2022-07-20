@@ -6,41 +6,46 @@ import { createViteConfig } from "../../scripts/utils"
 
 export default createViteConfig({
   target: "webview",
-  resolve: {
-    alias: {
-      "@evoker/shared": resolve(__dirname, "../shared/src/index.ts"),
-      "@evoker/bridge": resolve(__dirname, "../bridge/src/index.ts")
-    }
-  },
-  rollupOptions: {
-    output: {
-      assetFileNames: asset => {
-        if (asset.name === "style.css") {
-          return "evoker-built-in.css"
-        }
-        return asset.name
+  vite: {
+    resolve: {
+      alias: {
+        "@evoker/shared": resolve(__dirname, "../shared/src/index.ts"),
+        "@evoker/bridge": resolve(__dirname, "../bridge/src/index.ts")
       }
-    }
-  },
-  plugins: [
-    vue(),
-    copy({
-      targets: [
-        {
-          src: resolve(__dirname, "src/index.html"),
-          dest: resolve(__dirname, "dist/")
+    },
+    build: {
+      rollupOptions: {
+        external: [],
+        output: {
+          assetFileNames: asset => {
+            if (asset.name === "style.css") {
+              return "evoker-built-in.css"
+            }
+            return asset.name
+          }
         }
-      ]
-    }),
-    jsx({
-      isCustomElement: tag => tag.startsWith("ek-")
-    })
-  ],
-  test: {
-    globals: true,
-    environment: "jsdom",
-    transformMode: {
-      web: [/.[tj]sx$/]
+      }
+    },
+    plugins: [
+      vue(),
+      copy({
+        targets: [
+          {
+            src: resolve(__dirname, "src/index.html"),
+            dest: resolve(__dirname, "dist/")
+          }
+        ]
+      }),
+      jsx({
+        isCustomElement: tag => tag.startsWith("ek-")
+      })
+    ],
+    test: {
+      globals: true,
+      environment: "jsdom",
+      transformMode: {
+        web: [/.[tj]sx$/]
+      }
     }
   }
 })

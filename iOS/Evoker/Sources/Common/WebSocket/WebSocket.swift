@@ -13,7 +13,7 @@ public class WebSocket {
     
     public private(set) var host: String = "127.0.0.1"
     
-    public private(set) var port: UInt16 = 8800
+    public private(set) var port: UInt16 = 5173
     
     public private(set) var isForeground = true
     
