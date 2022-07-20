@@ -89,7 +89,7 @@ export class CanvasRenderingContext2D {
 
   private _direction: CanvasDirection = "inherit"
 
-  private _fillStyle: string | CanvasPattern | CanvasGradient = "#000000"
+  private _fillStyle: string | CanvasGradient | CanvasPattern = "#000000"
 
   private _globalAlpha = 1.0
 
@@ -111,7 +111,7 @@ export class CanvasRenderingContext2D {
 
   private _shadowBlur = 0
 
-  private _strokeStyle: string | CanvasPattern | CanvasGradient = "#000000"
+  private _strokeStyle: string | CanvasGradient | CanvasPattern = "#000000"
 
   private _shadowColor = "#000000"
 
@@ -521,11 +521,29 @@ export class CanvasRenderingContext2D {
     this.enqueue([Canvas2DCommands.FILL_TEXT, text, x, y, maxWidth])
   }
 
+  getImageData(sx: number, sy: number, sw: number, sh: number, settings?: ImageDataSettings) {
+    const imageData = execCanvas2DContextFunction(
+      this.id,
+      this.webViewId,
+      `const imageData = ctx.getImageData(${sx}, ${sy}, ${sw}, ${sh}, ${settings});
+      return { data: Array.from(imageData.data), width: imageData.width, height: imageData.height }`
+    )
+    return new ImageData(imageData.width, imageData.height, Uint8ClampedArray.from(imageData.data))
+  }
+
+  getTransform(): DOMMatrix {
+    return execCanvas2DContextFunction(
+      this.id,
+      this.webViewId,
+      `const matrix = ctx.getTransform();return JSON.parse(JSON.stringify(matrix))`
+    )
+  }
+
   lineTo(x: number, y: number) {
     this.enqueue([Canvas2DCommands.LINE_TO, x, y])
   }
 
-  measureText(text: string) {
+  measureText(text: string): TextMetrics {
     return execCanvas2DContextFunction(
       this.id,
       this.webViewId,
