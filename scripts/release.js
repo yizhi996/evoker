@@ -64,41 +64,49 @@ const currentVersion = mainPkg.version
 
   await execa("pnpm", ["i"], { stdio: "inherit" })
 
+  updateCreateTemplateDependenciesVersion("^" + targetVersion)
+
   removeCreateTemplateNodeModules()
 
   console.log(colors.bold(colors.cyan(`completed release to ${targetVersion}!`)))
 })()
 
-function updatePackageVersion(package, targetVersion) {
-  const pkgDir = resolve(getPkgDir(package), "package.json")
+function updatePackage(pkgDir, exec) {
   const pkg = JSON.parse(fs.readFileSync(pkgDir, { encoding: "utf-8" }))
-  pkg.version = targetVersion
-  updatePackageDependencitsVersion(pkg.dependencies, targetVersion)
-  updatePackageDependencitsVersion(pkg.devDependencies, targetVersion)
+  exec(pkg)
   fs.writeFileSync(pkgDir, JSON.stringify(pkg, null, 2) + "\n", { encoding: "utf-8" })
 }
 
-function updatePackageDependencitsVersion(dependencies, targetVersion) {
+function updatePackageVersion(package, targetVersion) {
+  updatePackage(resolve(getPkgDir(package), "package.json"), pkg => {
+    pkg.version = targetVersion
+    updatePackageDependenciesVersion(pkg.dependencies, targetVersion)
+    updatePackageDependenciesVersion(pkg.devDependencies, targetVersion)
+  })
+}
+
+function updatePackageDependenciesVersion(dependencies, targetVersion) {
   if (!dependencies) {
     return
   }
 
   for (const pkg in dependencies) {
-    if (pkg.startsWith("@evoker")) {
+    if (pkg.startsWith("@evoker") || pkg === "evoker") {
       dependencies[pkg] = targetVersion
     }
   }
 }
 
-async function publish(package) {
-  const pkgDir = getPkgDir(package)
-  try {
-    await execa("npm", ["publish", "--access", "public"], { stdio: "inherit", cwd: pkgDir })
-    console.log(colors.bold(colors.cyan("publish success")))
-  } catch (e) {
-    console.log(colors.bold(colors.red(`publish fail: ${e}`)))
-    throw e
-  }
+function updateCreateTemplateDependenciesVersion(targetVersion) {
+  const create = getPkgDir("create-evoker")
+  fs.readdirSync(create)
+    .filter(f => f.startsWith("template-") && !f.includes("iOS"))
+    .forEach(f => {
+      updatePackage(resolve(create, `${f}/package.json`), pkg => {
+        updatePackageDependenciesVersion(pkg.dependencies, targetVersion)
+        updatePackageDependenciesVersion(pkg.devDependencies, targetVersion)
+      })
+    })
 }
 
 function removeCreateTemplateNodeModules() {
@@ -111,4 +119,15 @@ function removeCreateTemplateNodeModules() {
         fs.rmSync(fp, { recursive: true, force: true })
       }
     })
+}
+
+async function publish(package) {
+  const pkgDir = getPkgDir(package)
+  try {
+    await execa("npm", ["publish", "--access", "public"], { stdio: "inherit", cwd: pkgDir })
+    console.log(colors.bold(colors.cyan("publish success")))
+  } catch (e) {
+    console.log(colors.bold(colors.red(`publish fail: ${e}`)))
+    throw e
+  }
 }
