@@ -7,7 +7,7 @@
     "build": "evoker build"
   },
   "dependencies": {
-    "evoker": "^0.5.0",
+    "evoker": "^0.6.1",
     "vue": "^3.2.37"
   },
   "devDependencies": {
