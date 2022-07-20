@@ -155,6 +155,11 @@
       "style": { "navigationBarTitleText": "label" }
     },
     {
+      "component": "pages/Component/Canvas.vue",
+      "path": "canvas",
+      "style": { "navigationBarTitleText": "Canvas" }
+    },
+    {
       "component": "pages/API/Index.vue",
       "path": "api",
       "style": { "navigationBarTitleText": "小程序接口能力展示" }

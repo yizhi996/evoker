@@ -61,7 +61,7 @@ const list = reactive([
     name: "画布",
     open: false,
     pages: [
-      { name: "canvas-2d 暂未支持", url: "canvas-2d" },
+      { name: "canvas-2d", url: "canvas" },
       { name: "webgl 暂未支持", url: "webgl" }
     ]
   }
