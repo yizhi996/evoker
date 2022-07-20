@@ -1,4 +1,4 @@
-import { defineComponent, ref, PropType, onMounted, nextTick } from "vue"
+import { defineComponent, ref, PropType, onMounted, onUnmounted, nextTick } from "vue"
 import { getRandomInt } from "../../utils"
 import { useCanvas2D } from "../../composables/useCanvas2D"
 
@@ -19,11 +19,15 @@ export default defineComponent({
 
     const ctx = ref<CanvasRenderingContext2D | null>()
 
-    const { exec } = useCanvas2D(ctx)
+    const { exec, destroy } = useCanvas2D(ctx)
 
     onMounted(async () => {
       await nextTick()
       ctx.value = canvas.value!.getContext("2d")
+    })
+
+    onUnmounted(() => {
+      destroy()
     })
 
     const defineMethods = {

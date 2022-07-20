@@ -28,15 +28,18 @@ const defineCommands = {
   [Canvas2DCommands.CLOSE_PATH]: (ctx: CanvasRenderingContext2D, args: any) => {
     ctx.closePath.apply(ctx, args)
   },
-  [Canvas2DCommands.DRAW_IMAGE]: (ctx: CanvasRenderingContext2D, args: any) => {
+  [Canvas2DCommands.DRAW_IMAGE]: (
+    ctx: CanvasRenderingContext2D,
+    args: any,
+    imageCache: Map<string, HTMLImageElement>
+  ) => {
     return new Promise<void>(reslove => {
-      const img = new Image()
-      img.onload = () => {
-        args[0] = img
+      const src = args[0]
+      getImageSource(src, imageCache, image => {
+        args[0] = image
         ctx.drawImage.apply(ctx, args)
         reslove()
-      }
-      img.src = args[0]
+      })
     })
   },
   [Canvas2DCommands.ELLIPSE]: (ctx: CanvasRenderingContext2D, args: any) => {
@@ -121,16 +124,19 @@ const defineCommands = {
   [Canvas2DCommands.SET_FILL_STYLE]: (ctx: CanvasRenderingContext2D, args: any) => {
     ctx.fillStyle = args[0]
   },
-  [Canvas2DCommands.SET_FILL_STYLE_BY_PATTERN]: (ctx: CanvasRenderingContext2D, args: any) => {
+  [Canvas2DCommands.SET_FILL_STYLE_BY_PATTERN]: (
+    ctx: CanvasRenderingContext2D,
+    args: any,
+    imageCache: Map<string, HTMLImageElement>
+  ) => {
     return new Promise<void>(reslove => {
-      const img = new Image()
-      img.onload = () => {
-        args[0] = img
+      const src = args[0]
+      getImageSource(src, imageCache, image => {
+        args[0] = image
         const pattern = ctx.createPattern.apply(ctx, args)
         pattern && (ctx.fillStyle = pattern)
         reslove()
-      }
-      img.src = args[0]
+      })
     })
   },
   [Canvas2DCommands.SET_FILL_STYLE_BY_LINEAR_GRADIENT]: (
@@ -226,16 +232,19 @@ const defineCommands = {
   [Canvas2DCommands.SET_STROKE_STYLE]: (ctx: CanvasRenderingContext2D, args: any) => {
     ctx.strokeStyle = args[0]
   },
-  [Canvas2DCommands.SET_STROKE_STYLE_BY_PATTERN]: (ctx: CanvasRenderingContext2D, args: any) => {
+  [Canvas2DCommands.SET_STROKE_STYLE_BY_PATTERN]: (
+    ctx: CanvasRenderingContext2D,
+    args: any,
+    imageCache: Map<string, HTMLImageElement>
+  ) => {
     return new Promise<void>(reslove => {
-      const img = new Image()
-      img.onload = () => {
-        args[0] = img
+      const src = args[0]
+      getImageSource(src, imageCache, image => {
+        args[0] = image
         const pattern = ctx.createPattern.apply(ctx, args)
         pattern && (ctx.strokeStyle = pattern)
         reslove()
-      }
-      img.src = args[0]
+      })
     })
   },
   [Canvas2DCommands.SET_STROKE_STYLE_BY_LINEAR_GRADIENT]: (
@@ -299,7 +308,27 @@ const isAsyncCommand = cmd =>
   cmd === Canvas2DCommands.SET_FILL_STYLE_BY_PATTERN ||
   cmd === Canvas2DCommands.SET_STROKE_STYLE_BY_PATTERN
 
+function getImageSource(
+  src: string,
+  imageCache: Map<string, HTMLImageElement>,
+  completion: (image: HTMLImageElement) => void
+) {
+  const image = imageCache.get(src)
+  if (image) {
+    completion(image)
+  } else {
+    const image = new Image()
+    imageCache.set(src, image)
+    image.onload = () => {
+      completion(image)
+    }
+    image.src = src
+  }
+}
+
 export function useCanvas2D(ctx: Ref<CanvasRenderingContext2D | null | undefined>) {
+  const imageCache = new Map<string, HTMLImageElement>()
+
   return {
     exec: async (commands: any[]) => {
       if (!ctx.value) {
@@ -310,12 +339,15 @@ export function useCanvas2D(ctx: Ref<CanvasRenderingContext2D | null | undefined
         const [cmd, ...args] = command
         if (isAsyncCommand(cmd)) {
           const fn = defineCommands[cmd]
-          fn && (await fn(ctx.value, args))
+          fn && (await fn(ctx.value, args, imageCache))
         } else {
           const fn = defineCommands[cmd]
           fn && fn(ctx.value, args)
         }
       }
+    },
+    destroy: () => {
+      imageCache.clear()
     }
   }
 }
