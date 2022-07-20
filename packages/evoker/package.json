@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "vue": "^3.2.37",
-    "@evoker/cli": "0.6.1",
     "@evoker/service": "0.6.1",
     "@evoker/webview": "0.6.1"
   },

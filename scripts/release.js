@@ -2,7 +2,7 @@
 
 const semver = require("semver")
 const { prompt } = require("inquirer")
-const { evokerPkg, allPakcages, getPkgDir } = require("./utils")
+const { evokerPkg, allPakcages, getPkgDir, readdir } = require("./utils")
 const colors = require("picocolors")
 const fs = require("fs")
 const execa = require("execa")
@@ -65,7 +65,7 @@ const currentVersion = mainPkg.version
   await execa("pnpm", ["i"], { stdio: "inherit" })
 
   updateCreateTemplateDependenciesVersion("^" + targetVersion)
-
+  updateCreateTemplatePodfileVersion(targetVersion)
   removeCreateTemplateNodeModules()
 
   console.log(colors.bold(colors.cyan(`completed release to ${targetVersion}!`)))
@@ -98,11 +98,10 @@ function updatePackageDependenciesVersion(dependencies, targetVersion) {
 }
 
 function updateCreateTemplateDependenciesVersion(targetVersion) {
-  const create = getPkgDir("create-evoker")
-  fs.readdirSync(create)
-    .filter(f => f.startsWith("template-") && !f.includes("iOS"))
+  readdir(getPkgDir("create-evoker"))
+    .filter(f => f.includes("template-") && f.includes("package.json"))
     .forEach(f => {
-      updatePackage(resolve(create, `${f}/package.json`), pkg => {
+      updatePackage(f, pkg => {
         updatePackageDependenciesVersion(pkg.dependencies, targetVersion)
         updatePackageDependenciesVersion(pkg.devDependencies, targetVersion)
       })
@@ -110,14 +109,34 @@ function updateCreateTemplateDependenciesVersion(targetVersion) {
 }
 
 function removeCreateTemplateNodeModules() {
-  const create = getPkgDir("create-evoker")
-  fs.readdirSync(create)
-    .filter(f => f.startsWith("template-"))
+  readdir(getPkgDir("create-evoker"))
+    .filter(f => f.includes("template-") && f.includes("node_modules"))
     .forEach(f => {
-      const fp = resolve(create, `${f}/node_modules`)
-      if (fs.existsSync(fp)) {
-        fs.rmSync(fp, { recursive: true, force: true })
+      if (fs.existsSync(f)) {
+        fs.rmSync(f, { recursive: true, force: true })
       }
+    })
+}
+
+function updateCreateTemplatePodfileVersion(targetVersion) {
+  readdir(getPkgDir("create-evoker"))
+    .filter(f => f.includes("Podfile"))
+    .forEach(f => {
+      const pod = fs.readFileSync(f, { encoding: "utf-8" })
+      const lines = pod.split("\n")
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]
+        if (line.includes("Evoker")) {
+          const search = "~> "
+          const start = line.indexOf(search)
+          if (start > -1) {
+            const end = line.lastIndexOf("'")
+            lines[i] =
+              line.substring(0, start + search.length) + targetVersion + line.substring(end)
+          }
+        }
+      }
+      fs.writeFileSync(f, lines.join("\n"), { encoding: "utf-8" })
     })
 }
 

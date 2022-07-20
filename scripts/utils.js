@@ -54,6 +54,21 @@ exports.allPakcages = function () {
   })
 }
 
-exports.evokerPkg = function evokerPkg() {
+exports.evokerPkg = function () {
   return getPkg("evoker")
 }
+
+function readdir(path) {
+  const files = []
+  fs.readdirSync(path).forEach(f => {
+    const fp =resolve(path, f)
+    if (fs.statSync(fp).isDirectory()) {
+      files.push(...readdir(fp))
+    } else {
+      files.push(fp)
+    }
+  })
+  return files
+}
+
+exports.readdir = readdir
