@@ -37,11 +37,11 @@ class TabBarView: UIView {
     func load(config: AppConfig, envVersion: AppEnvVersion) {
         guard let tabBarInfo = config.tabBar else { return }
         
-        backgroundColor = tabBarInfo.backgroundColor.hexColor()
+        backgroundColor = (tabBarInfo.backgroundColor ?? "#ffffff").hexColor()
         
         if tabBarInfo.borderStyle == .white {
             borderTopView.backgroundColor = UIColor(white: 1, alpha: 0.3)
-        } else if tabBarInfo.borderStyle == .black {
+        } else {
             borderTopView.backgroundColor = UIColor(white: 0, alpha: 0.3)
         }
         
@@ -56,8 +56,8 @@ class TabBarView: UIView {
             tabBarItem.tag = index
             tabBarItem.setTitle(item.text, for: .normal)
             tabBarItem.titleLabel?.font = UIFont.systemFont(ofSize: 10.0)
-            tabBarItem.setTitleColor(tabBarInfo.color.hexColor(), for: .normal)
-            tabBarItem.setTitleColor(tabBarInfo.selectedColor.hexColor(), for: .selected)
+            tabBarItem.setTitleColor((tabBarInfo.color ?? "#353535").hexColor(), for: .normal)
+            tabBarItem.setTitleColor((tabBarInfo.selectedColor ?? "#1989fa").hexColor(), for: .selected)
             if let iconPath = item.iconPath, !iconPath.isEmpty {
                 let iconFile = FilePath.appStaticFilePath(appId: config.appId, envVersion: envVersion, src: iconPath)
                 let image = UIImage(contentsOfFile: iconFile.path)

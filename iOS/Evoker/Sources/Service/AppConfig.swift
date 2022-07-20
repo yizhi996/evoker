@@ -29,11 +29,11 @@ public struct AppConfig: Decodable {
     }
 
     public struct TabBar: Decodable {
-        public let color: String
+        public let color: String?
         
-        public let selectedColor: String
+        public let selectedColor: String?
         
-        public let backgroundColor: String
+        public let backgroundColor: String?
         
         public let borderStyle: BorderStyle?
         
