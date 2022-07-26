@@ -1,6 +1,7 @@
 export * from "./event"
 export { SyncFlags } from "./syncFlags"
 export * from "./canvas"
+export * from "./devtools"
 
 export const isNumber = (val: unknown): val is number => typeof val === "number"
 

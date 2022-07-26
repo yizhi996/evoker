@@ -1,4 +1,6 @@
 import { DataType, GetStorageInfoSuccessCallbackResult } from "./src/api/storage"
+import { DevtoolsBridgeCommands, InvokeArgs, PublishArgs } from "@evoker/shared"
+import { InvokeCallbackResult } from "./src"
 
 interface Base64 {
   base64ToArrayBuffer(string: string): number[]
@@ -143,17 +145,33 @@ interface TabBarItem {
 }
 
 interface Config {
+  env: "webview" | "service"
+  platform: "iOS" | "devtools"
   appId: string
   appName: string
   appIcon: string
   pages: Page[]
   tabBar?: TabBar
+  webViewId: number
+}
+
+interface Devtools {
+  invokeHandler(command: DevtoolsBridgeCommands, args: InvokeArgs)
+
+  publishHandler(command: DevtoolsBridgeCommands, args: PublishArgs)
+}
+
+interface JSBridge {
+  invokeCallbackHandler: (result: InvokeCallbackResult) => void
+  subscribeHandler: (event: string, message: any, webViewId: number) => void
 }
 
 declare global {
   var webkit: WebKit
   var __AppServiceNativeSDK: AppServiceNativeSDK
   var __Config: Config
+  var __Devtools: Devtools
+  var JSBridge: JSBridge
 }
 
 export {}

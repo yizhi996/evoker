@@ -217,8 +217,9 @@ final public class AppService {
         let fileName = "app-service.js"
         let appServiceURL = dist.appendingPathComponent(fileName)
         if let js = try? String(contentsOfFile: appServiceURL.path) {
-            context.evaluateScript(js, name: fileName)
             var cfgjs = """
+            globalThis.__Config.env = 'service';
+            globalThis.__Config.plaftorm = 'iOS';
             globalThis.__Config.appName = '\(appInfo.appName)';
             globalThis.__Config.appIcon = '\(appInfo.appIconURL)';
             """
@@ -228,6 +229,7 @@ final public class AppService {
                 cfgjs += "globalThis.__Config.userInfo = {};"
             }
             context.evaluateScript(cfgjs)
+            context.evaluateScript(js, name: fileName)
         } else {
             Logger.error("load app code failed: \(appServiceURL.path) file not exist")
             return EKError.appServiceBundleNotFound

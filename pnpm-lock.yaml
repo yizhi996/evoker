@@ -99,7 +99,6 @@ importers:
       fast-glob: ^3.2.11
       minimist: ^1.2.6
       picocolors: ^1.0.0
-      resolve-from: ^5.0.0
       rollup: ^2.77.0
       rollup-plugin-copy: ^3.4.0
       tmp: ^0.2.1
@@ -114,7 +113,6 @@ importers:
       fast-glob: 3.2.11
       minimist: 1.2.6
       picocolors: 1.0.0
-      resolve-from: 5.0.0
       rollup: 2.77.0
       rollup-plugin-copy: 3.4.0
       tmp: 0.2.1
@@ -139,6 +137,7 @@ importers:
 
   packages/create-evoker/template-blank:
     specifiers:
+      '@evoker/cli': 0.6.1
       '@vitejs/plugin-vue': ^3.0.1
       evoker: ^0.6.1
       typescript: ^4.7.4
@@ -149,6 +148,7 @@ importers:
       evoker: link:../../evoker
       vue: 3.2.37
     devDependencies:
+      '@evoker/cli': link:../../cli
       '@vitejs/plugin-vue': 3.0.1_vite@3.0.2+vue@3.2.37
       typescript: 4.7.4
       vite: 3.0.2
@@ -156,6 +156,7 @@ importers:
 
   packages/create-evoker/template-example:
     specifiers:
+      '@evoker/cli': 0.6.1
       '@vitejs/plugin-vue': ^3.0.1
       autoprefixer: ^10.4.2
       evoker: ^0.6.1
@@ -172,6 +173,7 @@ importers:
       tailwindcss: 3.1.5
       vue: 3.2.37
     devDependencies:
+      '@evoker/cli': link:../../cli
       '@vitejs/plugin-vue': 3.0.1_vite@3.0.2+vue@3.2.37
       autoprefixer: 10.4.7_postcss@8.4.14
       postcss: 8.4.14
@@ -179,15 +181,30 @@ importers:
       vite: 3.0.2
       vue-tsc: 0.34.17_typescript@4.7.4
 
+  packages/devtools:
+    specifiers:
+      '@evoker/bridge': workspace:0.6.1
+      '@evoker/shared': workspace:0.6.1
+      '@types/ws': ^8.5.3
+      '@vue/shared': ^3.2.37
+      hammer-touchemulator: ^0.0.2
+      ws: ^8.8.0
+    dependencies:
+      '@evoker/bridge': link:../bridge
+      '@evoker/shared': link:../shared
+      '@vue/shared': 3.2.37
+      hammer-touchemulator: 0.0.2
+      ws: 8.8.0
+    devDependencies:
+      '@types/ws': 8.5.3
+
   packages/evoker:
     specifiers:
-      '@evoker/cli': 0.6.1
       '@evoker/service': 0.6.1
       '@evoker/webview': 0.6.1
       vite: ^3.0.2
       vue: ^3.2.37
     dependencies:
-      '@evoker/cli': link:../cli
       '@evoker/service': link:../service
       '@evoker/webview': link:../webview
       vue: 3.2.37
@@ -4255,6 +4272,10 @@ packages:
   /graceful-fs/4.2.10:
     resolution: {integrity: sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==}
 
+  /hammer-touchemulator/0.0.2:
+    resolution: {integrity: sha512-NnH4nBhI18GeT2PdfJWmTeuTAR8IowNtvxL6QQLNk6lo2uJ29rFSstOJ9ZjdVsqbjosVXFCi3SEChiagCPo0aQ==}
+    dev: false
+
   /has-flag/3.0.0:
     resolution: {integrity: sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==}
     engines: {node: '>=4'}
@@ -5688,11 +5709,6 @@ packages:
     resolution: {integrity: sha512-pb/MYmXstAkysRFx8piNI1tGFNQIFA3vkE3Gq4EuA1dF6gHp/+vgZqsCGJapvy8N3Q+4o7FwvquPJcnZ7RYy4g==}
     engines: {node: '>=4'}
     dev: true
-
-  /resolve-from/5.0.0:
-    resolution: {integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==}
-    engines: {node: '>=8'}
-    dev: false
 
   /resolve/1.22.1:
     resolution: {integrity: sha512-nBpuuYuY5jFsli/JIs1oldw6fOQCBioohqWZg/2hiaOybXOft4lonv85uDOKXdf8rhyK159cxU5cDcK/NKk8zw==}

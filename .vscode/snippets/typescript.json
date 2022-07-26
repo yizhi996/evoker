@@ -1,6 +1,6 @@
 {
   "EvokerAsyncAPI": {
-    "prefix": "evapi",
+    "prefix": "ekapi",
     "body": [
       "interface $1Options {",
       "  success?: $1SuccessCallback",

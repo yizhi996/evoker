@@ -65,6 +65,7 @@ export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: b
     el.__listenerOptions || (el.__listenerOptions = {})
 
   let touchStartTimestamp = 0
+  let isTouch = true
   let isMoved = false
 
   const isDisabled = () => {
@@ -81,7 +82,7 @@ export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: b
 
   const onStart = (ev: TouchEvent) => {
     touchStartTimestamp = ev.timeStamp
-
+    isTouch = true
     if (isDisabled()) {
       ev.stopPropagation()
       ev.preventDefault()
@@ -96,7 +97,7 @@ export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: b
   }
 
   const onMove = (ev: TouchEvent) => {
-    isMoved = true
+    isTouch && (isMoved = true)
   }
 
   const onEnd = (ev: TouchEvent) => {
@@ -129,10 +130,12 @@ export function addClickEvent(el: any, onClick?: (ev: TouchEvent, isLongPress: b
         }
       }
     }
+    isTouch = false
     isMoved = false
   }
 
   const onCancel = (ev: TouchEvent) => {
+    isTouch = false
     isMoved = false
     singleTouch = -1
   }
@@ -193,6 +196,7 @@ function createCustomTouchEvent(currentTarget: HTMLElement, ev: TouchEvent, type
   const target = ev.target as HTMLElement
 
   const changedTouches: EvokerTouch[] = []
+
   for (let i = 0; i < ev.changedTouches.length; i++) {
     const touch = ev.changedTouches.item(i)!
     changedTouches.push({

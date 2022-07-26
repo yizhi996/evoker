@@ -186,11 +186,12 @@ function update(clients: WebSocket[]) {
  * @returns
  */
 function loadSDKFiles(root: string) {
-  const pkgs = ["evoker", "webview", "vue"]
+  const pkgs = ["evoker", "webview", "vue", "devtools"]
   const include: Record<string, string[]> = {
     evoker: ["evoker.global.js"],
     webview: ["webview.global.js", "evoker-built-in.css", "index.html"],
-    vue: ["vue.runtime.global.js"]
+    vue: ["vue.runtime.global.js"],
+    devtools: ["devtools.global.js"]
   }
 
   const allFiles: string[] = []

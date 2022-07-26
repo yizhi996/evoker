@@ -143,6 +143,8 @@ open class WebPage: Page {
         window.webViewId = \(pageId);
         document.title = '\(appService.appInfo.appName) - \(route)';
         window.__Config = {
+            env: 'webview',
+            platform: 'iOS',
             appName: '\(appService.appInfo.appName)',
             appIcon: '\(appService.appInfo.appIconURL)'
         };

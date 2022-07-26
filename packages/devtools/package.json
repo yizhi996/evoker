@@ -1,0 +1,33 @@
+{
+  "name": "@evoker/devtools",
+  "version": "0.6.1",
+  "description": "evoker devtools",
+  "author": "yizhi996",
+  "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/devtools",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yizhi996/evoker.git"
+  },
+  "license": "MIT",
+  "main": "dist/devtools.cjs.js",
+  "module": "dist/devtools.es.js",
+  "types": "dist/devtools.d.ts",
+  "buildOptions": {
+    "name": "__Devtools",
+    "formats": [
+      "es",
+      "cjs",
+      "global"
+    ]
+  },
+  "dependencies": {
+    "@evoker/bridge": "workspace:0.6.1",
+    "@evoker/shared": "workspace:0.6.1",
+    "@vue/shared": "^3.2.37",
+    "hammer-touchemulator": "^0.0.2",
+    "ws": "^8.8.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.3"
+  }
+}

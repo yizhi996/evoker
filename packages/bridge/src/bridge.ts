@@ -1,4 +1,9 @@
 import { isString } from "@vue/shared"
+import { DevtoolsBridgeCommands } from "@evoker/shared"
+
+const isDevtools = globalThis.__Config.platform === "devtools"
+
+const isService = globalThis.__Config.env === "service"
 
 let callbackId = 0
 
@@ -23,20 +28,23 @@ export function invoke<T = unknown>(
     callbacks.set(cbId, callback)
   }
 
-  if (globalThis.__AppServiceNativeSDK) {
-    const msg = {
-      event,
-      params: JSON.stringify(params),
-      callbackId: cbId
+  const msg = {
+    event,
+    params: JSON.stringify(params),
+    callbackId: cbId
+  }
+
+  if (isDevtools) {
+    const command = isService
+      ? DevtoolsBridgeCommands.APP_SERVICE_INVOKE
+      : DevtoolsBridgeCommands.WEB_VIEW_INVOKE
+    __Devtools.invokeHandler(command, msg)
+  } else {
+    if (globalThis.__AppServiceNativeSDK) {
+      globalThis.__AppServiceNativeSDK.messageChannel.invokeHandler.postMessage(msg)
+    } else if (globalThis.webkit) {
+      globalThis.webkit.messageHandlers.invokeHandler.postMessage(msg)
     }
-    globalThis.__AppServiceNativeSDK.messageChannel.invokeHandler.postMessage(msg)
-  } else if (globalThis.webkit) {
-    const msg = {
-      event,
-      params: JSON.stringify(params),
-      callbackId: cbId
-    }
-    globalThis.webkit.messageHandlers.invokeHandler.postMessage(msg)
   }
 }
 
@@ -58,18 +66,22 @@ export type SubscribeCallback<T> = (result: T, webViewId: number) => void
 const subscribes = new Map<string, SubscribeCallback<any>>()
 
 export function publish(event: string, params: Record<string, any> = {}, webViewId: number) {
-  if (globalThis.__AppServiceNativeSDK) {
-    globalThis.__AppServiceNativeSDK.messageChannel.publishHandler.postMessage({
-      event,
-      params: JSON.stringify(params),
-      webViewId: webViewId
-    })
-  } else if (globalThis.webkit) {
-    globalThis.webkit.messageHandlers.publishHandler.postMessage({
-      event,
-      params: JSON.stringify(params),
-      webViewId: webViewId
-    })
+  const msg = {
+    event,
+    params: JSON.stringify(params),
+    webViewId: webViewId
+  }
+  if (isDevtools) {
+    const command = isService
+      ? DevtoolsBridgeCommands.APP_SERVICE_PUBLISH
+      : DevtoolsBridgeCommands.WEB_VIEW_PUBLISH
+    __Devtools.publishHandler(command, msg)
+  } else {
+    if (globalThis.__AppServiceNativeSDK) {
+      globalThis.__AppServiceNativeSDK.messageChannel.publishHandler.postMessage(msg)
+    } else if (globalThis.webkit) {
+      globalThis.webkit.messageHandlers.publishHandler.postMessage(msg)
+    }
   }
 }
 
@@ -79,7 +91,5 @@ export function subscribe<T = unknown>(event: string, callback: SubscribeCallbac
 
 export function subscribeHandler(event: string, message: any, webViewId: number = 0) {
   const callback = subscribes.get(event)
-  if (callback) {
-    callback(message, webViewId)
-  }
+  callback && callback(message, webViewId)
 }
