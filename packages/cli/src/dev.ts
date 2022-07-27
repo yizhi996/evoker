@@ -3,8 +3,9 @@ import colors from "picocolors"
 import path from "path"
 import { getDirAllFiles, getFileHash, getAppId, zip } from "./utils"
 import { createWebSocketServer, createMessage, createFileMessage } from "./webSocket"
+import chokidar from "chokidar"
+import debounce from "lodash.debounce"
 
-import fg from "fast-glob"
 import { WebSocket } from "ws"
 
 let firstBuildFinished = false
@@ -32,6 +33,8 @@ let options: Options
 
 let ws: ReturnType<typeof createWebSocketServer>
 
+const debouncedUpdate = debounce(updateToAllClients, 200)
+
 export default function vitePluginEvokerDevtools(_options: Options = {}): Plugin {
   options = _options
   return {
@@ -55,14 +58,17 @@ export default function vitePluginEvokerDevtools(_options: Options = {}): Plugin
           } catch {}
         }
       })
-    },
 
-    async buildStart(this, _) {
       if (options.devSDK?.root) {
-        const fp = path.resolve(options.devSDK.root, "packages/*/dist/*")
-        const files = await fg(fp)
-        files.forEach(f => {
-          this.addWatchFile(f)
+        const watcher = chokidar.watch("file", {
+          ignored: /(^|[\/\\])\../,
+          persistent: true
+        })
+        watcher.on("add", debouncedUpdate)
+
+        const files = loadSDKFiles(options.devSDK.root)
+        files.forEach(file => {
+          watcher.add(file)
         })
       }
     },
@@ -110,6 +116,15 @@ function checkClientVersion(client: WebSocket) {
   const message = JSON.stringify({ appId })
   const data = createMessage(Methods.CHECK_VERSION, message)
   send(data, [client])
+}
+
+function updateToAllClients() {
+  if (!firstBuildFinished) {
+    return
+  }
+  setTimeout(() => {
+    update(ws.clients())
+  }, 100)
 }
 
 /**

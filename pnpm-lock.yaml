@@ -96,7 +96,9 @@ importers:
       '@vue/shared': ^3.2.37
       archiver: ^5.3.1
       builtin-modules: ^3.3.0
+      chokidar: ^3.5.3
       fast-glob: ^3.2.11
+      lodash.debounce: ^4.0.8
       minimist: ^1.2.6
       picocolors: ^1.0.0
       rollup: ^2.77.0
@@ -110,7 +112,9 @@ importers:
       '@vue/compiler-core': 3.2.37
       '@vue/shared': 3.2.37
       archiver: 5.3.1
+      chokidar: 3.5.3
       fast-glob: 3.2.11
+      lodash.debounce: 4.0.8
       minimist: 1.2.6
       picocolors: 1.0.0
       rollup: 2.77.0
@@ -4716,7 +4720,6 @@ packages:
 
   /lodash.debounce/4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
-    dev: true
 
   /lodash.defaults/4.2.0:
     resolution: {integrity: sha512-qjxPLHd3r5DnsdGacqOMU6pb/avJzdh9tFX2ymgoZE27BmjXrNy/y4LoaiTeAb+O3gL8AfpJGtqfX/ae2leYYQ==}
