@@ -63,7 +63,7 @@ const toNext = () => {
   scrollIntoView.value = items[idx]
 }
 
-const onScroll = ({ scrollTop }) => {
-  scrollTop.value = scrollTop
+const onScroll = (ev) => {
+  scrollTop.value = ev.detail.scrollTop
 }
 </script>
