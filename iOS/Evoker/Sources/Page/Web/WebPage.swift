@@ -139,22 +139,12 @@ open class WebPage: Page {
     func mount() {
         guard let appService = appService else { return }
         
-        var js = """
+        let script = """
         window.webViewId = \(pageId);
         document.title = '\(appService.appInfo.appName) - \(route)';
-        window.__Config = {
-            env: 'webview',
-            platform: 'iOS',
-            appName: '\(appService.appInfo.appName)',
-            appIcon: '\(appService.appInfo.appIconURL)'
-        };
+        \(appService.generateConfigScript())
         """
-        if let userInfo = appService.appInfo.userInfo.toJSONString() {
-            js += "window.__Config.userInfo = \(userInfo);"
-        } else {
-            js += "window.__Config.userInfo = {};"
-        }
-        webView.evaluateJavaScript(js)
+        webView.evaluateJavaScript(script)
         
         var tabText = ""
         if isFromTabItemTap {
@@ -168,6 +158,9 @@ open class WebPage: Page {
                                                                                          "path": url])
         Engine.shared.config.hooks.pageLifeCycle.onLoad?(self)
         appService.modules.values.forEach { $0.onLoad(self) }
+        
+        Engine.shared.config.hooks.pageLifeCycle.onShow?(self)
+        appService.modules.values.forEach { $0.onShow(self) }
     }
 
     func publishOnShow() {

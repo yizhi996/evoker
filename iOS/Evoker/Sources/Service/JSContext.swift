@@ -87,6 +87,14 @@ public class JSContext {
         """
         context.evaluateScript(disableEval)
         
+        let configScript = """
+        globalThis.__Config = {
+            platform: "\(Constant.platfrom)",
+            env: "service"
+        }
+        """
+        context.evaluateScript(configScript)
+        
         let version = PackageManager.shared.localJSSDKVersion
         let jsSDKDir = FilePath.jsSDK(version: version)
         let ext = Engine.shared.config.dev.useDevJSSDK ? ".js" : ".prod.js"

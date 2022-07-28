@@ -215,6 +215,14 @@ extension WebView: WKNavigationDelegate {
     }
     
     public func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        let configScript = """
+        globalThis.__Config = {
+            platform: "\(Constant.platfrom)",
+            env: "webview"
+        }
+        """
+        evaluateJavaScript(configScript)
+        
         let ext = Engine.shared.config.dev.useDevJSSDK ? ".js" : ".prod.js"
         let script = """
         const head = document.head || document.getElementsByTagName("head")
@@ -224,7 +232,7 @@ extension WebView: WKNavigationDelegate {
         head.appendChild(script)
         """
         
-        evaluateJavaScript(script, completionHandler: nil)
+        evaluateJavaScript(script)
     }
     
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
