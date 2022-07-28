@@ -46,12 +46,6 @@ class InputModule: Module {
         NotificationCenter.default.removeObserver(self)
     }
     
-    func onShow(_ page: Page) {
-        guard let needFocusInput = last(pageId: page.pageId, where: { $0.needFocus }) else { return }
-        needFocusInput.startEdit()
-        allInputs(pageId: page.pageId).forEach { $0.needFocus = false }
-    }
-    
     func onUnload(_ page: Page) {
         inputs.remove(page.pageId)
     }
@@ -79,7 +73,7 @@ class InputModule: Module {
     @objc func textViewDidChangeHeightNotification(_ notify: Notification) {
         guard let appService = appService,
               let page = appService.currentPage as? WebPage,
-              page.isVisible,
+              page.isVisibled,
               let input = notify.object as? TextView,
               let transition = KeyboardManager.shared.currentTransition else { return }
         var rect = input.frame
@@ -105,7 +99,7 @@ extension InputModule: KeyboardObserver {
     func keyboardChanged(_ transition: KeyboardTransition) {
         guard let appService = appService,
               let page = appService.currentPage as? WebPage,
-              page.isVisible else { return }
+              page.isVisibled else { return }
         
         let webView = page.webView
         let keyboardHeight = transition.toVisible ? transition.toFrame.height : 0

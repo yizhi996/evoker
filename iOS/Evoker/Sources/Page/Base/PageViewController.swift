@@ -37,8 +37,6 @@ open class PageViewController: UIViewController {
         
         view.backgroundColor = .white
         
-        page.isVisible = true
-        
         addInteractivePopGesture()
         
         setupNavigationBar()
@@ -47,13 +45,13 @@ open class PageViewController: UIViewController {
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        page.isVisible = true
-        
         addNavigationBarTransitionAnimate()
     }
     
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
+        page.isVisibled = true
         
         addInteractivePopGesture()
                 
@@ -64,7 +62,7 @@ open class PageViewController: UIViewController {
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         
-        page.isVisible = false
+        page.isVisibled = false
     }
     
     @objc

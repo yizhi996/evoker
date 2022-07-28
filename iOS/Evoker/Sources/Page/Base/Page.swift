@@ -27,7 +27,7 @@ public protocol Page: AnyObject {
     
     var tabIndex: UInt8 { get set }
     
-    var isVisible: Bool { get set }
+    var isVisibled: Bool { get set }
     
     init(appService: AppService, url: String)
     

@@ -36,7 +36,7 @@ open class WebPage: Page {
     
     public var tabIndex: UInt8 = 0
     
-    public var isVisible = false
+    public var isVisibled = false
     
     public internal(set) var state: State = .none
     
