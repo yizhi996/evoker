@@ -1,13 +1,4 @@
-import {
-  onMounted,
-  ref,
-  watch,
-  computed,
-  getCurrentInstance,
-  nextTick,
-  PropType,
-  defineComponent
-} from "vue"
+import { onMounted, ref, watch, computed, nextTick, PropType, defineComponent } from "vue"
 import { useChildren } from "../../composables/useRelation"
 import { SWIPE_KEY } from "./constant"
 import { useTouch } from "../../composables/useTouch"
@@ -42,8 +33,6 @@ export default defineComponent({
   props,
   emits: ["change", "transition", "animationfinish"],
   setup(props, { emit }) {
-    const instance = getCurrentInstance()!
-
     const container = ref<HTMLElement>()
 
     const { children, linkChildren } = useChildren(SWIPE_KEY)
@@ -55,6 +44,7 @@ export default defineComponent({
     })
 
     const currentIndex = ref(0)
+
     const nextIndex = ref(0)
 
     const offset = ref(0)
@@ -111,19 +101,47 @@ export default defineComponent({
       }
     )
 
+    const enum Sources {
+      AUTOPLAY = "autoplay",
+      TOUCH = "touch",
+      OTHER = ""
+    }
+
     watch(
       () => props.current,
-      () => {
-        scrollTo(props.current, Easing.Linear.None, 0, Sources.OTHER)
+      newValue => {
+        scrollTo(newValue, Easing.Linear.None, 0, Sources.OTHER)
       }
     )
 
-    onMounted(() => {
-      nextTick(() => {
-        addTouchEvent()
-        autoScroll()
-      })
+    onMounted(async () => {
+      await nextTick()
+      addTouchEvent()
+      autoScroll()
     })
+
+    const converEasingFunctionToEasing = () => {
+      let easing: (amount: number) => number
+      switch (props.easingFunction) {
+        case "easeInCubic":
+          easing = Easing.Cubic.In
+          break
+        case "easeInOutCubic":
+          easing = Easing.Cubic.InOut
+          break
+        case "easeOutCubic":
+          easing = Easing.Cubic.Out
+          break
+        case "linear":
+          easing = Easing.Linear.None
+          break
+        case "default":
+        default:
+          easing = Easing.Quadratic.InOut
+          break
+      }
+      return easing
+    }
 
     let autoScrollTimer: ReturnType<typeof setTimeout>
 
@@ -131,29 +149,11 @@ export default defineComponent({
       clearTimeout(autoScrollTimer)
       if (props.autoplay) {
         autoScrollTimer = setTimeout(() => {
-          let easing: (amount: number) => number
-          switch (props.easingFunction) {
-            case "easeInCubic":
-              easing = Easing.Cubic.In
-              break
-            case "easeInOutCubic":
-              easing = Easing.Cubic.InOut
-              break
-            case "easeOutCubic":
-              easing = Easing.Cubic.Out
-              break
-            case "linear":
-              easing = Easing.Linear.None
-              break
-            case "default":
-            default:
-              easing = Easing.Quadratic.InOut
-              break
-          }
           nextIndex.value += 1
           if (nextIndex.value > itemCount.value - 1) {
             nextIndex.value = 0
           }
+          const easing = converEasingFunctionToEasing()
           scrollTo(nextIndex.value, easing, props.duration, Sources.AUTOPLAY)
         }, props.interval)
       }
@@ -275,12 +275,6 @@ export default defineComponent({
 
     const { startAnimation, stopAnimation } = useJSAnimation<{ position: number }>()
 
-    const enum Sources {
-      AUTOPLAY = "autoplay",
-      TOUCH = "touch",
-      OTHER = ""
-    }
-
     const scrollTo = (
       next: number,
       easing: (amount: number) => number,
@@ -321,9 +315,6 @@ export default defineComponent({
           setChildStyle()
         },
         onComplete: () => {
-          if (source !== Sources.OTHER) {
-            instance.props.current = next
-          }
           if (currentIndex.value !== next) {
             emit("change", { current: next, source })
           }
@@ -448,7 +439,7 @@ export default defineComponent({
                       })}
                       style={{
                         "background-color":
-                          i - 1 === currentIndex.value
+                          i === currentIndex.value
                             ? props.indicatorActiveColor
                             : props.indicatorColor
                       }}
