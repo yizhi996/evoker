@@ -735,7 +735,7 @@ export default defineComponent({
     const renderTongceng = () => {
       return (
         <div
-          class="ek-native__tongceng ek-video__native"
+          class="ek-tongceng ek-video__native"
           ref={tongcengRef}
           id={tongcengKey}
           style={tongcengSize.value}

@@ -190,7 +190,7 @@ export default defineComponent({
       <ek-map>
         <div
           ref={tongcengRef}
-          class="ek-native__tongceng"
+          class="ek-tongceng"
           style="position: absolute"
           id={tongcengKey}
         >

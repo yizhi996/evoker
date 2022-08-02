@@ -100,7 +100,7 @@ export default defineComponent({
 
     return () => (
       <ek-camera>
-        <div ref={tongcengRef} class="ek-native__tongceng" id={tongcengKey}>
+        <div ref={tongcengRef} class="ek-tongceng" id={tongcengKey}>
           <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
       </ek-camera>
