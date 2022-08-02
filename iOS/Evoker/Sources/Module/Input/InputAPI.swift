@@ -156,6 +156,18 @@ enum InputAPI: String, CaseIterableAPI {
         
         inputModule.inputs.set(page.pageId, params.inputId, value: input)
         
+        if input.needFocus {
+            let startEdit = {
+                input.startEdit()
+                input.needFocus = false
+            }
+            if page.isVisibled {
+                startEdit()
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: startEdit)
+            }
+        }
+        
         let height = input.getContentHeight()
         let lineCount = Int(floor(height / input.textView.font!.lineHeight))
         bridge.invokeCallbackSuccess(args: args, result: ["height": height,
@@ -268,6 +280,18 @@ enum InputAPI: String, CaseIterableAPI {
         container.addSubview(input)
         
         inputModule.inputs.set(page.pageId, params.inputId, value: input)
+        
+        if input.needFocus {
+            let startEdit = {
+                input.startEdit()
+                input.needFocus = false
+            }
+            if page.isVisibled {
+                startEdit()
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: startEdit)
+            }
+        }
         
         bridge.invokeCallbackSuccess(args: args)
     }
