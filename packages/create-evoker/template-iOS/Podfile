@@ -4,6 +4,6 @@ use_frameworks!
     
 target 'Runner' do
   
-  pod 'Evoker', '~> 0.6.1'
+  pod 'Evoker', '~> 0.7.0'
   
 end

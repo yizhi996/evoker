@@ -7,13 +7,13 @@
     "build": "evoker build"
   },
   "dependencies": {
-    "evoker": "^0.6.1",
+    "evoker": "^0.7.0",
     "vue": "^3.2.37",
     "pinia": "^2.0.14",
     "tailwindcss": "^3.0.15"
   },
   "devDependencies": {
-    "@evoker/cli": "0.6.1",
+    "@evoker/cli": "^0.7.0",
     "@vitejs/plugin-vue": "^3.0.1",
     "autoprefixer": "^10.4.2",
     "postcss": "^8.4.5",

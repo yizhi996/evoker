@@ -1,6 +1,6 @@
 {
   "name": "@evoker/bridge",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "evoker js bridge",
   "author": "yizhi996",
   "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/bridge",
@@ -23,7 +23,7 @@
     "dist"
   ],
   "dependencies": {
-    "@evoker/shared": "0.6.1",
+    "@evoker/shared": "0.7.0",
     "vue": "^3.2.37",
     "@vue/shared": "^3.2.37"
   }
