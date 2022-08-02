@@ -5,15 +5,13 @@ import {
   PublishArgs
 } from "@evoker/shared"
 
+const isService = globalThis.__Config.env === "service"
+
 function createWebSocketClient(port: number = 33233) {
-  const client = new window.WebSocket(`ws://127.0.0.1:${port}`)
+  const protocol = isService ? "APPSERVICE" : `WEBVIEW_${window.webViewId}`
+  const client = new window.WebSocket(`ws://127.0.0.1:${port}`, protocol)
   client.onopen = () => {
     console.log("connected")
-    if (globalThis.__Config.env === "webview") {
-      client.send(JSON.stringify({ command: "SET_PAGE_ID", args: globalThis.__Config.webViewId }))
-    } else {
-      client.send(JSON.stringify({ command: "SET_APP_SERVICE", args: "" }))
-    }
   }
 
   client.onerror = err => {
