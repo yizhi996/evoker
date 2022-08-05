@@ -12,6 +12,7 @@ import { ImageMode } from "../../utils/style"
 import { addIntersectionObserve, removeIntersectionObserve } from "../../lazy/observer"
 import { loadImage, ImageLoadResult } from "../../lazy/loader"
 import { getImageModeStyleCssText } from "../../utils/style"
+import { isDevtools } from "@evoker/shared"
 
 const props = {
   src: String,
@@ -56,7 +57,9 @@ export default defineComponent({
     })
 
     const getSrc = () => {
-      if (props.webp) {
+      if (isDevtools) {
+        return props.src
+      } else if (props.webp) {
         return "webp" + props.src
       }
       return props.src

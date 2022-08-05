@@ -12,3 +12,5 @@ export const isArrayBuffer = (val: unknown) =>
 
 export const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(min, value), max)
+
+export const isDevtools = __Config.platform === "devtools"

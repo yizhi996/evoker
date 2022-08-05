@@ -1,7 +1,5 @@
 import { isString } from "@vue/shared"
-import { DevtoolsBridgeCommands } from "@evoker/shared"
-
-const isDevtools = globalThis.__Config.platform === "devtools"
+import { DevtoolsBridgeCommands, isDevtools } from "@evoker/shared"
 
 const isService = globalThis.__Config.env === "service"
 
