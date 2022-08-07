@@ -5,7 +5,8 @@ import {
   watchEffect,
   getCurrentInstance,
   PropType,
-  defineComponent
+  defineComponent,
+  nextTick
 } from "vue"
 import { useTongceng } from "../../composables/useTongceng"
 import { useKeyboard } from "../../composables/useKeyboard"
@@ -13,7 +14,7 @@ import { getInputStyle, getInputPlaceholderStyle } from "../../utils/style"
 import { JSBridge } from "../../../bridge"
 import { classNames } from "../../utils"
 
-const props = {
+export const props = {
   value: { type: String, default: "" },
   type: { type: String as PropType<"text" | "number" | "digit">, default: "text" },
   password: { type: Boolean, default: false },
@@ -33,13 +34,16 @@ const props = {
   selectionStart: { type: Number, default: -1 },
   selectionEnd: { type: Number, default: -1 },
   adjustPosition: { type: Boolean, default: true },
-  holdKeyboard: { type: Boolean, default: false }
+  holdKeyboard: { type: Boolean, default: false },
+  name: { type: String, required: false }
 }
+
+export const emits = ["focus", "blur", "input", "confirm", "keyboard-height-change", "update:value"]
 
 export default defineComponent({
   name: "ek-input",
   props,
-  emits: ["focus", "blur", "input", "confirm", "keyboard-height-change", "update:value"],
+  emits: emits,
   setup(props, { emit, expose }) {
     const instance = getCurrentInstance()!
 
@@ -64,22 +68,26 @@ export default defineComponent({
     const placeholderEl = ref<HTMLElement>()
 
     const onInput = (value: string) => {
+      instance.props.value = value
       emit("update:value", value)
       emit("input", { value })
     }
 
+    const onFocus = () => {
+      emit("focus", { value: props.value })
+    }
+
+    const onBlur = () => {
+      emit("blur", { value: props.value })
+    }
+
     onKeyboardSetValue(data => {
-      instance.props.value = data.value
       onInput(data.value)
     })
 
-    onKeyboardShow(() => {
-      emit("focus", { value: props.value })
-    })
+    onKeyboardShow(onFocus)
 
-    onKeyboardHide(() => {
-      emit("blur", { value: props.value })
-    })
+    onKeyboardHide(onBlur)
 
     onKeyboardConfirm(() => {
       emit("confirm", { value: props.value })
@@ -89,7 +97,8 @@ export default defineComponent({
       emit("keyboard-height-change", { height: data.height, duration: data.duration })
     })
 
-    onMounted(() => {
+    onMounted(async () => {
+      await nextTick()
       setTimeout(() => {
         insert()
       })
@@ -199,7 +208,6 @@ export default defineComponent({
     expose({
       formData: () => props.value,
       resetFormData: () => {
-        instance.props.value = ""
         onInput("")
         changeValue()
       },
@@ -210,13 +218,13 @@ export default defineComponent({
 
     return () => (
       <ek-input ref={container}>
-        <div ref={tongcengRef} class="ek-native__tongceng" id={tongcengKey}>
+        <div ref={tongcengRef} class="ek-tongceng" id={tongcengKey}>
           <div style={{ width: "100%", height: tongcengHeight }}></div>
         </div>
         <p
           ref={placeholderEl}
           class={classNames("ek-input__placeholder", props.placeholderClass)}
-          style={props.placeholderStyle}
+          style={[props.placeholderStyle || {}, { display: "none" }]}
         ></p>
       </ek-input>
     )

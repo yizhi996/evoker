@@ -1,6 +1,7 @@
 import { ref, onMounted, onUnmounted } from "vue"
 import { JSBridge } from "../../bridge"
 import { getRandomInt } from "../utils"
+import { isDevtools } from "@evoker/shared"
 
 let incTongcengId = 1000
 
@@ -9,6 +10,8 @@ const enum NativeInvokeKeys {
   UPDATE = "updateContainer",
   REMOVE = "removeContainer"
 }
+
+const isSupportedTongceng = !isDevtools
 
 export function useTongceng(options: { scrollEnabled?: boolean } = { scrollEnabled: false }) {
   const tongcengId = incTongcengId++
@@ -139,6 +142,7 @@ export function useTongceng(options: { scrollEnabled?: boolean } = { scrollEnabl
   }
 
   return {
+    isSupportedTongceng,
     tongcengId,
     tongcengKey,
     nativeId: getRandomInt(10000, 10000000),

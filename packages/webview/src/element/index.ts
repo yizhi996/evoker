@@ -13,6 +13,7 @@ import Switch from "./components/switch"
 import Checkbox from "./components/checkbox"
 import CheckboxGroup from "./components/checkbox-group"
 import Input from "./components/input"
+import InputHTML from "./components/input-html"
 import Icon from "./components/icon"
 import Picker from "./components/picker"
 import Radio from "./components/radio"
@@ -31,6 +32,7 @@ import Form from "./components/form"
 import Label from "./components/label"
 
 import "./index.less"
+import { isDevtools } from "@evoker/shared"
 
 export interface BuiltInComponent {
   component: Component
@@ -53,7 +55,7 @@ const builtInComponent: Record<string, BuiltInComponent> = {
   switch: { component: Switch, slot: ".ek-switch__label" },
   checkbox: { component: Checkbox, slot: ".ek-checkbox__label" },
   "checkbox-group": { component: CheckboxGroup },
-  input: { component: Input },
+  input: { component: isDevtools ? InputHTML : Input },
   icon: { component: Icon },
   picker: { component: Picker },
   radio: { component: Radio, slot: ".ek-radio__label" },

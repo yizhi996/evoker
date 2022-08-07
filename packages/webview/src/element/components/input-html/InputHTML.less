@@ -1,0 +1,41 @@
+ek-input div {
+  position: relative;
+  height: inherit;
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+.ek-input {
+  &__html {
+    background: transparent;
+    border: none;
+    display: inherit;
+    position: relative;
+    width: 100%;
+    height: inherit;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    outline: none;
+    overflow: inherit;
+    text-overflow: inherit;
+    vertical-align: middle;
+    white-space: inherit;
+    z-index: 2;
+
+    &__placeholder {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: inherit;
+      min-height: 100%;
+      line-height: 100%;
+      overflow: hidden;
+      vertical-align: middle;
+      white-space: pre;
+      z-index: 1;
+    }
+  }
+}
