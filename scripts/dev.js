@@ -1,8 +1,10 @@
 // @ts-check
-const { build } = require("vite")
-const { resolve } = require("path")
-const { allPakcages, getPkgDir } = require("./utils")
-const args = require("minimist")(process.argv.slice(2))
+import { build } from "vite"
+import { resolve } from "path"
+import minimist from "minimist"
+import { allPakcages, packageDirectory } from "./utils.js"
+
+const args = minimist(process.argv.slice(2))
 
 const target = args._[0]
 
@@ -15,8 +17,7 @@ if (!target) {
 }
 
 async function buildTarget(target) {
-  const pkgDir = getPkgDir(target)
-
+  const pkgDir = packageDirectory(target)
   return await build({
     configFile: resolve(pkgDir, "vite.config.ts"),
     root: pkgDir,

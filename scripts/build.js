@@ -1,12 +1,21 @@
 // @ts-check
-const { resolve, basename } = require("path")
-const execa = require("execa")
-const fs = require("fs")
-const { gzipSync } = require("zlib")
-const colors = require("picocolors")
-const { allPakcages } = require("./utils")
+import { resolve, basename, dirname } from "path"
+import { execa } from "execa"
+import fs from "fs"
+import { gzipSync } from "zlib"
+import colors from "picocolors"
+import { allPakcages } from "./utils.js"
+import minimist from "minimist"
+import { fileURLToPath } from "url"
+import pLimit from "p-limit"
+import os from "os"
 
-const args = require("minimist")(process.argv.slice(2))
+const limit = pLimit(os.cpus().length)
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+const args = minimist(process.argv.slice(2))
 
 const target = args._[0]
 
@@ -16,7 +25,7 @@ const rmdir = path => fs.rmSync(path, { recursive: true, force: true })
 
 async function buildAll() {
   const promises = targets.map(target => {
-    return build(target)
+    return limit(() => build(target))
   })
   return Promise.all(promises)
 }
@@ -52,7 +61,7 @@ function checkAllTargetSize() {
 
 function checkProdFileSize(target) {
   const pkgDir = resolve(`packages/${target}`)
-  const pkg = require(resolve(`${pkgDir}/package.json`))
+  const pkg = JSON.parse(fs.readFileSync(resolve(`${pkgDir}/package.json`), { encoding: "utf-8" }))
   if (!pkg.buildOptions) {
     return
   }

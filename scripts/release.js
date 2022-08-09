@@ -1,19 +1,19 @@
 // @ts-check
 
-const semver = require("semver")
-const { prompt } = require("inquirer")
-const { evokerPkg, allPakcages, getPkgDir, readdir } = require("./utils")
-const colors = require("picocolors")
-const fs = require("fs")
-const execa = require("execa")
-const { resolve } = require("path")
+import semver from "semver"
+import inquirer from "inquirer"
+import { allPakcages, packageDirectory, packageObject, readdir } from "./utils.js"
+import colors from "picocolors"
+import fs from "fs"
+import { execa } from "execa"
+import { resolve } from "path"
 
-const mainPkg = evokerPkg()
+const mainPkg = packageObject("evoker")
 
 const currentVersion = mainPkg.version
 
 ;(async function () {
-  const { release } = await prompt([
+  const { release } = await inquirer.prompt([
     {
       name: "release",
       message: "select release type",
@@ -25,7 +25,7 @@ const currentVersion = mainPkg.version
   let targetVersion
 
   if (release === "custom") {
-    const { custom } = await prompt([
+    const { custom } = await inquirer.prompt([
       {
         name: "custom",
         message: "input custom version",
@@ -41,7 +41,7 @@ const currentVersion = mainPkg.version
     throw new Error(`target version invalid: ${targetVersion}`)
   }
 
-  const { yes } = await prompt([
+  const { yes } = await inquirer.prompt([
     {
       name: "yes",
       message: `release ${targetVersion}`,
@@ -58,8 +58,8 @@ const currentVersion = mainPkg.version
   packages.forEach(p => updatePackageVersion(p, targetVersion))
 
   console.log(colors.bold(colors.cyan("start publish")))
-  for (const package of packages) {
-    await publish(package)
+  for (const pkg of packages) {
+    await publish(pkg)
   }
 
   await execa("pnpm", ["i"], { stdio: "inherit" })
@@ -77,8 +77,8 @@ function updatePackage(pkgDir, exec) {
   fs.writeFileSync(pkgDir, JSON.stringify(pkg, null, 2) + "\n", { encoding: "utf-8" })
 }
 
-function updatePackageVersion(package, targetVersion) {
-  updatePackage(resolve(getPkgDir(package), "package.json"), pkg => {
+function updatePackageVersion(target, targetVersion) {
+  updatePackage(resolve(packageDirectory(target), "package.json"), pkg => {
     pkg.version = targetVersion
     updatePackageDependenciesVersion(pkg.dependencies, targetVersion)
     updatePackageDependenciesVersion(pkg.devDependencies, targetVersion)
@@ -98,7 +98,7 @@ function updatePackageDependenciesVersion(dependencies, targetVersion) {
 }
 
 function updateCreateTemplateDependenciesVersion(targetVersion) {
-  readdir(getPkgDir("create-evoker"))
+  readdir(packageDirectory("create-evoker"))
     .filter(f => f.includes("template-") && f.includes("package.json"))
     .forEach(f => {
       updatePackage(f, pkg => {
@@ -109,7 +109,7 @@ function updateCreateTemplateDependenciesVersion(targetVersion) {
 }
 
 function removeCreateTemplateNodeModules() {
-  readdir(getPkgDir("create-evoker"))
+  readdir(packageDirectory("create-evoker"))
     .filter(f => f.includes("template-") && f.includes("node_modules"))
     .forEach(f => {
       if (fs.existsSync(f)) {
@@ -119,7 +119,7 @@ function removeCreateTemplateNodeModules() {
 }
 
 function updateCreateTemplatePodfileVersion(targetVersion) {
-  readdir(getPkgDir("create-evoker"))
+  readdir(packageDirectory("create-evoker"))
     .filter(f => f.includes("Podfile"))
     .forEach(f => {
       const pod = fs.readFileSync(f, { encoding: "utf-8" })
@@ -140,8 +140,8 @@ function updateCreateTemplatePodfileVersion(targetVersion) {
     })
 }
 
-async function publish(package) {
-  const pkgDir = getPkgDir(package)
+async function publish(target) {
+  const pkgDir = packageDirectory(target)
   try {
     await execa("npm", ["publish", "--access", "public"], { stdio: "inherit", cwd: pkgDir })
     console.log(colors.bold(colors.cyan("publish success")))

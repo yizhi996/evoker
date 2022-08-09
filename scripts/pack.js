@@ -1,12 +1,16 @@
 // @ts-check
-const { resolve } = require("path")
-const fs = require("fs")
-const archiver = require("archiver")
+import { resolve, dirname } from "path"
+import fs from "fs"
+import archiver from "archiver"
+import { fileURLToPath } from "url"
+import { packageObject } from "./utils.js"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const root = resolve(__dirname, "../packages/")
 
-const evokerDir = resolve(root, "evoker")
-const version = require(resolve(evokerDir, "package.json")).version
+const version = packageObject("evoker").version
 
 const include = {
   evoker: ["evoker.global.prod.js"],

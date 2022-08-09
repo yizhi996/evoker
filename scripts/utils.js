@@ -1,21 +1,24 @@
 // @ts-check
-const { resolve } = require("path")
-const fs = require("fs")
+import { resolve, dirname } from "path"
+import fs from "fs"
+import { fileURLToPath } from "url"
+import { mergeConfig } from "vite"
 
-const getPkgDir = target => resolve(__dirname, `../packages/${target}`)
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
-exports.getPkgDir = getPkgDir
+export const packageDirectory = target => resolve(__dirname, `../packages/${target}`)
 
-const getPkg = target => require(resolve(`${getPkgDir(target)}/package.json`))
+export const packageObject = target =>
+  JSON.parse(
+    fs.readFileSync(resolve(`${packageDirectory(target)}/package.json`), { encoding: "utf-8" })
+  )
 
-exports.getPkg = getPkg
-
-exports.createViteConfig = function (options) {
+export function createViteConfig(options) {
   const { target, vite = {} } = options
 
-  const pkg = getPkg(target)
+  const pkg = packageObject(target)
 
-  const { mergeConfig } = require("vite")
   const config = mergeConfig(
     {
       define: {
@@ -23,7 +26,7 @@ exports.createViteConfig = function (options) {
       },
       build: {
         lib: {
-          entry: resolve(getPkgDir(target), "src/index.ts"),
+          entry: resolve(packageDirectory(target), "src/index.ts"),
           name: pkg.buildOptions.name,
           fileName: foramt => `${target}.${foramt === "iife" ? "global" : foramt}.js`,
           formats: pkg.buildOptions.formats.map(f => {
@@ -45,23 +48,17 @@ exports.createViteConfig = function (options) {
   return config
 }
 
-exports.allPakcages = function () {
+export function allPakcages() {
   const root = resolve(__dirname, "../packages")
   return fs.readdirSync(root).filter(pkg => {
-    return (
-      fs.statSync(resolve(root, pkg)).isDirectory() && require(resolve(root, `${pkg}/package.json`))
-    )
+    return fs.statSync(resolve(root, pkg)).isDirectory()
   })
 }
 
-exports.evokerPkg = function () {
-  return getPkg("evoker")
-}
-
-function readdir(path) {
+export function readdir(path) {
   const files = []
   fs.readdirSync(path).forEach(f => {
-    const fp =resolve(path, f)
+    const fp = resolve(path, f)
     if (fs.statSync(fp).isDirectory()) {
       files.push(...readdir(fp))
     } else {
@@ -70,5 +67,3 @@ function readdir(path) {
   })
   return files
 }
-
-exports.readdir = readdir
