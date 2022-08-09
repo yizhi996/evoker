@@ -166,7 +166,7 @@ open class WebPage: Page {
 
     func publishOnShow() {
         guard let appService = appService else { return }
-        appService.bridge.subscribeHandler(method:WebPage.onShowSubscribeKey, data: ["pageId": pageId])
+        appService.bridge.subscribeHandler(method:WebPage.onShowSubscribeKey, data: ["pageId": pageId, "route": route])
         Engine.shared.config.hooks.pageLifeCycle.onShow?(self)
         appService.modules.values.forEach { $0.onShow(self) }
     }

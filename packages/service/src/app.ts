@@ -25,7 +25,8 @@ export const innerAppData = {
   currentTabIndex: 0,
   query: {},
   routerLock: false,
-  eventFromUserClick: false
+  eventFromUserClick: false,
+  lastRoute: ""
 }
 
 let vueContext: AppContext
@@ -98,6 +99,8 @@ export function mountPage(options: MountOptions) {
     innerAppData.pageStack.set(tabIndex, [page])
   }
   innerAppData.pages.set(pageId, page)
+
+  innerAppData.lastRoute = route
 
   const vnode = createVNode(component, {
     __pageId: pageId,

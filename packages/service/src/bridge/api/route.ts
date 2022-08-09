@@ -115,9 +115,10 @@ export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
       return
     }
 
-    if ("relativePath" in options) {
-      options.url = pathResolve((options as any).relativePath, options.url)
-    }
+    const relativePath = (options as any).relativePath
+      ? (options as any).relativePath
+      : innerAppData.lastRoute
+    options.url = pathResolve(relativePath, options.url)
 
     const { path, query } = parseURL(options.url)
 
@@ -202,9 +203,10 @@ export function redirectTo<T extends RedirectToOptions = RedirectToOptions>(
       return
     }
 
-    if ("relativePath" in options) {
-      options.url = pathResolve((options as any).relativePath, options.url)
-    }
+    const relativePath = (options as any).relativePath
+      ? (options as any).relativePath
+      : innerAppData.lastRoute
+    options.url = pathResolve(relativePath, options.url)
 
     const { path, query } = parseURL(options.url)
 
@@ -252,9 +254,10 @@ export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
       return
     }
 
-    if ("relativePath" in options) {
-      options.url = pathResolve((options as any).relativePath, options.url)
-    }
+    const relativePath = (options as any).relativePath
+      ? (options as any).relativePath
+      : innerAppData.lastRoute
+    options.url = pathResolve(relativePath, options.url)
 
     const { path, query } = parseURL(options.url)
 
@@ -302,9 +305,11 @@ export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
     }
 
     if (globalThis.__Config.tabBar) {
-      if ("relativePath" in options) {
-        options.url = pathResolve((options as any).relativePath, options.url)
-      }
+      const relativePath = (options as any).relativePath
+        ? (options as any).relativePath
+        : innerAppData.lastRoute
+      options.url = pathResolve(relativePath, options.url)
+
       const { path } = parseURL(options.url)
       const exist = globalThis.__Config.tabBar.list.find(item => {
         return item.path === path
@@ -314,6 +319,9 @@ export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
         return
       }
       InnerJSBridge.invoke<SuccessResult<T>>(event, { url: path }, result => {
+        if (!result.errMsg) {
+          innerAppData.lastRoute = path
+        }
         invokeCallback(event, options, result)
       })
     } else {

@@ -147,7 +147,8 @@ InnerJSBridge.subscribe<{ pageId: number; query: Record<string, any> }>(
   }
 )
 
-InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_SHOW, message => {
+InnerJSBridge.subscribe<{ pageId: number; route: string }>(LifecycleHooks.PAGE_ON_SHOW, message => {
+  innerAppData.lastRoute = message.route
   invokePageHook(LifecycleHooks.PAGE_ON_SHOW, message.pageId)
 })
 
