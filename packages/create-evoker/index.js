@@ -7,6 +7,7 @@ import { createPromptModule } from "inquirer"
 import { fileURLToPath } from "node:url"
 import whichPMRuns from "which-pm-runs"
 import minimist from "minimist"
+import { execa } from "execa"
 
 const args = minimist(process.argv.slice(2))
 
@@ -127,10 +128,12 @@ async function main() {
   copy(path.resolve(root, "_gitignore"), path.resolve(dest, ".gitignore"))
   copy(path.resolve(root, "_README.md"), path.resolve(dest, "README.md"))
 
+  const mgr = whichPMRuns() || { name: "npm" }
+
+  await execa(mgr.name, ["install"], { cwd: dest, stdio: "inherit" })
+
   console.log("\ncompleted")
   console.log(`\n  cd ${path.basename(dest)}`)
-  const mgr = whichPMRuns() || { name: "npm" }
-  console.log(`  ${mgr.name} install`)
   console.log(`  ${mgr.name} run dev`)
 
   if (platform === "iOS") {
