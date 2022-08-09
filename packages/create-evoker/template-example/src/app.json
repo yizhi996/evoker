@@ -14,13 +14,13 @@
     "backgroundColor": "#ffffff",
     "list": [
       {
-        "path": "component",
+        "path": "pages/Component/Index",
         "text": "组件",
         "iconPath": "assets/icon_component.png",
         "selectedIconPath": "assets/icon_component_HL.png"
       },
       {
-        "path": "api",
+        "path": "pages/API/Index",
         "text": "接口",
         "iconPath": "assets/icon_API.png",
         "selectedIconPath": "assets/icon_API_HL.png"
@@ -29,13 +29,13 @@
   },
   "pages": [
     {
-      "component": "pages/Component/Index.vue",
-      "path": "component",
-      "style": { "navigationBarTitleText": "小程序内置组件展示" }
+      "path": "pages/Component/Index",
+      "style": {
+        "navigationBarTitleText": "小程序内置组件展示"
+      }
     },
     {
-      "component": "pages/Component/View.vue",
-      "path": "view",
+      "path": "pages/Component/View",
       "style": {
         "navigationBarTitleText": "view",
         "navigationBarBackgroundColor": "#1989fa",
@@ -43,301 +43,358 @@
       }
     },
     {
-      "component": "pages/Component/ScrollView.vue",
-      "path": "scroll-view",
+      "path": "pages/Component/ScrollView",
       "style": {
         "navigationBarTitleText": "scroll-view"
       }
     },
     {
-      "component": "pages/Component/Swiper.vue",
-      "path": "swiper",
-      "style": { "navigationBarTitleText": "swiper" }
+      "path": "pages/Component/Swiper",
+      "style": {
+        "navigationBarTitleText": "swiper"
+      }
     },
     {
-      "component": "pages/Component/Button.vue",
-      "path": "button",
-      "style": { "navigationBarTitleText": "button" }
+      "path": "pages/Component/Button",
+      "style": {
+        "navigationBarTitleText": "button"
+      }
     },
     {
-      "component": "pages/Component/Image.vue",
-      "path": "image",
-      "style": { "navigationBarTitleText": "image" }
+      "path": "pages/Component/Image",
+      "style": {
+        "navigationBarTitleText": "image"
+      }
     },
     {
-      "component": "pages/Component/Video.vue",
-      "path": "video",
-      "style": { "navigationBarTitleText": "video" }
+      "path": "pages/Component/Video",
+      "style": {
+        "navigationBarTitleText": "video"
+      }
     },
     {
-      "component": "pages/Component/Text.vue",
-      "path": "text",
-      "style": { "navigationBarTitleText": "text" }
+      "path": "pages/Component/Text",
+      "style": {
+        "navigationBarTitleText": "text"
+      }
     },
     {
-      "component": "pages/Component/Progress.vue",
-      "path": "progress",
-      "style": { "navigationBarTitleText": "progress" }
+      "path": "pages/Component/Progress",
+      "style": {
+        "navigationBarTitleText": "progress"
+      }
     },
     {
-      "component": "pages/Component/Switch.vue",
-      "path": "switch",
-      "style": { "navigationBarTitleText": "switch" }
+      "path": "pages/Component/Switch",
+      "style": {
+        "navigationBarTitleText": "switch"
+      }
     },
     {
-      "component": "pages/Component/Checkbox.vue",
-      "path": "checkbox",
-      "style": { "navigationBarTitleText": "checkbox" }
+      "path": "pages/Component/Checkbox",
+      "style": {
+        "navigationBarTitleText": "checkbox"
+      }
     },
     {
-      "component": "pages/Component/Input.vue",
-      "path": "input",
-      "style": { "navigationBarTitleText": "input" }
+      "path": "pages/Component/Input",
+      "style": {
+        "navigationBarTitleText": "input"
+      }
     },
     {
-      "component": "pages/Component/Navigator.vue",
-      "path": "navigator",
-      "style": { "navigationBarTitleText": "navigator" }
+      "path": "pages/Component/Navigator",
+      "style": {
+        "navigationBarTitleText": "navigator"
+      }
     },
     {
-      "component": "pages/Component/Icon.vue",
-      "path": "icon",
-      "style": { "navigationBarTitleText": "icon" }
+      "path": "pages/Component/Icon",
+      "style": {
+        "navigationBarTitleText": "icon"
+      }
     },
     {
-      "component": "pages/Component/Picker.vue",
-      "path": "picker",
-      "style": { "navigationBarTitleText": "picker" }
+      "path": "pages/Component/Picker",
+      "style": {
+        "navigationBarTitleText": "picker"
+      }
     },
     {
-      "component": "pages/Component/Radio.vue",
-      "path": "radio",
-      "style": { "navigationBarTitleText": "radio" }
+      "path": "pages/Component/Radio",
+      "style": {
+        "navigationBarTitleText": "radio"
+      }
     },
     {
-      "component": "pages/Component/Camera.vue",
-      "path": "camera",
-      "style": { "navigationBarTitleText": "camera" }
+      "path": "pages/Component/Camera",
+      "style": {
+        "navigationBarTitleText": "camera"
+      }
     },
     {
-      "component": "pages/Component/Movable.vue",
-      "path": "movable-view",
-      "style": { "navigationBarTitleText": "movable-view" }
+      "path": "pages/Component/Movable",
+      "style": {
+        "navigationBarTitleText": "movable-view"
+      }
     },
     {
-      "component": "pages/Component/Textarea.vue",
-      "path": "textarea",
-      "style": { "navigationBarTitleText": "textarea" }
+      "path": "pages/Component/Textarea",
+      "style": {
+        "navigationBarTitleText": "textarea"
+      }
     },
     {
-      "component": "pages/Component/Slider.vue",
-      "path": "slider",
-      "style": { "navigationBarTitleText": "slider" }
+      "path": "pages/Component/Slider",
+      "style": {
+        "navigationBarTitleText": "slider"
+      }
     },
     {
-      "component": "pages/Component/Map.vue",
-      "path": "map",
-      "style": { "navigationBarTitleText": "map" }
+      "path": "pages/Component/Map",
+      "style": {
+        "navigationBarTitleText": "map"
+      }
     },
     {
-      "component": "pages/Component/PickerView.vue",
-      "path": "picker-view",
-      "style": { "navigationBarTitleText": "picker-view" }
+      "path": "pages/Component/PickerView",
+      "style": {
+        "navigationBarTitleText": "picker-view"
+      }
     },
     {
-      "component": "pages/Component/Form.vue",
-      "path": "form",
-      "style": { "navigationBarTitleText": "form" }
+      "path": "pages/Component/Form",
+      "style": {
+        "navigationBarTitleText": "form"
+      }
     },
     {
-      "component": "pages/Component/Label.vue",
-      "path": "label",
-      "style": { "navigationBarTitleText": "label" }
+      "path": "pages/Component/Label",
+      "style": {
+        "navigationBarTitleText": "label"
+      }
     },
     {
-      "component": "pages/Component/Canvas.vue",
-      "path": "canvas",
-      "style": { "navigationBarTitleText": "Canvas" }
+      "path": "pages/Component/Canvas",
+      "style": {
+        "navigationBarTitleText": "Canvas"
+      }
     },
     {
-      "component": "pages/API/Index.vue",
-      "path": "api",
-      "style": { "navigationBarTitleText": "小程序接口能力展示" }
+      "path": "pages/API/Index",
+      "style": {
+        "navigationBarTitleText": "小程序接口能力展示"
+      }
     },
     {
-      "component": "pages/API/SetTitle.vue",
-      "path": "set-navigation-bar-title",
-      "style": { "navigationBarTitleText": "设置页面标题" }
+      "path": "pages/API/SetTitle",
+      "style": {
+        "navigationBarTitleText": "设置页面标题"
+      }
     },
     {
-      "component": "pages/API/Modal.vue",
-      "path": "modal",
-      "style": { "navigationBarTitleText": "模态弹窗" }
+      "path": "pages/API/Modal",
+      "style": {
+        "navigationBarTitleText": "模态弹窗"
+      }
     },
     {
-      "component": "pages/API/NavigationBarLoading.vue",
-      "path": "navigation-bar-loading",
-      "style": { "navigationBarTitleText": "标题栏加载动画" }
+      "path": "pages/API/NavigationBarLoading",
+      "style": {
+        "navigationBarTitleText": "标题栏加载动画"
+      }
     },
     {
-      "component": "pages/API/PullDownRefresh.vue",
-      "path": "pull-down-refresh",
-      "style": { "navigationBarTitleText": "下拉刷新" }
+      "path": "pages/API/PullDownRefresh",
+      "style": {
+        "navigationBarTitleText": "下拉刷新"
+      }
     },
     {
-      "component": "pages/API/ActionSheet.vue",
-      "path": "action-sheet",
-      "style": { "navigationBarTitleText": "操作菜单" }
+      "path": "pages/API/ActionSheet",
+      "style": {
+        "navigationBarTitleText": "操作菜单"
+      }
     },
     {
-      "component": "pages/API/HTML.vue",
-      "path": "get-html-node-info",
-      "style": { "navigationBarTitleText": "获取 HTML 节点信息" }
+      "path": "pages/API/HTML",
+      "style": {
+        "navigationBarTitleText": "获取 HTML 节点信息"
+      }
     },
     {
-      "component": "pages/API/Toast.vue",
-      "path": "toast",
-      "style": { "navigationBarTitleText": "消息提示框" }
+      "path": "pages/API/Toast",
+      "style": {
+        "navigationBarTitleText": "消息提示框"
+      }
     },
     {
-      "component": "pages/API/VModel.vue",
-      "path": "v-model",
-      "style": { "navigationBarTitleText": "v-model" }
+      "path": "pages/API/VModel",
+      "style": {
+        "navigationBarTitleText": "v-model"
+      }
     },
     {
-      "component": "pages/API/ScanCode.vue",
-      "path": "scan-code",
-      "style": { "navigationBarTitleText": "扫码" }
+      "path": "pages/API/ScanCode",
+      "style": {
+        "navigationBarTitleText": "扫码"
+      }
     },
     {
-      "component": "pages/API/Audio.vue",
-      "path": "audio",
-      "style": { "navigationBarTitleText": "音频" }
+      "path": "pages/API/Audio",
+      "style": {
+        "navigationBarTitleText": "音频"
+      }
     },
     {
-      "component": "pages/API/Request.vue",
-      "path": "request",
-      "style": { "navigationBarTitleText": "Request" }
+      "path": "pages/API/Request",
+      "style": {
+        "navigationBarTitleText": "Request"
+      }
     },
     {
-      "component": "pages/API/DownloadFile.vue",
-      "path": "download-file",
-      "style": { "navigationBarTitleText": "DownloadFile" }
+      "path": "pages/API/DownloadFile",
+      "style": {
+        "navigationBarTitleText": "DownloadFile"
+      }
     },
     {
-      "component": "pages/API/UploadFile.vue",
-      "path": "upload-file",
-      "style": { "navigationBarTitleText": "UploadFile" }
+      "path": "pages/API/UploadFile",
+      "style": {
+        "navigationBarTitleText": "UploadFile"
+      }
     },
     {
-      "component": "pages/API/ScreenBrightness.vue",
-      "path": "screen-brightness",
-      "style": { "navigationBarTitleText": "ScreenBrightness" }
+      "path": "pages/API/ScreenBrightness",
+      "style": {
+        "navigationBarTitleText": "ScreenBrightness"
+      }
     },
     {
-      "component": "pages/API/Clipboard.vue",
-      "path": "clipboard",
-      "style": { "navigationBarTitleText": "Clipboard" }
+      "path": "pages/API/Clipboard",
+      "style": {
+        "navigationBarTitleText": "Clipboard"
+      }
     },
     {
-      "component": "pages/API/MakePhoneCall.vue",
-      "path": "make-phone-call",
-      "style": { "navigationBarTitleText": "MakePhoneCall" }
+      "path": "pages/API/MakePhoneCall",
+      "style": {
+        "navigationBarTitleText": "MakePhoneCall"
+      }
     },
     {
-      "component": "pages/API/CaptureScreen.vue",
-      "path": "capture-screen",
-      "style": { "navigationBarTitleText": "CaptureScreen" }
+      "path": "pages/API/CaptureScreen",
+      "style": {
+        "navigationBarTitleText": "CaptureScreen"
+      }
     },
     {
-      "component": "pages/API/GetNetworkType.vue",
-      "path": "get-network-type",
-      "style": { "navigationBarTitleText": "GetNetworkType" }
+      "path": "pages/API/GetNetworkType",
+      "style": {
+        "navigationBarTitleText": "GetNetworkType"
+      }
     },
     {
-      "component": "pages/API/OnNetworkStatusChange.vue",
-      "path": "on-network-status-change",
-      "style": { "navigationBarTitleText": "OnNetworkStatusChange" }
+      "path": "pages/API/OnNetworkStatusChange",
+      "style": {
+        "navigationBarTitleText": "OnNetworkStatusChange"
+      }
     },
     {
-      "component": "pages/API/GetSystemInfo.vue",
-      "path": "get-system-info",
-      "style": { "navigationBarTitleText": "GetSystemInfo" }
+      "path": "pages/API/GetSystemInfo",
+      "style": {
+        "navigationBarTitleText": "GetSystemInfo"
+      }
     },
     {
-      "component": "pages/API/Vibrate.vue",
-      "path": "vibrate",
-      "style": { "navigationBarTitleText": "Vibrate" }
+      "path": "pages/API/Vibrate",
+      "style": {
+        "navigationBarTitleText": "Vibrate"
+      }
     },
     {
-      "component": "pages/API/Animation.vue",
-      "path": "animation",
-      "style": { "navigationBarTitleText": "Animation" }
+      "path": "pages/API/Animation",
+      "style": {
+        "navigationBarTitleText": "Animation"
+      }
     },
     {
-      "component": "pages/API/PageScroll.vue",
-      "path": "page-scroll",
-      "style": { "navigationBarTitleText": "页面滚动" }
+      "path": "pages/API/PageScroll",
+      "style": {
+        "navigationBarTitleText": "页面滚动"
+      }
     },
     {
-      "component": "pages/API/Image.vue",
-      "path": "choose-image",
-      "style": { "navigationBarTitleText": "图片" }
+      "path": "pages/API/Image",
+      "style": {
+        "navigationBarTitleText": "图片"
+      }
     },
     {
-      "component": "pages/API/Video.vue",
-      "path": "choose-video",
-      "style": { "navigationBarTitleText": "视频" }
+      "path": "pages/API/Video",
+      "style": {
+        "navigationBarTitleText": "视频"
+      }
     },
     {
-      "component": "pages/API/LoadFontFace.vue",
-      "path": "load-font-face",
-      "style": { "navigationBarTitleText": "动态加载字体" }
+      "path": "pages/API/LoadFontFace",
+      "style": {
+        "navigationBarTitleText": "动态加载字体"
+      }
     },
     {
-      "component": "pages/API/GetLocation.vue",
-      "path": "get-location",
-      "style": { "navigationBarTitleText": "获取当前位置" }
+      "path": "pages/API/GetLocation",
+      "style": {
+        "navigationBarTitleText": "获取当前位置"
+      }
     },
     {
-      "component": "pages/API/Storage.vue",
-      "path": "storage",
-      "style": { "navigationBarTitleText": "本地存储" }
+      "path": "pages/API/Storage",
+      "style": {
+        "navigationBarTitleText": "本地存储"
+      }
     },
     {
-      "component": "pages/API/Voice.vue",
-      "path": "voice",
-      "style": { "navigationBarTitleText": "录音" }
+      "path": "pages/API/Voice",
+      "style": {
+        "navigationBarTitleText": "录音"
+      }
     },
     {
-      "component": "pages/API/Setting.vue",
-      "path": "setting",
-      "style": { "navigationBarTitleText": "设置" }
+      "path": "pages/API/Setting",
+      "style": {
+        "navigationBarTitleText": "设置"
+      }
     },
     {
-      "component": "pages/API/GetUserInfo.vue",
-      "path": "get-user-info",
-      "style": { "navigationBarTitleText": "获取用户信息" }
+      "path": "pages/API/GetUserInfo",
+      "style": {
+        "navigationBarTitleText": "获取用户信息"
+      }
     },
     {
-      "component": "pages/API/Login.vue",
-      "path": "login",
-      "style": { "navigationBarTitleText": "登录" }
+      "path": "pages/API/Login",
+      "style": {
+        "navigationBarTitleText": "登录"
+      }
     },
     {
-      "component": "pages/API/Navigator.vue",
-      "path": "api/navigator",
-      "style": { "navigationBarTitleText": "页面跳转" }
+      "path": "pages/API/Navigator",
+      "style": {
+        "navigationBarTitleText": "页面跳转"
+      }
     },
     {
-      "component": "pages/API/IntersectionObserver.vue",
-      "path": "intersection-observer",
-      "style": { "navigationBarTitleText": "节点布局相交状态" }
+      "path": "pages/API/IntersectionObserver",
+      "style": {
+        "navigationBarTitleText": "节点布局相交状态"
+      }
     },
     {
-      "component": "pages/API/GetBatteryInfo.vue",
-      "path": "get-battery-info",
-      "style": { "navigationBarTitleText": "获取手机设备电量" }
+      "path": "pages/API/GetBatteryInfo",
+      "style": {
+        "navigationBarTitleText": "获取手机设备电量"
+      }
     }
   ]
 }

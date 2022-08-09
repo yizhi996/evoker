@@ -141,6 +141,7 @@ open class WebPage: Page {
         
         let script = """
         window.webViewId = \(pageId);
+        window.route = '\(route)';
         document.title = '\(appService.appInfo.appName) - \(route)';
         \(appService.generateConfigScript())
         """

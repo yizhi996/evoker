@@ -10,8 +10,7 @@
   },
   "pages": [
     {
-      "component": "components/HelloWorld.vue",
-      "path": "hello-world"
+      "path": "components/HelloWorld"
     }
   ]
 }

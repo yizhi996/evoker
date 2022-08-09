@@ -23,6 +23,10 @@ function parseURL(url: string) {
 function queryToObject(queryString: string) {
   const query: Record<string, any> = {}
 
+  if (!queryString) {
+    return query
+  }
+
   const pl = /\+/g
   function decode(s: string) {
     return decodeURIComponent(s.replace(pl, " "))
@@ -46,6 +50,21 @@ export function pathIsTabBar(path: string) {
     )
   }
   return false
+}
+
+function pathResolve(relativePath: string, url: string) {
+  if (url.indexOf("./") === 0) {
+    return pathResolve(relativePath, url.substring(2))
+  }
+
+  const components = url.split("/")
+  let i = 0
+  for (; i < components.length && components[i] === ".."; i++);
+  components.splice(0, i)
+
+  const relativePathComponents = relativePath.length > 0 ? relativePath.split("/") : []
+  relativePathComponents.splice(relativePathComponents.length - i - 1, i + 1)
+  return [...relativePathComponents, ...components].join("/")
 }
 
 export function pathIsExist(path: string) {
@@ -94,6 +113,10 @@ export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
     if (!options.url) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "url"))
       return
+    }
+
+    if ("relativePath" in options) {
+      options.url = pathResolve((options as any).relativePath, options.url)
     }
 
     const { path, query } = parseURL(options.url)
@@ -179,6 +202,10 @@ export function redirectTo<T extends RedirectToOptions = RedirectToOptions>(
       return
     }
 
+    if ("relativePath" in options) {
+      options.url = pathResolve((options as any).relativePath, options.url)
+    }
+
     const { path, query } = parseURL(options.url)
 
     if (pathIsTabBar(path)) {
@@ -223,6 +250,10 @@ export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
     if (!options.url) {
       invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "url"))
       return
+    }
+
+    if ("relativePath" in options) {
+      options.url = pathResolve((options as any).relativePath, options.url)
     }
 
     const { path, query } = parseURL(options.url)
@@ -271,6 +302,9 @@ export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
     }
 
     if (globalThis.__Config.tabBar) {
+      if ("relativePath" in options) {
+        options.url = pathResolve((options as any).relativePath, options.url)
+      }
       const { path } = parseURL(options.url)
       const exist = globalThis.__Config.tabBar.list.find(item => {
         return item.path === path

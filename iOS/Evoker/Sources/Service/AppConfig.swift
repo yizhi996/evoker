@@ -20,8 +20,6 @@ public struct AppConfig: Decodable {
     public let window: Style?
     
     public struct Page: Decodable {
-        public let component: String
-        
         public var path: String
         
         public var style: Style?

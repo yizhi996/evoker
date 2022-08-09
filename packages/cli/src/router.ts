@@ -3,7 +3,6 @@ import { getAppConfig } from "./utils"
 import color from "picocolors"
 
 interface Page {
-  component: string
   path: string
 }
 
@@ -27,7 +26,7 @@ export default function vitePluginEvokerRouter(): Plugin {
       for (let i = 0; i < config.pages.length; i++) {
         const page = config.pages[i] as Page
         const name = `evoker$${i}`
-        imports.push(`import ${name} from './${page.component}'`)
+        imports.push(`import ${name} from './${page.path}.vue'`)
         defines.push(`defineRouter('${page.path}', ${name})`)
         newPages.push(page)
       }
@@ -41,36 +40,15 @@ export default function vitePluginEvokerRouter(): Plugin {
       })
 
       if (addPages.length || delPages.length) {
-        const nameLongest = (pages: Page[]) => {
-          let longest = 0
-          for (const page of pages) {
-            const l = page.component.length
-            if (l > longest) {
-              longest = l
-            }
-          }
-          return longest
-        }
-
-        const longest = Math.max(nameLongest(addPages), nameLongest(delPages))
-
         console.log()
         for (const page of addPages) {
-          console.log(
-            `loaded page: ${color.cyan(page.component.padEnd(longest + 2))} ${color.white(
-              page.path
-            )}`
-          )
+          console.log(`loaded page: ${color.cyan(page.path)} `)
         }
 
         prevPages = prevPages.concat(addPages)
 
         for (const page of delPages) {
-          console.log(
-            `remove page: ${color.cyan(page.component.padEnd(longest + 2))} ${color.white(
-              page.path
-            )}`
-          )
+          console.log(`remove page: ${color.cyan(page.path)}`)
           const i = prevPages.findIndex(y => y.path === page.path)
           if (i > -1) {
             prevPages.splice(i, 1)
