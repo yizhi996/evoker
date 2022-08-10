@@ -41,6 +41,14 @@ const currentVersion = mainPkg.version
     throw new Error(`target version invalid: ${targetVersion}`)
   }
 
+  const { podfile } = await inquirer.prompt([
+    {
+      name: "podfile",
+      message: "update podfile version",
+      type: "confirm"
+    }
+  ])
+
   const { yes } = await inquirer.prompt([
     {
       name: "yes",
@@ -62,10 +70,10 @@ const currentVersion = mainPkg.version
     await publish(pkg)
   }
 
-  await execa("pnpm", ["i"], { stdio: "inherit" })
-
   updateCreateTemplateDependenciesVersion("^" + targetVersion)
-  updateCreateTemplatePodfileVersion(targetVersion)
+  if (podfile) {
+    updateCreateTemplatePodfileVersion(targetVersion)
+  }
   removeCreateTemplateNodeModules()
 
   console.log(colors.bold(colors.cyan(`completed release to ${targetVersion}!`)))
