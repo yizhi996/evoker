@@ -1,17 +1,18 @@
 {
   "name": "",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "evoker dev",
     "build": "evoker build"
   },
   "dependencies": {
-    "evoker": "^0.8.0",
+    "evoker": "^0.8.2",
     "vue": "^3.2.37"
   },
   "devDependencies": {
-    "@evoker/cli": "^0.8.0",
+    "@evoker/cli": "^0.8.2",
     "@vitejs/plugin-vue": "^3.0.1",
     "typescript": "^4.7.4",
     "vite": "^3.0.2",

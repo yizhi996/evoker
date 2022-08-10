@@ -1,6 +1,6 @@
 {
   "name": "@evoker/service",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "evoker jscore runtime",
   "author": "yizhi996",
   "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/service",
@@ -20,8 +20,8 @@
     ]
   },
   "dependencies": {
-    "@evoker/bridge": "0.8.0",
-    "@evoker/shared": "0.8.0",
+    "@evoker/bridge": "0.8.2",
+    "@evoker/shared": "0.8.2",
     "vue": "^3.2.37",
     "@vue/shared": "^3.2.37"
   },
