@@ -53,10 +53,11 @@ export function pathIsTabBar(path: string) {
 }
 
 function pathResolve(relativePath: string, url: string) {
-  if (url.indexOf("./") === 0) {
+  if (url.indexOf("/") === 0) {
+    return url.substring(1)
+  } else if (url.indexOf("./") === 0) {
     return pathResolve(relativePath, url.substring(2))
   }
-
   const components = url.split("/")
   let i = 0
   for (; i < components.length && components[i] === ".."; i++);
