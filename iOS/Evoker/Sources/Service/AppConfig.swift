@@ -19,10 +19,14 @@ public struct AppConfig: Decodable {
     
     public let window: Style?
     
+    public let chunkCSS: [String]?
+    
     public struct Page: Decodable {
         public var path: String
         
         public var style: Style?
+        
+        public let css: String?
 
     }
 

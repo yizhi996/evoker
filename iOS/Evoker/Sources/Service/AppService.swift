@@ -571,19 +571,15 @@ extension AppService {
     func loadAppCSS(to webView: WebView) {
         webView.runAfterLoad { [weak self] in
             guard let self = self else { return }
-            let cssURL = FilePath.appDist(appId: self.appId, envVersion: self.envVersion)
-                .appendingPathComponent("style.css").absoluteString
-            let loadAppCSS =
-            """
-            const link = document.createElement("link");
-            link.rel="stylesheet";
-            link.type="text/css";
-            link.href="\(cssURL)"
-            document.head.appendChild(link)
-            """
-            webView.evaluateJavaScript(loadAppCSS) { _, error in
-                if let error = error as? WKError, error.code != .javaScriptResultTypeIsUnsupported {
-                    Logger.error("WebView eval \(loadAppCSS) failed: \(error)")
+            
+            self.config.chunkCSS?.forEach { css in
+                let path = FilePath.appDist(appId: self.appId,
+                                              envVersion: self.envVersion).appendingPathComponent(css).absoluteString
+                let script = JavaScriptGenerator.injectCSS(path: path)
+                webView.evaluateJavaScript(script) { _, error in
+                    if let error = error as? WKError, error.code != .javaScriptResultTypeIsUnsupported {
+                        Logger.error("WebView eval \(script) failed: \(error)")
+                    }
                 }
             }
         }

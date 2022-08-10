@@ -79,6 +79,9 @@ export default function vitePluginEvokerCSS(): Plugin {
         const i = (outputAppConfig.pages as PageInfo[]).findIndex(p => p.path === pagePath)
         if (i > -1) {
           outputAppConfig.pages[i].css = dest
+        } else {
+          const chunkCSS = outputAppConfig.chunkCSS || (outputAppConfig.chunkCSS = [])
+          chunkCSS.push(dest)
         }
 
         this.emitFile({

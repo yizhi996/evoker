@@ -26,6 +26,8 @@ open class WebPage: Page {
     
     public weak var appService: AppService?
     
+    public var pageInfo: AppConfig.Page!
+    
     public weak var viewController: PageViewController?
     
     public var style: AppConfig.Style?
@@ -40,7 +42,9 @@ open class WebPage: Page {
     
     public internal(set) var state: State = .none
     
-    public internal(set) var route: String = ""
+    public var route: String {
+        return pageInfo.path
+    }
     
     var forceRotateScreen = false
     
@@ -94,16 +98,15 @@ open class WebPage: Page {
     public required init(appService: AppService, url: String) {
         self.appService = appService
         self.url = url
+    
         pageId = appService.genPageId()
         
-        if let url = URL(string: url) {
-            route = url.path
-        } else {
-            route = url
-        }
+        let splited = url.split(separator: "?")
+        let route = splited[0]
         
-        if let pageConfig = appService.config.pages.first(where: { $0.path == route }) {
-            style = pageConfig.style
+        if let pageInfo = appService.config.pages.first(where: { $0.path == route }) {
+            self.pageInfo = pageInfo
+            style = pageInfo.style
         }
         
         NotificationCenter.default.addObserver(self,
@@ -146,6 +149,12 @@ open class WebPage: Page {
         \(appService.generateConfigScript())
         """
         webView.evaluateJavaScript(script)
+        
+        if let css = pageInfo.css {
+            let path = FilePath.appDist(appId: appService.appId,
+                                          envVersion: appService.envVersion).appendingPathComponent(css).absoluteString
+            webView.evaluateJavaScript(JavaScriptGenerator.injectCSS(path: path))
+        }
         
         var tabText = ""
         if isFromTabItemTap {
