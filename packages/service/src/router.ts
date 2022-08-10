@@ -33,8 +33,13 @@ function wrapper(component: DefineComponent) {
   component.inheritAttrs = false
   component.isWrapper = true
   component.setup = (props, ctx) => {
-    const { __pageId: pageId, __query: query } = ctx.attrs as {
+    const {
+      __pageId: pageId,
+      __route: route,
+      __query: query
+    } = ctx.attrs as {
       __pageId: number
+      __route: string
       __query: Record<string, any>
     }
 
@@ -49,7 +54,7 @@ function wrapper(component: DefineComponent) {
       query
     })
 
-    InnerJSBridge.subscribeHandler(LifecycleHooks.PAGE_ON_SHOW, { pageId })
+    InnerJSBridge.subscribeHandler(LifecycleHooks.PAGE_ON_SHOW, { pageId, route })
     return render
   }
   return component
