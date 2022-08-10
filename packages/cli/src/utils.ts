@@ -26,15 +26,14 @@ export function getDirAllFiles(dir: string) {
   return list
 }
 
-export function hash(str: string) {
-  return crypto.createHash("sha256").update(str).digest("hex")
+export function getHash(str: string) {
+  return crypto.createHash("sha256").update(str).digest("hex").substring(0, 8)
 }
 
 export function getFileHash(filepath: string) {
   if (fs.existsSync(filepath)) {
     const code = fs.readFileSync(filepath).toString()
-    const fileHash = hash(code)
-    return fileHash
+    return getHash(code)
   }
   return ""
 }

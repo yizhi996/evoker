@@ -2,16 +2,17 @@ import { build as viteBuild, mergeConfig, loadConfigFromFile, resolveConfig } fr
 import type { InlineConfig, ResolvedConfig } from "vite"
 import { resolve } from "path"
 import fs from "fs"
-import router from "./router"
+import router from "./plugins/router"
 import { vue } from "./vue"
 import pack from "./pack"
-import app from "./app"
-import dev from "./dev"
+import app from "./plugins/app"
+import dev from "./plugins/dev"
+import css from "./plugins/css"
 import copy from "rollup-plugin-copy"
-import type { Options as DevOptions } from "./dev"
+import type { Options as DevOptions } from "./plugins/dev"
 import type { Options as VueOptions } from "@vitejs/plugin-vue"
 
-const entryFiles = ["main.ts", "index.ts", "main.js", "index.js"]
+const entryFiles = ["main.ts", "index.ts", "app.ts", "main.js", "index.js", "app.js"]
 
 function getEntry() {
   for (const file of entryFiles) {
@@ -63,11 +64,12 @@ export async function build(mode: string = "development") {
     plugins: [
       vue(evokerConfig.vue || {}),
       app(),
+      css(),
       router(),
       DEV ? dev(evokerConfig.dev || {}) : pack(),
       copy({
         targets: [
-          { src: resolve("src/app.json"), dest: resolve(outDir) },
+          // { src: resolve("src/app.json"), dest: resolve(outDir) },
           {
             src: resolve(`src/${defaultConfig.build.assetsDir}`),
             dest: resolve(outDir)

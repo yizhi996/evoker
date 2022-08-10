@@ -1,11 +1,18 @@
 import type { Plugin, ResolvedConfig } from "vite"
 import fs from "fs"
+import { resolve } from "path"
 
-let config: ResolvedConfig
+let outputAppConfig: {
+  [x: string]: any
+} = {}
 
-let input: string
+export { outputAppConfig }
 
 export default function vitePluginEvokerConfig(): Plugin {
+  let config: ResolvedConfig
+
+  let input: string
+
   return {
     name: "vite:evoker-app",
     enforce: "pre",
@@ -24,6 +31,11 @@ export default function vitePluginEvokerConfig(): Plugin {
         const og = fs.readFileSync(id, "utf-8")
         return inject + og
       }
+    },
+
+    writeBundle() {
+      const cfg = JSON.stringify(outputAppConfig, null, 4)
+      fs.writeFileSync(resolve(config.build.outDir, "app.json"), cfg, "utf-8")
     }
   }
 }

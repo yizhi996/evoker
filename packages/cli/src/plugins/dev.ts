@@ -1,8 +1,8 @@
 import type { Plugin, ResolvedConfig } from "vite"
 import colors from "picocolors"
 import path from "path"
-import { getDirAllFiles, getFileHash, getAppId, zip } from "./utils"
-import { createWebSocketServer, createMessage, createFileMessage } from "./webSocket"
+import { getDirAllFiles, getFileHash, getAppId, zip } from "../utils"
+import { createWebSocketServer, createMessage, createFileMessage } from "../webSocket"
 import chokidar from "chokidar"
 import debounce from "lodash.debounce"
 
