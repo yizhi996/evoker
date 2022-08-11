@@ -9,6 +9,7 @@ import app from "./plugins/app"
 import dev from "./plugins/dev"
 import css from "./plugins/css"
 import copy from "rollup-plugin-copy"
+import { IGNORE_CHUNK_CSS_NAME } from "./plugins/css"
 import type { Options as DevOptions } from "./plugins/dev"
 import type { Options as VueOptions } from "@vitejs/plugin-vue"
 
@@ -52,10 +53,17 @@ export async function build(mode: string = "development") {
       },
       rollupOptions: {
         external: ["evoker", "vue"],
+        /** @ts-ignore */
         output: {
           globals: {
             evoker: "Evoker",
             vue: "Vue"
+          },
+          assetFileNames: asset => {
+            if (asset.name === "style.css") {
+              return IGNORE_CHUNK_CSS_NAME
+            }
+            return asset.name
           }
         }
       },

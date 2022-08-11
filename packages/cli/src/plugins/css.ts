@@ -13,6 +13,10 @@ const cssLangs = `\\.(css|less|sass|scss|styl|stylus|pcss|postcss)($|\\?)`
 const cssLangRE = new RegExp(cssLangs)
 const isCSSRequest = request => cssLangRE.test(request)
 
+const IGNORE_CHUNK_CSS_NAME = "NEVER_USE_PLEASE_IGNORE_THIS.css"
+
+export { IGNORE_CHUNK_CSS_NAME }
+
 export default function vitePluginEvokerCSS(): Plugin {
   const styles: Map<string, string> = new Map<string, string>()
 
@@ -93,6 +97,13 @@ export default function vitePluginEvokerCSS(): Plugin {
       })
 
       return null
+    },
+
+    writeBundle() {
+      const cssPath = path.resolve(config.build.outDir, IGNORE_CHUNK_CSS_NAME)
+      if (fs.existsSync(cssPath)) {
+        fs.rmSync(cssPath)
+      }
     }
   }
 }
