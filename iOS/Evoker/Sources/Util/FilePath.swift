@@ -150,6 +150,7 @@ extension FilePath {
     public static func appRootDirectory() -> URL {
         return documentDirectory().appendingPathComponent("app")
     }
+    
     /// Document/com.evokerdev/app/{appId}/
     public static func app(appId: String) -> URL {
         return appRootDirectory().appendingPathComponent("\(appId)")
@@ -163,11 +164,6 @@ extension FilePath {
     /// Document/com.evokerdev/app/{appId}/dist/{envVersion}/
     public static func appDist(appId: String, envVersion: AppEnvVersion) -> URL {
         return app(appId: appId).appendingPathComponent("dist/\(envVersion)/")
-    }
-    
-    /// Document/com.evokerdev/app/{appId}/dist/{envVersion}/index.html
-    public static func appIndexHTMLPath(appId: String, envVersion: AppEnvVersion) -> URL {
-        return appDist(appId: appId, envVersion: envVersion).appendingPathComponent("index.html")
     }
     
     /// Document/com.evokerdev/app/{appId}/dist/{envVersion}/{src}

@@ -35,14 +35,6 @@ export default function vitePluginEvokerCSS(): Plugin {
       }
     },
 
-    load(id) {
-      if (id === input) {
-        const inject = `import config from "./app.json";globalThis.__Config = config;`
-        const og = fs.readFileSync(id, "utf-8")
-        return inject + og
-      }
-    },
-
     transform(css, id, opts) {
       if (!isCSSRequest(id)) {
         return

@@ -1,4 +1,4 @@
-import type { Plugin } from "vite"
+import type { Plugin, ResolvedConfig } from "vite"
 import { getAppConfig } from "../utils"
 import color from "picocolors"
 import { extend, isString } from "@vue/shared"
@@ -8,6 +8,7 @@ import { outputAppConfig } from "./app"
 
 export interface PageInfo {
   path: string
+  style: any
   css?: string
 }
 
@@ -15,14 +16,27 @@ type Page = string | PageInfo
 
 const getPath = (page: Page) => (isString(page) ? page : page.path)
 
-let prevPages: Page[] = []
-
 export default function vitePluginEvokerRouter(): Plugin {
+  let config: ResolvedConfig
+
+  let input: string
+
+  let prevPages: Page[] = []
+
   return {
     name: "vite:evoker-router",
 
+    configResolved: _config => {
+      config = _config
+      if (config.build.lib) {
+        input = resolve(config.root, config.build.lib.entry)
+      } else {
+        throw new Error("lib entry cannot be empty.")
+      }
+    },
+
     transform(code: string, id: string) {
-      if (!id.endsWith("app.json")) {
+      if (id !== input) {
         return
       }
 
@@ -46,7 +60,7 @@ export default function vitePluginEvokerRouter(): Plugin {
           imports.push(`import ${name} from './${path}.${ext}'`)
           defines.push(`defineRouter('${path}', ${name})`)
           newPages.push(page)
-          outputAppConfig.pages.push({ path: path })
+          outputAppConfig.pages.push({ path: path, style: isString(page) ? {} : page.style })
         }
       }
 
@@ -81,11 +95,11 @@ export default function vitePluginEvokerRouter(): Plugin {
 
       const nextLine = "\n"
 
-      code += `import { defineRouter } from 'evoker'${nextLine}`
-      code += imports.join(nextLine) + nextLine
-      code += defines.join(nextLine) + nextLine
+      let defineRouter = `import { defineRouter } from 'evoker'${nextLine}`
+      defineRouter += imports.join(nextLine) + nextLine
+      defineRouter += defines.join(nextLine) + nextLine
       return {
-        code
+        code: defineRouter + code
       }
     }
   }

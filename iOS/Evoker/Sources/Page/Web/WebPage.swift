@@ -146,7 +146,7 @@ open class WebPage: Page {
         window.webViewId = \(pageId);
         window.route = '\(route)';
         document.title = '\(appService.appInfo.appName) - \(route)';
-        \(appService.generateConfigScript())
+        \(JavaScriptGenerator.setAppInfo(appInfo: appService.appInfo))
         """
         webView.evaluateJavaScript(script)
         

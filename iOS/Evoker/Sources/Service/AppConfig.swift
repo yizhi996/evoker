@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-public struct AppConfig: Decodable {
+public struct AppConfig: Codable {
     
     public let appId: String
     
@@ -21,7 +21,7 @@ public struct AppConfig: Decodable {
     
     public let chunkCSS: [String]?
     
-    public struct Page: Decodable {
+    public struct Page: Codable {
         public var path: String
         
         public var style: Style?
@@ -30,7 +30,7 @@ public struct AppConfig: Decodable {
 
     }
 
-    public struct TabBar: Decodable {
+    public struct TabBar: Codable {
         public let color: String?
         
         public let selectedColor: String?
@@ -41,13 +41,13 @@ public struct AppConfig: Decodable {
         
         public let list: [Item]
         
-        public enum BorderStyle: String, Decodable {
+        public enum BorderStyle: String, Codable {
             case white
             
             case black
         }
         
-        public struct Item: Decodable {
+        public struct Item: Codable {
             public let path: String
             
             public let text: String
@@ -58,7 +58,7 @@ public struct AppConfig: Decodable {
         }
     }
 
-    public struct Style: Decodable {
+    public struct Style: Codable {
         
         public enum NavigationStyle: String, Codable {
             case `default` = "default"

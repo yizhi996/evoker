@@ -69,6 +69,8 @@ final public class AppService {
     
     public internal(set) var modules: [String: Module] = [:]
     
+    public private(set) lazy var localImageCache = LRUCache<String, String>(maxSize: 1024 * 1024 * 100)
+    
     private var incPageId = 0
     
     private var killTimer: Timer?
@@ -149,6 +151,11 @@ final public class AppService {
         }
         
         NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didReceiveMemoryWarning),
+                                               name: UIApplication.didReceiveMemoryWarningNotification,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(networkStatusDidChange(_:)),
                                                name: Engine.networkStatusDidChange,
                                                object: nil)
@@ -162,6 +169,10 @@ final public class AppService {
     deinit {
         Logger.debug("\(appId) app service deinit")
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc private func didReceiveMemoryWarning() {
+        localImageCache.removeAll()
     }
     
     func setupModules() {
@@ -213,28 +224,20 @@ final public class AppService {
     }
     
     func loadAppPackage() -> EKError? {
+        let configScript = JavaScriptGenerator.defineConfig(appConfig: config)
+        let appInfoScript = JavaScriptGenerator.setAppInfo(appInfo: appInfo)
+        context.evaluateScript(configScript + appInfoScript)
+        
         let dist = FilePath.appDist(appId: appId, envVersion: launchOptions.envVersion)
         let fileName = "app-service.js"
         let appServiceURL = dist.appendingPathComponent(fileName)
         if let js = try? String(contentsOfFile: appServiceURL.path) {
-            context.evaluateScript(generateConfigScript())
             context.evaluateScript(js, name: fileName)
         } else {
             Logger.error("load app code failed: \(appServiceURL.path) file not exist")
             return EKError.appServiceBundleNotFound
         }
         return nil
-    }
-    
-    func generateConfigScript() -> String {
-        var script = "globalThis.__Config.appName = '\(appInfo.appName)';"
-        script += "globalThis.__Config.appIcon = '\(appInfo.appIconURL)';"
-        if let userInfo = appInfo.userInfo.toJSONString() {
-            script += "globalThis.__Config.userInfo = \(userInfo);"
-        } else {
-            script += "globalThis.__Config.userInfo = {};"
-        }
-        return script
     }
     
     func genPageId() -> Int {

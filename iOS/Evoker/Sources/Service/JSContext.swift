@@ -81,19 +81,8 @@ public class JSContext {
     private func loadSDK() {
         context.setObject(nativeSDK, forKeyedSubscript: "__AppServiceNativeSDK" as (NSCopying & NSObjectProtocol)?)
         
-        let disableEval = """
-        global = globalThis;
-        eval = void 0;
-        """
-        context.evaluateScript(disableEval)
-        
-        let configScript = """
-        globalThis.__Config = {
-            platform: "\(Constant.platfrom)",
-            env: "service"
-        }
-        """
-        context.evaluateScript(configScript)
+        let disableEval = "eval = void 0;"
+        context.evaluateScript(disableEval + JavaScriptGenerator.defineEnv(env: .service))
         
         let version = PackageManager.shared.localJSSDKVersion
         let jsSDKDir = FilePath.jsSDK(version: version)
