@@ -35,8 +35,6 @@ final public class Engine {
         }
     }
     
-    public private(set) lazy var localImageCache = LRUCache<String, String>(maxSize: 1024 * 1024 * 100)
-    
     private let processPool = WKProcessPool()
     
     private let networkReachabilityManager = NetworkReachabilityManager()!
@@ -84,11 +82,6 @@ final public class Engine {
         setupSDWebImage()
         
         watchNetworkStatus()
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didReceiveMemoryWarning),
-                                               name: UIApplication.didReceiveMemoryWarningNotification,
-                                               object: nil)
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(appDevelopUpdateNotification(_:)),
@@ -209,10 +202,6 @@ final public class Engine {
                 }
             }
         }
-    }
-    
-    @objc private func didReceiveMemoryWarning() {
-        localImageCache.removeAll()
     }
     
     @objc private func willEnterForeground() {

@@ -86,7 +86,7 @@ enum MediaAPI: String, CaseIterableAPI {
         
         let key = filePath!.absoluteString
         
-        if !isEKFile, let cache = Engine.shared.localImageCache.get(key) {
+        if !isEKFile, let cache = appService.localImageCache.get(key) {
             bridge.invokeCallbackSuccess(args: args, result: ["src": cache])
             return
         }
@@ -123,7 +123,7 @@ enum MediaAPI: String, CaseIterableAPI {
         let base64 = data.base64EncodedString()
         let dataURL = "data:image/\(format);base64, " + base64
         if !isEKFile {
-            Engine.shared.localImageCache.put(key: key, value: dataURL, size: dataURL.bytes.count)
+            appService.localImageCache.put(key: key, value: dataURL, size: dataURL.bytes.count)
         }
         bridge.invokeCallbackSuccess(args: args, result: ["src": dataURL])
     }
