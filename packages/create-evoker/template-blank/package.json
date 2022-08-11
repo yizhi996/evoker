@@ -8,11 +8,11 @@
     "build": "evoker build"
   },
   "dependencies": {
-    "evoker": "^0.8.2",
+    "evoker": "^0.9.0",
     "vue": "^3.2.37"
   },
   "devDependencies": {
-    "@evoker/cli": "^0.8.2",
+    "@evoker/cli": "^0.9.0",
     "@vitejs/plugin-vue": "^3.0.1",
     "typescript": "^4.7.4",
     "vite": "^3.0.2",

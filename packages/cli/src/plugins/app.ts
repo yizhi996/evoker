@@ -11,8 +11,6 @@ export { outputAppConfig }
 export default function vitePluginEvokerConfig(): Plugin {
   let config: ResolvedConfig
 
-  let input: string
-
   return {
     name: "vite:evoker-app",
 
@@ -20,9 +18,7 @@ export default function vitePluginEvokerConfig(): Plugin {
 
     configResolved: _config => {
       config = _config
-      if (config.build.lib) {
-        input = resolve(config.root, config.build.lib.entry)
-      } else {
+      if (!config.build.lib || !config.build.lib.entry) {
         throw new Error("lib entry cannot be empty.")
       }
     },

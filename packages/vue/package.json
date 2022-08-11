@@ -1,6 +1,6 @@
 {
   "name": "@evoker/vue",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "main": "dist/vue.runtime.global.js",
   "types": "dist/vue.d.ts",
   "description": "fork vue",
