@@ -5,6 +5,7 @@ import { DEFAULT_EXTENSIONS } from "@babel/core"
 import nodeResolve from "@rollup/plugin-node-resolve"
 import replace from "@rollup/plugin-replace"
 import dts from "rollup-plugin-dts"
+import fs from "fs"
 
 if (!process.env.TARGET) {
   throw new Error("TARGET package must be specified via --environment flag.")
@@ -110,19 +111,6 @@ function createConfig(format, output, plugins = []) {
         ]
       })
     )
-
-    plugins.push(
-      // @ts-ignore
-      require("rollup-plugin-copy")({
-        targets: [
-          {
-            src: resolve("src/index.html"),
-            dest: resolve("dist/")
-          }
-        ],
-        hook: "writeBundle"
-      })
-    )
   } else if (name === "evoker" && isGlobalBuild) {
     external.push("vue")
     output.globals = { vue: "Vue" }
@@ -158,6 +146,8 @@ function createTerserConfig(format) {
 
   const { file, format: fmt } = outputConfigs[format]
 
+  const isWebView = name === "webview"
+
   return createConfig(
     format,
     {
@@ -166,12 +156,36 @@ function createTerserConfig(format) {
     },
     [
       terser({
-        module: /^es/.test(format),
+        module: false,
         compress: {
           ecma: 2016,
           pure_getters: true
         }
-      })
+      }),
+      isWebView
+        ? {
+            name: "evoker:minify",
+            writeBundle() {
+              const { transform } = require("esbuild")
+
+              const files = [
+                { src: "dist/evoker-built-in.css", loader: "css" },
+                { src: "src/index.html", dest: "dist/index.html", loader: "ignore" }
+              ]
+
+              files.forEach(async ({ src, dest, loader }) => {
+                const data = fs.readFileSync(resolve(src), { encoding: "utf-8" })
+                let res = data
+                if (loader !== "ignore") {
+                  // @ts-ignore
+                  const { code } = await transform(data, { loader: loader, minify: true })
+                  res = code
+                }
+                fs.writeFileSync(resolve(dest || src), res, { encoding: "utf-8" })
+              })
+            }
+          }
+        : null
     ]
   )
 }

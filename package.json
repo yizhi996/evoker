@@ -25,6 +25,7 @@
     "archiver": "^5.3.1",
     "autoprefixer": "^10.4.7",
     "builtin-modules": "^3.3.0",
+    "esbuild": "^0.15.0",
     "eslint": "^8.20.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
