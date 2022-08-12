@@ -66,7 +66,7 @@ function checkProdFileSize(target) {
     return
   }
   const formats = pkg.buildOptions.formats || []
-  if (!formats.includes("global")) {
+  if (!formats.includes("iife")) {
     return
   }
   checkFileSize(resolve(`${pkgDir}/dist/${target}.global.prod.js`))

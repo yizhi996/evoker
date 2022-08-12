@@ -1,6 +1,7 @@
 {
   "name": "@evoker/shared",
   "version": "0.9.0",
+  "type": "module",
   "description": "evoker shared",
   "author": "yizhi996",
   "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/shared",
@@ -9,13 +10,12 @@
     "url": "git+https://github.com/yizhi996/evoker.git"
   },
   "license": "MIT",
-  "main": "dist/shared.cjs.js",
-  "module": "dist/shared.es.js",
+  "main": "dist/shared.js",
+  "module": "dist/shared.js",
   "types": "dist/shared.d.ts",
   "buildOptions": {
     "formats": [
-      "es",
-      "cjs"
+      "es"
     ]
   },
   "sideEffects": false,

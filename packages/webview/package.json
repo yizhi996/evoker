@@ -14,7 +14,7 @@
   "buildOptions": {
     "name": "EvokerWebView",
     "formats": [
-      "global"
+      "iife"
     ]
   },
   "files": [

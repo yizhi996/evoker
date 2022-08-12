@@ -1,6 +1,7 @@
 {
   "name": "evoker",
   "version": "0.9.0",
+  "type": "module",
   "description": "The Vue mini program engine",
   "author": "yizhi996",
   "homepage": "https://github.com/yizhi996/evoker",
@@ -9,8 +10,8 @@
     "url": "git+https://github.com/yizhi996/evoker.git"
   },
   "license": "MIT",
-  "main": "dist/evoker.cjs.js",
-  "module": "dist/evoker.es.js",
+  "main": "dist/evoker.js",
+  "module": "dist/evoker.js",
   "types": "dist/global.d.ts",
   "sideEffects": false,
   "keywords": [
@@ -22,8 +23,7 @@
   "buildOptions": {
     "name": "Evoker",
     "formats": [
-      "global",
-      "cjs",
+      "iife",
       "es"
     ]
   },

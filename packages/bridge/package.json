@@ -1,6 +1,7 @@
 {
   "name": "@evoker/bridge",
   "version": "0.9.0",
+  "type": "module",
   "description": "evoker js bridge",
   "author": "yizhi996",
   "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/bridge",
@@ -9,13 +10,12 @@
     "url": "git+https://github.com/yizhi996/evoker.git"
   },
   "license": "MIT",
-  "main": "dist/bridge.cjs.js",
-  "module": "dist/bridge.es.js",
+  "main": "dist/bridge.js",
+  "module": "dist/bridge.js",
   "types": "dist/bridge.d.ts",
   "buildOptions": {
     "formats": [
-      "es",
-      "cjs"
+      "es"
     ]
   },
   "sideEffects": false,

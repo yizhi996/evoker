@@ -21,20 +21,20 @@ let hasTSChecked = false
 
 const outputConfigs = {
   es: {
-    file: resolve(`dist/${name}.es.js`),
-    format: `es`
+    file: resolve(`dist/${name}.js`),
+    format: "es"
   },
   cjs: {
     file: resolve(`dist/${name}.cjs.js`),
-    format: `cjs`
+    format: "cjs"
   },
-  global: {
+  iife: {
     file: resolve(`dist/${name}.global.js`),
-    format: `iife`
+    format: "iife"
   }
 }
 
-const packageFormats = packageOptions.formats || ["es", "cjs"]
+const packageFormats = packageOptions.formats || ["es"]
 
 export default [
   ...packageFormats.map(format => {
@@ -42,7 +42,7 @@ export default [
   }),
   ...packageFormats
     .map(format => {
-      if (/global/.test(format)) {
+      if (/iife/.test(format)) {
         return createTerserConfig(format)
       }
     })
@@ -58,7 +58,7 @@ function createConfig(format, output, plugins = []) {
 
   const isWebView = name === "webview"
   const isNodeBuild = format === "cjs"
-  const isGlobalBuild = /global/.test(format)
+  const isGlobalBuild = /iife/.test(format)
 
   output.exports = "named"
   output.sourcemap = !!process.env.SOURCE_MAP

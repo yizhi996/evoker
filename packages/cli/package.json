@@ -10,7 +10,7 @@
   },
   "license": "MIT",
   "main": "dist/cli.cjs.js",
-  "module": "dist/cli.es.js",
+  "module": "dist/cli.js",
   "types": "dist/cli.d.ts",
   "bin": {
     "evoker": "bin/evoker.js"

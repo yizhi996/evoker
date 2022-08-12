@@ -9,15 +9,14 @@
     "url": "git+https://github.com/yizhi996/evoker.git"
   },
   "license": "MIT",
-  "main": "dist/devtools.cjs.js",
-  "module": "dist/devtools.es.js",
+  "main": "dist/devtools.js",
+  "module": "dist/devtools.js",
   "types": "dist/devtools.d.ts",
   "buildOptions": {
     "name": "__Devtools",
     "formats": [
       "es",
-      "cjs",
-      "global"
+      "iife"
     ]
   },
   "dependencies": {

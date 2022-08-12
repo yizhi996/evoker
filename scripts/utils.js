@@ -28,10 +28,9 @@ export function createViteConfig(options) {
         lib: {
           entry: resolve(packageDirectory(target), "src/index.ts"),
           name: pkg.buildOptions.name,
-          fileName: foramt => `${target}.${foramt === "iife" ? "global" : foramt}.js`,
-          formats: pkg.buildOptions.formats.map(f => {
-            return f === "global" ? "iife" : f
-          })
+          formats: pkg.buildOptions.formats || ["es"],
+          fileName: format =>
+            `${target}${format === "iife" ? ".global" : format === "es" ? "" : `.${format}`}.js`
         },
         rollupOptions: {
           external: vite.build?.rollupOptions?.external || [...Object.keys(pkg.dependencies || {})],
