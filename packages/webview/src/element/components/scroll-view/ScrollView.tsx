@@ -307,7 +307,7 @@ export default defineComponent({
               style={scrollX ? "overflow: auto hidden" : "overflow: hidden auto;"}
             >
               <div
-                id="content"
+                class="el-scroll-view__slot"
                 style={{ height: scrollX ? "" : "100%", display: enableFlex ? "flex" : "" }}
               ></div>
             </div>

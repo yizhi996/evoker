@@ -42,7 +42,7 @@ export interface BuiltInComponent {
 const builtInComponent: Record<string, BuiltInComponent> = {
   "scroll-view": {
     component: ScrollView,
-    slot: "#content"
+    slot: ".el-scroll-view__slot"
   },
   image: { component: Image },
   swiper: { component: Swiper, slot: ".ek-swiper__slide__frame" },
