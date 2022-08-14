@@ -103,6 +103,7 @@ enum WebSocketAPI: String, CaseIterableAPI {
             if case .close(let data) = params.data {
                 if let ws = module.webSockets[params.socketTaskId] {
                     ws.disconnect(code: data.code, reason: data.reason)
+                    module.webSockets[params.socketTaskId] = nil
                     bridge.invokeCallbackSuccess(args: args)
                 } else {
                     

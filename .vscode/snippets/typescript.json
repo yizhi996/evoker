@@ -43,5 +43,21 @@
       "type $1CompleteCallback = (res: GeneralCallbackResult) => void",
       ""
     ]
+  },
+
+  "EvokerOn": {
+    "prefix": "ekon",
+    "body": [
+      "interface $1CallbackResult {",
+      "",
+      "}",
+      "",
+      "type $1Callback = (result: $1CallbackResult) => void",
+      "",
+      "export function ${1/(^.)/${1:/downcase}/}(callback: $1Callback) {",
+      "",
+      "}",
+      ""
+    ]
   }
 }
