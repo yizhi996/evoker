@@ -60,7 +60,8 @@ const list = reactive([
     pages: [
       { name: "发起一个请求", url: "./Request" },
       { name: "上传文件", url: "./UploadFile" },
-      { name: "下载文件", url: "./DownloadFile" }
+      { name: "下载文件", url: "./DownloadFile" },
+      { name: "WebSocket", url: "./WebSocket" }
     ]
   },
   {

@@ -395,6 +395,12 @@
       "style": {
         "navigationBarTitleText": "获取手机设备电量"
       }
+    },
+    {
+      "path": "pages/API/WebSocket",
+      "style": {
+        "navigationBarTitleText": "WebSocket"
+      }
     }
   ]
 }
