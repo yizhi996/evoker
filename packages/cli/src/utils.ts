@@ -83,7 +83,10 @@ export function zip(root: string, files: string[]): Promise<Buffer> {
 
         files.forEach(file => {
           const name = getRelativeFilePath(root, file)
-          archive.file(file, { name })
+          if (fs.existsSync(file)) {
+            const data = fs.readFileSync(file)
+            archive.append(data, { name })
+          }
         })
         archive.finalize()
       }

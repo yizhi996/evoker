@@ -23,8 +23,12 @@ export default function vitePluginEvokerConfig(): Plugin {
       }
     },
 
+    transform() {
+      this.addWatchFile(resolve("src/app.json"))
+    },
+
     writeBundle() {
-      const cfg = JSON.stringify(outputAppConfig, null, 4)
+      const cfg = JSON.stringify(outputAppConfig)
       fs.writeFileSync(resolve(config.build.outDir, "app.json"), cfg, "utf-8")
     }
   }
