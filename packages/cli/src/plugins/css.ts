@@ -52,6 +52,8 @@ export default function vitePluginEvokerCSS(): Plugin {
 
       const chunkCSS = new Map<string, string>()
 
+      outputAppConfig.chunkCSS = []
+
       for (const id of ids) {
         if (styles.has(id)) {
           const css = styles.get(id)
