@@ -43,7 +43,10 @@ export function removeChild(data: any[]) {
     if (child && child.el) {
       nodes.delete(childNodeId)
 
-      parent.el.removeChild(child.el)
+      // 如果在内置组件的 slot 内，可能 parent 和 parentNodeId 获取到的不一致
+      // 内置组件由多个 wrapper 嵌套
+      const el = child.el as Node
+      el.parentNode && el.parentNode.removeChild(el)
 
       removeChildNodes(child.el as Node)
     }
