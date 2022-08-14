@@ -47,7 +47,11 @@ class LaunchpadViewController: UIViewController {
         let app = LaunchpadViewController.apps[button.tag]
         var options = AppLaunchOptions()
         options.envVersion = app.envVersion
-        Engine.shared.openApp(appId: app.appId, launchOptions: options)
+        Engine.shared.openApp(appId: app.appId, launchOptions: options) { error in
+            if let error = error {
+                NotifyType.fail("open app failed \(error.localizedDescription)").show()
+            }
+        }
     }
     
     func generateAppButton(title: String) -> UIButton {

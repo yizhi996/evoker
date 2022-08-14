@@ -67,7 +67,7 @@ class DevServer: WebSocket {
     }
     
     override func onError(_ error: Error) {
-        print(error)
+        NotifyType.fail("connect dev server fail, please check network, error: \(error.localizedDescription)").show()
     }
     
     override func onClose(_ code: Int, reason: String?) {

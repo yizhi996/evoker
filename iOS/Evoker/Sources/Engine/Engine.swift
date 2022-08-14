@@ -186,7 +186,8 @@ final public class Engine {
         })
     }
     
-    @objc private func appDevelopUpdateNotification(_ notification: Notification) {
+    @objc
+    private func appDevelopUpdateNotification(_ notification: Notification) {
         guard let info = notification.object as? [String: Any],
               let appId = info["appId"] as? String,
               !appId.isEmpty else { return }
@@ -195,8 +196,7 @@ final public class Engine {
         if let launchOptions = info["launchOptions"] as? DevServer.AppUpdateOptions.LaunchOptions {
             options.path = launchOptions.page
         }
-        let runningId = runningId(appId: appId, envVersion: options.envVersion)
-        if let appService = runningApp.first(where: { $0.runningId == runningId }) {
+        if let appService = runningApp.first(where: { $0.appId == appId && $0.envVersion == .develop }) {
             appService.reLaunch(launchOptions: options)
         } else {
             launchApp(appId: appId, launchOptions: options) { error in
@@ -234,10 +234,7 @@ final public class Engine {
     public func onError(_ errorHandler: EKErrorBlock?) {
         self.errorHandler = errorHandler
     }
-    
-    func runningId(appId: String, envVersion: AppEnvVersion) -> String {
-        return "\(appId)_\(envVersion)"
-    }
+
 }
 
 //MARK: App
@@ -254,16 +251,18 @@ extension Engine {
                         presentTo viewController: UIViewController? = nil,
                         completionHandler: ((EKError?) -> Void)? = nil) {
         assert(!appId.isEmpty, "appId cannot be empty")
-        let runningId = runningId(appId: appId, envVersion: launchOptions.envVersion)
-        if let appService = runningApp.first(where: { $0.runningId == runningId }) {
+        
+        if let appService = runningApp.first(where: { $0.appId == appId && $0.envVersion == launchOptions.envVersion }) {
             guard let rootViewController = appService.rootViewController else {
                 completionHandler?(.appRootViewControllerNotFound)
                 return
             }
+            
             guard let presentViewController = viewController ?? UIViewController.visibleViewController() else {
                 completionHandler?(.presentViewControllerNotFound)
                 return
             }
+            
             var showOptions = AppShowOptions()
             showOptions.path = launchOptions.path
             showOptions.referrerInfo = launchOptions.referrerInfo
@@ -304,8 +303,7 @@ extension Engine {
     
     public func getAppService(appId: String, envVersion: AppEnvVersion) -> AppService? {
         assert(!appId.isEmpty, "appId cannot be empty")
-        let runningId = runningId(appId: appId, envVersion: envVersion)
-        return runningApp.first(where: { $0.runningId == runningId })
+        return runningApp.first(where: { $0.appId == appId && $0.envVersion == envVersion })
     }
     
     public func exitAllApp() {
@@ -320,7 +318,9 @@ extension Engine {
         
         public static let authorization = ClearOptions(rawValue: 1 << 2)
         
-        public static let all: ClearOptions = [.data, .file, .authorization]
+        public static let compile = ClearOptions(rawValue: 1 << 3)
+        
+        public static let all: ClearOptions = [.data, .file, .authorization, .compile]
 
         public let rawValue: Int
 
@@ -351,6 +351,14 @@ extension Engine {
                 Logger.error("clear app data of authorization \(error.localizedDescription)")
             }
         }
+        if options.contains(.compile) {
+            let dir = FilePath.app(appId: appId)
+            do {
+                try FileManager.default.removeItem(at: dir)
+            } catch {
+                Logger.error("clear app compile data fail \(error.localizedDescription)")
+            }
+        }
     }
     
     func launchApp(appId: String,
@@ -377,11 +385,11 @@ extension Engine {
         }
     }
     
-    public func getAppInfo(appId: String, envVersion: AppEnvVersion, completion: (AppInfo?, EKError?) -> Void) {
+    public func getAppInfo(appId: String, envVersion: AppEnvVersion, completionHandler: (AppInfo?, EKError?) -> Void) {
         if let getAppInfoHandler = Engine.shared.config.hooks.app.getAppInfo {
-            getAppInfoHandler(appId, envVersion, completion)
+            getAppInfoHandler(appId, envVersion, completionHandler)
         } else {
-            completion(AppInfo(appName: appId, appIconURL: ""), nil)
+            completionHandler(AppInfo(appName: appId, appIconURL: ""), nil)
         }
     }
 }

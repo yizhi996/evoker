@@ -79,10 +79,6 @@ final public class AppService {
         return Engine.shared.jsContextPool.idle()
     }()
     
-    var runningId: String {
-        return "\(appId)_\(envVersion)"
-    }
-    
     var webViewPool: Pool<WebView>!
     
     var keepScreenOn = false
@@ -835,7 +831,7 @@ extension AppService {
 extension AppService: Equatable {
     
     public static func == (lhs: AppService, rhs: AppService) -> Bool {
-        return lhs.runningId == rhs.runningId
+        return lhs.appId == rhs.appId && lhs.envVersion == rhs.envVersion
     }
 
 }

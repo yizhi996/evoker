@@ -46,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         config.dev.useDevServer = true
-        DevServer.shared.connect()
+        Engine.shared.connectDevService()
         
         PackageManager.shared.updateJSSDK { _ in
             Engine.shared.preload()
