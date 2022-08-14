@@ -13,7 +13,7 @@ let index = 0
 const events: Record<string, Event<any>[]> = {}
 
 export function addEvent<T = unknown>(type: string, callback: Callback<T>) {
-  const id = index++
+  const id = ++index
   events[type] === undefined && (events[type] = [])
   events[type].push({ id, callback })
   return id

@@ -82,7 +82,7 @@ import {
   showTabBarRedDot,
   removeTabBarBadge
 } from "@evoker/bridge"
-import { request, downloadFile, uploadFile } from "./api/request"
+import { request, downloadFile, uploadFile, connectSocket } from "./api/request"
 import { createAnimation } from "./api/ui/animation"
 import { pageScrollTo } from "./api/ui/scroll"
 import { loadFontFace } from "./api/ui/font"
@@ -157,6 +157,7 @@ export {
   request,
   downloadFile,
   uploadFile,
+  connectSocket,
   showLoading,
   hideLoading,
   showToast,
@@ -277,6 +278,7 @@ export default {
   request,
   downloadFile,
   uploadFile,
+  connectSocket,
   showLoading,
   hideLoading,
   showToast,

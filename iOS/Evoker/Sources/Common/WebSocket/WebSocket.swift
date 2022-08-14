@@ -7,25 +7,38 @@
 //
 
 import Foundation
-import Telegraph
+import SocketRocket
+import Alamofire
 
-public class WebSocket {
-    
-    public private(set) var host: String = "127.0.0.1"
-    
-    public private(set) var port: UInt16 = 5173
+public class WebSocket: NSObject {
     
     public private(set) var isForeground = true
     
-    public private(set) var isConnected = false
+    private var request: URLRequest?
     
-    private var heartTimer: Timer?
+    private var protocols: [String]?
     
-    private var client: WebSocketClient?
+    private var client: SRWebSocket?
     
-    private var attemptCount = 0
+    var readyState: SRReadyState {
+        return client?.readyState ?? .CONNECTING
+    }
     
-    public init() {
+    public init(url: URL, headers: [String: String] = [:], protocols: [String]? = nil, timeout: TimeInterval = 0) {
+        super.init()
+        
+        self.protocols = protocols
+        
+        var request = URLRequest(url: url)
+        request.method = .get
+        request.timeoutInterval = timeout
+        request.headers = HTTPHeaders(headers)
+        self.request = request
+        
+        let client = SRWebSocket(urlRequest: request, protocols: protocols)
+        client.delegate = self
+        self.client = client
+        
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(appWillEnterForeground),
                                                name: UIApplication.willEnterForegroundNotification,
@@ -35,123 +48,95 @@ public class WebSocket {
                                                selector: #selector(appDidEnterBackground),
                                                name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
-        
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(networkStatusChange),
-                                               name: Engine.networkStatusDidChange, object: nil)
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
 
-    public func connect(host: String, port: UInt16) {
-        self.host = host
-        self.port = port
-        
-        guard isForeground && Engine.shared.networkType != .none else { return }
-        
-        let address = "ws://\(host):\(port)"
-        do {
-            client?.delegate = nil
-            client?.disconnect()
-            client = try WebSocketClient(address)
-            client?.delegate = self
-        } catch {
-            Logger.error("dev server connect failed: \(error)")
-        }
-        client?.connect()
-    }
-    
-    public func disconnect() {
-        client?.disconnect()
-    }
-    
-    private func reconnect() {
-        if attemptCount + 1 > 10 {
-            return
-        }
-        
-        let delay = TimeInterval(attemptCount) * 5.0
-        attemptCount += 1
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-            self.connect(host: self.host, port: self.port)
+    public func connect() {
+        guard isForeground else { return }
+        if readyState != .CONNECTING {
+            reconnect()
+        } else {
+            client?.open()
         }
     }
     
-    @objc private func appWillEnterForeground() {
+    public func disconnect(code: Int = 1000, reason: String? = nil) {
+        client?.close(withCode: code, reason: reason)
+    }
+    
+    public func reconnect() {
+        client = nil
+        
+        if let request = request {
+            let client = SRWebSocket(urlRequest: request, protocols: protocols)
+            client.delegate = self
+            self.client = client
+            connect()
+        }
+    }
+    
+    @objc
+    public func appWillEnterForeground() {
         isForeground = true
-        connect(host: host, port: port)
     }
     
-    @objc private func appDidEnterBackground() {
+    @objc
+    public func appDidEnterBackground() {
         isForeground = false
         disconnect()
     }
     
-    @objc private func networkStatusChange() {
-        connect(host: host, port: port)
-    }
-    
-    @objc private func sendHeart() {
-        client?.send(text: "ping")
-    }
-    
-    func onRecv(_ data: Data) {
+    public func onOpen() {
         
     }
     
-    func onRecv(_ text: String) {
+    public func onClose(_ code: Int, reason: String?) {
         
     }
     
-    func send(_ text: String) {
-        client?.send(text: text)
+    public func onError(_ error: Error) {
+        
     }
     
-    func send(_ data: Data) {
-        client?.send(data: data)
+    public func onRecv(_ data: Data) {
+        
+    }
+    
+    public func onRecv(_ text: String) {
+        
+    }
+    
+    public func send(_ text: String) throws {
+        try client?.send(string: text)
+    }
+    
+    public func send(_ data: Data) throws {
+        try client?.send(data: data)
     }
 }
 
-extension WebSocket: WebSocketClientDelegate {
+extension WebSocket: SRWebSocketDelegate {
     
-    public func webSocketClient(_ client: WebSocketClient, didConnectToHost host: String) {
-        Logger.debug("dev server: \(host) connected")
-        
-        isConnected = true
-        
-        attemptCount = 0
-        
-        heartTimer?.invalidate()
-        heartTimer = nil
-        
-        heartTimer = Timer(timeInterval: 60,
-                           target: self,
-                           selector: #selector(self.sendHeart),
-                           userInfo: nil,
-                           repeats: true)
-        RunLoop.main.add(heartTimer!, forMode: .common)
+    public func webSocketDidOpen(_ webSocket: SRWebSocket) {
+        onOpen()
     }
     
-    public func webSocketClient(_ client: WebSocketClient, didDisconnectWithError error: Error?) {
-        Logger.debug("dev server disconnected")
-        
-        isConnected = false
-        
-        heartTimer?.invalidate()
-        heartTimer = nil
-        
-        reconnect()
+    public func webSocket(_ webSocket: SRWebSocket, didCloseWithCode code: Int, reason: String?, wasClean: Bool) {
+        onClose(code, reason: reason)
     }
     
-    public func webSocketClient(_ client: WebSocketClient, didReceiveText text: String) {
-        onRecv(text)
+    public func webSocket(_ webSocket: SRWebSocket, didFailWithError error: Error) {
+        onError(error)
     }
     
-    public func webSocketClient(_ client: WebSocketClient, didReceiveData data: Data) {
-        onRecv(data)
+    public func webSocket(_ webSocket: SRWebSocket, didReceiveMessage message: Any) {
+        if let message = message as? String {
+            onRecv(message)
+        } else {
+            onRecv(message as! Data)
+        }
     }
-    
 }

@@ -7,12 +7,9 @@
 //
 
 import Foundation
-import Telegraph
 import Zip
 
-
-
-public class DevServer: WebSocket {
+class DevServer: WebSocket {
     
     struct AppUpdateOptions: Decodable {
         let appId: String
@@ -25,11 +22,62 @@ public class DevServer: WebSocket {
         }
     }
     
-    public static let shared = DevServer()
+    private var attemptCount = 0
     
     private let lock = Lock()
     
     private var needUpdateApps: [String: AppUpdateOptions] = [:]
+    
+    private var heartTimer: Timer?
+    
+    public init(host: String = "", port: UInt16 = 5173) {
+        var ip = host
+        if ip.isEmpty,
+           let ipFile = Bundle.main.url(forResource: "IP", withExtension: "txt"),
+           let _ip = try? String(contentsOf: ipFile).split(separator: "\n").first {
+            ip = String(_ip)
+        }
+        if ip.isEmpty {
+            ip = "127.0.0.1"
+        }
+        super.init(url: URL(string: "ws://\(ip):\(port)")!)
+    }
+    
+    override func appWillEnterForeground() {
+        super.appWillEnterForeground()
+        
+        attemptCount = 0
+        reconnect()
+    }
+    
+    override func onOpen() {
+        Logger.debug("dev server: connected")
+        
+        attemptCount = 0
+        
+        heartTimer?.invalidate()
+        heartTimer = nil
+        
+        heartTimer = Timer(timeInterval: 60,
+                           target: self,
+                           selector: #selector(self.sendHeart),
+                           userInfo: nil,
+                           repeats: true)
+        RunLoop.main.add(heartTimer!, forMode: .common)
+    }
+    
+    override func onError(_ error: Error) {
+        print(error)
+    }
+    
+    override func onClose(_ code: Int, reason: String?) {
+        Logger.debug("dev server disconnected")
+        
+        heartTimer?.invalidate()
+        heartTimer = nil
+        
+        reconnect()
+    }
     
     override func onRecv(_ data: Data) {
         guard data.count > 64 else { return }
@@ -50,20 +98,28 @@ public class DevServer: WebSocket {
         }
     }
     
-    public override func connect(host: String = "", port: UInt16 = 5173) {
+    override func connect() {
         guard Engine.shared.config.dev.useDevServer else { return }
-        var ip = host
-        if ip.isEmpty,
-           let ipFile = Bundle.main.url(forResource: "IP", withExtension: "txt"),
-           let _ip = try? String(contentsOf: ipFile).split(separator: "\n").first {
-            ip = String(_ip)
-        }
-        if ip.isEmpty {
-            ip = "127.0.0.1"
-        }
-        super.connect(host: ip, port: port)
+        super.connect()
     }
-
+    
+    override func reconnect() {
+        if attemptCount + 1 > 10 {
+            return
+        }
+        
+        let delay = TimeInterval(attemptCount) * 5.0
+        attemptCount += 1
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            super.reconnect()
+        }
+    }
+    
+    @objc
+    func sendHeart() {
+        try? send("ping")
+    }
 }
 
 private extension DevServer {
@@ -73,7 +129,7 @@ private extension DevServer {
               let appId = message["appId"] as? String else { return }
         let version = PackageManager.shared.localAppVersion(appId: appId, envVersion: .develop)
         if let msg = ["event": "version", "data": ["version": version]].toJSONString() {
-            send(msg)
+            try? send(msg)
         }
     }
     
@@ -139,7 +195,7 @@ private extension DevServer {
     }
 }
 
-public extension DevServer {
+extension DevServer {
     
     static let didUpdateNotification = Notification.Name("EvokerDevServerDidUpdateNotification")
 }

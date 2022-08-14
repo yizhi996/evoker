@@ -25,5 +25,23 @@
       "  }, options)",
       "}"
     ]
+  },
+
+  "EvokerOptions": {
+    "prefix": "ekopts",
+    "body": [
+      "interface $1Options {",
+      "  success?: $1SuccessCallback",
+      "  fail?: $1FailCallback",
+      "  complete?: $1CompleteCallback",
+      "}",
+      "",
+      "type $1SuccessCallback = (res: GeneralCallbackResult) => void",
+      "",
+      "type $1FailCallback = (res: GeneralCallbackResult) => void",
+      "",
+      "type $1CompleteCallback = (res: GeneralCallbackResult) => void",
+      ""
+    ]
   }
 }

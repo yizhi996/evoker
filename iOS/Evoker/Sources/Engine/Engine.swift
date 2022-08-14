@@ -46,7 +46,8 @@ final public class Engine {
         CameraModule.self,
         CanvasModule.self,
         LocationModule.self,
-        AudioRecorderModule.self
+        AudioRecorderModule.self,
+        WebSocketModule.self
     ]
     
     public private(set) var extraModules: [Module.Type] = []
@@ -69,6 +70,8 @@ final public class Engine {
     var userAgent = ""
     
     var shouldInteractivePopGesture = true
+    
+    private var devServer: DevServer?
     
     private var isLaunch = false
     
@@ -456,6 +459,14 @@ extension Engine {
     
     func reportLog(_ log: String) {
         print(log)
+    }
+}
+
+extension Engine {
+    
+    public func connectDevService(host: String = "", port: UInt16 = 5173) {
+        devServer = DevServer(host: host, port: port)
+        devServer!.connect()
     }
 }
 

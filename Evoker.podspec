@@ -42,13 +42,13 @@ Pod::Spec.new do |s|
       ss.dependency 'JXPhotoBrowser', '~> 3.0'
       ss.dependency 'PureLayout'
       ss.dependency 'MJRefresh'
-      ss.dependency 'Telegraph'
       ss.dependency 'CryptoSwift', '~> 1.4.1'
       ss.dependency 'Zip', '~> 2.1'
       ss.dependency 'ZLPhotoBrowser'
       ss.dependency 'KTVHTTPCache', '~> 2.0.0'
       ss.dependency 'SQLite.swift', '~> 0.13.2'
       ss.dependency 'SwiftyRSA'
+      ss.dependency 'SocketRocket'
     end
     
     s.subspec 'Resources' do |ss|

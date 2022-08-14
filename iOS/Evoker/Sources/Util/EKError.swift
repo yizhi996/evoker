@@ -24,7 +24,7 @@ public enum EKError: Error {
     
     case httpRequestFailed
     
-    case createURLFailed(String)
+    case urlInvalidated(String)
     
     case storageFailed(reason: StorageFailureReason)
     
@@ -187,8 +187,8 @@ extension EKError: LocalizedError {
             return "app root viewController not found"
         case .presentViewControllerNotFound:
             return "present viewController not found"
-        case .createURLFailed(let url):
-            return "illegal url: \(url)"
+        case .urlInvalidated(let url):
+            return "invalidated url: \(url)"
         case .httpRequestFailed:
             return "http request fail"
         case let .bridgeFailed(reason):

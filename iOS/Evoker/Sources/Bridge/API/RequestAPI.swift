@@ -278,5 +278,6 @@ enum RequestAPI: String, CaseIterableAPI {
             bridge.invokeCallbackFail(args: args, error: error)
         }
     }
+    
 }
 

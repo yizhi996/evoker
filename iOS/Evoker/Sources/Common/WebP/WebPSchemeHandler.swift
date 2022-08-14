@@ -17,7 +17,7 @@ class WebPSchemeHandler: NSObject, WKURLSchemeHandler {
     
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
         guard let url = urlSchemeTask.request.url else {
-            urlSchemeTask.didFailWithError(EKError.createURLFailed(urlSchemeTask.request.url?.absoluteString ?? ""))
+            urlSchemeTask.didFailWithError(EKError.urlInvalidated(urlSchemeTask.request.url?.absoluteString ?? ""))
             return
         }
         
@@ -30,7 +30,7 @@ class WebPSchemeHandler: NSObject, WKURLSchemeHandler {
         }
         
         guard let newURL = URL(string: urlstr) else {
-            urlSchemeTask.didFailWithError(EKError.createURLFailed(urlstr))
+            urlSchemeTask.didFailWithError(EKError.urlInvalidated(urlstr))
             return
         }
         

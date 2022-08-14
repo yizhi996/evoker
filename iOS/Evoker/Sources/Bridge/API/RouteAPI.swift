@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import Telegraph
 
 enum RouteAPI: String, CaseIterableAPI {
    

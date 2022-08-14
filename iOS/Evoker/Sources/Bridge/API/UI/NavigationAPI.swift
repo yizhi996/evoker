@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Telegraph
 
 enum NavigationAPI: String, CaseIterableAPI {
    
