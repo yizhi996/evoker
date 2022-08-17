@@ -1,8 +1,20 @@
-import { GeneralCallbackResult, invokeCallback, invokeFailure, invokeSuccess } from "@evoker/bridge"
+import {
+  AsyncReturn,
+  GeneralCallbackResult,
+  invokeCallback,
+  invokeFailure,
+  invokeSuccess,
+  wrapperAsyncAPI
+} from "@evoker/bridge"
 import { InnerJSBridge } from "../../bridge"
 import { extend, isFunction, isString } from "@vue/shared"
 import { headerValueToString } from "./util"
-import { addEvent, dispatchEvent, removeEvent } from "@evoker/shared"
+
+const main = {}
+
+const weakMainTask = new WeakMap<object, SocketTask>()
+
+const mainEventListener = new WeakMap()
 
 interface ConnectSocketOptions {
   url: string
@@ -34,20 +46,88 @@ export function connectSocket(options: ConnectSocketOptions) {
     return
   }
 
-  let task = new SocketTask(options)
+  const prev = weakMainTask.get(main)
+
+  const task = new SocketTask(options)
   invokeSuccess(event, options, {})
 
+  prev && prev.readyState !== prev.CLOSED ? "" : weakMainTask.set(main, task)
+
   return task
+}
+
+interface CloseSocketOptions {
+  code?: number
+  reason?: string
+  success?: CloseSocketSuccessCallback
+  fail?: CloseSocketFailCallback
+  complete?: CloseSocketCompleteCallback
+}
+
+type CloseSocketSuccessCallback = (res: GeneralCallbackResult) => void
+
+type CloseSocketFailCallback = (res: GeneralCallbackResult) => void
+
+type CloseSocketCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function closeSocket<T extends CloseSocketOptions = CloseSocketOptions>(
+  options: T
+): AsyncReturn<T, CloseSocketOptions> {
+  return wrapperAsyncAPI(options => {
+    const task = weakMainTask.get(main)
+    if (task) {
+      task.close(options)
+    } else {
+      invokeFailure("closeSocket", options, "WebSocketTask is not found")
+    }
+  }, options)
+}
+
+interface SendSocketMessageOptions {
+  data: string | ArrayBuffer
+  success?: SendSocketMessageSuccessCallback
+  fail?: SendSocketMessageFailCallback
+  complete?: SendSocketMessageCompleteCallback
+}
+
+type SendSocketMessageSuccessCallback = (res: GeneralCallbackResult) => void
+
+type SendSocketMessageFailCallback = (res: GeneralCallbackResult) => void
+
+type SendSocketMessageCompleteCallback = (res: GeneralCallbackResult) => void
+
+export function sendSocketMessage<T extends SendSocketMessageOptions = SendSocketMessageOptions>(
+  options: T
+): AsyncReturn<T, SendSocketMessageOptions> {
+  return wrapperAsyncAPI(options => {
+    const task = weakMainTask.get(main)
+    if (task && task.readyState === task.OPEN) {
+      task.send(options)
+    } else {
+      invokeFailure("sendSocketMessage", options, "WebSocket is not connected")
+    }
+  }, options)
+}
+
+const enum EventTypes {
+  OPEN = "open",
+  CLOSE = "close",
+  ERROR = "error",
+  MESSAGE = "message"
+}
+
+function setMainCallback(callback: Function, type: EventTypes) {
+  const cs = (mainEventListener.get(main) as {}) || {}
+  cs[type] = callback
+  mainEventListener.set(main, cs)
 }
 
 interface OnSocketOpenCallbackResult {}
 
 type OnSocketOpenCallback = (result: OnSocketOpenCallbackResult) => void
 
-let onSocketOpenCallback: OnSocketOpenCallback
-
 export function onSocketOpen(callback: OnSocketOpenCallback) {
-  onSocketOpenCallback = callback
+  setMainCallback(callback, EventTypes.OPEN)
 }
 
 interface OnSocketCloseCallbackResult {
@@ -57,10 +137,8 @@ interface OnSocketCloseCallbackResult {
 
 type OnSocketCloseCallback = (result: OnSocketCloseCallbackResult) => void
 
-let onSocketCloseCallback: OnSocketCloseCallback
-
 export function onSocketClose(callback: OnSocketCloseCallback) {
-  onSocketCloseCallback = callback
+  setMainCallback(callback, EventTypes.CLOSE)
 }
 
 interface OnSocketErrorCallbackResult {
@@ -69,10 +147,8 @@ interface OnSocketErrorCallbackResult {
 
 type OnSocketErrorCallback = (result: OnSocketErrorCallbackResult) => void
 
-let onSocketErrorCallback: OnSocketErrorCallback
-
 export function onSocketError(callback: OnSocketErrorCallback) {
-  onSocketErrorCallback = callback
+  setMainCallback(callback, EventTypes.ERROR)
 }
 
 interface OnSocketMessageCallbackResult {
@@ -81,10 +157,8 @@ interface OnSocketMessageCallbackResult {
 
 type OnSocketMessageCallback = (result: OnSocketMessageCallbackResult) => void
 
-let onSocketMessageCallback: OnSocketMessageCallback
-
 export function OnSocketMessage(callback: OnSocketMessageCallback) {
-  onSocketMessageCallback = callback
+  setMainCallback(callback, EventTypes.MESSAGE)
 }
 
 interface SocketTaskSendOptions {
@@ -120,18 +194,23 @@ const enum Methods {
   SEND = "send"
 }
 
+const taskEventListener = new WeakMap<SocketTask>()
+
+function setTaskCallback(task: SocketTask, callback: Function, type: EventTypes) {
+  const cs = (taskEventListener.get(task) as {}) || {}
+  cs[type] = callback
+  taskEventListener.set(task, cs)
+}
+
+let incSocketTaskId = 0
+
+const tasks = new Map<number, SocketTask>()
+
 export class SocketTask {
-  private socketTaskId: number
+  readonly socketTaskId = incSocketTaskId++
 
-  private _readyState: number = 0
-
-  private onSocketOpenCallback: OnSocketOpenCallback | null = null
-
-  private onSocketCloseCallback: OnSocketCloseCallback | null = null
-
-  private onSocketErrorCallback: OnSocketErrorCallback | null = null
-
-  private onSocketMessageCallback: OnSocketMessageCallback | null = null
+  /** @internal */
+  _readyState: number = 0
 
   readonly CONNECTING: number = 0
 
@@ -142,27 +221,7 @@ export class SocketTask {
   readonly CLOSED: number = 3
 
   constructor(options: ConnectSocketOptions) {
-    const { socketTaskId, onOpen, onClose, onError, onMessage } = useWebSocket()
-
-    this.socketTaskId = socketTaskId
-
-    onOpen(data => {
-      this._readyState = this.OPEN
-      isFunction(this.onSocketOpenCallback) && this.onSocketOpenCallback(data)
-    })
-
-    onClose(data => {
-      this._readyState = this.CLOSED
-      isFunction(this.onSocketCloseCallback) && this.onSocketCloseCallback(data)
-    })
-
-    onError(data => {
-      isFunction(this.onSocketErrorCallback) && this.onSocketErrorCallback(data)
-    })
-
-    onMessage(data => {
-      isFunction(this.onSocketMessageCallback) && this.onSocketMessageCallback(data)
-    })
+    tasks.set(this.socketTaskId, this)
 
     let { header = {} } = options
     header = headerValueToString(header)
@@ -191,7 +250,7 @@ export class SocketTask {
 
   send(options: SocketTaskSendOptions) {
     if (this.readyState !== this.OPEN) {
-      invokeFailure("SocketTask.send", options, "readyState is not equal to OPEN")
+      invokeFailure("SocketTask.send", options, "readyState is not OPEN")
       return
     }
     let opts = extend({}, options) as any
@@ -203,86 +262,79 @@ export class SocketTask {
   }
 
   onOpen(callback: (res: OnSocketOpenCallbackResult) => void) {
-    this.onSocketOpenCallback = callback
+    setTaskCallback(this, callback, EventTypes.OPEN)
   }
 
   onClose(callback: (res: OnSocketCloseCallbackResult) => void) {
-    this.onSocketCloseCallback = callback
+    setTaskCallback(this, callback, EventTypes.CLOSE)
   }
 
   onError(callback: (res: OnSocketErrorCallbackResult) => void) {
-    this.onSocketErrorCallback = callback
+    setTaskCallback(this, callback, EventTypes.ERROR)
   }
 
   onMessage(callback: (res: OnSocketMessageCallbackResult) => void) {
-    this.onSocketMessageCallback = callback
+    setTaskCallback(this, callback, EventTypes.MESSAGE)
   }
 }
 
-enum SubscribeKeys {
-  ON_OPEN = "MODULE_WEB_SOCKET_ON_OPEN",
-  ON_CLOSE = "MODULE_WEB_SOCKET_ON_CLOSE",
-  ON_ERROR = "MODULE_WEB_SOCKET_ON_ERROR",
-  ON_MESSAGE = "MODULE_WEB_SOCKET_ON_MESSAGE"
+function invokeEventListener(task: SocketTask, type: EventTypes, data: any) {
+  const cs = taskEventListener.get(task)
+  if (cs) {
+    const fn = cs[type]
+    isFunction(fn) && fn(data)
+  }
+
+  const mainTask = weakMainTask.get(main)
+  if (mainTask && mainTask.socketTaskId === task.socketTaskId) {
+    const cs = mainEventListener.get(main)
+    if (cs) {
+      const fn = cs[type]
+      isFunction(fn) && fn(data)
+    }
+  }
 }
 
-Object.values(SubscribeKeys).forEach(key => {
-  InnerJSBridge.subscribe(key, data => {
-    dispatchEvent(key, data)
-  })
+const enum SubscribeKeys {
+  ON_OPEN = "ON_OPEN",
+  ON_CLOSE = "ON_CLOSE",
+  ON_ERROR = "ON_ERROR",
+  ON_MESSAGE = "ON_MESSAGE"
+}
+
+const key = (k: string) => "MODULE_WEB_SOCKET_" + k
+
+InnerJSBridge.subscribe<{ socketTaskId: number }>(key(SubscribeKeys.ON_OPEN), data => {
+  const task = tasks.get(data.socketTaskId)
+  if (task) {
+    task._readyState = task.OPEN
+    invokeEventListener(task, EventTypes.OPEN, data)
+  }
 })
 
-let incSocketTaskId = 0
+function destroy(task: SocketTask, type: EventTypes, data: any) {
+  task._readyState = task.CLOSED
+  invokeEventListener(task, type, data)
+  tasks.delete(data.socketTaskId)
+  taskEventListener.delete(task)
 
-function useWebSocket() {
-  const socketTaskId = incSocketTaskId++
-
-  const eventListener = new Map<string, number>()
-
-  const createListener = (key: SubscribeKeys, callback: (data: any) => void) => {
-    const prev = eventListener.get(key)
-    prev && removeEvent(key, prev)
-    const id = addEvent<{ socketTaskId: number }>(key, data => {
-      if (data.socketTaskId === socketTaskId) {
-        callback(data)
-      }
-    })
-    eventListener.set(key, id)
-  }
-
-  const onOpen = (callback: (res: OnSocketOpenCallbackResult) => void) => {
-    createListener(SubscribeKeys.ON_OPEN, data => {
-      callback(data)
-      isFunction(onSocketOpenCallback) && onSocketOpenCallback(data)
-    })
-  }
-
-  const onClose = (callback: (res: OnSocketCloseCallbackResult) => void) => {
-    createListener(SubscribeKeys.ON_CLOSE, data => {
-      callback(data)
-      isFunction(onSocketCloseCallback) && onSocketCloseCallback(data)
-    })
-  }
-
-  const onError = (callback: (res: OnSocketErrorCallbackResult) => void) => {
-    createListener(SubscribeKeys.ON_ERROR, data => {
-      callback(data)
-      isFunction(onSocketErrorCallback) && onSocketErrorCallback(data)
-    })
-  }
-
-  const onMessage = (callback: (res: OnSocketMessageCallbackResult) => void) => {
-    createListener(SubscribeKeys.ON_MESSAGE, data => {
-      callback(data)
-      isFunction(onSocketMessageCallback) && onSocketMessageCallback(data)
-    })
-  }
-
-  return {
-    socketTaskId,
-    onOpen,
-    onClose,
-    onError,
-    onMessage
+  const mainTask = weakMainTask.get(main)
+  if (mainTask && mainTask.socketTaskId === task.socketTaskId) {
+    mainEventListener.delete(main)
   }
 }
+
+InnerJSBridge.subscribe<{ socketTaskId: number }>(key(SubscribeKeys.ON_CLOSE), data => {
+  const task = tasks.get(data.socketTaskId)
+  task && destroy(task, EventTypes.CLOSE, data)
+})
+
+InnerJSBridge.subscribe<{ socketTaskId: number }>(key(SubscribeKeys.ON_ERROR), data => {
+  const task = tasks.get(data.socketTaskId)
+  task && destroy(task, EventTypes.ERROR, data)
+})
+
+InnerJSBridge.subscribe<{ socketTaskId: number }>(key(SubscribeKeys.ON_MESSAGE), data => {
+  const task = tasks.get(data.socketTaskId)
+  task && invokeEventListener(task, EventTypes.MESSAGE, data)
+})

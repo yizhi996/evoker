@@ -47,7 +47,9 @@ extension WebSocketModule: WebSocketTaskDelegate {
     
     func webSocket(_ webSocket: WebSocketTask, onClose code: Int, reason: String?) {
         appService?.bridge.subscribeHandler(method: Self.onCloseSubscribeKey,
-                                            data: ["socketTaskId": webSocket.socketTaskId, "code": code, "reason": reason ?? ""])
+                                            data: ["socketTaskId": webSocket.socketTaskId,
+                                                   "code": code,
+                                                   "reason": reason ?? ""])
     }
     
     func webSocket(_ webSocket: WebSocketTask, onError error: Error) {

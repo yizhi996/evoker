@@ -57,7 +57,6 @@ const connect = () => {
   ws.onOpen(() => {
     isConnected.value = true
     messages.value = []
-    console.log(messages.value)
     send("ping")
   })
   ws.onClose(() => {

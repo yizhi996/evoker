@@ -28,12 +28,20 @@ class WebSocketTask: WebSocket {
         super.onClose(code, reason: reason)
         
         delegate?.webSocket(self, onClose: code, reason: reason)
+        
+        if let module = delegate as? WebSocketModule {
+            module.webSockets[socketTaskId] = nil
+        }
     }
     
     override func onError(_ error: Error) {
         super.onError(error)
         
         delegate?.webSocket(self, onError: error)
+        
+        if let module = delegate as? WebSocketModule {
+            module.webSockets[socketTaskId] = nil
+        }
     }
     
     override func onRecv(_ text: String) {
