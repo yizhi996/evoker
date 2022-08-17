@@ -1,6 +1,6 @@
 {
   "name": "@evoker/service",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "type": "module",
   "description": "evoker jscore runtime",
   "author": "yizhi996",
@@ -20,8 +20,8 @@
     ]
   },
   "dependencies": {
-    "@evoker/bridge": "0.9.0",
-    "@evoker/shared": "0.9.0",
+    "@evoker/bridge": "0.10.0",
+    "@evoker/shared": "0.10.0",
     "vue": "^3.2.37",
     "@vue/shared": "^3.2.37"
   },

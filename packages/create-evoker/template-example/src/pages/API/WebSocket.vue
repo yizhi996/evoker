@@ -9,7 +9,7 @@
   </n-cell-group>
   <button v-if="!isConnected" type="primary" @click="connect">Connect</button>
   <button v-else type="danger" @click="close">Close</button>
-  <button type="primary" @click="send(inputValue)">Send</button>
+  <button type="primary" @click="send(inputValue)" :disabled="!isConnected">Send</button>
 
   <n-topic>Messages</n-topic>
   <scroll-view class="w-full h-80 bg-gray-200" scroll-y>
