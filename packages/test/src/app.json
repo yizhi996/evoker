@@ -1,0 +1,12 @@
+{
+  "appId": "com.evokerdev.test",
+  "version": "1.0.0",
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Evoker",
+    "navigationStyle": "default",
+    "backgroundColor": "#f3f4f6"
+  },
+  "pages": ["components/Main"]
+}

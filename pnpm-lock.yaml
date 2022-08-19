@@ -82,7 +82,7 @@ importers:
 
   packages/bridge:
     specifiers:
-      '@evoker/shared': 0.9.0
+      '@evoker/shared': 0.10.0
       '@vue/shared': ^3.2.37
       vue: ^3.2.37
     dependencies:
@@ -147,9 +147,9 @@ importers:
 
   packages/create-evoker/template-blank:
     specifiers:
-      '@evoker/cli': ^0.9.0
+      '@evoker/cli': ^0.10.0
       '@vitejs/plugin-vue': ^3.0.1
-      evoker: ^0.9.0
+      evoker: ^0.10.0
       typescript: ^4.7.4
       vite: ^3.0.2
       vue: ^3.2.37
@@ -166,10 +166,10 @@ importers:
 
   packages/create-evoker/template-example:
     specifiers:
-      '@evoker/cli': ^0.9.0
+      '@evoker/cli': ^0.10.0
       '@vitejs/plugin-vue': ^3.0.1
       autoprefixer: ^10.4.2
-      evoker: ^0.9.0
+      evoker: ^0.10.0
       pinia: ^2.0.14
       postcss: ^8.4.5
       tailwindcss: ^3.0.15
@@ -193,8 +193,8 @@ importers:
 
   packages/devtools:
     specifiers:
-      '@evoker/bridge': 0.9.0
-      '@evoker/shared': 0.9.0
+      '@evoker/bridge': 0.10.0
+      '@evoker/shared': 0.10.0
       '@types/ws': ^8.5.3
       '@vue/shared': ^3.2.37
       hammer-touchemulator: ^0.0.2
@@ -210,8 +210,8 @@ importers:
 
   packages/evoker:
     specifiers:
-      '@evoker/service': 0.9.0
-      '@evoker/webview': 0.9.0
+      '@evoker/service': 0.10.0
+      '@evoker/webview': 0.10.0
       vite: ^3.0.2
       vue: ^3.2.37
     dependencies:
@@ -223,8 +223,8 @@ importers:
 
   packages/service:
     specifiers:
-      '@evoker/bridge': 0.9.0
-      '@evoker/shared': 0.9.0
+      '@evoker/bridge': 0.10.0
+      '@evoker/shared': 0.10.0
       '@vue/shared': ^3.2.37
       vue: ^3.2.37
     dependencies:
@@ -239,6 +239,25 @@ importers:
     dependencies:
       '@vue/shared': 3.2.37
 
+  packages/test:
+    specifiers:
+      '@evoker/cli': ^0.10.0
+      '@vitejs/plugin-vue': ^3.0.1
+      '@vue/shared': ^3.2.37
+      evoker: ^0.10.0
+      typescript: ^4.7.4
+      vite: ^3.0.2
+      vue: ^3.2.37
+    dependencies:
+      '@vue/shared': 3.2.37
+      evoker: link:../evoker
+      vue: 3.2.37
+    devDependencies:
+      '@evoker/cli': link:../cli
+      '@vitejs/plugin-vue': 3.0.1_vite@3.0.2+vue@3.2.37
+      typescript: 4.7.4
+      vite: 3.0.2
+
   packages/vue:
     specifiers:
       '@vue/compiler-dom': ^3.2.37
@@ -249,8 +268,8 @@ importers:
 
   packages/webview:
     specifiers:
-      '@evoker/bridge': 0.9.0
-      '@evoker/shared': 0.9.0
+      '@evoker/bridge': 0.10.0
+      '@evoker/shared': 0.10.0
       '@tweenjs/tween.js': ^18.6.4
       '@types/lodash.throttle': ^4.1.7
       '@vitejs/plugin-vue': ^3.0.1

@@ -49,8 +49,11 @@ export function createViteConfig(options) {
 
 export function allPakcages() {
   const root = resolve(__dirname, "../packages")
-  return fs.readdirSync(root).filter(pkg => {
-    return fs.statSync(resolve(root, pkg)).isDirectory()
+  return fs.readdirSync(root).filter(target => {
+    if (fs.statSync(resolve(root, target)).isDirectory()) {
+      const pkg = packageObject(target)
+      return !pkg.private
+    }
   })
 }
 

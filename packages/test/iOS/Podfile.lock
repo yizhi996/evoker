@@ -1,0 +1,104 @@
+PODS:
+  - Alamofire (5.6.2)
+  - CocoaAsyncSocket (7.6.5)
+  - CryptoSwift (1.4.3)
+  - Evoker (0.10.0):
+    - Evoker/Core (= 0.10.0)
+    - Evoker/Resources (= 0.10.0)
+  - Evoker/Core (0.10.0):
+    - Alamofire (~> 5.4)
+    - CryptoSwift (~> 1.4.1)
+    - JXPhotoBrowser (~> 3.0)
+    - KTVHTTPCache (~> 2.0.0)
+    - MJRefresh
+    - PureLayout
+    - SDWebImage (~> 5.0)
+    - SDWebImageWebPCoder
+    - SocketRocket
+    - SQLite.swift (~> 0.13.2)
+    - SwiftyRSA
+    - Zip (~> 2.1)
+    - ZLPhotoBrowser
+  - Evoker/Resources (0.10.0)
+  - JXPhotoBrowser (3.1.3)
+  - KTVCocoaHTTPServer (1.0.0):
+    - CocoaAsyncSocket
+  - KTVHTTPCache (2.0.1):
+    - KTVCocoaHTTPServer
+  - libwebp (1.2.3):
+    - libwebp/demux (= 1.2.3)
+    - libwebp/mux (= 1.2.3)
+    - libwebp/webp (= 1.2.3)
+  - libwebp/demux (1.2.3):
+    - libwebp/webp
+  - libwebp/mux (1.2.3):
+    - libwebp/demux
+  - libwebp/webp (1.2.3)
+  - MJRefresh (3.7.5)
+  - PureLayout (3.1.9)
+  - SDWebImage (5.13.2):
+    - SDWebImage/Core (= 5.13.2)
+  - SDWebImage/Core (5.13.2)
+  - SDWebImageWebPCoder (0.9.0):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.13)
+  - SocketRocket (0.6.0)
+  - SQLite.swift (0.13.3):
+    - SQLite.swift/standard (= 0.13.3)
+  - SQLite.swift/standard (0.13.3)
+  - SwiftyRSA (1.7.0):
+    - SwiftyRSA/ObjC (= 1.7.0)
+  - SwiftyRSA/ObjC (1.7.0)
+  - Zip (2.1.2)
+  - ZLPhotoBrowser (4.3.5):
+    - ZLPhotoBrowser/Core (= 4.3.5)
+  - ZLPhotoBrowser/Core (4.3.5)
+
+DEPENDENCIES:
+  - Evoker (from `../../..`)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - CocoaAsyncSocket
+    - CryptoSwift
+    - JXPhotoBrowser
+    - KTVCocoaHTTPServer
+    - KTVHTTPCache
+    - libwebp
+    - MJRefresh
+    - PureLayout
+    - SDWebImage
+    - SDWebImageWebPCoder
+    - SocketRocket
+    - SQLite.swift
+    - SwiftyRSA
+    - Zip
+    - ZLPhotoBrowser
+
+EXTERNAL SOURCES:
+  Evoker:
+    :path: "../../.."
+
+SPEC CHECKSUMS:
+  Alamofire: d368e1ff8a298e6dde360e35a3e68e6c610e7204
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
+  CryptoSwift: a0799ee936271bd2253a006f1e4523df21845000
+  Evoker: 9fa2a145b4fc490b235bef4a34ddfb5141c4dc59
+  JXPhotoBrowser: d32e94e1226d43bf5ed83164e3f5b651fed625e0
+  KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
+  KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
+  libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
+  MJRefresh: fdf5e979eb406a0341468932d1dfc8b7f9fce961
+  PureLayout: 5fb5e5429519627d60d079ccb1eaa7265ce7cf88
+  SDWebImage: 72f86271a6f3139cc7e4a89220946489d4b9a866
+  SDWebImageWebPCoder: 3dc350894112feab5375cfba9ce0986544a66a69
+  SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
+  SQLite.swift: 903bfa3bc9ab06345fdfbb578e34f47cfcf417da
+  SwiftyRSA: 8c6dd1ea7db1b8dc4fb517a202f88bb1354bc2c6
+  Zip: b3fef584b147b6e582b2256a9815c897d60ddc67
+  ZLPhotoBrowser: 329ce19ac36da8fa9a163e878f88479bf1a11461
+
+PODFILE CHECKSUM: b96e8ad42bed22bf15f88155aa006c3a4f92e067
+
+COCOAPODS: 1.11.3

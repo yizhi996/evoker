@@ -53,17 +53,13 @@ export function removeChild(data: any[]) {
   }
 }
 
-type LLChildNode = ChildNode & { __nodeId: number }
-
 function removeChildNodes(node: Node) {
-  const cn = node.childNodes as NodeListOf<LLChildNode>
-  for (let i = 0; i < cn.length; i++) {
-    const node = cn[i]
+  const children = node.childNodes as NodeListOf<ChildNode & { __nodeId: number }>
+  for (let i = 0; i < children.length; i++) {
+    const node = children[i]
     if (node.__nodeId) {
       removeChildNodes(node)
       nodes.delete(node.__nodeId)
-    } else {
-      break
     }
   }
 }

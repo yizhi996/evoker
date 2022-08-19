@@ -1,0 +1,9 @@
+platform :ios, '11.0'
+
+use_frameworks!
+    
+target 'Test' do
+  
+  pod 'Evoker', :path => "../../.."
+  
+end

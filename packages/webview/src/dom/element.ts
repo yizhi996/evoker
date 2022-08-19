@@ -120,8 +120,7 @@ function createBuiltInComponent(node: EvokerVNode, component: BuiltInComponent) 
   el.__instance = vnodeInstance!
 
   if (component.slot) {
-    const slot = el.querySelector(component.slot) as HTMLElement
-    slot && (el.__slot = slot)
+    el.__slot = el.querySelector(component.slot) as HTMLElement
   }
 
   if (textContent) {
