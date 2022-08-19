@@ -287,6 +287,10 @@ final public class AppService {
         modules = [:]
         context.exit()
         
+        webViewPool.clean { webView in
+            webView.removeFromSuperview()
+        }
+        
         if let index = Engine.shared.runningApp.firstIndex(of: self) {
             Engine.shared.runningApp.remove(at: index)
         }
