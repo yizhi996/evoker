@@ -73,14 +73,18 @@ extension NavigationController: UINavigationControllerDelegate {
         if let coordinator = navigationController.topViewController?.transitionCoordinator {
             coordinator.notifyWhenInteractionChanges { context in
                 if !context.isCancelled {
-                    let viewController = viewController as! PageViewController
-                    if let webPage = viewController.page.appService?.currentPage as? WebPage {
+                    
+                    if let fromViewController = context.viewController(forKey: .from) as? PageViewController,
+                       let webPage = fromViewController.page as? WebPage {
                         webPage.publishOnUnload()
                     }
-                    if let webPage = viewController.page as? WebPage {
-                        webPage.publishOnShow()
+                    
+                    if let viewController = viewController as? PageViewController {
+                        if let webPage = viewController.page as? WebPage {
+                            webPage.publishOnShow()
+                        }
+                        viewController.page.appService?.currentPage = viewController.page
                     }
-                    viewController.page.appService?.currentPage = viewController.page
                 }
             }
         }
