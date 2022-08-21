@@ -541,6 +541,16 @@ extension AppService {
         RunLoop.main.add(killTimer!, forMode: .common)
     }
     
+    /// 获取当前页面的 onShareAppMessage 返回的内容
+    ///
+    /// 返回的内容在 Engine.shared.config.hooks.app.shareAppMessage 中接收
+    public func fetchShareAppMessageContent() {
+        if let page = currentPage as? WebPage {
+            bridge.subscribeHandler(method: Self.fetchShareAppMessageContentSubscribeKey,
+                                    data: ["pageId": page.pageId, "from": "menu"])
+        }
+    }
+    
     func invokeAppMoreAction(_ action: AppMoreAction) {
         switch action.key {
         case AppMoreAction.builtInSettingsKey:
@@ -551,6 +561,8 @@ extension AppService {
             var options = AppLaunchOptions()
             options.envVersion = envVersion
             reLaunch(launchOptions: options)
+        case AppMoreAction.builtInShareKey:
+            fetchShareAppMessageContent()
         default:
             Engine.shared.config.hooks.app.clickAppMoreAction?(self, action)
         }
@@ -828,6 +840,8 @@ extension AppService {
     public static let networkStatusChangeSubscribeKey = SubscribeKey("APP_NETWORK_STATUS_CHANGE")
     
     public static let userCaptureScreenSubscribeKey = SubscribeKey("APP_USER_CAPTURE_SCREEN")
+    
+    public static let fetchShareAppMessageContentSubscribeKey = SubscribeKey("FETCH_SHARE_APP_MESSAGE_CONTENT")
     
 }
 

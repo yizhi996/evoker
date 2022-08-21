@@ -5,6 +5,22 @@ interface PageScrollObject {
   scrollTop: number
 }
 
+interface PageShareAppMessageOptions {
+  from: "button" | "menu"
+
+  target: any
+}
+
+export interface PageShareAppMessageContent {
+  title?: string
+
+  path?: string
+
+  imageUrl?: string
+
+  promise?: Promise<Omit<PageShareAppMessageContent, "promise">>
+}
+
 export default function usePage() {
   const instance = getCurrentInstance()
   if (!instance) {
@@ -48,6 +64,11 @@ export default function usePage() {
     },
     onSaveExitState: (hook: () => void) => {
       return createHook(LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE, hook, pageId)
+    },
+    onShareAppMessage: (
+      hook: (object: PageShareAppMessageOptions) => PageShareAppMessageContent
+    ) => {
+      return createHook(LifecycleHooks.PAGE_ON_SHARE_APP_MESSAGE, hook, pageId)
     }
   }
 }

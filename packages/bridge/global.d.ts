@@ -19,6 +19,8 @@ export interface AppServiceNativeSDK {
 
   base64: Base64
 
+  shareAppMessage(title: string, path: string, imageUrl: string): void
+
   evalWebView(script: string, webviewId: number): any
 }
 

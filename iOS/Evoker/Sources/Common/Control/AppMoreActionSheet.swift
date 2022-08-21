@@ -11,6 +11,8 @@ import UIKit
 
 public struct AppMoreAction {
     
+    static let builtInShareKey = "builtin:share"
+    
     static let builtInSettingsKey = "builtin:settings"
     
     static let builtInReLaunchKey = "builtin:reLaunch"
@@ -18,14 +20,40 @@ public struct AppMoreAction {
     /// 标识符
     let key: String
     
+    /// 标题
+    let title: String
+    
+    /// 是否允许点击
+    let enable: Bool
+    
     /// 图标地址
     let icon: String?
     
-    /// 使用本图标，优先级高于 icon
+    /// 使用本地图片，优先级高于 icon
     let iconImage: UIImage?
     
-    /// 标题
-    let title: String
+    /// 禁用状态的图标地址
+    let disabledIcon: String?
+    
+    /// 禁用状态的图片，使用本地图片，优先级高于 disabledIcon
+    let disabledIconImage: UIImage?
+    
+    init(key: String,
+         title: String,
+         enable: Bool = true,
+         icon: String? = nil,
+         iconImage: UIImage? = nil,
+         disabledIcon: String? = nil,
+         disabledIconImage: UIImage? = nil) {
+        self.key = key
+        self.title = title
+        self.enable = enable
+        self.icon = icon
+        self.iconImage = iconImage
+        self.disabledIcon = disabledIcon
+        self.disabledIconImage = disabledIconImage
+    }
+    
 }
 
 class AppMoreActionSheet: UIView, TransitionView {
@@ -166,17 +194,25 @@ class AppMoreActionSheet: UIView, TransitionView {
         
         for (i, item) in list.enumerated() {
             let actionView = AppMoreActionSheetItemView()
-            actionView.isUserInteractionEnabled = true
+            actionView.isUserInteractionEnabled = item.enable
             actionView.action = item
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onClickAction(gesture:)))
             actionView.addGestureRecognizer(tapGesture)
             
             let actionButton = AppMoreActionSheetItemButton()
             actionButton.action = item
+            actionButton.isEnabled = item.enable
+            
             if let icon = item.iconImage {
                 actionButton.setImage(icon, for: .normal)
-            } else if let iconSrc = item.icon {
-                actionButton.sd_setImage(with: URL(string: iconSrc), for: .normal, completed: nil)
+            } else if let src = item.icon {
+                actionButton.sd_setImage(with: URL(string: src), for: .normal, completed: nil)
+            }
+            
+            if let icon = item.disabledIconImage {
+                actionButton.setImage(icon, for: .disabled)
+            } else if let src = item.disabledIcon {
+                actionButton.sd_setImage(with: URL(string: src), for: .disabled, completed: nil)
             }
             
             let backgroundImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-button-bg")!,
@@ -199,6 +235,8 @@ class AppMoreActionSheet: UIView, TransitionView {
             actionTitleLabel.textAlignment = .center
             actionView.addSubview(actionTitleLabel)
             actionTitleLabel.autoAlignAxis(toSuperviewAxis: .vertical)
+            actionTitleLabel.autoPinEdge(toSuperviewEdge: .left)
+            actionTitleLabel.autoPinEdge(toSuperviewEdge: .right)
             actionTitleLabel.autoPinEdge(.top, to: .bottom, of: actionButton, withOffset: 8.0)
             
             scrollView.addSubview(actionView)

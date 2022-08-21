@@ -41,6 +41,8 @@ enum LifeCycleAPI: String, CaseIterableAPI {
         }
         
         webPage.isSubscribeOnPageScroll = params.hooks["onPageScroll"] ?? false
+        
+        webPage.shareEnable = params.hooks["onShareAppMessage"] ?? false
        
         if let x = params.hooks["onPullDownRefresh"], x == true {
             let normalHeader = MJRefreshNormalHeader(refreshingBlock: {

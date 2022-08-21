@@ -1,9 +1,10 @@
 import { InnerJSBridge } from "../bridge/bridge"
 import { dispatchEvent } from "@evoker/shared"
-import { isFunction } from "@vue/shared"
+import { extend, isFunction } from "@vue/shared"
 import { innerAppData, mountPage, unmountPage } from "../app"
 import { decodeURL } from "../router"
 import { AppLaunchOptions } from "./useApp"
+import { PageShareAppMessageContent } from "./usePage"
 
 export const enum LifecycleHooks {
   APP_ON_LAUNCH = "APP_ON_LAUNCH",
@@ -25,7 +26,9 @@ export const enum LifecycleHooks {
   PAGE_ON_SCROLL = "PAGE_ON_SCROLL",
   PAGE_ON_RESIZE = "PAGE_ON_RESIZE",
   PAGE_ON_TAB_ITEM_TAP = "PAGE_ON_TAB_ITEM_TAP",
-  PAGE_ON_SAVE_EXIT_STATE = "PAGE_ON_SAVE_EXIT_STATE"
+  PAGE_ON_SAVE_EXIT_STATE = "PAGE_ON_SAVE_EXIT_STATE",
+  PAGE_ON_SHARE_APP_MESSAGE = "PAGE_ON_SHARE_APP_MESSAGE",
+  FETCH_SHARE_APP_MESSAGE_CONTENT = "FETCH_SHARE_APP_MESSAGE_CONTENT"
 }
 
 const appEvents: Record<string, Function[]> = {}
@@ -49,6 +52,8 @@ function injectHook(lifecycle: LifecycleHooks, hook: Function, pageId?: number) 
     effects["onPageScroll"] = true
   } else if (lifecycle === LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH) {
     effects["onPullDownRefresh"] = true
+  } else if (lifecycle === LifecycleHooks.PAGE_ON_SHARE_APP_MESSAGE) {
+    effects["onShareAppMessage"] = true
   }
 
   if (Object.keys(effects).length) {
@@ -80,7 +85,9 @@ function invokePageHook(lifecycle: LifecycleHooks, pageId: number, data?: any) {
   const events = pageEvents[pageId]
   if (events) {
     const hook = events.get(lifecycle)
-    hook && isFunction(hook) && hook(data)
+    if (isFunction(hook)) {
+      return hook(data)
+    }
   }
 }
 
@@ -138,6 +145,10 @@ InnerJSBridge.subscribe(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_END, message =>
   dispatchEvent(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_END, message)
 })
 
+interface PageLifecycleMessage {
+  pageId: number
+}
+
 InnerJSBridge.subscribe(LifecycleHooks.PAGE_BEGIN_MOUNT, mountPage)
 
 InnerJSBridge.subscribe<{ pageId: number; query: Record<string, any> }>(
@@ -147,20 +158,23 @@ InnerJSBridge.subscribe<{ pageId: number; query: Record<string, any> }>(
   }
 )
 
-InnerJSBridge.subscribe<{ pageId: number; route: string }>(LifecycleHooks.PAGE_ON_SHOW, message => {
-  innerAppData.lastRoute = message.route
-  invokePageHook(LifecycleHooks.PAGE_ON_SHOW, message.pageId)
-})
+InnerJSBridge.subscribe<PageLifecycleMessage & { route: string }>(
+  LifecycleHooks.PAGE_ON_SHOW,
+  message => {
+    innerAppData.lastRoute = message.route
+    invokePageHook(LifecycleHooks.PAGE_ON_SHOW, message.pageId)
+  }
+)
 
-InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_READY, message => {
+InnerJSBridge.subscribe<PageLifecycleMessage>(LifecycleHooks.PAGE_ON_READY, message => {
   invokePageHook(LifecycleHooks.PAGE_ON_READY, message.pageId)
 })
 
-InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_HIDE, message => {
+InnerJSBridge.subscribe<PageLifecycleMessage>(LifecycleHooks.PAGE_ON_HIDE, message => {
   invokePageHook(LifecycleHooks.PAGE_ON_HIDE, message.pageId)
 })
 
-InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_UNLOAD, message => {
+InnerJSBridge.subscribe<PageLifecycleMessage>(LifecycleHooks.PAGE_ON_UNLOAD, message => {
   const { pageId } = message
   unmountPage(pageId)
   invokePageHook(LifecycleHooks.PAGE_ON_UNLOAD, pageId)
@@ -168,11 +182,11 @@ InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_UNLOAD, messa
   delete pageEffectHooks[pageId]
 })
 
-InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH, message => {
+InnerJSBridge.subscribe<PageLifecycleMessage>(LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH, message => {
   invokePageHook(LifecycleHooks.PAGE_ON_PULL_DOWN_REFRESH, message.pageId)
 })
 
-InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message => {
+InnerJSBridge.subscribe<PageLifecycleMessage>(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message => {
   invokePageHook(LifecycleHooks.PAGE_ON_REACH_BOTTOM, message.pageId)
 })
 
@@ -185,7 +199,7 @@ InnerJSBridge.subscribe<{ pageId: number; scrollTop: number }>(
   }
 )
 
-InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_RESIZE, message => {
+InnerJSBridge.subscribe<PageLifecycleMessage>(LifecycleHooks.PAGE_ON_RESIZE, message => {
   invokePageHook(LifecycleHooks.PAGE_ON_RESIZE, message.pageId)
 })
 
@@ -200,6 +214,50 @@ InnerJSBridge.subscribe<{ pageId: number; index: number; fromTap: boolean }>(
   }
 )
 
-InnerJSBridge.subscribe<{ pageId: number }>(LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE, message => {
+InnerJSBridge.subscribe<PageLifecycleMessage>(LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE, message => {
   invokePageHook(LifecycleHooks.PAGE_ON_SAVE_EXIT_STATE, message.pageId, message)
 })
+
+InnerJSBridge.subscribe<PageLifecycleMessage & { from: string }>(
+  LifecycleHooks.FETCH_SHARE_APP_MESSAGE_CONTENT,
+  message => {
+    const opts = extend({}, message) as any
+    delete opts.pageId
+    const result = invokePageHook(
+      LifecycleHooks.PAGE_ON_SHARE_APP_MESSAGE,
+      message.pageId,
+      opts
+    ) as PageShareAppMessageContent
+
+    const defaultContent = {
+      title: globalThis.__Config.appName,
+      path: innerAppData.lastRoute,
+      imageUrl: ""
+    }
+    const content = extend(defaultContent, result)
+
+    function share(content: Required<Omit<PageShareAppMessageContent, "promise">>) {
+      globalThis.__AppServiceNativeSDK.shareAppMessage(
+        content.title,
+        content.path,
+        content.imageUrl
+      )
+    }
+
+    if (content.promise) {
+      let promiseContent: Omit<PageShareAppMessageContent, "promise"> | null
+
+      // 对齐微信，3秒 超时后返回默认 content
+      const timer = setTimeout(() => {
+        promiseContent ? share(extend(defaultContent, promiseContent)) : share(content)
+      }, 3000)
+
+      content.promise.then(promiseContent => {
+        clearTimeout(timer)
+        promiseContent ? share(extend(defaultContent, promiseContent)) : share(content)
+      })
+    } else {
+      share(content)
+    }
+  }
+)

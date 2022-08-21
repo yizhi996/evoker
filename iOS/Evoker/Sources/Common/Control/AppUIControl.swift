@@ -30,35 +30,48 @@ public class AppUIControl {
                                        to view: UIView,
                                        cancellationHandler: EmptyBlock?,
                                        selectionHandler: @escaping (AppMoreAction) -> Void) {
+        var enableShare = false
+        if let webPage = appService.currentPage as? WebPage {
+            enableShare = webPage.shareEnable
+        }
         
-        func builtInItems() -> [AppMoreAction] {
+        func firstBuiltInItems() -> [AppMoreAction] {
+            let settingIconImage = UIImage(builtIn: "mp-action-sheet-share-icon")
+            let shareAction = AppMoreAction(key: AppMoreAction.builtInShareKey,
+                                            title: enableShare ? "转发" : "当前页面不能转发",
+                                            enable: enableShare,
+                                            iconImage: settingIconImage,
+                                            disabledIconImage: nil)
+            return [shareAction]
+        }
+        
+        func secondBuiltInItems() -> [AppMoreAction] {
             let settingIconImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-setting-icon")!,
                                                  dark: UIImage(builtIn: "mp-action-sheet-setting-icon-dark")!)
             let settingsAction = AppMoreAction(key: AppMoreAction.builtInSettingsKey,
-                                                     icon: nil,
-                                                     iconImage: settingIconImage,
-                                                     title: "设置")
+                                               title: "设置",
+                                               iconImage: settingIconImage)
             let relaunchIconImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-reload-icon")!,
                                                   dark: UIImage(builtIn: "mp-action-sheet-reload-icon-dark")!)
             let relaunchAction = AppMoreAction(key: AppMoreAction.builtInReLaunchKey,
-                                                     icon: nil,
-                                                     iconImage: relaunchIconImage,
-                                                     title: "重新进入小程序")
+                                               title: "重新进入小程序",
+                                               iconImage: relaunchIconImage)
             return [settingsAction, relaunchAction]
         }
+        
         
         let firstActions: [AppMoreAction]
         let secondActions: [AppMoreAction]
         if let data = Engine.shared.config.hooks.app.fetchAppMoreActionSheetItems?(appService) {
-            firstActions = data.0
+            firstActions = firstBuiltInItems() + data.0
             if data.2 {
-                secondActions = builtInItems() + data.1
+                secondActions = secondBuiltInItems() + data.1
             } else {
                 secondActions = data.1
             }
         } else {
-            firstActions = []
-            secondActions = builtInItems()
+            firstActions = firstBuiltInItems()
+            secondActions = secondBuiltInItems()
         }
         
         let params = AppMoreActionSheet.Params(appId: appService.appId,

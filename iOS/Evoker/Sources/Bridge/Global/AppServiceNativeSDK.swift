@@ -9,6 +9,15 @@
 import Foundation
 import JavaScriptCore
 
+public struct ShareAppMessageContent {
+    
+    public let title: String
+    
+    public let path: String
+    
+    public let imageUrl: String?
+}
+
 @objc public protocol AppServiceNativeSDKExport: JSExport {
     
     var timer: NativeTimer { get }
@@ -24,6 +33,8 @@ import JavaScriptCore
     init()
     
     func evalWebView(_ script: String, _ webViewId: Int) -> Any?
+    
+    func shareAppMessage(_ title: String, _ path: String, _ imageUrl: String)
 
 }
 
@@ -75,4 +86,10 @@ import JavaScriptCore
         return result
     }
     
+    public func shareAppMessage(_ title: String, _ path: String, _ imageUrl: String) {
+        guard let appService = Engine.shared.getAppService(appId: appId, envVersion: envVersion) else { return }
+        
+        let content = ShareAppMessageContent(title: title, path: path, imageUrl: imageUrl)
+        Engine.shared.config.hooks.app.shareAppMessage?(appService, content)
+    }
 }

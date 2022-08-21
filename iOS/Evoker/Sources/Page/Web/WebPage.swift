@@ -52,6 +52,8 @@ open class WebPage: Page {
     
     var isSubscribeOnPageScroll = false
     
+    var shareEnable = false
+    
     var isFromTabItemTap = false
     
     public lazy var webView: WebView = {

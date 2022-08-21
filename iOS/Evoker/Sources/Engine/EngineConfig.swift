@@ -66,12 +66,14 @@ extension EngineConfig.Hooks {
         
         /// 自定义点击胶囊的更多按钮时显示的 action
         /// - returns:
-        /// 第一个数组是第一行，第二个数组是第二行，第三个 Bool 表示是否在第二行的最前面加入内置的 action（包含设置和重启）
+        /// 第一个数组是第一行，第二个数组是第二行，第三个 Bool 表示是否在最前面加入内置的 action（包含分享、设置和重启）
         public var fetchAppMoreActionSheetItems: ((AppService) -> ([AppMoreAction], [AppMoreAction], Bool))?
         
         /// 点击自定义的 AppMoreAction 时执行，可根据 key 判断需要执行的事件
         public var clickAppMoreAction: ((AppService, AppMoreAction) -> Void)?
         
+        /// 点击分享应用时返回的内容
+        public var shareAppMessage: ((AppService, ShareAppMessageContent) -> Void)?
     }
 
 }

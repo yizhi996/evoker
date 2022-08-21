@@ -15,8 +15,10 @@ public enum NotifyType {
     case fail(String)
     
     public func show() {
-        let notify = NotifyView(type: self)
-        NotifyQueue.shared.enqueue(notify)
+        DispatchQueue.main.async {
+            let notify = NotifyView(type: self)
+            NotifyQueue.shared.enqueue(notify)
+        }
     }
 }
 
@@ -27,9 +29,9 @@ private class NotifyQueue {
     lazy var queue: [NotifyView] = []
     
     func enqueue(_ notify: NotifyView) {
-        guard let text = notify.text, !text.isEmpty, let window = UIApplication.shared.keyWindow else { return }
-        let maxWidth = Constant.windowWidth - 40
-        let size = notify.sizeThatFits(CGSize(width: maxWidth, height: .infinity))
+        guard let text = notify.label.text, !text.isEmpty, let window = UIApplication.shared.keyWindow else { return }
+        let maxWidth = Constant.windowWidth - 40 - 20
+        let size = notify.label.sizeThatFits(CGSize(width: maxWidth, height: .infinity))
         let height = size.height + 10
         notify.frame = CGRect(x: 20, y: -height, width: maxWidth, height: height)
         window.addSubview(notify)
@@ -51,22 +53,30 @@ private class NotifyQueue {
     }
 }
 
-private class NotifyView: UILabel {
-
+private class NotifyView: UIView {
+    
+    let label = UILabel()
+    
     init(type: NotifyType) {
         super.init(frame: .zero)
         
-        textColor = .white
-        numberOfLines = 0
-        font = UIFont.systemFont(ofSize: 16.0)
-        textAlignment = .left
+        label.textColor = .white
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 16.0)
+        label.textAlignment = .left
+        addSubview(label)
+        
+        label.autoPinEdge(toSuperviewEdge: .left, withInset: 10)
+        label.autoPinEdge(toSuperviewEdge: .right, withInset: 10)
+        label.autoPinEdge(toSuperviewEdge: .top, withInset: 5)
+        label.autoPinEdge(toSuperviewEdge: .bottom, withInset: 5)
         
         switch type {
         case .success(let message):
-            text = message
+            label.text = message
             backgroundColor = "#1989fa".hexColor()
         case .fail(let error):
-            text = error
+            label.text = error
             backgroundColor = "#e45353".hexColor()
         }
         
