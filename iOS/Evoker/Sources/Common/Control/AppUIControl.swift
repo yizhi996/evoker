@@ -36,7 +36,8 @@ public class AppUIControl {
         }
         
         func firstBuiltInItems() -> [AppMoreAction] {
-            let settingIconImage = UIImage(builtIn: "mp-action-sheet-share-icon")
+            let settingIconImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-share-icon")!,
+                                                 dark: UIImage(builtIn: "mp-action-sheet-share-icon-dark")!)
             let shareAction = AppMoreAction(key: AppMoreAction.builtInShareKey,
                                             title: enableShare ? "转发" : "当前页面不能转发",
                                             enable: enableShare,
@@ -54,7 +55,7 @@ public class AppUIControl {
             let relaunchIconImage = UIImage.image(light: UIImage(builtIn: "mp-action-sheet-reload-icon")!,
                                                   dark: UIImage(builtIn: "mp-action-sheet-reload-icon-dark")!)
             let relaunchAction = AppMoreAction(key: AppMoreAction.builtInReLaunchKey,
-                                               title: "重新进入小程序",
+                                               title: "重新进入\n小程序",
                                                iconImage: relaunchIconImage)
             return [settingsAction, relaunchAction]
         }
