@@ -5,6 +5,13 @@ import { useHover } from "../../composables/useHover"
 import { dispatchEvent } from "../../../dom/event"
 import { getUserInfo } from "../../../bridge/api/open"
 import Loading from "../loading"
+import { JSBridge } from "../../../bridge"
+
+const enum OpenTypes {
+  GET_USER_INFO = "getUserInfo",
+  OPEN_SETTING = "openSetting",
+  SHARE = "share"
+}
 
 const props = {
   type: {
@@ -52,7 +59,7 @@ const props = {
     required: false
   },
   openType: {
-    type: String as PropType<"getUserInfo" | "openSetting">,
+    type: String as PropType<OpenTypes.GET_USER_INFO | OpenTypes.OPEN_SETTING | OpenTypes.SHARE>,
     required: false
   }
 }
@@ -113,7 +120,7 @@ export default defineComponent({
 
     const onTapOpenType = () => {
       switch (props.openType) {
-        case "getUserInfo":
+        case OpenTypes.GET_USER_INFO:
           getUserInfo({
             withCredentials: true,
             success: res => {
@@ -123,6 +130,18 @@ export default defineComponent({
               emit("getuserinfo", res)
             }
           })
+          break
+        case OpenTypes.OPEN_SETTING:
+          JSBridge.invoke(OpenTypes.OPEN_SETTING)
+          break
+        case OpenTypes.SHARE:
+          const button = container.value!
+          const target = {
+            id: button.id,
+            offsetLeft: button.offsetLeft,
+            offsetTop: button.offsetTop
+          }
+          JSBridge.invoke("shareAppMessage", { target })
           break
       }
     }
@@ -154,11 +173,17 @@ export default defineComponent({
       }
     )
 
+    const validOpenType = (type?: OpenTypes) => {
+      return (
+        type && [OpenTypes.GET_USER_INFO, OpenTypes.OPEN_SETTING, OpenTypes.SHARE].includes(type)
+      )
+    }
+
     watch(
       () => props.openType,
       openType => {
         builtInClickEvent && builtInClickEvent()
-        if (openType && ["getUserInfo", "openSetting"].includes(openType)) {
+        if (validOpenType(openType)) {
           nextTick(() => {
             if (container.value) {
               builtInClickEvent = addClickEvent(container.value, builtInClick)

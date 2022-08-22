@@ -546,12 +546,18 @@ extension AppService {
     }
     
     /// 获取当前页面的 onShareAppMessage 返回的内容
+    /// - Parameters:
+    ///     - from: 来自 menu 或者 button
+    ///     - target: 如果 from 是 button 则需要告知来自哪个 button
     ///
     /// 返回的内容在 Engine.shared.config.hooks.app.shareAppMessage 中接收
-    public func fetchShareAppMessageContent() {
+    public func fetchShareAppMessageContent(from: FetchShareAppMessageContentFrom, target: [String: Any]? = nil) {
         if let page = currentPage as? WebPage {
-            bridge.subscribeHandler(method: Self.fetchShareAppMessageContentSubscribeKey,
-                                    data: ["pageId": page.pageId, "from": "menu"])
+            var data = ["pageId": page.pageId, "from": from.rawValue] as [String : Any]
+            if let target = target {
+                data["target"] = target
+            }
+            bridge.subscribeHandler(method: Self.fetchShareAppMessageContentSubscribeKey, data: data)
         }
     }
     
@@ -566,7 +572,7 @@ extension AppService {
             options.envVersion = envVersion
             reLaunch(launchOptions: options)
         case AppMoreAction.builtInShareKey:
-            fetchShareAppMessageContent()
+            fetchShareAppMessageContent(from: .menu)
         default:
             Engine.shared.config.hooks.app.clickAppMoreAction?(self, action)
         }

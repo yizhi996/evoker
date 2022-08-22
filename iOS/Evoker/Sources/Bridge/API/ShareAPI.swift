@@ -8,11 +8,19 @@
 
 import Foundation
 
+public enum FetchShareAppMessageContentFrom: String {
+    case menu
+    
+    case button
+}
+
 enum ShareAPI: String, CaseIterableAPI {
    
     case showShareMenu
     
     case hideShareMenu
+    
+    case shareAppMessage
     
     func onInvoke(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         switch self {
@@ -20,6 +28,8 @@ enum ShareAPI: String, CaseIterableAPI {
             showShareMenu(appService: appService, bridge: bridge, args: args)
         case .hideShareMenu:
             hideShareMenu(appService: appService, bridge: bridge, args: args)
+        case .shareAppMessage:
+            shareAppMessage(appService: appService, bridge: bridge, args: args)
         }
     }
         
@@ -62,6 +72,15 @@ enum ShareAPI: String, CaseIterableAPI {
         }
         
         page.shareEnable = false
+        bridge.invokeCallbackSuccess(args: args)
+    }
+    
+    private func shareAppMessage(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
+        var target: [String: Any]? = nil
+        if let params = args.paramsString.toDict() {
+            target = params["target"] as? [String : Any]
+        }
+        appService.fetchShareAppMessageContent(from: .button, target: target)
         bridge.invokeCallbackSuccess(args: args)
     }
 }
