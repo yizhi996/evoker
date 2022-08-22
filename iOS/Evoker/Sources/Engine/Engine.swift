@@ -139,6 +139,7 @@ final public class Engine {
         TabBarAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         VolumeAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         PickerAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
+        ShareAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
     }
     
     func setupBuiltInModules() {

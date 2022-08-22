@@ -245,6 +245,10 @@ final public class AppService {
         return pages.first(where: { $0.pageId == pageId }) as? WebPage
     }
     
+    public func findWebPage(from route: String) -> WebPage? {
+        return pages.filter(ofType: WebPage.self).first(where: { $0.route == route })
+    }
+    
     public func getModule<T: Module>() -> T? {
         return modules[T.name] as? T
     }

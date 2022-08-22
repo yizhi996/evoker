@@ -127,6 +127,7 @@ import {
   onAudioInterruptionEnd,
   offAudioInterruptionEnd
 } from "../lifecycle/global"
+import { showShareMenu, hideShareMenu } from "./api/share"
 import "./fromWebView"
 
 export type { VideoContext } from "./api/media/video"
@@ -255,7 +256,9 @@ export {
   onAudioInterruptionBegin,
   offAudioInterruptionBegin,
   onAudioInterruptionEnd,
-  offAudioInterruptionEnd
+  offAudioInterruptionEnd,
+  showShareMenu,
+  hideShareMenu
 }
 
 export default {
@@ -382,5 +385,7 @@ export default {
   onAudioInterruptionBegin,
   offAudioInterruptionBegin,
   onAudioInterruptionEnd,
-  offAudioInterruptionEnd
+  offAudioInterruptionEnd,
+  showShareMenu,
+  hideShareMenu
 }
