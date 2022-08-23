@@ -1,9 +1,14 @@
 import { InnerJSBridge } from "../../bridge"
-import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@evoker/bridge"
+import {
+  SuccessResult,
+  GeneralCallbackResult,
+  invokeFailure,
+  invokeSuccess,
+  EKFILE_SCHEME
+} from "@evoker/bridge"
 import { isString } from "@vue/shared"
 import { Events, MAX_TIMEOUT, headerValueToString } from "./util"
 import { Task } from "./task"
-import { EKFILE_SCHEME } from "../const"
 
 const uploadTasks: Map<string, UploadTask> = new Map()
 

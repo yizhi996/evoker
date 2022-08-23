@@ -93,6 +93,8 @@ public enum EKError: Error {
         
         case apiHookNotImplemented
         
+        case invalidFilePath(String)
+        
         case custom(String)
     }
 }
@@ -165,6 +167,8 @@ extension EKError.BridgeFailureReason {
             return "api hook not implemented, see EngineConfig.hooks"
         case .contentNotFound:
             return "content not found"
+        case .invalidFilePath(let filePath):
+            return "filePath \(filePath) is invalid"
         case .custom(let error):
             return "\(error)"
         }

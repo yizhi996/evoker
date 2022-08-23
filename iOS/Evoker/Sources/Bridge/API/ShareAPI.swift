@@ -1,5 +1,5 @@
 //
-//  AuthAPI.swift
+//  ShareAPI.swift
 //
 //  Copyright (c) Evoker. All rights reserved. (https://evokerdev.com)
 //

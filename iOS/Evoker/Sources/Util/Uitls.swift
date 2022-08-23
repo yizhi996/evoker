@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CommonCrypto
 
 extension Comparable {
     func clampe(to limits: ClosedRange<Self>) -> Self {
@@ -70,5 +71,55 @@ class PerformanceTimer {
             print("🔔 \(label) now: \(now * 1000) use: \((now - x) * 1000) ms")
             labals[label] = nil
         }
+    }
+}
+
+func calcuateFileMD5(url: URL) -> String? {
+    let bufferSize = 1024 * 1024
+    
+    do {
+        let file = try FileHandle(forReadingFrom: url)
+        defer {
+            file.closeFile()
+        }
+        
+        var context = CC_MD5_CTX()
+        CC_MD5_Init(&context)
+        
+        while case let data = file.readData(ofLength: bufferSize), data.count > 0 {
+            _ = data.withUnsafeBytes { CC_MD5_Update(&context, $0, CC_LONG(data.count)) }
+        }
+        
+        var digest = Data(count: Int(CC_MD5_DIGEST_LENGTH))
+        _ = digest.withUnsafeMutableBytes { CC_MD5_Final($0, &context) }
+        
+        return digest.map { String(format: "%02hhx", $0) }.joined()
+    } catch {
+        return nil
+    }
+}
+
+func calcuateFileSHA1(url: URL) -> String? {
+    let bufferSize = 1024 * 1024
+    
+    do {
+        let file = try FileHandle(forReadingFrom: url)
+        defer {
+            file.closeFile()
+        }
+        
+        var context = CC_SHA1_CTX()
+        CC_SHA1_Init(&context)
+        
+        while case let data = file.readData(ofLength: bufferSize), data.count > 0 {
+            _ = data.withUnsafeBytes { CC_SHA1_Update(&context, $0, CC_LONG(data.count)) }
+        }
+        
+        var digest = Data(count: Int(CC_SHA1_DIGEST_LENGTH))
+        _ = digest.withUnsafeMutableBytes { CC_SHA1_Final($0, &context) }
+        
+        return digest.map { String(format: "%02hhx", $0) }.joined()
+    } catch {
+        return nil
     }
 }

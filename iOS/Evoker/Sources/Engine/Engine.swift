@@ -140,6 +140,7 @@ final public class Engine {
         VolumeAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         PickerAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
         ShareAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
+        FileAPI.allCases.forEach { builtInAPIs[$0.rawValue] = $0 }
     }
     
     func setupBuiltInModules() {

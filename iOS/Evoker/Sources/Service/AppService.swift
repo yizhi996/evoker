@@ -83,6 +83,8 @@ final public class AppService {
     
     var keepScreenOn = false
     
+    lazy var fileQueue = DispatchQueue(label: "com.evokerdev.fileQueue")
+    
     init?(appId: String, appInfo: AppInfo, launchOptions: AppLaunchOptions) {
         guard !appId.isEmpty,
               let config = AppConfig.load(appId: appId, envVersion: launchOptions.envVersion),

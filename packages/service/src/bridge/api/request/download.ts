@@ -1,8 +1,13 @@
 import { InnerJSBridge } from "../../bridge"
-import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@evoker/bridge"
+import {
+  SuccessResult,
+  GeneralCallbackResult,
+  invokeFailure,
+  invokeSuccess,
+  env
+} from "@evoker/bridge"
 import { isString } from "@vue/shared"
 import { Events, MAX_TIMEOUT, headerValueToString } from "./util"
-import { env } from "../const"
 import { Task } from "./task"
 
 const downloadTasks: Map<string, DownloadTask> = new Map()

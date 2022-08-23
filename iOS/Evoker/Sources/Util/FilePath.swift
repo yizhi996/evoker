@@ -102,14 +102,18 @@ public extension FilePath {
     
     static func generateStoreEKFilePath(appId: String, userId: String = Engine.shared.userId, ext: String) -> (EKFile, URL) {
         let id = UUID().uuidString.md5()
-        let filename = "store_\(id).\(ext)"
-        return ("ekfile://\(filename)", FilePath.store(appId: appId, userId: userId, filename: filename))
+        let filename = "\(id).\(ext)"
+        return generateStoreEKFilePath(appId: appId, userId: userId, filename: filename)
+    }
+    
+    static func generateStoreEKFilePath(appId: String, userId: String = Engine.shared.userId, filename: String) -> (EKFile, URL) {
+        return ("ekfile://store_\(filename)", FilePath.store(appId: appId, userId: userId, filename: filename))
     }
     
     static func generateTmpEKFilePath(ext: String) -> (EKFile, URL) {
         let id = UUID().uuidString.md5()
-        let filename = "tmp_\(id).\(ext)"
-        return ("ekfile://\(filename)", FilePath.tmp(filename: filename))
+        let filename = "\(id).\(ext)"
+        return ("ekfile://tmp_\(filename)", FilePath.tmp(filename: filename))
     }
     
     static func isEKFile(filePath: String) -> Bool {
@@ -126,11 +130,11 @@ public extension FilePath {
             let path = filePath[start..<filePath.endIndex]
             return FilePath.usr(appId: appId, userId: userId, path: String(path))
         } else if filePath.hasPrefix(store) {
-            let start = filePath.index(filePath.startIndex, offsetBy: scheme.count)
+            let start = filePath.index(filePath.startIndex, offsetBy: store.count)
             let filename = filePath[start..<filePath.endIndex]
             return FilePath.store(appId: appId, userId: userId, filename: String(filename))
         } else if filePath.hasPrefix(tmp) {
-            let start = filePath.index(filePath.startIndex, offsetBy: scheme.count)
+            let start = filePath.index(filePath.startIndex, offsetBy: tmp.count)
             let filename = filePath[start..<filePath.endIndex]
             return FilePath.tmp(filename: String(filename))
         }

@@ -2,6 +2,7 @@ export * from "./errors"
 export * from "./bridge"
 export * from "./async"
 
+export * from "./api/const"
 export * from "./api/device/screen"
 export * from "./api/device/battery"
 export * from "./api/device/vibrate"
@@ -26,6 +27,7 @@ export * from "./api/crypto"
 export * from "./api/location"
 export * from "./api/auth"
 export * from "./api/open"
+export * from "./api/file"
 
 export type { InvokeCallback, InvokeCallbackResult, SubscribeCallback } from "./bridge"
 
