@@ -8,6 +8,24 @@ interface Base64 {
   arrayBufferToBase64(buffer: ArrayBuffer): string
 }
 
+interface FileSystemManagerGeneralResult {
+  errMsg: string
+}
+
+interface FileSystemManager {
+  access(path: string): FileSystemManagerGeneralResult
+
+  mkdir(dirPath: string, recursive: boolean): FileSystemManagerGeneralResult
+
+  rmdir(dirPath: string, recursive: boolean): FileSystemManagerGeneralResult
+
+  readdir(dirPath: string): FileSystemManagerGeneralResult & { files: string[] }
+
+  readFile(options: any): FileSystemManagerGeneralResult & { data: string | ArrayBuffer }
+
+  writeFile(options: any): FileSystemManagerGeneralResult
+}
+
 export interface AppServiceNativeSDK {
   timer: NativeTimer
 
@@ -18,6 +36,8 @@ export interface AppServiceNativeSDK {
   storage: Storage
 
   base64: Base64
+
+  fileSystemManager: FileSystemManager
 
   shareAppMessage(title: string, path: string, imageUrl: string): void
 

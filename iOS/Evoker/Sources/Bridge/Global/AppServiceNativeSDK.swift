@@ -30,6 +30,8 @@ public struct ShareAppMessageContent {
     
     var base64: Base64Object { get }
     
+    var fileSystemManager: FileSystemManagerObject { get }
+    
     init()
     
     func evalWebView(_ script: String, _ webViewId: Int) -> Any?
@@ -44,6 +46,7 @@ public struct ShareAppMessageContent {
         didSet {
             system.appId = appId
             storage.appId = appId
+            fileSystemManager.appId = appId
         }
     }
     
@@ -51,6 +54,7 @@ public struct ShareAppMessageContent {
         didSet {
             system.envVersion = envVersion
             storage.envVersion = envVersion
+            fileSystemManager.envVersion = envVersion
         }
     }
     
@@ -63,6 +67,8 @@ public struct ShareAppMessageContent {
     public var storage = StorageSyncObject()
     
     public var base64 = Base64Object()
+    
+    public var fileSystemManager = FileSystemManagerObject()
     
     override public required init() {
         super.init()

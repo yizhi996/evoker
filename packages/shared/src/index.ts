@@ -7,7 +7,7 @@ export const isNumber = (val: unknown): val is number => typeof val === "number"
 
 export const isBoolean = (val: unknown): val is number => typeof val === "boolean"
 
-export const isArrayBuffer = (val: unknown) =>
+export const isArrayBuffer = (val: unknown): val is ArrayBuffer =>
   Object.prototype.toString.call(val) === "[object ArrayBuffer]"
 
 export const clamp = (value: number, min: number, max: number) =>

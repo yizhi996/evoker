@@ -5,11 +5,13 @@ import {
   AsyncReturn,
   SuccessResult,
   wrapperAsyncAPI,
-  invokeFailure
+  invokeFailure,
+  invokeSuccess
 } from "../async"
-import { isString } from "@vue/shared"
+import { isArray, isString } from "@vue/shared"
 import { ErrorCodes, errorMessage } from "../errors"
-import { EKFILE_SCHEME, EKFILE_TMP, EKFILE_STORE } from "./const"
+import { EKFILE_SCHEME, EKFILE_TMP, EKFILE_STORE, USER_DATA_PATH } from "./const"
+import { isArrayBuffer } from "@evoker/shared"
 
 const enum Events {
   SAVE_FILE = "saveFile",
@@ -205,4 +207,333 @@ export function getFileInfo<T extends GetFileInfoOptions = GetFileInfoOptions>(
     options,
     { digestAlgorithm: "md5" }
   )
+}
+
+let globalFileSystemManager: FileSystemManager | null = null
+
+export function getFileSystemManager() {
+  if (!globalFileSystemManager) {
+    globalFileSystemManager = new FileSystemManager()
+  }
+  return globalFileSystemManager
+}
+
+interface AccessOptions {
+  path: string
+  success?: AccessSuccessCallback
+  fail?: AccessFailCallback
+  complete?: AccessCompleteCallback
+}
+
+type AccessSuccessCallback = (res: GeneralCallbackResult) => void
+
+type AccessFailCallback = (res: GeneralCallbackResult) => void
+
+type AccessCompleteCallback = (res: GeneralCallbackResult) => void
+
+interface MkdirOptions {
+  dirPath: string
+  recursive?: boolean
+  success?: MkdirSuccessCallback
+  fail?: MkdirFailCallback
+  complete?: MkdirCompleteCallback
+}
+
+type MkdirSuccessCallback = (res: GeneralCallbackResult) => void
+
+type MkdirFailCallback = (res: GeneralCallbackResult) => void
+
+type MkdirCompleteCallback = (res: GeneralCallbackResult) => void
+
+interface RmdirOptions {
+  dirPath: string
+  recursive?: boolean
+  success?: RmdirSuccessCallback
+  fail?: RmdirFailCallback
+  complete?: RmdirCompleteCallback
+}
+
+type RmdirSuccessCallback = (res: GeneralCallbackResult) => void
+
+type RmdirFailCallback = (res: GeneralCallbackResult) => void
+
+type RmdirCompleteCallback = (res: GeneralCallbackResult) => void
+
+interface ReaddirOptions {
+  dirPath: string
+  success?: ReaddirSuccessCallback
+  fail?: ReaddirFailCallback
+  complete?: ReaddirCompleteCallback
+}
+
+interface ReaddirSuccessCallbackResult {
+  files: string[]
+}
+
+type ReaddirSuccessCallback = (res: ReaddirSuccessCallbackResult) => void
+
+type ReaddirFailCallback = (res: GeneralCallbackResult) => void
+
+type ReaddirCompleteCallback = (res: GeneralCallbackResult) => void
+
+type Encoding =
+  | "ascii"
+  | "base64"
+  | "hex"
+  | "ucs2"
+  | "ucs-2"
+  | "utf16le"
+  | "utf-16le"
+  | "utf-8"
+  | "utf8"
+  | "latin1"
+
+interface ReadFileOptions {
+  filePath: string
+  encoding?: Encoding
+  position?: number
+  length?: number
+  success?: ReadFileSuccessCallback
+  fail?: ReadFileFailCallback
+  complete?: ReadFileCompleteCallback
+}
+
+interface ReadFileSuccessCallbackResult {
+  data: string | ArrayBuffer
+}
+
+type ReadFileSuccessCallback = (res: ReadFileSuccessCallbackResult) => void
+
+type ReadFileFailCallback = (res: GeneralCallbackResult) => void
+
+type ReadFileCompleteCallback = (res: GeneralCallbackResult) => void
+
+interface WriteFileOptions {
+  filePath: string
+  data: string | ArrayBuffer
+  encoding?: Encoding
+  success?: WriteFileSuccessCallback
+  fail?: WriteFileFailCallback
+  complete?: WriteFileCompleteCallback
+}
+
+type WriteFileSuccessCallback = (res: GeneralCallbackResult) => void
+
+type WriteFileFailCallback = (res: GeneralCallbackResult) => void
+
+type WriteFileCompleteCallback = (res: GeneralCallbackResult) => void
+
+class FileSystemManager {
+  access(options: AccessOptions) {
+    const event = "access"
+    try {
+      this.accessSync(options.path)
+      invokeSuccess(event, options, {})
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  accessSync(path: String) {
+    const event = "accessSync"
+    if (!path || !isString(path)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "path")}`)
+    }
+
+    if (!path.startsWith(EKFILE_SCHEME)) {
+      throw new Error(`${event}:fail ${path} scheme is not ${EKFILE_SCHEME}`)
+    }
+
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.access(path)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+  }
+
+  mkdir(options: MkdirOptions) {
+    const event = "mkdir"
+    try {
+      this.mkdirSync(options.dirPath, options.recursive)
+      invokeSuccess(event, options, {})
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  mkdirSync(dirPath: string, recursive: boolean = false) {
+    const event = "mkdirSync"
+
+    if (!dirPath || !isString(dirPath)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "dirPath")}`)
+    }
+
+    if (!dirPath.startsWith(USER_DATA_PATH)) {
+      throw new Error(`${event}:fail ${dirPath} is not ${USER_DATA_PATH}`)
+    }
+
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.mkdir(dirPath, recursive)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+  }
+
+  rmdir(options: RmdirOptions) {
+    const event = "rmdir"
+    try {
+      this.rmdirSync(options.dirPath, options.recursive)
+      invokeSuccess(event, options, {})
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  rmdirSync(dirPath: string, recursive: boolean = false) {
+    const event = "rmdirSync"
+
+    if (!dirPath || !isString(dirPath)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "dirPath")}`)
+    }
+
+    if (!dirPath.startsWith(USER_DATA_PATH)) {
+      throw new Error(`${event}:fail ${dirPath} is not ${USER_DATA_PATH}`)
+    }
+
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.rmdir(dirPath, recursive)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+  }
+
+  readdir(options: ReaddirOptions) {
+    const event = "readdir"
+    try {
+      const files = this.readdirSync(options.dirPath)
+      invokeSuccess(event, options, { files })
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  readdirSync(dirPath: string) {
+    const event = "readdirSync"
+
+    if (!dirPath || !isString(dirPath)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "dirPath")}`)
+    }
+
+    if (!dirPath.startsWith(USER_DATA_PATH)) {
+      throw new Error(`${event}:fail ${dirPath} is not ${USER_DATA_PATH}`)
+    }
+
+    const { files, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.readdir(dirPath)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+    return files
+  }
+
+  readFile(options: ReadFileOptions) {
+    const event = "readFile"
+    try {
+      const data = this.readFileSync(
+        options.filePath,
+        options.encoding,
+        options.position,
+        options.length
+      )
+      invokeSuccess(event, options, { data })
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  readFileSync(filePath: string, encoding?: Encoding, position?: number, length?: number) {
+    const event = "readFileSync"
+
+    if (!filePath || !isString(filePath)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "filePath")}`)
+    }
+
+    if (!filePath.startsWith(USER_DATA_PATH)) {
+      throw new Error(`${event}:fail ${filePath} is not ${USER_DATA_PATH}`)
+    }
+
+    let noHyphenEncoding = encoding && encoding.replaceAll("-", "")
+    if (
+      noHyphenEncoding &&
+      !["ascii", "base64", "hex", "utf16le", "utf8", "latin1", "ucs2"].includes(noHyphenEncoding)
+    ) {
+      throw new Error(`${event}:fail unknown encoding: ${encoding}`)
+    }
+
+    const { data, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.readFile({
+      filePath,
+      encoding: noHyphenEncoding,
+      position,
+      length
+    })
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+    if (isArray(data)) {
+      return Uint8Array.from(data as number[]).buffer
+    }
+    return data
+  }
+
+  writeFile(options: WriteFileOptions) {
+    const event = "writeFile"
+    try {
+      this.writeFileSync(options.filePath, options.data, options.encoding)
+      invokeSuccess(event, options, {})
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  writeFileSync(filePath: string, data: string | ArrayBuffer, encoding: Encoding = "utf8") {
+    const event = "writeFileSync"
+
+    if (!filePath || !isString(filePath)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "filePath")}`)
+    }
+
+    if (!filePath.startsWith(USER_DATA_PATH)) {
+      throw new Error(`${event}:fail ${filePath} is not ${USER_DATA_PATH}`)
+    }
+
+    let noHyphenEncoding = encoding && encoding.replaceAll("-", "")
+    if (
+      noHyphenEncoding &&
+      !["ascii", "base64", "hex", "utf16le", "utf8", "latin1", "ucs2"].includes(noHyphenEncoding)
+    ) {
+      throw new Error(`${event}:fail unknown encoding: ${encoding}`)
+    }
+
+    let cover = data
+    if (isArrayBuffer(data)) {
+      cover = Array.from(new Uint8Array(data)) as any
+    }
+
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.writeFile({
+      filePath,
+      data: cover,
+      encoding: noHyphenEncoding
+    })
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+  }
 }

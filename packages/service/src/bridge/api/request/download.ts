@@ -4,7 +4,7 @@ import {
   GeneralCallbackResult,
   invokeFailure,
   invokeSuccess,
-  env
+  USER_DATA_PATH
 } from "@evoker/bridge"
 import { isString } from "@vue/shared"
 import { Events, MAX_TIMEOUT, headerValueToString } from "./util"
@@ -107,11 +107,11 @@ export function downloadFile<T extends DownloadFileOptions = DownloadFileOptions
   }
 
   if (filePath) {
-    if (!isString(filePath) || !filePath.startsWith(env.USER_DATA_PATH + "/")) {
+    if (!isString(filePath) || !filePath.startsWith(USER_DATA_PATH + "/")) {
       invokeFailure(event, options, "download filePath invalid")
       return
     }
-    filePath = filePath.substring(env.USER_DATA_PATH.length + 1)
+    filePath = filePath.substring(USER_DATA_PATH.length + 1)
   }
 
   header = headerValueToString(header)

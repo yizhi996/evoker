@@ -133,7 +133,8 @@ import {
   removeSavedFile,
   getSavedFileList,
   getSavedFileInfo,
-  getFileInfo
+  getFileInfo,
+  getFileSystemManager
 } from "@evoker/bridge"
 import "./fromWebView"
 
@@ -270,5 +271,6 @@ export default {
   removeSavedFile,
   getSavedFileList,
   getSavedFileInfo,
-  getFileInfo
+  getFileInfo,
+  getFileSystemManager
 }
