@@ -24,6 +24,8 @@ interface FileSystemManager {
   readFile(options: any): FileSystemManagerGeneralResult & { data: string | ArrayBuffer }
 
   writeFile(options: any): FileSystemManagerGeneralResult
+
+  rename(oldPath: string, newPath: string): FileSystemManagerGeneralResult
 }
 
 export interface AppServiceNativeSDK {

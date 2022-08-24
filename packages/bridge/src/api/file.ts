@@ -323,6 +323,20 @@ type WriteFileFailCallback = (res: GeneralCallbackResult) => void
 
 type WriteFileCompleteCallback = (res: GeneralCallbackResult) => void
 
+interface RenameOptions {
+  oldPath: string
+  newPath: string
+  success?: RenameSuccessCallback
+  fail?: RenameFailCallback
+  complete?: RenameCompleteCallback
+}
+
+type RenameSuccessCallback = (res: GeneralCallbackResult) => void
+
+type RenameFailCallback = (res: GeneralCallbackResult) => void
+
+type RenameCompleteCallback = (res: GeneralCallbackResult) => void
+
 class FileSystemManager {
   access(options: AccessOptions) {
     const event = "access"
@@ -336,15 +350,10 @@ class FileSystemManager {
     }
   }
 
-  accessSync(path: String) {
+  accessSync(path: string) {
     const event = "accessSync"
-    if (!path || !isString(path)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "path")}`)
-    }
 
-    if (!path.startsWith(EKFILE_SCHEME)) {
-      throw new Error(`${event}:fail ${path} scheme is not ${EKFILE_SCHEME}`)
-    }
+    validFilePath(event, path, "path", EKFILE_SCHEME)
 
     const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.access(path)
     if (errMsg) {
@@ -367,13 +376,7 @@ class FileSystemManager {
   mkdirSync(dirPath: string, recursive: boolean = false) {
     const event = "mkdirSync"
 
-    if (!dirPath || !isString(dirPath)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "dirPath")}`)
-    }
-
-    if (!dirPath.startsWith(USER_DATA_PATH)) {
-      throw new Error(`${event}:fail ${dirPath} is not ${USER_DATA_PATH}`)
-    }
+    validFilePath(event, dirPath, "dirPath", USER_DATA_PATH)
 
     const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.mkdir(dirPath, recursive)
     if (errMsg) {
@@ -396,13 +399,7 @@ class FileSystemManager {
   rmdirSync(dirPath: string, recursive: boolean = false) {
     const event = "rmdirSync"
 
-    if (!dirPath || !isString(dirPath)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "dirPath")}`)
-    }
-
-    if (!dirPath.startsWith(USER_DATA_PATH)) {
-      throw new Error(`${event}:fail ${dirPath} is not ${USER_DATA_PATH}`)
-    }
+    validFilePath(event, dirPath, "dirPath", USER_DATA_PATH)
 
     const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.rmdir(dirPath, recursive)
     if (errMsg) {
@@ -425,13 +422,7 @@ class FileSystemManager {
   readdirSync(dirPath: string) {
     const event = "readdirSync"
 
-    if (!dirPath || !isString(dirPath)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "dirPath")}`)
-    }
-
-    if (!dirPath.startsWith(USER_DATA_PATH)) {
-      throw new Error(`${event}:fail ${dirPath} is not ${USER_DATA_PATH}`)
-    }
+    validFilePath(event, dirPath, "dirPath", USER_DATA_PATH)
 
     const { files, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.readdir(dirPath)
     if (errMsg) {
@@ -460,13 +451,7 @@ class FileSystemManager {
   readFileSync(filePath: string, encoding?: Encoding, position?: number, length?: number) {
     const event = "readFileSync"
 
-    if (!filePath || !isString(filePath)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "filePath")}`)
-    }
-
-    if (!filePath.startsWith(USER_DATA_PATH)) {
-      throw new Error(`${event}:fail ${filePath} is not ${USER_DATA_PATH}`)
-    }
+    validFilePath(event, filePath, "filePath", USER_DATA_PATH)
 
     let noHyphenEncoding = encoding && encoding.replaceAll("-", "")
     if (
@@ -506,13 +491,7 @@ class FileSystemManager {
   writeFileSync(filePath: string, data: string | ArrayBuffer, encoding: Encoding = "utf8") {
     const event = "writeFileSync"
 
-    if (!filePath || !isString(filePath)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "filePath")}`)
-    }
-
-    if (!filePath.startsWith(USER_DATA_PATH)) {
-      throw new Error(`${event}:fail ${filePath} is not ${USER_DATA_PATH}`)
-    }
+    validFilePath(event, filePath, "filePath", USER_DATA_PATH)
 
     let noHyphenEncoding = encoding && encoding.replaceAll("-", "")
     if (
@@ -535,5 +514,40 @@ class FileSystemManager {
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
+  }
+
+  rename(options: RenameOptions) {
+    const event = "rename"
+    try {
+      this.renameSync(options.oldPath, options.newPath)
+      invokeSuccess(event, options, {})
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  renameSync(oldPath: string, newPath: string) {
+    const event = "renameSync"
+
+    validFilePath(event, oldPath, "oldPath", USER_DATA_PATH)
+
+    validFilePath(event, newPath, "newPath", USER_DATA_PATH)
+
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.rename(oldPath, newPath)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+  }
+}
+
+function validFilePath(event: string, path: string, name: string, startsWith: string) {
+  if (!path || !isString(path)) {
+    throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, name)}`)
+  }
+
+  if (!path.startsWith(startsWith)) {
+    throw new Error(`${event}:fail ${path} is not startsWith ${startsWith}`)
   }
 }
