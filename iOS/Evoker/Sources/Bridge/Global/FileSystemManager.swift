@@ -30,6 +30,8 @@ import JavaScriptCore
     func copy(_ srcPath: String, _ destPath: String) -> [String : Any]
     
     func appendFile(_ options: [String : Any]) -> [String : Any]
+    
+    func unlink(_ filePath: String) -> [String : Any]
 }
 
 @objc public class FileSystemManagerObject: NSObject, FileSystemManagerObjectExport {
@@ -333,6 +335,27 @@ import JavaScriptCore
             } else {
                 return [ERR_MSG: "encode failed"]
             }
+        } else {
+            return [ERR_MSG: "invalid path"]
+        }
+    }
+    
+    public func unlink(_ filePath: String) -> [String : Any] {
+        if let fileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: filePath) {
+            if !FileManager.default.fileExists(atPath: fileURL.path) {
+                return [ERR_MSG: "no such file or directory \(filePath)"]
+            }
+            
+            do {
+                if let isDirectory = try fileURL.resourceValues(forKeys: [.isDirectoryKey]).isDirectory, isDirectory {
+                    return [ERR_MSG: "\(filePath) is a directory"]
+                }
+                try FileManager.default.removeItem(at: fileURL)
+                return [ERR_MSG: ""]
+            } catch {
+                return [ERR_MSG: error.localizedDescription]
+            }
+            
         } else {
             return [ERR_MSG: "invalid path"]
         }

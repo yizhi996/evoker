@@ -28,6 +28,7 @@ export * from "./api/location"
 export * from "./api/auth"
 export * from "./api/open"
 export * from "./api/file"
+export * from "./api/fs"
 
 export type { InvokeCallback, InvokeCallbackResult, SubscribeCallback } from "./bridge"
 

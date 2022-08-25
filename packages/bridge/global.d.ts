@@ -30,6 +30,8 @@ interface FileSystemManager {
   copy(srcPath: string, destPath: string): FileSystemManagerGeneralResult
 
   appendFile(options: any): FileSystemManagerGeneralResult
+
+  unlink(filePath: string): FileSystemManagerGeneralResult
 }
 
 export interface AppServiceNativeSDK {
