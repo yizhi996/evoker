@@ -26,6 +26,8 @@ import JavaScriptCore
     func writeFile(_ options: [String : Any]) -> [String : Any]
     
     func rename(_ oldPath: String, _ newPath: String) -> [String : Any]
+    
+    func copy(_ srcPath: String, _ destPath: String) -> [String : Any]
 }
 
 @objc public class FileSystemManagerObject: NSObject, FileSystemManagerObjectExport {
@@ -242,6 +244,25 @@ import JavaScriptCore
             
             do {
                 try FileManager.default.moveItem(at: oldURL, to: newURL)
+                return [ERR_MSG: ""]
+            } catch {
+                return [ERR_MSG: error.localizedDescription]
+            }
+            
+        } else {
+            return [ERR_MSG: "invalid path"]
+        }
+    }
+    
+    public func copy(_ srcPath: String, _ destPath: String) -> [String : Any] {
+        if let srcURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: srcPath),
+           let destURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: destPath) {
+            if !FileManager.default.fileExists(atPath: srcURL.path) {
+                return [ERR_MSG: "no such file or directory \(srcPath)"]
+            }
+            
+            do {
+                try FileManager.default.copyItem(at: srcURL, to: destURL)
                 return [ERR_MSG: ""]
             } catch {
                 return [ERR_MSG: error.localizedDescription]

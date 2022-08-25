@@ -337,6 +337,20 @@ type RenameFailCallback = (res: GeneralCallbackResult) => void
 
 type RenameCompleteCallback = (res: GeneralCallbackResult) => void
 
+interface CopyOptions {
+  srcPath: string
+  destPath: string
+  success?: CopySuccessCallback
+  fail?: CopyFailCallback
+  complete?: CopyCompleteCallback
+}
+
+type CopySuccessCallback = (res: GeneralCallbackResult) => void
+
+type CopyFailCallback = (res: GeneralCallbackResult) => void
+
+type CopyCompleteCallback = (res: GeneralCallbackResult) => void
+
 class FileSystemManager {
   access(options: AccessOptions) {
     const event = "access"
@@ -536,6 +550,31 @@ class FileSystemManager {
     validFilePath(event, newPath, "newPath", USER_DATA_PATH)
 
     const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.rename(oldPath, newPath)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+  }
+
+  copy(options: CopyOptions) {
+    const event = "copy"
+    try {
+      this.copySync(options.srcPath, options.destPath)
+      invokeSuccess(event, options, {})
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  copySync(srcPath: string, destPath: string) {
+    const event = "copySync"
+
+    validFilePath(event, srcPath, "srcPath", USER_DATA_PATH)
+
+    validFilePath(event, destPath, "destPath", USER_DATA_PATH)
+
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.copy(srcPath, destPath)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }

@@ -26,6 +26,8 @@ interface FileSystemManager {
   writeFile(options: any): FileSystemManagerGeneralResult
 
   rename(oldPath: string, newPath: string): FileSystemManagerGeneralResult
+
+  copy(srcPath: string, destPath: string): FileSystemManagerGeneralResult
 }
 
 export interface AppServiceNativeSDK {
