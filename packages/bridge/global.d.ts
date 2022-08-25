@@ -28,6 +28,8 @@ interface FileSystemManager {
   rename(oldPath: string, newPath: string): FileSystemManagerGeneralResult
 
   copy(srcPath: string, destPath: string): FileSystemManagerGeneralResult
+
+  appendFile(options: any): FileSystemManagerGeneralResult
 }
 
 export interface AppServiceNativeSDK {

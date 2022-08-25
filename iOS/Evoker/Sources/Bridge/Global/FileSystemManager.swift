@@ -28,6 +28,8 @@ import JavaScriptCore
     func rename(_ oldPath: String, _ newPath: String) -> [String : Any]
     
     func copy(_ srcPath: String, _ destPath: String) -> [String : Any]
+    
+    func appendFile(_ options: [String : Any]) -> [String : Any]
 }
 
 @objc public class FileSystemManagerObject: NSObject, FileSystemManagerObjectExport {
@@ -268,6 +270,69 @@ import JavaScriptCore
                 return [ERR_MSG: error.localizedDescription]
             }
             
+        } else {
+            return [ERR_MSG: "invalid path"]
+        }
+    }
+    
+    public func appendFile(_ options: [String : Any]) -> [String : Any] {
+        struct Params: Decodable {
+            let filePath: String
+            let data: Any
+            let encoding: Encoding
+            
+            enum CodingKeys: String, CodingKey {
+                case filePath, data, encoding
+            }
+            
+            init(from decoder: Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                filePath = try container.decode(String.self, forKey: .filePath)
+                encoding = try container.decode(Encoding.self, forKey: .encoding)
+                
+                if let data = try? container.decode(String.self, forKey: .data) {
+                    self.data = data
+                } else if let data = try? container.decode([UInt8].self, forKey: .data) {
+                    self.data = data
+                } else {
+                    throw EKError.custom("data must be string or ArrayBuffer")
+                }
+            }
+        }
+        
+        guard let params: Params = options.toModel() else { return [ERR_MSG: "invalid params"] }
+        
+        if let filePath = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: params.filePath) {
+            if !FileManager.default.fileExists(atPath: filePath.path) {
+                return [ERR_MSG: "no such file or directory \(params.filePath)"]
+            }
+            
+            var data: Data?
+            if let string = params.data as? String {
+                if let encoding = params.encoding.toFoundation() {
+                    data = string.data(using: encoding)
+                } else if params.encoding == .base64 {
+                    data = Data(base64Encoded: string)
+                } else if params.encoding == .hex {
+                    data = Data(hex: string)
+                }
+            } else if let bytesData = params.data as? Array<UInt8> {
+                data = Data(bytesData)
+            }
+            
+            if let data = data {
+                do {
+                    let handler = try FileHandle(forWritingTo: filePath)
+                    handler.seekToEndOfFile()
+                    handler.write(data)
+                    handler.closeFile()
+                    return [ERR_MSG: ""]
+                } catch {
+                    return [ERR_MSG: "\(error.localizedDescription)"]
+                }
+            } else {
+                return [ERR_MSG: "encode failed"]
+            }
         } else {
             return [ERR_MSG: "invalid path"]
         }

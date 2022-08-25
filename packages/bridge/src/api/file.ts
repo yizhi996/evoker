@@ -351,6 +351,21 @@ type CopyFailCallback = (res: GeneralCallbackResult) => void
 
 type CopyCompleteCallback = (res: GeneralCallbackResult) => void
 
+interface AppendFileOptions {
+  filePath: string
+  data: string | ArrayBuffer
+  encoding: Encoding
+  success?: AppendFileSuccessCallback
+  fail?: AppendFileFailCallback
+  complete?: AppendFileCompleteCallback
+}
+
+type AppendFileSuccessCallback = (res: GeneralCallbackResult) => void
+
+type AppendFileFailCallback = (res: GeneralCallbackResult) => void
+
+type AppendFileCompleteCallback = (res: GeneralCallbackResult) => void
+
 class FileSystemManager {
   access(options: AccessOptions) {
     const event = "access"
@@ -515,14 +530,14 @@ class FileSystemManager {
       throw new Error(`${event}:fail unknown encoding: ${encoding}`)
     }
 
-    let cover = data
+    let conver = data
     if (isArrayBuffer(data)) {
-      cover = Array.from(new Uint8Array(data)) as any
+      conver = Array.from(new Uint8Array(data)) as any
     }
 
     const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.writeFile({
       filePath,
-      data: cover,
+      data: conver,
       encoding: noHyphenEncoding
     })
     if (errMsg) {
@@ -575,6 +590,46 @@ class FileSystemManager {
     validFilePath(event, destPath, "destPath", USER_DATA_PATH)
 
     const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.copy(srcPath, destPath)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+  }
+
+  appendFile(options: AppendFileOptions) {
+    const event = "appendFile"
+    try {
+      this.appendFileSync(options.filePath, options.data, options.encoding)
+      invokeSuccess(event, options, {})
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  appendFileSync(filePath: string, data: string | ArrayBuffer, encoding: Encoding = "utf8") {
+    const event = "appendFileSync"
+
+    validFilePath(event, filePath, "filePath", USER_DATA_PATH)
+
+    let noHyphenEncoding = encoding && encoding.replaceAll("-", "")
+    if (
+      noHyphenEncoding &&
+      !["ascii", "base64", "hex", "utf16le", "utf8", "latin1", "ucs2"].includes(noHyphenEncoding)
+    ) {
+      throw new Error(`${event}:fail unknown encoding: ${encoding}`)
+    }
+
+    let conver = data
+    if (isArrayBuffer(data)) {
+      conver = Array.from(new Uint8Array(data)) as any
+    }
+
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.appendFile({
+      filePath,
+      data: conver,
+      encoding: noHyphenEncoding
+    })
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
