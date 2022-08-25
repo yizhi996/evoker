@@ -12,6 +12,13 @@ interface FileSystemManagerGeneralResult {
   errMsg: string
 }
 
+interface Stats {
+  mode: number
+  size: number
+  lastAccessedTime: number
+  lastModifiedTime: number
+}
+
 interface FileSystemManager {
   access(path: string): FileSystemManagerGeneralResult
 
@@ -32,6 +39,14 @@ interface FileSystemManager {
   appendFile(options: any): FileSystemManagerGeneralResult
 
   unlink(filePath: string): FileSystemManagerGeneralResult
+
+  open(filePath: string, flag: string): FileSystemManagerGeneralResult & { fd: string }
+
+  close(fd: string): FileSystemManagerGeneralResult
+
+  fstat(fd: string): FileSystemManagerGeneralResult & { stats: Stats }
+
+  ftruncate(fd: string, length: number): FileSystemManagerGeneralResult
 }
 
 export interface AppServiceNativeSDK {

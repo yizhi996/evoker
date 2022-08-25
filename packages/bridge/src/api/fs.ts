@@ -4,6 +4,10 @@ import { ErrorCodes, errorMessage } from "../errors"
 import { EKFILE_SCHEME, USER_DATA_PATH } from "./const"
 import { isArrayBuffer } from "@evoker/shared"
 
+const S_IFREG = 32768
+
+const S_IFDIR = 16384
+
 let globalFileSystemManager: FileSystemManager | null = null
 
 export function getFileSystemManager() {
@@ -173,6 +177,79 @@ type UnlinkSuccessCallback = (res: GeneralCallbackResult) => void
 type UnlinkFailCallback = (res: GeneralCallbackResult) => void
 
 type UnlinkCompleteCallback = (res: GeneralCallbackResult) => void
+
+type Flag = "a" | "ax" | "a+" | "ax+" | "as" | "as+" | "r" | "r+" | "w" | "wx" | "w+" | "wx+"
+
+interface OpenOptions {
+  filePath: string
+  flag: Flag
+  success?: OpenSuccessCallback
+  fail?: OpenFailCallback
+  complete?: OpenCompleteCallback
+}
+
+interface OpenSuccessCallbackResult {
+  fd: string
+}
+
+type OpenSuccessCallback = (res: OpenSuccessCallbackResult) => void
+
+type OpenFailCallback = (res: GeneralCallbackResult) => void
+
+type OpenCompleteCallback = (res: GeneralCallbackResult) => void
+
+interface CloseOptions {
+  fd: string
+  success?: CloseSuccessCallback
+  fail?: CloseFailCallback
+  complete?: CloseCompleteCallback
+}
+
+type CloseSuccessCallback = (res: GeneralCallbackResult) => void
+
+type CloseFailCallback = (res: GeneralCallbackResult) => void
+
+type CloseCompleteCallback = (res: GeneralCallbackResult) => void
+
+interface FstatOptions {
+  fd: string
+  success?: FstatSuccessCallback
+  fail?: FstatFailCallback
+  complete?: FstatCompleteCallback
+}
+
+interface Stats {
+  mode: number
+  size: number
+  lastAccessedTime: number
+  lastModifiedTime: number
+  isFile: () => boolean
+  isDirectory: () => boolean
+}
+
+interface FstatSuccessCallbackResult {
+  stats: Stats
+}
+
+type FstatSuccessCallback = (res: FstatSuccessCallbackResult) => void
+
+type FstatFailCallback = (res: GeneralCallbackResult) => void
+
+type FstatCompleteCallback = (res: GeneralCallbackResult) => void
+
+interface FtruncateOptions {
+  fd: string
+  length: number
+  success?: FtruncateSuccessCallback
+  fail?: FtruncateFailCallback
+  complete?: FtruncateCompleteCallback
+}
+
+type FtruncateSuccessCallback = (res: GeneralCallbackResult) => void
+
+type FtruncateFailCallback = (res: GeneralCallbackResult) => void
+
+type FtruncateCompleteCallback = (res: GeneralCallbackResult) => void
 
 class FileSystemManager {
   access(options: AccessOptions) {
@@ -461,6 +538,126 @@ class FileSystemManager {
     validFilePath(event, filePath, "filePath", USER_DATA_PATH)
 
     const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.unlink(filePath)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+  }
+
+  open(options: OpenOptions) {
+    const event = "open"
+    try {
+      const fd = this.openSync(options)
+      invokeSuccess(event, options, { fd })
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  openSync(options: Omit<OpenOptions, "success" | "fail" | "complete">) {
+    const event = "openSync"
+
+    const { filePath, flag = "r" } = options
+
+    validFilePath(event, filePath, "filePath", USER_DATA_PATH)
+
+    if (!["a", "ax", "a+", "ax+", "as", "as+", "r", "r+", "w", "wx", "w+", "wx+"].includes(flag)) {
+      throw new Error(`${event}:fail invalid flag: ${flag}`)
+    }
+
+    const { fd, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.open(filePath, flag)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+    return fd
+  }
+
+  close(options: CloseOptions) {
+    const event = "close"
+    try {
+      this.closeSync(options)
+      invokeSuccess(event, options, {})
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  closeSync(options: Omit<CloseOptions, "success" | "fail" | "complete">) {
+    const event = "closeSync"
+
+    const { fd } = options
+
+    if (!fd || !isString(fd)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
+    }
+
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.close(fd)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+  }
+
+  fstat(options: FstatOptions) {
+    const event = "fstat"
+    try {
+      const stats = this.fstatSync(options)
+      invokeSuccess(event, options, { stats })
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  fstatSync(options: Omit<FstatOptions, "success" | "fail" | "complete">) {
+    const event = "fstatSync"
+
+    const { fd } = options
+
+    if (!fd || !isString(fd)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
+    }
+
+    const { stats, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.fstat(fd)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+
+    ;(stats as Stats).isFile = () => {
+      return (stats.mode & S_IFREG) === S_IFREG
+    }
+    ;(stats as Stats).isDirectory = () => {
+      return (stats.mode & S_IFDIR) === S_IFDIR
+    }
+
+    return stats
+  }
+
+  ftruncate(options: FtruncateOptions) {
+    const event = "fstat"
+    try {
+      this.ftruncateSync(options)
+      invokeSuccess(event, options, {})
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  ftruncateSync(options: Omit<FtruncateOptions, "success" | "fail" | "complete">) {
+    const event = "ftruncateSync"
+
+    const { fd, length = 0 } = options
+
+    if (!fd || !isString(fd)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
+    }
+
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.ftruncate(fd, length)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
