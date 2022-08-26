@@ -9,7 +9,7 @@
 import Foundation
 import JavaScriptCore
 
-@objc public protocol FileSystemManagerObjectExport: JSExport {
+@objc protocol FileSystemManagerObjectExport: JSExport {
     
     init()
     
@@ -40,9 +40,11 @@ import JavaScriptCore
     func fstat(_ fd: String) -> [String: Any]
     
     func ftruncate(_ fd: String, _ length: Int64) -> [String: Any]
+    
+    func read(_ fd: String, _ arrayBuffer: JSValue, _ offset: Int64, _ length: Int, _ position: Int64) -> [String : Any]
 }
 
-@objc public class FileSystemManagerObject: NSObject, FileSystemManagerObjectExport {
+@objc class FileSystemManagerObject: NSObject, FileSystemManagerObjectExport {
     
     let ERR_MSG = "errMsg"
     
@@ -52,13 +54,13 @@ import JavaScriptCore
     
     lazy var fdMap: [String: Int32] = [:]
     
-    override public required init() {
+    override required init() {
         super.init()
         
         try? FilePath.createDirectory(at: FilePath.usr(appId: appId))
     }
     
-    public func access(_ path: String) -> [String: Any] {
+    func access(_ path: String) -> [String: Any] {
         guard let filePath = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: path) else {
             return [ERR_MSG: "invalid path"]
         }
@@ -69,7 +71,7 @@ import JavaScriptCore
         return [ERR_MSG: "no such file or directory, access \(path)"]
     }
     
-    public func mkdir(_ dirPath: String, _ recursive: Bool) -> [String : Any] {
+    func mkdir(_ dirPath: String, _ recursive: Bool) -> [String : Any] {
         guard let dirURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: dirPath) else {
             return [ERR_MSG: "invalid dirPath"]
         }
@@ -81,7 +83,7 @@ import JavaScriptCore
         }
     }
     
-    public func rmdir(_ dirPath: String, _ recursive: Bool) -> [String : Any] {
+    func rmdir(_ dirPath: String, _ recursive: Bool) -> [String : Any] {
         guard let dirURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: dirPath) else {
             return [ERR_MSG: "invalid dirPath"]
         }
@@ -103,7 +105,7 @@ import JavaScriptCore
         }
     }
     
-    public func readdir(_ dirPath: String) -> [String : Any] {
+    func readdir(_ dirPath: String) -> [String : Any] {
         guard let dirURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: dirPath) else {
             return [ERR_MSG: "invalid dirPath"]
         }
@@ -144,7 +146,7 @@ import JavaScriptCore
         }
     }
     
-    public func readFile(_ options: [String : Any]) -> [String : Any] {
+    func readFile(_ options: [String : Any]) -> [String : Any] {
         struct Params: Decodable {
             let filePath: String
             let encoding: Encoding?
@@ -189,7 +191,7 @@ import JavaScriptCore
         }
     }
     
-    public func writeFile(_ options: [String : Any]) -> [String : Any] {
+    func writeFile(_ options: [String : Any]) -> [String : Any] {
         struct Params: Decodable {
             let filePath: String
             let data: Any
@@ -248,7 +250,7 @@ import JavaScriptCore
         }
     }
     
-    public func rename(_ oldPath: String, _ newPath: String) -> [String : Any] {
+    func rename(_ oldPath: String, _ newPath: String) -> [String : Any] {
         guard let oldURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: oldPath) else {
             return [ERR_MSG: "invalid oldPath"]
         }
@@ -269,7 +271,7 @@ import JavaScriptCore
         }
     }
     
-    public func copy(_ srcPath: String, _ destPath: String) -> [String : Any] {
+    func copy(_ srcPath: String, _ destPath: String) -> [String : Any] {
         guard let srcURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: srcPath) else {
             return [ERR_MSG: "invalid srcPath"]
         }
@@ -290,7 +292,7 @@ import JavaScriptCore
         }
     }
     
-    public func appendFile(_ options: [String : Any]) -> [String : Any] {
+    func appendFile(_ options: [String : Any]) -> [String : Any] {
         struct Params: Decodable {
             let filePath: String
             let data: Any
@@ -353,7 +355,7 @@ import JavaScriptCore
         }
     }
     
-    public func unlink(_ filePath: String) -> [String : Any] {
+    func unlink(_ filePath: String) -> [String : Any] {
         guard let fileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: filePath) else {
             return [ERR_MSG: "invalid filePath"]
         }
@@ -381,7 +383,7 @@ import JavaScriptCore
         return id
     }
     
-    public func open(_ filePath: String, _ flag: String) -> [String: Any] {
+    func open(_ filePath: String, _ flag: String) -> [String: Any] {
         guard let fileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: filePath) else {
             return  [ERR_MSG: "invalid fileURL"]
         }
@@ -393,7 +395,7 @@ import JavaScriptCore
         return [ERR_MSG: "", "fd": fd]
     }
     
-    public func close(_ fd: String) -> [String: Any] {
+    func close(_ fd: String) -> [String: Any] {
         guard let fileNumber = fdMap[fd] else { return [ERR_MSG: "invalid fd: \(fd)"] }
         
         let err = Darwin.close(fileNumber)
@@ -404,7 +406,12 @@ import JavaScriptCore
         return [ERR_MSG: ""]
     }
     
-    public func fstat(_ fd: String) -> [String: Any] {
+    func closeAll() {
+        fdMap.values.forEach { Darwin.close($0) }
+        fdMap = [:]
+    }
+    
+    func fstat(_ fd: String) -> [String: Any] {
         guard let fileNumber = fdMap[fd] else { return [ERR_MSG: "invalid fd: \(fd)"] }
         
         let sb: UnsafeMutablePointer<stat> = UnsafeMutablePointer<stat>.allocate(capacity: 1)
@@ -419,7 +426,7 @@ import JavaScriptCore
                                        "lastModifiedTime": sb.pointee.st_mtimespec.tv_sec]]
     }
     
-    public func ftruncate(_ fd: String, _ length: Int64) -> [String : Any] {
+    func ftruncate(_ fd: String, _ length: Int64) -> [String : Any] {
         guard let fileNumber = fdMap[fd] else { return [ERR_MSG: "invalid fd: \(fd)"] }
         
         let err = Darwin.ftruncate(fileNumber, length)
@@ -430,4 +437,27 @@ import JavaScriptCore
         return [ERR_MSG: ""]
     }
     
+    func read(_ fd: String, _ arrayBuffer: JSValue, _ offset: Int64, _ length: Int, _ position: Int64) -> [String : Any] {
+        guard let fileNumber = fdMap[fd] else { return [ERR_MSG: "invalid fd: \(fd)"] }
+        
+        var bytes = JSObjectGetArrayBufferBytesPtr(arrayBuffer.context.jsGlobalContextRef, arrayBuffer.jsValueRef, nil)!
+        
+        if offset > 0 {
+            bytes = bytes.advanced(by: Int(offset))
+        }
+        
+        if position > 0 {
+            let bytesRead = Darwin.pread(fileNumber, bytes, length, position)
+            if bytesRead == -1 && errno != noErr {
+                return [ERR_MSG: String(cString: strerror(errno))]
+            }
+            return [ERR_MSG: "", "bytesRead": bytesRead]
+        } else {
+            let bytesRead = Darwin.read(fileNumber, bytes, length)
+            if bytesRead == -1 && errno != noErr {
+                return [ERR_MSG: String(cString: strerror(errno))]
+            }
+            return [ERR_MSG: "", "bytesRead": bytesRead]
+        }
+    }
 }

@@ -47,6 +47,14 @@ interface FileSystemManager {
   fstat(fd: string): FileSystemManagerGeneralResult & { stats: Stats }
 
   ftruncate(fd: string, length: number): FileSystemManagerGeneralResult
+
+  read(
+    fd: string,
+    arrayBuffer: ArrayBuffer,
+    offset: number,
+    length: number,
+    position: number
+  ): FileSystemManagerGeneralResult & { bytesRead: number }
 }
 
 export interface AppServiceNativeSDK {

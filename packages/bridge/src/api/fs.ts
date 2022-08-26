@@ -251,6 +251,28 @@ type FtruncateFailCallback = (res: GeneralCallbackResult) => void
 
 type FtruncateCompleteCallback = (res: GeneralCallbackResult) => void
 
+interface ReadOptions {
+  fd: string
+  arrayBuffer: ArrayBuffer
+  offset?: number
+  length?: number
+  position?: number
+  success?: ReadSuccessCallback
+  fail?: ReadFailCallback
+  complete?: ReadCompleteCallback
+}
+
+interface ReadResult {
+  bytesRead: number
+  arrayBuffer: ArrayBuffer
+}
+
+type ReadSuccessCallback = (res: ReadResult) => void
+
+type ReadFailCallback = (res: GeneralCallbackResult) => void
+
+type ReadCompleteCallback = (res: GeneralCallbackResult) => void
+
 class FileSystemManager {
   access(options: AccessOptions) {
     const event = "access"
@@ -660,6 +682,48 @@ class FileSystemManager {
     const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.ftruncate(fd, length)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
+    }
+  }
+
+  read(options: ReadOptions) {
+    const event = "read"
+    try {
+      const res = this.readSync(options)
+      invokeSuccess(event, options, res)
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  readSync(options: Omit<ReadOptions, "success" | "fail" | "complete">) {
+    const event = "readSync"
+
+    const { fd, arrayBuffer, offset = 0, length = 0, position = 0 } = options
+
+    if (!fd || !isString(fd)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
+    }
+
+    if (!isArrayBuffer(arrayBuffer)) {
+      throw new Error(`${event}:fail arrayBuffer must be an ArrayBuffer`)
+    }
+
+    const { bytesRead, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.read(
+      fd,
+      arrayBuffer,
+      offset,
+      length,
+      position
+    )
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+
+    return {
+      bytesRead,
+      arrayBuffer
     }
   }
 }

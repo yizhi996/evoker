@@ -9,28 +9,28 @@
 import Foundation
 import JavaScriptCore
 
-@objc public protocol MessageChannelPortExport: JSExport {
+@objc protocol MessageChannelPortExport: JSExport {
     
     init()
     
     func postMessage(_ message: Any)
 }
 
-@objc public class MessageChannelPort: NSObject, MessageChannelPortExport {
+@objc class MessageChannelPort: NSObject, MessageChannelPortExport {
     
     var recvMessage: (([String: Any]) -> Void)?
     
-    override public required init() {
+    override required init() {
         super.init()
     }
     
-    public func postMessage(_ message: Any) {
+    func postMessage(_ message: Any) {
         guard let dict = message as? [String: Any] else { return }
         recvMessage?(dict)
     }
 }
 
-@objc public protocol MessageChannelExports: JSExport {
+@objc protocol MessageChannelExports: JSExport {
     
     var publishHandler: MessageChannelPort { get }
     
@@ -39,13 +39,13 @@ import JavaScriptCore
     init()
 }
 
-@objc public class MessageChannel: NSObject, MessageChannelExports {
+@objc class MessageChannel: NSObject, MessageChannelExports {
     
-    public var publishHandler: MessageChannelPort = MessageChannelPort()
+    var publishHandler: MessageChannelPort = MessageChannelPort()
     
-    public var invokeHandler: MessageChannelPort = MessageChannelPort()
+    var invokeHandler: MessageChannelPort = MessageChannelPort()
         
-    override public required init() {
+    override required init() {
         super.init()
     }
 }

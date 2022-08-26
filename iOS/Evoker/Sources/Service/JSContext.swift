@@ -60,6 +60,7 @@ public class JSContext {
 
     func exit() {
         nativeSDK.timer.clearAll()
+        nativeSDK.fileSystemManager.closeAll()
         pendingFunctions = []
         workThread.stop()
     }

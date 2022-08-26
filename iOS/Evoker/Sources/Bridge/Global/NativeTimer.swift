@@ -9,7 +9,7 @@
 import Foundation
 import JavaScriptCore
 
-@objc public protocol TimerExport: JSExport {
+@objc protocol TimerExport: JSExport {
     
     init()
 
@@ -22,28 +22,28 @@ import JavaScriptCore
     func clearInterval(_ identifier: Int)
 }
 
-@objc public class NativeTimer: NSObject, TimerExport {
+@objc class NativeTimer: NSObject, TimerExport {
     
     var id = 0
     var timers: [Int: DispatchSourceTimer] = [:]
     
-    override public required init() {
+    override required init() {
         super.init()
     }
     
-    public func setTimeout(_ callback: JSValue, _ ms: Double) -> Int {
+    func setTimeout(_ callback: JSValue, _ ms: Double) -> Int {
         return createTimer(callback: callback, ms: ms , repeats: false)
     }
     
-    public func clearTimeout(_ identifier: Int) {
+    func clearTimeout(_ identifier: Int) {
         clear(identifier)
     }
     
-    public func setInterval(_ callback: JSValue,_ ms: Double) -> Int {
+    func setInterval(_ callback: JSValue,_ ms: Double) -> Int {
         return createTimer(callback: callback, ms: ms, repeats: true)
     }
     
-    public func clearInterval(_ identifier: Int) {
+    func clearInterval(_ identifier: Int) {
         clear(identifier)
     }
     

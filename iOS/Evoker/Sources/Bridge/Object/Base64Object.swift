@@ -9,7 +9,7 @@
 import Foundation
 import JavaScriptCore
 
-@objc public protocol Base64ObjectExport: JSExport {
+@objc protocol Base64ObjectExport: JSExport {
     
     init()
     
@@ -19,18 +19,18 @@ import JavaScriptCore
     
 }
 
-@objc public class Base64Object: NSObject, Base64ObjectExport {
+@objc class Base64Object: NSObject, Base64ObjectExport {
     
-    override public required init() {
+    override required init() {
         super.init()
     }
     
-    public func base64ToArrayBuffer(_ string: String) -> [UInt8] {
+    func base64ToArrayBuffer(_ string: String) -> [UInt8] {
         let data = Data(base64Encoded: string)
         return data?.bytes ?? []
     }
     
-    public func arrayBufferToBase64(_ buffer: [UInt8]) -> String {
+    func arrayBufferToBase64(_ buffer: [UInt8]) -> String {
         return buffer.toBase64()
     }
 }

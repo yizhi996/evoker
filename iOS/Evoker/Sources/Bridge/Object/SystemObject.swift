@@ -10,7 +10,7 @@ import Foundation
 import JavaScriptCore
 import CoreLocation
 
-@objc public protocol SystemObjectExport: JSExport {
+@objc protocol SystemObjectExport: JSExport {
     
     init()
     
@@ -25,17 +25,17 @@ import CoreLocation
     func getAppAuthorizeSetting() -> [String: Any]
 }
 
-@objc public class SystemObject: NSObject, SystemObjectExport {
+@objc class SystemObject: NSObject, SystemObjectExport {
     
     var appId = ""
     
     var envVersion = AppEnvVersion.develop
     
-    override public required init() {
+    override required init() {
         super.init()
     }
     
-    public func getWindowInfo() -> [String: Any] {
+    func getWindowInfo() -> [String: Any] {
         let screenWidth = Constant.screenWidth
         let screenHeight = Constant.screenHeight
         var windowWidth = screenWidth
@@ -68,7 +68,7 @@ import CoreLocation
         ]
     }
     
-    public func getSystemSetting() -> [String: Any] {
+    func getSystemSetting() -> [String: Any] {
         let bluetoothEnabled = PrivacyPermission.bluetooth == .authorized
         return [
             "bluetoothEnabled": bluetoothEnabled,
@@ -78,7 +78,7 @@ import CoreLocation
         ]
     }
     
-    public func getDeviceInfo() -> [String: Any] {
+    func getDeviceInfo() -> [String: Any] {
         return [
             "brand": Constant.brand,
             "model": Constant.modle,
@@ -87,7 +87,7 @@ import CoreLocation
         ]
     }
     
-    public func getAppBaseInfo() -> [String: Any] {
+    func getAppBaseInfo() -> [String: Any] {
         var theme = "light"
         if #available(iOS 12.0, *) {
             if UIScreen.main.traitCollection.userInterfaceStyle == .light {
@@ -106,7 +106,7 @@ import CoreLocation
         ]
     }
     
-    public func getAppAuthorizeSetting() -> [String: Any] {
+    func getAppAuthorizeSetting() -> [String: Any] {
         let notificationAuthorized = PrivacyPermission.notificationSettings
         return [
             "albumAuthorized": PrivacyPermission.album.toString(),
