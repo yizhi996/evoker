@@ -97,8 +97,10 @@ final public class AppService {
         self.config = config
         
         context.name = "\(self.appInfo.appName) - app-service"
-        context.nativeSDK.appId = appId
-        context.nativeSDK.envVersion = launchOptions.envVersion
+        context.fileSystem.appId = appId
+        context.nativeSDK.appService = self
+        context.storageObject.appService = self
+        context.systemObject.appService = self
         
         bridge = JSBridge(appService: self, container: context)
 

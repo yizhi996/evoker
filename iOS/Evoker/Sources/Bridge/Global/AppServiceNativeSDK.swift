@@ -20,68 +20,23 @@ public struct ShareAppMessageContent {
 
 @objc protocol AppServiceNativeSDKExport: JSExport {
     
-    var timer: NativeTimer { get }
-    
-    var messageChannel: MessageChannel { get }
-    
-    var system: SystemObject { get }
-    
-    var storage: StorageSyncObject { get }
-    
-    var base64: Base64Object { get }
-    
-    var fileSystemManager: FileSystemManagerObject { get }
-    
     init()
     
     func evalWebView(_ script: String, _ webViewId: Int) -> Any?
     
     func shareAppMessage(_ title: String, _ path: String, _ imageUrl: String)
-
 }
 
 @objc class AppServiceNativeSDK: NSObject, AppServiceNativeSDKExport {
     
-    var appId = "" {
-        didSet {
-            system.appId = appId
-            storage.appId = appId
-            fileSystemManager.appId = appId
-        }
-    }
-    
-    var envVersion = AppEnvVersion.develop {
-        didSet {
-            system.envVersion = envVersion
-            storage.envVersion = envVersion
-            fileSystemManager.envVersion = envVersion
-        }
-    }
-    
-    weak var context: JavaScriptCore.JSContext? {
-        didSet {
-            base64.context = context
-        }
-    }
-    
-    var timer = NativeTimer()
-    
-    var messageChannel = MessageChannel()
-    
-    var system = SystemObject()
-    
-    var storage = StorageSyncObject()
-    
-    var base64 = Base64Object()
-    
-    var fileSystemManager = FileSystemManagerObject()
+    weak var appService: AppService?
     
     override required init() {
         super.init()
     }
     
     func evalWebView(_ script: String, _ webViewId: Int) -> Any? {
-        guard let appService = Engine.shared.getAppService(appId: appId, envVersion: envVersion) else { return nil }
+        guard let appService = appService else { return nil }
         
         guard let webPage = appService.findWebPage(from: webViewId) else { return nil }
         
@@ -99,7 +54,7 @@ public struct ShareAppMessageContent {
     }
     
     func shareAppMessage(_ title: String, _ path: String, _ imageUrl: String) {
-        guard let appService = Engine.shared.getAppService(appId: appId, envVersion: envVersion) else { return }
+        guard let appService = appService else { return }
         
         let content = ShareAppMessageContent(title: title, path: path, imageUrl: imageUrl)
         Engine.shared.config.hooks.app.shareAppMessage?(appService, content)

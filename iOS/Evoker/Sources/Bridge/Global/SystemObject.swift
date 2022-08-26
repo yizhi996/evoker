@@ -27,9 +27,7 @@ import CoreLocation
 
 @objc class SystemObject: NSObject, SystemObjectExport {
     
-    var appId = ""
-    
-    var envVersion = AppEnvVersion.develop
+    weak var appService: AppService?
     
     override required init() {
         super.init()
@@ -41,7 +39,7 @@ import CoreLocation
         var windowWidth = screenWidth
         var windowHeight = screenHeight
         var screenTop = Constant.statusBarHeight + Constant.navigationBarHeight
-        if let appService = Engine.shared.getAppService(appId: appId, envVersion: envVersion) {
+        if let appService = appService {
             let webPage = (appService.currentPage as! WebPage)
             let webView = webPage.webView
             windowWidth = webView.frame.width

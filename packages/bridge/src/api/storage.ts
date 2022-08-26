@@ -159,7 +159,7 @@ export function getStorageSync(key: string): any {
   if (!isString(key)) {
     return
   }
-  const { errMsg, result } = globalThis.__AppServiceNativeSDK.storage.getStorageSync(key)
+  const { errMsg, result } = globalThis.__Storage.getStorageSync(key)
   if (errMsg) {
     return ""
   } else {
@@ -214,7 +214,7 @@ export function setStorageSync<T = any>(key: string, data: T) {
   }
   try {
     const { data: dataString, dataType } = dataToDataType(data)
-    const { errMsg } = globalThis.__AppServiceNativeSDK.storage.setStorageSync(
+    const { errMsg } = globalThis.__Storage.setStorageSync(
       key,
       dataString,
       dataType
@@ -261,7 +261,7 @@ export function removeStorageSync(key: string) {
   if (!isString(key)) {
     return
   }
-  const { errMsg } = globalThis.__AppServiceNativeSDK.storage.removeStorageSync(key)
+  const { errMsg } = globalThis.__Storage.removeStorageSync(key)
   if (errMsg) {
     throw new Error(`${event}:fail ${errMsg}`)
   }
@@ -292,7 +292,7 @@ export function clearStorage<T extends ClearStorageOptions = ClearStorageOptions
 
 export function clearStorageSync() {
   const event = Events.CLEAR_SYNC
-  const { errMsg } = globalThis.__AppServiceNativeSDK.storage.clearStorageSync()
+  const { errMsg } = globalThis.__Storage.clearStorageSync()
   if (errMsg) {
     throw new Error(`${event}:fail ${errMsg}`)
   }
@@ -330,7 +330,7 @@ export function getStorageInfo<T extends GetStorageInfoOptions = GetStorageInfoO
 
 export function getStorageInfoSync(): GetStorageInfoSuccessCallbackResult {
   const event = Events.INFO_SYNC
-  const { errMsg, result } = globalThis.__AppServiceNativeSDK.storage.getStorageInfoSync()
+  const { errMsg, result } = globalThis.__Storage.getStorageInfoSync()
   if (errMsg) {
     throw new Error(`${event}:fail ${errMsg}`)
   }

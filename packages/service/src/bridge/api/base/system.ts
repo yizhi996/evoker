@@ -9,7 +9,7 @@ interface SystemSetting {
 }
 
 export function getSystemSetting(): SystemSetting {
-  return globalThis.__AppServiceNativeSDK.system.getSystemSetting()
+  return globalThis.__System.getSystemSetting()
 }
 
 interface DeviceInfo {
@@ -20,7 +20,7 @@ interface DeviceInfo {
 }
 
 export function getDeviceInfo(): DeviceInfo {
-  return globalThis.__AppServiceNativeSDK.system.getDeviceInfo()
+  return globalThis.__System.getDeviceInfo()
 }
 
 interface WindowInfo {
@@ -44,7 +44,7 @@ interface SafeArea {
 }
 
 export function getWindowInfo(): WindowInfo {
-  return globalThis.__AppServiceNativeSDK.system.getWindowInfo()
+  return globalThis.__System.getWindowInfo()
 }
 
 interface AppBaseInfo {
@@ -56,7 +56,7 @@ interface AppBaseInfo {
 }
 
 export function getAppBaseInfo(): AppBaseInfo {
-  return globalThis.__AppServiceNativeSDK.system.getAppBaseInfo()
+  return globalThis.__System.getAppBaseInfo()
 }
 
 type AuthorizedStatus = "authorized" | "denied" | "not determined"
@@ -75,7 +75,7 @@ interface AppAuthorizedSetting {
 }
 
 export function getAppAuthorizeSetting(): AppAuthorizedSetting {
-  return globalThis.__AppServiceNativeSDK.system.getAppAuthorizeSetting()
+  return globalThis.__System.getAppAuthorizeSetting()
 }
 
 export function getSystemInfoSync() {

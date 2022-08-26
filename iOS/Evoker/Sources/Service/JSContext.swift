@@ -25,6 +25,18 @@ public class JSContext {
     
     let nativeSDK = AppServiceNativeSDK()
     
+    let nativeTimer = NativeTimer()
+    
+    let messageChannel = MessageChannel()
+    
+    let systemObject = SystemObject()
+    
+    let base64Object = Base64Object()
+    
+    let fileSystem = FileSystemManagerObject()
+    
+    let storageObject = StorageSyncObject()
+    
     private var workThread = KeepActiveThread()
     
     private var isLoading = true
@@ -32,18 +44,17 @@ public class JSContext {
     private var pendingFunctions: [() -> Any?] = []
     
     public init() {
-        nativeSDK.messageChannel.invokeHandler.recvMessage = { [weak self] message in
+        messageChannel.invokeHandler.recvMessage = { [weak self] message in
             self?.invokeHandler?(message)
         }
         
-        nativeSDK.messageChannel.publishHandler.recvMessage = { [weak self] message in
+        messageChannel.publishHandler.recvMessage = { [weak self] message in
             self?.publishHandler?(message)
         }
         
         workThread.exec {
             self.createJSContext()
         }
-        
     }
     
     private func createJSContext() {
@@ -59,8 +70,8 @@ public class JSContext {
     }
 
     func exit() {
-        nativeSDK.timer.clearAll()
-        nativeSDK.fileSystemManager.closeAll()
+        nativeTimer.clearAll()
+        fileSystem.closeAll()
         pendingFunctions = []
         workThread.stop()
     }
@@ -80,8 +91,14 @@ public class JSContext {
     }
     
     private func loadSDK() {
-        nativeSDK.context = context
-        context.setObject(nativeSDK, forKeyedSubscript: "__AppServiceNativeSDK" as (NSCopying & NSObjectProtocol)?)
+        context.setObject(nativeSDK, forKeyedSubscript: "__NativeSDK" as (NSCopying & NSObjectProtocol)?)
+        context.setObject(messageChannel, forKeyedSubscript: "__MessageChannel" as (NSCopying & NSObjectProtocol)?)
+        context.setObject(nativeTimer, forKeyedSubscript: "__NativeTimer" as (NSCopying & NSObjectProtocol)?)
+        context.setObject(systemObject, forKeyedSubscript: "__System" as (NSCopying & NSObjectProtocol)?)
+        base64Object.context = context
+        context.setObject(base64Object, forKeyedSubscript: "__Base64" as (NSCopying & NSObjectProtocol)?)
+        context.setObject(fileSystem, forKeyedSubscript: "__FileSystem" as (NSCopying & NSObjectProtocol)?)
+        context.setObject(storageObject, forKeyedSubscript: "__Storage" as (NSCopying & NSObjectProtocol)?)
         
         let disableEval = "eval = void 0;"
         context.evaluateScript(disableEval + JavaScriptGenerator.defineEnv(env: .service))

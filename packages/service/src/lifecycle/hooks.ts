@@ -237,7 +237,7 @@ InnerJSBridge.subscribe<PageLifecycleMessage & { from: string }>(
     const content = extend(defaultContent, result)
 
     function share(content: Required<Omit<PageShareAppMessageContent, "promise">>) {
-      globalThis.__AppServiceNativeSDK.shareAppMessage(
+      globalThis.__NativeSDK.shareAppMessage(
         content.title,
         content.path,
         content.imageUrl

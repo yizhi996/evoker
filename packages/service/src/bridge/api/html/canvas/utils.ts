@@ -7,7 +7,7 @@ const template = (id: string, script: string) => `(function() {
 })()`
 
 const exec = (script: string, webViewId: number) =>
-  globalThis.__AppServiceNativeSDK.evalWebView(script, webViewId)
+  globalThis.__NativeSDK.evalWebView(script, webViewId)
 
 export const execCanvasFunction = (id: string, webViewId: number, func: string) =>
   exec(template(id, func), webViewId)

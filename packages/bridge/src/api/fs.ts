@@ -292,7 +292,7 @@ class FileSystemManager {
 
     validFilePath(event, path, "path", EKFILE_SCHEME)
 
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.access(path)
+    const { errMsg } = globalThis.__FileSystem.access(path)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -315,7 +315,7 @@ class FileSystemManager {
 
     validFilePath(event, dirPath, "dirPath", USER_DATA_PATH)
 
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.mkdir(dirPath, recursive)
+    const { errMsg } = globalThis.__FileSystem.mkdir(dirPath, recursive)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -338,7 +338,7 @@ class FileSystemManager {
 
     validFilePath(event, dirPath, "dirPath", USER_DATA_PATH)
 
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.rmdir(dirPath, recursive)
+    const { errMsg } = globalThis.__FileSystem.rmdir(dirPath, recursive)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -361,7 +361,7 @@ class FileSystemManager {
 
     validFilePath(event, dirPath, "dirPath", USER_DATA_PATH)
 
-    const { files, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.readdir(dirPath)
+    const { files, errMsg } = globalThis.__FileSystem.readdir(dirPath)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -392,7 +392,7 @@ class FileSystemManager {
 
     const noHyphenEncoding = formatAndValidEncoding(event, encoding)
 
-    const { data, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.readFile({
+    const { data, errMsg } = globalThis.__FileSystem.readFile({
       filePath,
       encoding: noHyphenEncoding,
       position,
@@ -427,7 +427,7 @@ class FileSystemManager {
       throw new Error(`${event}:fail data must be a string or ArrayBuffer`)
     }
 
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.writeFile(
+    const { errMsg } = globalThis.__FileSystem.writeFile(
       filePath,
       data,
       noHyphenEncoding
@@ -456,7 +456,7 @@ class FileSystemManager {
 
     validFilePath(event, newPath, "newPath", USER_DATA_PATH)
 
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.rename(oldPath, newPath)
+    const { errMsg } = globalThis.__FileSystem.rename(oldPath, newPath)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -481,7 +481,7 @@ class FileSystemManager {
 
     validFilePath(event, destPath, "destPath", USER_DATA_PATH)
 
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.copy(srcPath, destPath)
+    const { errMsg } = globalThis.__FileSystem.copy(srcPath, destPath)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -510,7 +510,7 @@ class FileSystemManager {
       throw new Error(`${event}:fail data must be string or ArrayBuffer`)
     }
 
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.appendFile(
+    const { errMsg } = globalThis.__FileSystem.appendFile(
       filePath,
       data,
       noHyphenEncoding
@@ -537,7 +537,7 @@ class FileSystemManager {
 
     validFilePath(event, filePath, "filePath", USER_DATA_PATH)
 
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.unlink(filePath)
+    const { errMsg } = globalThis.__FileSystem.unlink(filePath)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -566,7 +566,7 @@ class FileSystemManager {
       throw new Error(`${event}:fail invalid flag: ${flag}`)
     }
 
-    const { fd, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.open(filePath, flag)
+    const { fd, errMsg } = globalThis.__FileSystem.open(filePath, flag)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -594,7 +594,7 @@ class FileSystemManager {
       throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
     }
 
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.close(fd)
+    const { errMsg } = globalThis.__FileSystem.close(fd)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -621,7 +621,7 @@ class FileSystemManager {
       throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
     }
 
-    const { stats, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.fstat(fd)
+    const { stats, errMsg } = globalThis.__FileSystem.fstat(fd)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -657,7 +657,7 @@ class FileSystemManager {
       throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
     }
 
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.ftruncate(fd, length)
+    const { errMsg } = globalThis.__FileSystem.ftruncate(fd, length)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -688,7 +688,7 @@ class FileSystemManager {
       throw new Error(`${event}:fail arrayBuffer must be an ArrayBuffer`)
     }
 
-    const { bytesRead, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.read(
+    const { bytesRead, errMsg } = globalThis.__FileSystem.read(
       fd,
       arrayBuffer,
       offset,

@@ -8,7 +8,7 @@ interface Base64 {
   arrayBufferToBase64(buffer: ArrayBuffer): string
 }
 
-interface FileSystemManagerGeneralResult {
+interface FileSystemGeneralResult {
   errMsg: string
 }
 
@@ -19,26 +19,22 @@ interface Stats {
   lastModifiedTime: number
 }
 
-interface FileSystemManager {
-  access(path: string): FileSystemManagerGeneralResult
+interface FileSystem {
+  access(path: string): FileSystemGeneralResult
 
-  mkdir(dirPath: string, recursive: boolean): FileSystemManagerGeneralResult
+  mkdir(dirPath: string, recursive: boolean): FileSystemGeneralResult
 
-  rmdir(dirPath: string, recursive: boolean): FileSystemManagerGeneralResult
+  rmdir(dirPath: string, recursive: boolean): FileSystemGeneralResult
 
-  readdir(dirPath: string): FileSystemManagerGeneralResult & { files: string[] }
+  readdir(dirPath: string): FileSystemGeneralResult & { files: string[] }
 
-  readFile(options: any): FileSystemManagerGeneralResult & { data: string | ArrayBuffer }
+  readFile(options: any): FileSystemGeneralResult & { data: string | ArrayBuffer }
 
-  writeFile(
-    filePath: string,
-    data: string | ArrayBuffer,
-    encoding: string
-  ): FileSystemManagerGeneralResult
+  writeFile(filePath: string, data: string | ArrayBuffer, encoding: string): FileSystemGeneralResult
 
-  rename(oldPath: string, newPath: string): FileSystemManagerGeneralResult
+  rename(oldPath: string, newPath: string): FileSystemGeneralResult
 
-  copy(srcPath: string, destPath: string): FileSystemManagerGeneralResult
+  copy(srcPath: string, destPath: string): FileSystemGeneralResult
 
   appendFile(
     filePath: string,
@@ -46,15 +42,15 @@ interface FileSystemManager {
     encoding: string
   ): FileSystemManagerGeneralResult
 
-  unlink(filePath: string): FileSystemManagerGeneralResult
+  unlink(filePath: string): FileSystemGeneralResult
 
-  open(filePath: string, flag: string): FileSystemManagerGeneralResult & { fd: string }
+  open(filePath: string, flag: string): FileSystemGeneralResult & { fd: string }
 
-  close(fd: string): FileSystemManagerGeneralResult
+  close(fd: string): FileSystemGeneralResult
 
-  fstat(fd: string): FileSystemManagerGeneralResult & { stats: Stats }
+  fstat(fd: string): FileSystemGeneralResult & { stats: Stats }
 
-  ftruncate(fd: string, length: number): FileSystemManagerGeneralResult
+  ftruncate(fd: string, length: number): FileSystemGeneralResult
 
   read(
     fd: string,
@@ -62,22 +58,10 @@ interface FileSystemManager {
     offset: number,
     length: number,
     position: number
-  ): FileSystemManagerGeneralResult & { bytesRead: number }
+  ): FileSystemGeneralResult & { bytesRead: number }
 }
 
-export interface AppServiceNativeSDK {
-  timer: NativeTimer
-
-  messageChannel: MessageChannel
-
-  system: NativeSystem
-
-  storage: Storage
-
-  base64: Base64
-
-  fileSystemManager: FileSystemManager
-
+export interface NativeSDK {
   shareAppMessage(title: string, path: string, imageUrl: string): void
 
   evalWebView(script: string, webviewId: number): any
@@ -229,7 +213,13 @@ interface JSBridge {
 
 declare global {
   var webkit: WebKit
-  var __AppServiceNativeSDK: AppServiceNativeSDK
+  var __NativeSDK: NativeSDK
+  var __MessageChannel: MessageChannel
+  var __FileSystem: FileSystem
+  var __NativeTimer: NativeTimer
+  var __System: NativeSystem
+  var __Storage: Storage
+  var __Base64: Base64
   var __Config: Config
   var __Devtools: Devtools
   var JSBridge: JSBridge

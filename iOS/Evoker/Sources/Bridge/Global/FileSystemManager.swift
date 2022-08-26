@@ -50,8 +50,6 @@ import JavaScriptCore
     
     var appId = ""
     
-    var envVersion = AppEnvVersion.develop
-    
     lazy var fdMap: [String: Int32] = [:]
     
     override required init() {

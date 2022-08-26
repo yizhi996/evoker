@@ -38,8 +38,8 @@ export function invoke<T = unknown>(
       : DevtoolsBridgeCommands.WEB_VIEW_INVOKE
     __Devtools.invokeHandler(command, msg)
   } else {
-    if (globalThis.__AppServiceNativeSDK) {
-      globalThis.__AppServiceNativeSDK.messageChannel.invokeHandler.postMessage(msg)
+    if (globalThis.__MessageChannel) {
+      globalThis.__MessageChannel.invokeHandler.postMessage(msg)
     } else if (globalThis.webkit) {
       globalThis.webkit.messageHandlers.invokeHandler.postMessage(msg)
     }
@@ -75,8 +75,8 @@ export function publish(event: string, params: Record<string, any> = {}, webView
       : DevtoolsBridgeCommands.WEB_VIEW_PUBLISH
     __Devtools.publishHandler(command, msg)
   } else {
-    if (globalThis.__AppServiceNativeSDK) {
-      globalThis.__AppServiceNativeSDK.messageChannel.publishHandler.postMessage(msg)
+    if (globalThis.__MessageChannel) {
+      globalThis.__MessageChannel.publishHandler.postMessage(msg)
     } else if (globalThis.webkit) {
       globalThis.webkit.messageHandlers.publishHandler.postMessage(msg)
     }

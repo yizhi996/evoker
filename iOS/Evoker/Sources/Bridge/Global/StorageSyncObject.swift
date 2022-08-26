@@ -26,16 +26,14 @@ import JavaScriptCore
 
 @objc class StorageSyncObject: NSObject, StorageSyncObjectExport {
         
-    var appId = ""
-    
-    var envVersion = AppEnvVersion.develop
+    weak var appService: AppService?
     
     override required init() {
         super.init()
     }
     
     func getStorageSync(_ key: String) -> [String: Any] {
-        if let appService = Engine.shared.getAppService(appId: appId, envVersion: envVersion) {
+        if let appService = appService {
             let (result, error) = appService.storage.get(key: key)
             if let result = result {
                 return ["result": ["data": result.0, "dataType": result.1]]
@@ -47,7 +45,7 @@ import JavaScriptCore
     }
     
     func setStorageSync(_ key: String, _ data: String, _ dataType: String) -> [String: Any] {
-        if let appService = Engine.shared.getAppService(appId: appId, envVersion: envVersion) {
+        if let appService = appService {
             if let error = appService.storage.set(key: key, data: data, dataType: dataType) {
                 return ["errMsg": error.localizedDescription]
             } else {
@@ -58,7 +56,7 @@ import JavaScriptCore
     }
     
     func getStorageInfoSync() -> [String: Any] {
-        if let appService = Engine.shared.getAppService(appId: appId, envVersion: envVersion) {
+        if let appService = appService {
             let (result, error) = appService.storage.info()
             if let (keys, size, limit) = result {
                 return ["result": ["keys": keys, "currentSize": size, "limitSize": limit]]
@@ -70,7 +68,7 @@ import JavaScriptCore
     }
     
     func removeStorageSync(_ key: String) -> [String: Any] {
-        if let appService = Engine.shared.getAppService(appId: appId, envVersion: envVersion) {
+        if let appService = appService {
             let error = appService.storage.remove(key: key)
             if let error = error {
                 return ["errMsg": error.localizedDescription]
@@ -81,7 +79,7 @@ import JavaScriptCore
     }
     
     func clearStorageSync() -> [String: Any] {
-        if let appService = Engine.shared.getAppService(appId: appId, envVersion: envVersion) {
+        if let appService = appService {
             let error = appService.storage.clear()
             if let error = error {
                 return ["errMsg": error.localizedDescription]
