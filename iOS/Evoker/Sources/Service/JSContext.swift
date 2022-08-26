@@ -21,7 +21,7 @@ public class JSContext {
         }
     }
     
-    private var context: JavaScriptCore.JSContext!
+    internal var context: JavaScriptCore.JSContext!
     
     let nativeSDK = AppServiceNativeSDK()
     
@@ -80,6 +80,7 @@ public class JSContext {
     }
     
     private func loadSDK() {
+        nativeSDK.context = context
         context.setObject(nativeSDK, forKeyedSubscript: "__AppServiceNativeSDK" as (NSCopying & NSObjectProtocol)?)
         
         let disableEval = "eval = void 0;"

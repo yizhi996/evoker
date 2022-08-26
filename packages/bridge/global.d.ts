@@ -3,7 +3,7 @@ import { DevtoolsBridgeCommands, InvokeArgs, PublishArgs } from "@evoker/shared"
 import { InvokeCallbackResult } from "./src"
 
 interface Base64 {
-  base64ToArrayBuffer(string: string): number[]
+  base64ToArrayBuffer(string: string): ArrayBuffer
 
   arrayBufferToBase64(buffer: ArrayBuffer): string
 }
@@ -30,13 +30,21 @@ interface FileSystemManager {
 
   readFile(options: any): FileSystemManagerGeneralResult & { data: string | ArrayBuffer }
 
-  writeFile(options: any): FileSystemManagerGeneralResult
+  writeFile(
+    filePath: string,
+    data: string | ArrayBuffer,
+    encoding: string
+  ): FileSystemManagerGeneralResult
 
   rename(oldPath: string, newPath: string): FileSystemManagerGeneralResult
 
   copy(srcPath: string, destPath: string): FileSystemManagerGeneralResult
 
-  appendFile(options: any): FileSystemManagerGeneralResult
+  appendFile(
+    filePath: string,
+    data: string | ArrayBuffer,
+    encoding: string
+  ): FileSystemManagerGeneralResult
 
   unlink(filePath: string): FileSystemManagerGeneralResult
 

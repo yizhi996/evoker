@@ -23,13 +23,13 @@ import JavaScriptCore
     
     func readFile(_ options: [String: Any]) -> [String: Any]
     
-    func writeFile(_ options: [String : Any]) -> [String : Any]
+    func writeFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String : Any]
     
     func rename(_ oldPath: String, _ newPath: String) -> [String : Any]
     
     func copy(_ srcPath: String, _ destPath: String) -> [String : Any]
     
-    func appendFile(_ options: [String : Any]) -> [String : Any]
+    func appendFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String : Any]
     
     func unlink(_ filePath: String) -> [String : Any]
     
@@ -129,6 +129,7 @@ import JavaScriptCore
         case utf8
         case latin1
         case ucs2
+        case binary
         
         func toFoundation() -> String.Encoding? {
             switch self {
@@ -191,56 +192,35 @@ import JavaScriptCore
         }
     }
     
-    func writeFile(_ options: [String : Any]) -> [String : Any] {
-        struct Params: Decodable {
-            let filePath: String
-            let data: Any
-            let encoding: Encoding
-            
-            enum CodingKeys: String, CodingKey {
-                case filePath, data, encoding
-            }
-            
-            init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                filePath = try container.decode(String.self, forKey: .filePath)
-                encoding = try container.decode(Encoding.self, forKey: .encoding)
-                
-                if let data = try? container.decode(String.self, forKey: .data) {
-                    self.data = data
-                } else if let data = try? container.decode([UInt8].self, forKey: .data) {
-                    self.data = data
-                } else {
-                    throw EKError.custom("data must be string or ArrayBuffer")
-                }
-            }
-        }
-        
-        guard let params: Params = options.toModel() else { return [ERR_MSG: "invalid params"] }
-        
-        guard let fileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: params.filePath) else {
+    func writeFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String : Any] {
+        guard let fileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: filePath) else {
             return [ERR_MSG: "invalid filePath"]
         }
         
-        if !FileManager.default.fileExists(atPath: fileURL.deletingLastPathComponent().path) {
-            return [ERR_MSG: "no such file or directory \(params.filePath)"]
+        guard let encoding = Encoding(rawValue: encoding) else {
+            return [ERR_MSG: "invalid encoding"]
         }
         
-        var data: Data?
-        if let string = params.data as? String {
-            if let encoding = params.encoding.toFoundation() {
-                data = string.data(using: encoding)
-            } else if params.encoding == .base64 {
-                data = Data(base64Encoded: string)
-            } else if params.encoding == .hex {
-                data = Data(hex: string)
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            return [ERR_MSG: "no such file or directory \(filePath)"]
+        }
+        
+        var writeData: Data?
+        if data.isString {
+            let string = data.toString()!
+            if let encoding = encoding.toFoundation() {
+                writeData = string.data(using: encoding)
+            } else if encoding == .base64 {
+                writeData = Data(base64Encoded: string)
+            } else if encoding == .hex {
+                writeData = Data(hex: string)
             }
-        } else if let bytesData = params.data as? Array<UInt8> {
-            data = Data(bytesData)
+        } else if let bytes = data.toArrayBuffer() {
+            writeData = Data(bytes: bytes, count: data.getArrayBufferLength())
         }
         
-        if let data = data {
-            if FileManager.default.createFile(atPath: fileURL.path, contents: data) {
+        if let writeData = writeData {
+            if FileManager.default.createFile(atPath: fileURL.path, contents: writeData) {
                 return [ERR_MSG: ""]
             } else {
                 return [ERR_MSG: "failed"]
@@ -292,59 +272,38 @@ import JavaScriptCore
         }
     }
     
-    func appendFile(_ options: [String : Any]) -> [String : Any] {
-        struct Params: Decodable {
-            let filePath: String
-            let data: Any
-            let encoding: Encoding
-            
-            enum CodingKeys: String, CodingKey {
-                case filePath, data, encoding
-            }
-            
-            init(from decoder: Decoder) throws {
-                let container = try decoder.container(keyedBy: CodingKeys.self)
-                filePath = try container.decode(String.self, forKey: .filePath)
-                encoding = try container.decode(Encoding.self, forKey: .encoding)
-                
-                if let data = try? container.decode(String.self, forKey: .data) {
-                    self.data = data
-                } else if let data = try? container.decode([UInt8].self, forKey: .data) {
-                    self.data = data
-                } else {
-                    throw EKError.custom("data must be string or ArrayBuffer")
-                }
-            }
-        }
-        
-        guard let params: Params = options.toModel() else { return [ERR_MSG: "invalid params"] }
-        
-        guard let fileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: params.filePath) else {
+    func appendFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String : Any] {
+        guard let fileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: filePath) else {
             return [ERR_MSG: "invalid filePath"]
         }
         
-        if !FileManager.default.fileExists(atPath: fileURL.path) {
-            return [ERR_MSG: "no such file or directory \(params.filePath)"]
+        guard let encoding = Encoding(rawValue: encoding) else {
+            return [ERR_MSG: "invalid encoding"]
         }
         
-        var data: Data?
-        if let string = params.data as? String {
-            if let encoding = params.encoding.toFoundation() {
-                data = string.data(using: encoding)
-            } else if params.encoding == .base64 {
-                data = Data(base64Encoded: string)
-            } else if params.encoding == .hex {
-                data = Data(hex: string)
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            return [ERR_MSG: "no such file or directory \(filePath)"]
+        }
+        
+        var appendData: Data?
+        if data.isString {
+            let string = data.toString()!
+            if let encoding = encoding.toFoundation() {
+                appendData = string.data(using: encoding)
+            } else if encoding == .base64 {
+                appendData = Data(base64Encoded: string)
+            } else if encoding == .hex {
+                appendData = Data(hex: string)
             }
-        } else if let bytesData = params.data as? Array<UInt8> {
-            data = Data(bytesData)
+        } else if let bytes = data.toArrayBuffer() {
+            appendData = Data(bytes: bytes, count: data.getArrayBufferLength())
         }
         
-        if let data = data {
+        if let appendData = appendData {
             do {
                 let handler = try FileHandle(forWritingTo: fileURL)
                 handler.seekToEndOfFile()
-                handler.write(data)
+                handler.write(appendData)
                 handler.closeFile()
                 return [ERR_MSG: ""]
             } catch {
@@ -440,7 +399,7 @@ import JavaScriptCore
     func read(_ fd: String, _ arrayBuffer: JSValue, _ offset: Int64, _ length: Int, _ position: Int64) -> [String : Any] {
         guard let fileNumber = fdMap[fd] else { return [ERR_MSG: "invalid fd: \(fd)"] }
         
-        var bytes = JSObjectGetArrayBufferBytesPtr(arrayBuffer.context.jsGlobalContextRef, arrayBuffer.jsValueRef, nil)!
+        var bytes = arrayBuffer.toArrayBuffer()!
         
         if offset > 0 {
             bytes = bytes.advanced(by: Int(offset))

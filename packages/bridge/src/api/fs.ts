@@ -86,6 +86,7 @@ type Encoding =
   | "utf-8"
   | "utf8"
   | "latin1"
+  | "binary"
 
 interface ReadFileOptions {
   filePath: string
@@ -389,13 +390,7 @@ class FileSystemManager {
 
     validFilePath(event, filePath, "filePath", USER_DATA_PATH)
 
-    let noHyphenEncoding = encoding && encoding.replaceAll("-", "")
-    if (
-      noHyphenEncoding &&
-      !["ascii", "base64", "hex", "utf16le", "utf8", "latin1", "ucs2"].includes(noHyphenEncoding)
-    ) {
-      throw new Error(`${event}:fail unknown encoding: ${encoding}`)
-    }
+    const noHyphenEncoding = formatAndValidEncoding(event, encoding)
 
     const { data, errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.readFile({
       filePath,
@@ -405,9 +400,6 @@ class FileSystemManager {
     })
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
-    }
-    if (isArray(data)) {
-      return Uint8Array.from(data as number[]).buffer
     }
     return data
   }
@@ -429,24 +421,17 @@ class FileSystemManager {
 
     validFilePath(event, filePath, "filePath", USER_DATA_PATH)
 
-    let noHyphenEncoding = encoding && encoding.replaceAll("-", "")
-    if (
-      noHyphenEncoding &&
-      !["ascii", "base64", "hex", "utf16le", "utf8", "latin1", "ucs2"].includes(noHyphenEncoding)
-    ) {
-      throw new Error(`${event}:fail unknown encoding: ${encoding}`)
+    const noHyphenEncoding = formatAndValidEncoding(event, encoding)
+
+    if (!isArrayBuffer(data) && !isString(data)) {
+      throw new Error(`${event}:fail data must be a string or ArrayBuffer`)
     }
 
-    let conver = data
-    if (isArrayBuffer(data)) {
-      conver = Array.from(new Uint8Array(data)) as any
-    }
-
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.writeFile({
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.writeFile(
       filePath,
-      data: conver,
-      encoding: noHyphenEncoding
-    })
+      data,
+      noHyphenEncoding
+    )
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -519,24 +504,17 @@ class FileSystemManager {
 
     validFilePath(event, filePath, "filePath", USER_DATA_PATH)
 
-    let noHyphenEncoding = encoding && encoding.replaceAll("-", "")
-    if (
-      noHyphenEncoding &&
-      !["ascii", "base64", "hex", "utf16le", "utf8", "latin1", "ucs2"].includes(noHyphenEncoding)
-    ) {
-      throw new Error(`${event}:fail unknown encoding: ${encoding}`)
+    const noHyphenEncoding = formatAndValidEncoding(event, encoding)
+
+    if (!isArrayBuffer(data) && !isString(data)) {
+      throw new Error(`${event}:fail data must be string or ArrayBuffer`)
     }
 
-    let conver = data
-    if (isArrayBuffer(data)) {
-      conver = Array.from(new Uint8Array(data)) as any
-    }
-
-    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.appendFile({
+    const { errMsg } = globalThis.__AppServiceNativeSDK.fileSystemManager.appendFile(
       filePath,
-      data: conver,
-      encoding: noHyphenEncoding
-    })
+      data,
+      noHyphenEncoding
+    )
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -736,4 +714,20 @@ function validFilePath(event: string, path: string, name: string, startsWith: st
   if (!path.startsWith(startsWith)) {
     throw new Error(`${event}:fail ${path} is not startsWith ${startsWith}`)
   }
+}
+
+function formatAndValidEncoding(event: string, encoding?: Encoding) {
+  if (!encoding) {
+    throw new Error(`${event}:fail unknown encoding`)
+  }
+
+  const noHyphenEncoding = encoding.replaceAll("-", "")
+  if (
+    !["ascii", "base64", "hex", "utf16le", "utf8", "latin1", "ucs2", "binary"].includes(
+      noHyphenEncoding
+    )
+  ) {
+    throw new Error(`${event}:fail unknown encoding: ${encoding}`)
+  }
+  return noHyphenEncoding
 }

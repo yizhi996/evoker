@@ -58,6 +58,12 @@ public struct ShareAppMessageContent {
         }
     }
     
+    weak var context: JavaScriptCore.JSContext? {
+        didSet {
+            base64.context = context
+        }
+    }
+    
     var timer = NativeTimer()
     
     var messageChannel = MessageChannel()
