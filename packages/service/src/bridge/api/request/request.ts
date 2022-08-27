@@ -1,7 +1,13 @@
 import { InnerJSBridge } from "../../bridge"
-import { SuccessResult, GeneralCallbackResult, invokeFailure, invokeSuccess } from "@evoker/bridge"
+import {
+  SuccessResult,
+  GeneralCallbackResult,
+  invokeFailure,
+  invokeSuccess,
+  fetchArrayBuffer
+} from "@evoker/bridge"
 import { isArrayBuffer } from "@evoker/shared"
-import { isString, isObject, extend } from "@vue/shared"
+import { isString, extend, isPlainObject } from "@vue/shared"
 import { Task } from "./task"
 import {
   Events,
@@ -76,9 +82,11 @@ export function request<T extends RequestOptions = RequestOptions>(
 
   const contentType = header[CONTENT_TYPE]
 
+  let __arrayBuffer__ = 0
+
   method = method.toUpperCase() as RequestMethod
   if (method === "GET") {
-    if (isObject(data) && Object.keys(data).length > 0) {
+    if (isPlainObject(data) && Object.keys(data).length > 0) {
       const [ogURL, ogQuery] = url.split("?")
       let query = data
       if (ogQuery) {
@@ -86,8 +94,8 @@ export function request<T extends RequestOptions = RequestOptions>(
         query = extend(query, data)
       }
       url = ogURL + "?" + objectToQueryString(query)
-      data = ""
     }
+    data = ""
   } else if (method === "HEAD") {
     data = ""
   } else if (!isString(data) && !isArrayBuffer(data)) {
@@ -96,6 +104,8 @@ export function request<T extends RequestOptions = RequestOptions>(
     } else if (contentType.includes("application/json")) {
       data = JSON.stringify(data)
     }
+  } else if (isArrayBuffer(data)) {
+    __arrayBuffer__ = globalThis.__ArrayBufferRegister.set(data)
   }
 
   if (!["text", "arraybuffer"].includes(responseType)) {
@@ -112,11 +122,16 @@ export function request<T extends RequestOptions = RequestOptions>(
     url,
     header,
     method,
-    data,
     dataType: options.dataType || "json",
     responseType,
     timeout,
     taskId: task.taskId
+  }
+
+  if (__arrayBuffer__) {
+    request["__arrayBuffer__"] = __arrayBuffer__
+  } else {
+    request["data"] = data
   }
 
   InnerJSBridge.invoke<SuccessResult<T>>(event, request, result => {
@@ -128,17 +143,24 @@ export function request<T extends RequestOptions = RequestOptions>(
         invokeFailure(event, options, "abort")
         return
       }
-      let { data } = result.data as { data: string | number[] | ArrayBuffer }
+
       if (request.responseType === "arraybuffer") {
-        data = Uint8Array.from(data as number[]).buffer
+        fetchArrayBuffer(result.data, "data")
       } else {
+        const response = result.data as any
+        const { dataString } = response as { dataString: string }
+        delete response.dataString
+
         if (request.dataType === "json") {
           try {
-            data = JSON.parse(data as string)
-          } catch {}
+            response.data = JSON.parse(dataString)
+          } catch {
+            response.data = dataString
+          }
+        } else {
+          response.data = dataString
         }
       }
-      result.data!.data = data
       invokeSuccess(event, options, result.data)
     }
   })

@@ -1,5 +1,6 @@
 import {
   AsyncReturn,
+  fetchArrayBuffer,
   GeneralCallbackResult,
   invokeCallback,
   invokeFailure,
@@ -9,6 +10,7 @@ import {
 import { InnerJSBridge } from "../../bridge"
 import { extend, isFunction, isString } from "@vue/shared"
 import { headerValueToString } from "./util"
+import { isArrayBuffer } from "@evoker/shared"
 
 const main = {}
 
@@ -253,11 +255,17 @@ export class SocketTask {
       invokeFailure("SocketTask.send", options, "readyState is not OPEN")
       return
     }
-    let opts = extend({}, options) as any
-    if (isString(options.data)) {
-      opts.text = options.data
-      delete opts.data
+
+    const opts = extend({}, options) as any
+    if (isArrayBuffer(options.data)) {
+      opts.__arrayBuffer__ = globalThis.__ArrayBufferRegister.set(opts.data)
+    } else if (isString(options.data)) {
+      opts.string = options.data
+    } else {
+      invokeFailure("SocketTask.send", options, "data must be a string or ArrayBuffer")
+      return
     }
+    delete opts.data
     this.operate(Methods.SEND, opts)
   }
 
@@ -334,7 +342,11 @@ InnerJSBridge.subscribe<{ socketTaskId: number }>(key(SubscribeKeys.ON_ERROR), d
   task && destroy(task, EventTypes.ERROR, data)
 })
 
-InnerJSBridge.subscribe<{ socketTaskId: number }>(key(SubscribeKeys.ON_MESSAGE), data => {
-  const task = tasks.get(data.socketTaskId)
-  task && invokeEventListener(task, EventTypes.MESSAGE, data)
-})
+InnerJSBridge.subscribe<{ socketTaskId: number; data: string | ArrayBuffer }>(
+  key(SubscribeKeys.ON_MESSAGE),
+  data => {
+    const task = tasks.get(data.socketTaskId)
+    fetchArrayBuffer(data, "data")
+    task && invokeEventListener(task, EventTypes.MESSAGE, data)
+  }
+)

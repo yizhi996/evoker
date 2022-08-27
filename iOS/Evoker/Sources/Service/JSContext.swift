@@ -37,6 +37,8 @@ public class JSContext {
     
     let storageObject = StorageSyncObject()
     
+    let arrayBufferRegister = ArrayBufferRegister()
+    
     private var workThread = KeepActiveThread()
     
     private var isLoading = true
@@ -72,6 +74,7 @@ public class JSContext {
     func exit() {
         nativeTimer.clearAll()
         fileSystem.closeAll()
+        arrayBufferRegister.clearAll()
         pendingFunctions = []
         workThread.stop()
     }
@@ -99,6 +102,7 @@ public class JSContext {
         context.setObject(base64Object, forKeyedSubscript: "__Base64" as (NSCopying & NSObjectProtocol)?)
         context.setObject(fileSystem, forKeyedSubscript: "__FileSystem" as (NSCopying & NSObjectProtocol)?)
         context.setObject(storageObject, forKeyedSubscript: "__Storage" as (NSCopying & NSObjectProtocol)?)
+        context.setObject(arrayBufferRegister, forKeyedSubscript: "__ArrayBufferRegister" as (NSCopying & NSObjectProtocol)?)
         
         let disableEval = "eval = void 0;"
         context.evaluateScript(disableEval + JavaScriptGenerator.defineEnv(env: .service))

@@ -40,7 +40,7 @@ interface FileSystem {
     filePath: string,
     data: string | ArrayBuffer,
     encoding: string
-  ): FileSystemManagerGeneralResult
+  ): FileSystemGeneralResult
 
   unlink(filePath: string): FileSystemGeneralResult
 
@@ -176,6 +176,12 @@ interface Storage {
   clearStorageSync(): { errMsg: string }
 }
 
+interface ArrayBufferRegister {
+  get(id: number): ArrayBuffer
+
+  set(arrayBuffer: ArrayBuffer): number
+}
+
 interface Page {
   component: string
   path: string
@@ -220,6 +226,7 @@ declare global {
   var __System: NativeSystem
   var __Storage: Storage
   var __Base64: Base64
+  var __ArrayBufferRegister: ArrayBufferRegister
   var __Config: Config
   var __Devtools: Devtools
   var JSBridge: JSBridge

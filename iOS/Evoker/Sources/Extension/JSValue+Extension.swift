@@ -16,6 +16,11 @@ extension JSValue {
         return bytes
     }
     
+    func toData() -> Data? {
+        guard let bytes = toArrayBuffer() else { return nil }
+        return Data(bytes: bytes, count: getArrayBufferLength())
+    }
+    
     func getArrayBufferLength() -> Int {
         return JSObjectGetArrayBufferByteLength(context.jsGlobalContextRef, jsValueRef, nil)
     }

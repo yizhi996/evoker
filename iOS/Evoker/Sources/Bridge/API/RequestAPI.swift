@@ -9,6 +9,7 @@
 import Foundation
 import Alamofire
 import QuartzCore
+import JavaScriptCore
 
 enum RequestAPI: String, CaseIterableAPI {
    
@@ -39,7 +40,8 @@ enum RequestAPI: String, CaseIterableAPI {
             let header: [String: String]
             let timeout: TimeInterval
             let responseType: ResponseType
-            let data: String
+            let data: String?
+            let __arrayBuffer__: Int?
             
             enum ResponseType: String, Decodable {
                 case text
@@ -69,10 +71,12 @@ enum RequestAPI: String, CaseIterableAPI {
                                             headers: header)
             urlRequest.timeoutInterval = params.timeout / 1000
             
-            if !params.data.isEmpty {
-                urlRequest.httpBody = params.data.data(using: .utf8)
+            if let string = params.data, !string.isEmpty {
+                urlRequest.httpBody = string.data(using: .utf8)
+            } else if let id = params.__arrayBuffer__, let arrayBuffer = appService.context.arrayBufferRegister.get(id) {
+                urlRequest.httpBody = arrayBuffer.toData()
             }
-                        
+            
             let request = AF.request(urlRequest)
             
             let taskId = params.taskId
@@ -97,16 +101,19 @@ enum RequestAPI: String, CaseIterableAPI {
                         return res.joined(separator: "; ")
                     }
                     
-                    var result: Any
+                    var result = ["statusCode": response.response!.statusCode,
+                                  "header": header,
+                                  "cookies": cookies] as [String : Any]
+                    
                     if params.responseType == .arraybuffer {
-                        result = data.bytes
+                        let arrayBuffer = data.toJSArrayBuffer(context: appService.context.context)
+                        let arrayBufferId = appService.context.arrayBufferRegister.set(arrayBuffer)
+                        result[ArrayBufferRegister.Key] = arrayBufferId
                     } else {
-                        result = responseSerializerToString(response)
+                        result["dataString"] = responseSerializerToString(response)
                     }
-                    bridge.invokeCallbackSuccess(args: args, result: ["statusCode": response.response!.statusCode,
-                                                                      "header": header,
-                                                                      "cookies": cookies,
-                                                                      "data": result])
+                    
+                    bridge.invokeCallbackSuccess(args: args, result: result)
                 case .failure(let error):
                     let error = EKError.bridgeFailed(reason: .networkError(error.localizedDescription))
                     bridge.invokeCallbackFail(args: args, error: error)

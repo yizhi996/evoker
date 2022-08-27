@@ -65,6 +65,8 @@ protocol WebSocketTaskDelegate: NSObject {
     
     func webSocket(_ webSocket: WebSocketTask, onError error: Error)
     
-    func webSocket(_ webSocket: WebSocketTask, onMessage message: Any)
+    func webSocket(_ webSocket: WebSocketTask, onMessage message: String)
+    
+    func webSocket(_ webSocket: WebSocketTask, onMessage message: Data)
     
 }

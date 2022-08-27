@@ -50,8 +50,8 @@ enum WebSocketAPI: String, CaseIterableAPI {
                 }
                 
                 struct SendData: Decodable {
-                    let text: String?
-                    let data: Foundation.Data?
+                    let string: String?
+                    let __arrayBuffer__: Int?
                 }
                 
                 init(from decoder: Decoder) throws {
@@ -112,9 +112,11 @@ enum WebSocketAPI: String, CaseIterableAPI {
             if case .send(let data) = params.data {
                 if let ws = module.webSockets[params.socketTaskId] {
                     do {
-                        if let text = data.text {
-                            try ws.send(text)
-                        } else if let data = data.data {
+                        if let string = data.string {
+                            try ws.send(string)
+                        } else if let id = data.__arrayBuffer__,
+                                  let ab = appService.context.arrayBufferRegister.get(id),
+                                  let data = ab.toData() {
                             try ws.send(data)
                         }
                         bridge.invokeCallbackSuccess(args: args)

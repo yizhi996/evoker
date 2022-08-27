@@ -33,3 +33,5 @@ export * from "./api/fs"
 export type { InvokeCallback, InvokeCallbackResult, SubscribeCallback } from "./bridge"
 
 export * from "./pipeline"
+
+export * from "./utils"

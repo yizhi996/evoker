@@ -10,6 +10,7 @@ import {
   invokeSuccess
 } from "../async"
 import { ErrorCodes, errorMessage } from "../errors"
+import { fetchArrayBuffer } from "../utils"
 
 const enum Events {
   RSA = "rsa",
@@ -90,8 +91,7 @@ export function getRandomValues<T extends GetRandomValuesOptions = GetRandomValu
       if (result.errMsg) {
         invokeFailure(event, options, result.errMsg)
       } else {
-        const { randomValues } = result.data! as any
-        result.data!.randomValues = Uint8Array.from(randomValues).buffer
+        fetchArrayBuffer(result.data, "randomValues")
         invokeSuccess(event, options, result.data)
       }
     })

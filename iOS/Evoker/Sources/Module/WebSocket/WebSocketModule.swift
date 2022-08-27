@@ -58,9 +58,17 @@ extension WebSocketModule: WebSocketTaskDelegate {
                                                    "errMsg": error.localizedDescription])
     }
     
-    func webSocket(_ webSocket: WebSocketTask, onMessage message: Any) {
+    func webSocket(_ webSocket: WebSocketTask, onMessage message: String) {
         appService?.bridge.subscribeHandler(method: Self.onMessageSubscribeKey,
                                             data: ["socketTaskId": webSocket.socketTaskId, "data": message])
+    }
+    
+    func webSocket(_ webSocket: WebSocketTask, onMessage message: Data) {
+        guard let appService = appService else { return }
+        let arrayBuffer = message.toJSArrayBuffer(context: appService.context.context)
+        let id = appService.context.arrayBufferRegister.set(arrayBuffer)
+        appService.bridge.subscribeHandler(method: Self.onMessageSubscribeKey,
+                                           data: ["socketTaskId": webSocket.socketTaskId, ArrayBufferRegister.Key: id])
     }
     
 }

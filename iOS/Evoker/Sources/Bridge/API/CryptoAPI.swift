@@ -91,7 +91,10 @@ enum CryptoAPI: String, CaseIterableAPI {
         var bytes = [Int8](repeating: 0, count: length)
         let status = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
         if status == errSecSuccess {
-            bridge.invokeCallbackSuccess(args: args, result: ["randomValues": bytes])
+            let data = Data(bytes: bytes, count: bytes.count)
+            let arrayBuffer = data.toJSArrayBuffer(context: appService.context.context)
+            let id = appService.context.arrayBufferRegister.set(arrayBuffer)
+            bridge.invokeCallbackSuccess(args: args, result: [ArrayBufferRegister.Key: id])
         } else {
             bridge.invokeCallbackFail(args: args, error: .bridgeFailed(reason: .custom("")))
         }
