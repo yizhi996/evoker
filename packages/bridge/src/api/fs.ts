@@ -179,6 +179,24 @@ type UnlinkFailCallback = (res: GeneralCallbackResult) => void
 
 type UnlinkCompleteCallback = (res: GeneralCallbackResult) => void
 
+interface StatOptions {
+  path: string
+  recursive?: boolean
+  success?: StatSuccessCallback
+  fail?: StatFailCallback
+  complete?: StatCompleteCallback
+}
+
+interface StatSuccessCallbackResult {
+  stats: Stats | Stats[]
+}
+
+type StatSuccessCallback = (res: StatSuccessCallbackResult) => void
+
+type StatFailCallback = (res: GeneralCallbackResult) => void
+
+type StatCompleteCallback = (res: GeneralCallbackResult) => void
+
 type Flag = "a" | "ax" | "a+" | "ax+" | "as" | "as+" | "r" | "r+" | "w" | "wx" | "w+" | "wx+"
 
 interface OpenOptions {
@@ -273,6 +291,28 @@ type ReadSuccessCallback = (res: ReadResult) => void
 type ReadFailCallback = (res: GeneralCallbackResult) => void
 
 type ReadCompleteCallback = (res: GeneralCallbackResult) => void
+
+interface WriteOptions {
+  fd: string
+  data: string | ArrayBuffer
+  encoding?: Encoding
+  offset?: number
+  length?: number
+  position?: number
+  success?: WriteSuccessCallback
+  fail?: WriteFailCallback
+  complete?: WriteCompleteCallback
+}
+
+interface WriteResult {
+  bytesWritten: number
+}
+
+type WriteSuccessCallback = (res: WriteResult) => void
+
+type WriteFailCallback = (res: GeneralCallbackResult) => void
+
+type WriteCompleteCallback = (res: GeneralCallbackResult) => void
 
 class FileSystemManager {
   access(options: AccessOptions) {
@@ -427,11 +467,7 @@ class FileSystemManager {
       throw new Error(`${event}:fail data must be a string or ArrayBuffer`)
     }
 
-    const { errMsg } = globalThis.__FileSystem.writeFile(
-      filePath,
-      data,
-      noHyphenEncoding
-    )
+    const { errMsg } = globalThis.__FileSystem.writeFile(filePath, data, noHyphenEncoding)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -510,11 +546,7 @@ class FileSystemManager {
       throw new Error(`${event}:fail data must be string or ArrayBuffer`)
     }
 
-    const { errMsg } = globalThis.__FileSystem.appendFile(
-      filePath,
-      data,
-      noHyphenEncoding
-    )
+    const { errMsg } = globalThis.__FileSystem.appendFile(filePath, data, noHyphenEncoding)
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
@@ -541,6 +573,30 @@ class FileSystemManager {
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
+  }
+
+  stat(options: StatOptions) {
+    const event = "stat"
+    try {
+      const stats = this.statSync(options.path, options.recursive)
+      invokeSuccess(event, options, { stats })
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  statSync(path: string, recursive: boolean = false) {
+    const event = "statSync"
+
+    validFilePath(event, path, "path", USER_DATA_PATH)
+
+    const { stats, errMsg } = globalThis.__FileSystem.stat(path, recursive)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+    return stats
   }
 
   open(options: OpenOptions) {
@@ -702,6 +758,50 @@ class FileSystemManager {
     return {
       bytesRead,
       arrayBuffer
+    }
+  }
+
+  write(options: WriteOptions) {
+    const event = "write"
+    try {
+      const res = this.writeSync(options)
+      invokeSuccess(event, options, res)
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  writeSync(options: Omit<WriteOptions, "success" | "fail" | "complete">) {
+    const event = "writeSync"
+
+    const { fd, data, encoding = "utf8", offset = 0, length = 0, position = 0 } = options
+
+    if (!fd || !isString(fd)) {
+      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
+    }
+
+    if (!isString(data) && !isArrayBuffer(data)) {
+      throw new Error(`${event}:fail arrayBuffer must be a string or ArrayBuffer`)
+    }
+
+    const noHyphenEncoding = formatAndValidEncoding(event, encoding)
+
+    const { bytesWritten, errMsg } = globalThis.__FileSystem.write(
+      fd,
+      data,
+      offset,
+      length,
+      position,
+      noHyphenEncoding
+    )
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+
+    return {
+      bytesWritten
     }
   }
 }

@@ -17,21 +17,23 @@ import JavaScriptCore
     
     func mkdir(_ dirPath: String, _ recursive: Bool) -> [String: Any]
     
-    func rmdir(_ dirPath: String, _ recursive: Bool) -> [String : Any]
+    func rmdir(_ dirPath: String, _ recursive: Bool) -> [String: Any]
     
     func readdir(_ dirPath: String) -> [String: Any]
     
     func readFile(_ options: [String: Any]) -> [String: Any]
     
-    func writeFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String : Any]
+    func writeFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String: Any]
     
-    func rename(_ oldPath: String, _ newPath: String) -> [String : Any]
+    func rename(_ oldPath: String, _ newPath: String) -> [String: Any]
     
-    func copy(_ srcPath: String, _ destPath: String) -> [String : Any]
+    func copy(_ srcPath: String, _ destPath: String) -> [String: Any]
     
-    func appendFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String : Any]
+    func appendFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String: Any]
     
-    func unlink(_ filePath: String) -> [String : Any]
+    func unlink(_ filePath: String) -> [String: Any]
+    
+    func stat(_ path: String, _ recursive: Bool) -> [String: Any]
     
     func open(_ filePath: String, _ flag: String) -> [String: Any]
     
@@ -41,7 +43,9 @@ import JavaScriptCore
     
     func ftruncate(_ fd: String, _ length: Int64) -> [String: Any]
     
-    func read(_ fd: String, _ arrayBuffer: JSValue, _ offset: Int64, _ length: Int, _ position: Int64) -> [String : Any]
+    func read(_ fd: String, _ arrayBuffer: JSValue, _ offset: Int, _ length: Int, _ position: Int64) -> [String: Any]
+    
+    func write(_ fd: String, _ data: JSValue, _ offset: Int, _ length: Int, _ position: Int64, _ encoding: String) -> [String: Any]
 }
 
 @objc class FileSystemManagerObject: NSObject, FileSystemManagerObjectExport {
@@ -69,7 +73,7 @@ import JavaScriptCore
         return [ERR_MSG: "no such file or directory, access \(path)"]
     }
     
-    func mkdir(_ dirPath: String, _ recursive: Bool) -> [String : Any] {
+    func mkdir(_ dirPath: String, _ recursive: Bool) -> [String: Any] {
         guard let dirURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: dirPath) else {
             return [ERR_MSG: "invalid dirPath"]
         }
@@ -81,7 +85,7 @@ import JavaScriptCore
         }
     }
     
-    func rmdir(_ dirPath: String, _ recursive: Bool) -> [String : Any] {
+    func rmdir(_ dirPath: String, _ recursive: Bool) -> [String: Any] {
         guard let dirURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: dirPath) else {
             return [ERR_MSG: "invalid dirPath"]
         }
@@ -103,7 +107,7 @@ import JavaScriptCore
         }
     }
     
-    func readdir(_ dirPath: String) -> [String : Any] {
+    func readdir(_ dirPath: String) -> [String: Any] {
         guard let dirURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: dirPath) else {
             return [ERR_MSG: "invalid dirPath"]
         }
@@ -145,7 +149,7 @@ import JavaScriptCore
         }
     }
     
-    func readFile(_ options: [String : Any]) -> [String : Any] {
+    func readFile(_ options: [String: Any]) -> [String: Any] {
         struct Params: Decodable {
             let filePath: String
             let encoding: Encoding?
@@ -190,17 +194,13 @@ import JavaScriptCore
         }
     }
     
-    func writeFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String : Any] {
+    func writeFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String: Any] {
         guard let fileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: filePath) else {
             return [ERR_MSG: "invalid filePath"]
         }
         
         guard let encoding = Encoding(rawValue: encoding) else {
             return [ERR_MSG: "invalid encoding"]
-        }
-        
-        guard FileManager.default.fileExists(atPath: fileURL.path) else {
-            return [ERR_MSG: "no such file or directory \(filePath)"]
         }
         
         var writeData: Data?
@@ -228,7 +228,7 @@ import JavaScriptCore
         }
     }
     
-    func rename(_ oldPath: String, _ newPath: String) -> [String : Any] {
+    func rename(_ oldPath: String, _ newPath: String) -> [String: Any] {
         guard let oldURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: oldPath) else {
             return [ERR_MSG: "invalid oldPath"]
         }
@@ -249,7 +249,7 @@ import JavaScriptCore
         }
     }
     
-    func copy(_ srcPath: String, _ destPath: String) -> [String : Any] {
+    func copy(_ srcPath: String, _ destPath: String) -> [String: Any] {
         guard let srcURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: srcPath) else {
             return [ERR_MSG: "invalid srcPath"]
         }
@@ -270,7 +270,7 @@ import JavaScriptCore
         }
     }
     
-    func appendFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String : Any] {
+    func appendFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String: Any] {
         guard let fileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: filePath) else {
             return [ERR_MSG: "invalid filePath"]
         }
@@ -312,7 +312,7 @@ import JavaScriptCore
         }
     }
     
-    func unlink(_ filePath: String) -> [String : Any] {
+    func unlink(_ filePath: String) -> [String: Any] {
         guard let fileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: filePath) else {
             return [ERR_MSG: "invalid filePath"]
         }
@@ -330,6 +330,61 @@ import JavaScriptCore
         } catch {
             return [ERR_MSG: error.localizedDescription]
         }
+    }
+    
+    func stat(_ path: String, _ recursive: Bool) -> [String: Any] {
+        guard let url = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: path) else {
+            return [ERR_MSG: "invalid filePath"]
+        }
+        
+        func lstat(path: String) -> [String: Any]? {
+            let sb: UnsafeMutablePointer<stat> = UnsafeMutablePointer<stat>.allocate(capacity: 1)
+            let err = Darwin.lstat(path, sb)
+            if err != noErr {
+                return nil
+            }
+            return ["mode": sb.pointee.st_mode,
+                    "size": sb.pointee.st_size,
+                    "lastAccessedTime": sb.pointee.st_atimespec.tv_sec,
+                    "lastModifiedTime": sb.pointee.st_mtimespec.tv_sec]
+        }
+        
+        guard let rootStats = lstat(path: url.path) else { return [ERR_MSG: String(cString: strerror(errno))] }
+            
+        if recursive {
+            if Darwin.opendir(url.path) == nil {
+                return [ERR_MSG: "", "stats": rootStats]
+            }
+            
+            var stats: [[String: Any]] = []
+            stats.append(["path": "/", "stats": rootStats])
+            
+            func listdir(path: String) {
+                guard let dir = Darwin.opendir(path) else { return }
+                while let entry = Darwin.readdir(dir) {
+                    let entryName = withUnsafeBytes(of: entry.pointee.d_name) { rawPtr -> String in
+                        let ptr = rawPtr.baseAddress!.assumingMemoryBound(to: CChar.self)
+                        return String(cString: ptr)
+                    }
+                    
+                    guard entryName != "." && entryName != ".." else { continue }
+                    
+                    let path = "\(path)/\(entryName)"
+                    if let stat = lstat(path: path) {
+                        stats.append(["path": path.replacingOccurrences(of: url.path, with: ""), "stats": stat])
+                    }
+                    
+                    if entry.pointee.d_type == DT_DIR {
+                        listdir(path: path)
+                    }
+                }
+                Darwin.closedir(dir)
+            }
+            
+            listdir(path: url.path)
+            return [ERR_MSG: "", "stats": stats]
+        }
+        return [ERR_MSG: "", "stats": rootStats]
     }
     
     func generateFD() -> String {
@@ -383,7 +438,7 @@ import JavaScriptCore
                                        "lastModifiedTime": sb.pointee.st_mtimespec.tv_sec]]
     }
     
-    func ftruncate(_ fd: String, _ length: Int64) -> [String : Any] {
+    func ftruncate(_ fd: String, _ length: Int64) -> [String: Any] {
         guard let fileNumber = fdMap[fd] else { return [ERR_MSG: "invalid fd: \(fd)"] }
         
         let err = Darwin.ftruncate(fileNumber, length)
@@ -394,13 +449,13 @@ import JavaScriptCore
         return [ERR_MSG: ""]
     }
     
-    func read(_ fd: String, _ arrayBuffer: JSValue, _ offset: Int64, _ length: Int, _ position: Int64) -> [String : Any] {
+    func read(_ fd: String, _ arrayBuffer: JSValue, _ offset: Int, _ length: Int, _ position: Int64) -> [String: Any] {
         guard let fileNumber = fdMap[fd] else { return [ERR_MSG: "invalid fd: \(fd)"] }
         
         var bytes = arrayBuffer.toArrayBuffer()!
         
         if offset > 0 {
-            bytes = bytes.advanced(by: Int(offset))
+            bytes = bytes.advanced(by: offset)
         }
         
         if position > 0 {
@@ -415,6 +470,55 @@ import JavaScriptCore
                 return [ERR_MSG: String(cString: strerror(errno))]
             }
             return [ERR_MSG: "", "bytesRead": bytesRead]
+        }
+    }
+    
+    func write(_ fd: String,
+               _ data: JSValue,
+               _ offset: Int,
+               _ length: Int,
+               _ position: Int64,
+               _ encoding: String) -> [String: Any] {
+        guard let fileNumber = fdMap[fd] else { return [ERR_MSG: "invalid fd: \(fd)"] }
+        
+        guard let encoding = Encoding.init(rawValue: encoding) else { return [ERR_MSG: "invalid encoding"] }
+        
+        var writeData: Data?
+        if data.isString {
+            let string = data.toString()!
+            if let encoding = encoding.toFoundation() {
+                writeData = string.data(using: encoding)
+            } else if encoding == .base64 {
+                writeData = Data(base64Encoded: string)
+            } else if encoding == .hex {
+                writeData = Data(hex: string)
+            }
+        } else if let bytes = data.toArrayBuffer() {
+            writeData = Data(bytes: bytes, count: data.getArrayBufferLength())
+            
+            let start = offset > 0 ? offset : 0
+            let len = length > 0 ? length : writeData!.count
+            writeData = writeData![start..<len]
+        }
+        
+        if writeData == nil {
+            return [ERR_MSG: "invalid data"]
+        }
+        
+        let bytes = writeData!.bytes
+        
+        if position > 0 {
+            let bytesWritten = Darwin.pwrite(fileNumber, bytes, bytes.count, position)
+            if bytesWritten == -1 && errno != noErr {
+                return [ERR_MSG: String(cString: strerror(errno))]
+            }
+            return [ERR_MSG: "", "bytesWritten": bytesWritten]
+        } else {
+            let bytesWritten = Darwin.write(fileNumber, bytes, bytes.count)
+            if bytesWritten == -1 && errno != noErr {
+                return [ERR_MSG: String(cString: strerror(errno))]
+            }
+            return [ERR_MSG: "", "bytesWritten": bytesWritten]
         }
     }
 }

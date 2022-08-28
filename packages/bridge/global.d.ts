@@ -44,6 +44,8 @@ interface FileSystem {
 
   unlink(filePath: string): FileSystemGeneralResult
 
+  stat(path: string, recursive: boolean): FileSystemGeneralResult & { stats: Stats | Stats[] }
+
   open(filePath: string, flag: string): FileSystemGeneralResult & { fd: string }
 
   close(fd: string): FileSystemGeneralResult
@@ -59,6 +61,15 @@ interface FileSystem {
     length: number,
     position: number
   ): FileSystemGeneralResult & { bytesRead: number }
+
+  write(
+    fd: string,
+    data: string | ArrayBuffer,
+    offset: number,
+    length: number,
+    position: number,
+    encoding: string
+  ): FileSystemGeneralResult & { bytesWritten: number }
 }
 
 export interface NativeSDK {
