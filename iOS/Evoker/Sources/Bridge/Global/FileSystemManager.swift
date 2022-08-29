@@ -35,6 +35,8 @@ import JavaScriptCore
     
     func stat(_ path: String, _ recursive: Bool) -> [String: Any]
     
+    func saveFile(_ tempFilePath: String, _ filePath: String) -> [String: Any]
+    
     func open(_ filePath: String, _ flag: String) -> [String: Any]
     
     func close(_ fd: String) -> [String: Any]
@@ -46,20 +48,24 @@ import JavaScriptCore
     func read(_ fd: String, _ arrayBuffer: JSValue, _ offset: Int, _ length: Int, _ position: Int64) -> [String: Any]
     
     func write(_ fd: String, _ data: JSValue, _ offset: Int, _ length: Int, _ position: Int64, _ encoding: String) -> [String: Any]
+    
 }
 
 @objc class FileSystemManagerObject: NSObject, FileSystemManagerObjectExport {
     
     let ERR_MSG = "errMsg"
     
-    var appId = ""
+    var appId = "" {
+        didSet {
+            try? FilePath.createDirectory(at: FilePath.usr(appId: appId))
+            try? FilePath.createDirectory(at: FilePath.store(appId: appId))
+        }
+    }
     
     lazy var fdMap: [String: Int32] = [:]
     
     override required init() {
         super.init()
-        
-        try? FilePath.createDirectory(at: FilePath.usr(appId: appId))
     }
     
     func access(_ path: String) -> [String: Any] {
@@ -67,10 +73,11 @@ import JavaScriptCore
             return [ERR_MSG: "invalid path"]
         }
         
-        if FileManager.default.fileExists(atPath: filePath.path) {
-            return [ERR_MSG: ""]
+        guard FileManager.default.fileExists(atPath: filePath.path) else {
+            return [ERR_MSG: "no such file or directory, access \(path)"]
         }
-        return [ERR_MSG: "no such file or directory, access \(path)"]
+        
+        return [ERR_MSG: ""]
     }
     
     func mkdir(_ dirPath: String, _ recursive: Bool) -> [String: Any] {
@@ -90,9 +97,10 @@ import JavaScriptCore
             return [ERR_MSG: "invalid dirPath"]
         }
         
-        if !FileManager.default.fileExists(atPath: dirURL.path) {
+        guard FileManager.default.fileExists(atPath: dirURL.path) else {
             return [ERR_MSG: "no such file or directory \(dirPath)"]
         }
+        
         do {
             if !recursive {
                 let files = try FileManager.default.contentsOfDirectory(atPath: dirURL.path)
@@ -132,12 +140,13 @@ import JavaScriptCore
         case latin1
         case ucs2
         case binary
+        case none
         
         func toFoundation() -> String.Encoding? {
             switch self {
             case .ascii:
                 return .ascii
-            case .utf8:
+            case .utf8, .binary:
                 return .utf8
             case .utf16le ,.ucs2:
                 return .utf16LittleEndian
@@ -163,9 +172,10 @@ import JavaScriptCore
             return [ERR_MSG: "invalid filePath"]
         }
         
-        if !FileManager.default.fileExists(atPath: fileURL.path) {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
             return [ERR_MSG: "no such file or directory \(params.filePath)"]
         }
+        
         do {
             var data = try Data(contentsOf: fileURL)
             let position = params.position ?? 0
@@ -173,7 +183,7 @@ import JavaScriptCore
             data = data[position..<length]
             
             var result: Any?
-            if let encoding = params.encoding {
+            if let encoding = params.encoding, encoding != .none {
                 if let encoding = encoding.toFoundation() {
                     result = String(data: data, encoding: encoding)
                 } else if encoding == .base64 {
@@ -237,7 +247,7 @@ import JavaScriptCore
             return [ERR_MSG: "invalid newPath"]
         }
         
-        if !FileManager.default.fileExists(atPath: oldURL.path) {
+        guard FileManager.default.fileExists(atPath: oldURL.path) else {
             return [ERR_MSG: "no such file or directory \(oldPath)"]
         }
         
@@ -258,7 +268,7 @@ import JavaScriptCore
             return [ERR_MSG: "invalid destPath"]
         }
         
-        if !FileManager.default.fileExists(atPath: srcURL.path) {
+        guard FileManager.default.fileExists(atPath: srcURL.path) else {
             return [ERR_MSG: "no such file or directory \(srcPath)"]
         }
         
@@ -317,7 +327,7 @@ import JavaScriptCore
             return [ERR_MSG: "invalid filePath"]
         }
         
-        if !FileManager.default.fileExists(atPath: fileURL.path) {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
             return [ERR_MSG: "no such file or directory \(filePath)"]
         }
         
@@ -385,6 +395,39 @@ import JavaScriptCore
             return [ERR_MSG: "", "stats": stats]
         }
         return [ERR_MSG: "", "stats": rootStats]
+    }
+    
+    func saveFile(_ tempFilePath: String, _ filePath: String) -> [String : Any] {
+        guard let tempFileURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: tempFilePath) else {
+            return [ERR_MSG: "invalid tempFilePath"]
+        }
+        
+        guard FileManager.default.fileExists(atPath: tempFileURL.path) else {
+            return [ERR_MSG: "no such file or directory \(tempFileURL)"]
+        }
+        
+        var destURL: URL
+        var savedFilePath: String
+        if !filePath.isEmpty {
+            if let dest = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: filePath) {
+                destURL = dest
+                savedFilePath = filePath
+            } else {
+                return [ERR_MSG: "invalid filePath"]
+            }
+        } else {
+            let fileName = tempFileURL.lastPathComponent
+            let (newEKFile, dest) = FilePath.generateStoreEKFilePath(appId: appId, filename: fileName)
+            destURL = dest
+            savedFilePath = newEKFile
+        }
+        
+        do {
+            try FileManager.default.moveItem(at: tempFileURL, to: destURL)
+            return [ERR_MSG: "", "savedFilePath": savedFilePath]
+        } catch {
+            return [ERR_MSG: "\(error.localizedDescription)"]
+        }
     }
     
     func generateFD() -> String {
@@ -494,11 +537,20 @@ import JavaScriptCore
                 writeData = Data(hex: string)
             }
         } else if let bytes = data.toArrayBuffer() {
-            writeData = Data(bytes: bytes, count: data.getArrayBufferLength())
+            let len = data.getArrayBufferLength()
+            writeData = Data(bytes: bytes, count: len)
             
             let start = offset > 0 ? offset : 0
-            let len = length > 0 ? length : writeData!.count
-            writeData = writeData![start..<len]
+            if start > len {
+                return [ERR_MSG: "offset is out of bounds, requires <= \(len)"]
+            }
+            
+            let end = start + (length > 0 ? length : len)
+            if end > len {
+                return [ERR_MSG: "offset + length is out of bounds, requires <= \(len)"]
+            }
+            
+            writeData = writeData![start..<end]
         }
         
         if writeData == nil {

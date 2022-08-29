@@ -45,11 +45,8 @@ class KeepActiveThread: NSObject {
         port = nil
     }
     
-    func exec(execute work: @escaping @convention(block) () -> Void) {
-        perform(#selector(_exec(execute:)),
-                         on: thread,
-                         with: work,
-                         waitUntilDone: false)
+    func async(execute work: @escaping @convention(block) () -> Void) {
+        perform(#selector(_exec(execute:)), on: thread, with: work, waitUntilDone: false)
     }
     
     @objc

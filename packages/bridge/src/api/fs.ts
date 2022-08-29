@@ -1,8 +1,10 @@
 import { GeneralCallbackResult, invokeSuccess, invokeFailure } from "../async"
-import { isArray, isString } from "@vue/shared"
+import { isString } from "@vue/shared"
 import { ErrorCodes, errorMessage } from "../errors"
-import { EKFILE_SCHEME, USER_DATA_PATH } from "./const"
+import { EKFILE_SCHEME, EKFILE_TMP, USER_DATA_PATH } from "./const"
 import { isArrayBuffer } from "@evoker/shared"
+import { getFileInfo, getSavedFileList, removeSavedFile } from "./file"
+import type { GetFileInfoOptions, GetSavedFileListOptions, RemoveSavedFileOptions } from "./file"
 
 const S_IFREG = 32768
 
@@ -196,6 +198,24 @@ type StatSuccessCallback = (res: StatSuccessCallbackResult) => void
 type StatFailCallback = (res: GeneralCallbackResult) => void
 
 type StatCompleteCallback = (res: GeneralCallbackResult) => void
+
+interface SaveFileOptions {
+  tempFilePath: string
+  filePath?: string
+  success?: SaveFileSuccessCallback
+  fail?: SaveFileFailCallback
+  complete?: SaveFileCompleteCallback
+}
+
+interface SaveFileSuccessCallbackResult {
+  savedFilePath: string
+}
+
+type SaveFileSuccessCallback = (res: SaveFileSuccessCallbackResult) => void
+
+type SaveFileFailCallback = (res: GeneralCallbackResult) => void
+
+type SaveFileCompleteCallback = (res: GeneralCallbackResult) => void
 
 type Flag = "a" | "ax" | "a+" | "ax+" | "as" | "as+" | "r" | "r+" | "w" | "wx" | "w+" | "wx+"
 
@@ -430,7 +450,10 @@ class FileSystemManager {
 
     validFilePath(event, filePath, "filePath", USER_DATA_PATH)
 
-    const noHyphenEncoding = formatAndValidEncoding(event, encoding)
+    let noHyphenEncoding = "none"
+    if (encoding) {
+      noHyphenEncoding = formatAndValidEncoding(event, encoding)
+    }
 
     const { data, errMsg } = globalThis.__FileSystem.readFile({
       filePath,
@@ -597,6 +620,34 @@ class FileSystemManager {
       throw new Error(`${event}:fail ${errMsg}`)
     }
     return stats
+  }
+
+  saveFile(options: SaveFileOptions) {
+    const event = "saveFile"
+    try {
+      const savedFilePath = this.saveFileSync(options.tempFilePath, options.filePath)
+      invokeSuccess(event, options, { savedFilePath })
+    } catch (error) {
+      if (error instanceof Error) {
+        invokeFailure(event, options, error.message.replace(`${event}Sync:fail `, ""))
+      }
+    }
+  }
+
+  saveFileSync(tempFilePath: string, filePath: string = "") {
+    const event = "saveFileSync"
+
+    validFilePath(event, tempFilePath, "tempFilePath", EKFILE_TMP)
+
+    if (filePath) {
+      validFilePath(event, filePath, "filePath", USER_DATA_PATH)
+    }
+
+    const { savedFilePath, errMsg } = globalThis.__FileSystem.saveFile(tempFilePath, filePath)
+    if (errMsg) {
+      throw new Error(`${event}:fail ${errMsg}`)
+    }
+    return savedFilePath
   }
 
   open(options: OpenOptions) {
@@ -803,6 +854,18 @@ class FileSystemManager {
     return {
       bytesWritten
     }
+  }
+
+  getFileInfo(options: Omit<GetFileInfoOptions, "digestAlgorithm">) {
+    getFileInfo(options)
+  }
+
+  getSavedFileList(options: GetSavedFileListOptions) {
+    getSavedFileList(options)
+  }
+
+  removeSavedFile(options: RemoveSavedFileOptions) {
+    removeSavedFile(options)
   }
 }
 

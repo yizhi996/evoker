@@ -39,7 +39,7 @@ public class JSContext {
     
     let arrayBufferRegister = ArrayBufferRegister()
     
-    private var workThread = KeepActiveThread()
+    private let workThread = KeepActiveThread()
     
     private var isLoading = true
     
@@ -54,7 +54,7 @@ public class JSContext {
             self?.publishHandler?(message)
         }
         
-        workThread.exec {
+        workThread.async {
             self.createJSContext()
         }
     }
@@ -89,7 +89,7 @@ public class JSContext {
         if isLoading {
             pendingFunctions.append(block)
         } else {
-            workThread.exec(execute: block)
+            workThread.async(execute: block)
         }
     }
     

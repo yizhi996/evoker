@@ -26,7 +26,11 @@ interface SaveFileOptions {
   complete?: SaveFileCompleteCallback
 }
 
-type SaveFileSuccessCallback = (res: GeneralCallbackResult) => void
+interface SaveFileSuccessCallbackResult {
+  savedFilePath: string
+}
+
+type SaveFileSuccessCallback = (res: SaveFileSuccessCallbackResult) => void
 
 type SaveFileFailCallback = (res: GeneralCallbackResult) => void
 
@@ -54,7 +58,7 @@ export function saveFile<T extends SaveFileOptions = SaveFileOptions>(
   }, options)
 }
 
-interface RemoveSavedFileOptions {
+export interface RemoveSavedFileOptions {
   filePath: string
   success?: RemoveSavedFileSuccessCallback
   fail?: RemoveSavedFileFailCallback
@@ -89,7 +93,7 @@ export function removeSavedFile<T extends RemoveSavedFileOptions = RemoveSavedFi
   }, options)
 }
 
-interface GetSavedFileListOptions {
+export interface GetSavedFileListOptions {
   success?: GetSavedFileListSuccessCallback
   fail?: GetSavedFileListFailCallback
   complete?: GetSavedFileListCompleteCallback
@@ -162,7 +166,7 @@ export function getSavedFileInfo<T extends GetSavedFileInfoOptions = GetSavedFil
   }, options)
 }
 
-interface GetFileInfoOptions {
+export interface GetFileInfoOptions {
   filePath: string
   digestAlgorithm?: "md5" | "sha1"
   success?: GetFileInfoSuccessCallback

@@ -52,10 +52,6 @@ enum FileAPI: String, CaseIterableAPI {
             let fileName = filePath.lastPathComponent
             let (newEKFile, dest) = FilePath.generateStoreEKFilePath(appId: appService.appId, filename: fileName)
             do {
-                let destDirectory = dest.deletingPathExtension()
-                if !FileManager.default.fileExists(atPath: destDirectory.path) {
-                    try FileManager.default.createDirectory(at: destDirectory, withIntermediateDirectories: true)
-                }
                 try FileManager.default.moveItem(at: filePath, to: dest)
                 bridge.invokeCallbackSuccess(args: args, result: ["savedFilePath": newEKFile])
             } catch {

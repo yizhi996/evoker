@@ -46,6 +46,11 @@ interface FileSystem {
 
   stat(path: string, recursive: boolean): FileSystemGeneralResult & { stats: Stats | Stats[] }
 
+  saveFile(
+    tempFilePath: string,
+    filePath: string
+  ): FileSystemGeneralResult & { savedFilePath: string }
+
   open(filePath: string, flag: string): FileSystemGeneralResult & { fd: string }
 
   close(fd: string): FileSystemGeneralResult
