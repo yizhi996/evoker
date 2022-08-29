@@ -29,7 +29,7 @@ export default defineComponent({
     const container = ref<HTMLElement>()
     const imageEl = ref<HTMLElement>()
 
-    let imageSize = { width: 0, height: 0 }
+    const imageSize = { width: 0, height: 0 }
 
     watch(
       () => props.mode,
@@ -57,12 +57,24 @@ export default defineComponent({
     })
 
     const getSrc = () => {
-      if (isDevtools) {
-        return props.src
-      } else if (props.webp) {
-        return "webp" + props.src
+      const { src, webp } = props
+      if (!src) {
+        imageSize.width = 0
+        imageSize.height = 0
+        if (imageEl.value) {
+          imageEl.value.style.backgroundImage = ""
+        }
+        if (container.value) {
+          container.value.style.width = ""
+          container.value.style.height = ""
+        }
       }
-      return props.src
+      if (isDevtools) {
+        return src
+      } else if (webp) {
+        return "webp" + src
+      }
+      return src
     }
 
     onMounted(() => {
@@ -123,10 +135,10 @@ export default defineComponent({
 
     const lazyLoadImage = () => {
       const src = getSrc()
-      if (!container.value || !src) {
+      if (!src) {
         return
       }
-      addIntersectionObserve(container.value, src, onLoad)
+      container.value && addIntersectionObserve(container.value, src, onLoad)
     }
 
     const immediateLoadImage = () => {
