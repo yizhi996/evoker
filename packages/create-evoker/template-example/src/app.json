@@ -401,6 +401,12 @@
       "style": {
         "navigationBarTitleText": "WebSocket"
       }
+    },
+    {
+      "path": "pages/API/File",
+      "style": {
+        "navigationBarTitleText": "File"
+      }
     }
   ]
 }

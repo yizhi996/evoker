@@ -73,7 +73,7 @@ const list = reactive([
       { name: "音频", url: "./Audio" },
       { name: "录音", url: "./Voice" },
       { name: "背景音频", url: "not supported" },
-      { name: "文件", url: "not supported" },
+      { name: "文件", url: "./File" },
       { name: "视频", url: "./Video" },
       { name: "动态加载字体", url: "./LoadFontFace" }
     ]

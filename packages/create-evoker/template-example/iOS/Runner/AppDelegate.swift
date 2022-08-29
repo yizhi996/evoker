@@ -69,6 +69,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                            "avatarUrl": "https://file.lilithvue.com/lilith-test-assets/avatar-new.png"]
             bridge.invokeCallbackSuccess(args: args, result: ["userInfo": userInfo])
         }
+
+        config.hooks.app.shareAppMessage = { appService, content in
+            NotifyType.success("title: \(content.title)\npath: \(content.path)\n请在 Native 自行实现转发界面").show()
+        }
         
         config.dev.useDevServer = true
         Engine.shared.connectDevService()

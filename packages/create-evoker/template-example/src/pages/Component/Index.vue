@@ -80,7 +80,7 @@ const list = reactive([
   }
 ])
 
-const { onLoad, onShow, onReady, onHide, onUnload } = usePage()
+const { onLoad, onShow, onReady, onHide, onUnload, onShareAppMessage } = usePage()
 
 onLoad(options => {
   console.log("Page onLoad: ", options)
@@ -100,5 +100,9 @@ onHide(() => {
 
 onUnload(() => {
   console.log("Page onUnload")
+})
+
+onShareAppMessage(() => {
+  return { title: "!! Evoker !!" }
 })
 </script>
