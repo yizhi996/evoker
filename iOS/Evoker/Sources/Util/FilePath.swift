@@ -126,7 +126,7 @@ public extension FilePath {
         let store = scheme + "store_"
         let tmp = scheme + "tmp_"
         if filePath.hasPrefix(usr) {
-            let start = filePath.index(filePath.startIndex, offsetBy: usr.count)
+            let start = filePath.index(filePath.startIndex, offsetBy: usr.count + (filePath.hasPrefix(usr + "/") ? 1 : 0))
             let path = filePath[start..<filePath.endIndex]
             return FilePath.usr(appId: appId, userId: userId, path: String(path))
         } else if filePath.hasPrefix(store) {

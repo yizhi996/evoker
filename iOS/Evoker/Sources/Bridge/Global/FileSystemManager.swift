@@ -423,6 +423,9 @@ import JavaScriptCore
         }
         
         do {
+            if FileManager.default.fileExists(atPath: destURL.path) {
+                try FileManager.default.removeItem(at: destURL)
+            }
             try FileManager.default.moveItem(at: tempFileURL, to: destURL)
             return [ERR_MSG: "", "savedFilePath": savedFilePath]
         } catch {
