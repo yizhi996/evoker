@@ -4,8 +4,8 @@ use_frameworks!
     
 target 'Runner' do
   
-  pod 'Evoker', '~> 0.10.0'
+  pod 'Evoker', '~> 0.11.0'
 
-  pod 'Evoker/Map', '~> 0.10.0'
+  pod 'Evoker/Map', '~> 0.11.0'
   
 end

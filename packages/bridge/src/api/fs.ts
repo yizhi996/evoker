@@ -619,7 +619,7 @@ class FileSystemManager {
     if (errMsg) {
       throw new Error(`${event}:fail ${errMsg}`)
     }
-    return stats
+    return stats as Stats | Stats[]
   }
 
   saveFile(options: SaveFileOptions) {
@@ -733,14 +733,14 @@ class FileSystemManager {
       throw new Error(`${event}:fail ${errMsg}`)
     }
 
-    ;(stats as Stats).isFile = () => {
+    const res = stats as Stats
+    res.isFile = () => {
       return (stats.mode & S_IFREG) === S_IFREG
     }
-    ;(stats as Stats).isDirectory = () => {
+    res.isDirectory = () => {
       return (stats.mode & S_IFDIR) === S_IFDIR
     }
-
-    return stats
+    return res
   }
 
   ftruncate(options: FtruncateOptions) {
