@@ -95,6 +95,8 @@ public enum EKError: Error {
         
         case invalidFilePath(String)
         
+        case outOfRange(String)
+        
         case custom(String)
     }
 }
@@ -169,6 +171,8 @@ extension EKError.BridgeFailureReason {
             return "content not found"
         case .invalidFilePath(let filePath):
             return "filePath \(filePath) is invalid"
+        case .outOfRange(let name):
+            return "\(name) out of range"
         case .custom(let error):
             return "\(error)"
         }

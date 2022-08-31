@@ -159,6 +159,12 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         let tabBarView = appService.uiControl.tabBarView
+        if params.index < 0 || params.index >= tabBarView.tabBarItems.count {
+            let error = EKError.bridgeFailed(reason: .outOfRange("index"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
         let item = tabBarView.tabBarItems[params.index]
         item.badgeView.showRedDot()
         bridge.invokeCallbackSuccess(args: args)
@@ -177,6 +183,12 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         let tabBarView = appService.uiControl.tabBarView
+        if params.index < 0 || params.index >= tabBarView.tabBarItems.count {
+            let error = EKError.bridgeFailed(reason: .outOfRange("index"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
         let item = tabBarView.tabBarItems[params.index]
         item.badgeView.hideRedDot()
         bridge.invokeCallbackSuccess(args: args)
@@ -196,6 +208,12 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         let tabBarView = appService.uiControl.tabBarView
+        if params.index < 0 || params.index >= tabBarView.tabBarItems.count {
+            let error = EKError.bridgeFailed(reason: .outOfRange("index"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
         let item = tabBarView.tabBarItems[params.index]
         item.badgeView.showBadge(params.text)
         bridge.invokeCallbackSuccess(args: args)
@@ -214,6 +232,12 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         let tabBarView = appService.uiControl.tabBarView
+        if params.index < 0 || params.index >= tabBarView.tabBarItems.count {
+            let error = EKError.bridgeFailed(reason: .outOfRange("index"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
         let item = tabBarView.tabBarItems[params.index]
         item.badgeView.hideBadge()
         bridge.invokeCallbackSuccess(args: args)
@@ -235,6 +259,12 @@ enum TabBarAPI: String, CaseIterableAPI {
         }
         
         let tabBarView = appService.uiControl.tabBarView
+        if params.index < 0 || params.index >= tabBarView.tabBarItems.count {
+            let error = EKError.bridgeFailed(reason: .outOfRange("index"))
+            bridge.invokeCallbackFail(args: args, error: error)
+            return
+        }
+        
         let item = tabBarView.tabBarItems[params.index]
         if let text = params.text {
             item.setTitle(text, for: .normal)

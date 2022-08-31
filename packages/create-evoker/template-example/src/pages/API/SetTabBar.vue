@@ -27,11 +27,11 @@ const isSetTabBarBadge = ref(false)
 const setTabBarBadge = () => {
   if (isSetTabBarBadge.value) {
     isSetTabBarBadge.value = false
-    ek.removeTabBarBadge({ index: 2 })
+    ek.removeTabBarBadge({ index: 1 })
   } else {
     isSetTabBarBadge.value = true
     ek.setTabBarBadge({
-      index: 2,
+      index: 1,
       text: "1"
     })
   }
@@ -42,10 +42,10 @@ const isShowTabBarRedDot = ref(false)
 const showTabBarRedDot = () => {
   if (isShowTabBarRedDot.value) {
     isShowTabBarRedDot.value = false
-    ek.hideTabBarRedDot({ index: 2 })
+    ek.hideTabBarRedDot({ index: 1 })
   } else {
     isShowTabBarRedDot.value = true
-    ek.showTabBarRedDot({ index: 2 })
+    ek.showTabBarRedDot({ index: 1 })
   }
 }
 
@@ -74,11 +74,11 @@ const isSetTabBarItem = ref(false)
 const setTabBarItem = () => {
   if (isSetTabBarItem.value) {
     isSetTabBarItem.value = false
-    ek.setTabBarItem({ index: 2, text: "接口", selectedIconPath: "assets/icon_API_HL.png" })
+    ek.setTabBarItem({ index: 1, text: "接口", selectedIconPath: "assets/icon_API_HL.png" })
   } else {
     isSetTabBarItem.value = true
     ek.setTabBarItem({
-      index: 2,
+      index: 1,
       text: "API",
       selectedIconPath:
         "https://file.lilithvue.com/lilith-test-assets/wallhaven-43y68y.jpg?imageMogr2/thumbnail/81x"
