@@ -568,13 +568,12 @@ export default defineComponent({
       } else if (currentGestureEvent === GestureEvents.VOLUME) {
         const position = touch.startY.value - (touch.deltaY.value + touch.startY.value)
         const percent = position / (rect.height * 0.5)
-        const value = clamp(systemVolume.value + percent, 0, 1)
+        const volume = clamp(systemVolume.value + percent, 0, 1)
 
         touch.startY.value = touch.deltaY.value + touch.startY.value
 
-        setVolume({ volume: value })
-
-        systemVolume.value = value
+        setVolume({ volume })
+        systemVolume.value = volume
 
         clearTimeout(controlAutoHiddenTimer)
         isShowControl.value = true

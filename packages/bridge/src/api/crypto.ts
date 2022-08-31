@@ -18,15 +18,27 @@ const enum Events {
 }
 
 interface RSAOptions {
+  /** 使用 RSA 加密还是 RSA 解密
+   *
+   * 可选值：
+   * - encrypt: 加密
+   * - decrypt: 解密
+   */
   action: "encrypt" | "decrypt"
+  /** 要处理的文本，加密为原始文本，解密为 Base64 编码格式文本 */
   text: string
+  /** RSA 密钥，加密使用公钥，解密使用私钥 */
   key: string
+  /** 接口调用成功的回调函数 */
   success?: RSASuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: RSAFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: RSACompleteCallback
 }
 
 interface RSASuccessCallbackResult {
+  /** 经过处理过后得到的文本，加密为 Base64编码文本，解密为原始文本 */
   text: string
 }
 
@@ -36,6 +48,7 @@ type RSAFailCallback = (res: GeneralCallbackResult) => void
 
 type RSACompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 非对称加解密 */
 export function rsa<T extends RSAOptions = RSAOptions>(options: T): AsyncReturn<T, RSAOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.RSA
@@ -62,13 +75,18 @@ export function rsa<T extends RSAOptions = RSAOptions>(options: T): AsyncReturn<
 }
 
 interface GetRandomValuesOptions {
+  /** 整数，生成随机数的字节数，最大 1048576 */
   length: number
+  /** 接口调用成功的回调函数 */
   success?: GetRandomValuesSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetRandomValuesFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetRandomValuesCompleteCallback
 }
 
 interface GetRandomValuesSuccessCallbackResult {
+  /** 随机数内容，长度为传入的字节数 */
   randomValues: ArrayBuffer
 }
 
@@ -78,6 +96,7 @@ type GetRandomValuesFailCallback = (res: GeneralCallbackResult) => void
 
 type GetRandomValuesCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 获取密码学安全随机数 */
 export function getRandomValues<T extends GetRandomValuesOptions = GetRandomValuesOptions>(
   options: T
 ): AsyncReturn<T, GetRandomValuesOptions> {

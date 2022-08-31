@@ -27,12 +27,16 @@ export interface AuthSetting {
 }
 
 interface GetSettingOptions {
+  /** 接口调用成功的回调函数 */
   success?: GetSettingSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetSettingFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetSettingCompleteCallback
 }
 
 interface GetSettingSuccessCallbackResult {
+  /** 用户授权 */
   authSetting: AuthSetting
 }
 
@@ -42,6 +46,7 @@ type GetSettingFailCallback = (res: GeneralCallbackResult) => void
 
 type GetSettingCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 获取用户的当前设置。返回值中只会出现小程序已经向用户请求过的权限 */
 export function getSetting<T extends GetSettingOptions = GetSettingOptions>(
   options: T
 ): AsyncReturn<T, GetSettingOptions> {
@@ -54,9 +59,13 @@ export function getSetting<T extends GetSettingOptions = GetSettingOptions>(
 }
 
 interface AuthorizeOptions {
+  /** 需要获取权限的 scope，详见 scope 列表 */
   scope: string
+  /** 接口调用成功的回调函数 */
   success?: AuthorizeSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: AuthorizeFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: AuthorizeCompleteCallback
 }
 

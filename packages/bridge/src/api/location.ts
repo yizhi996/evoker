@@ -19,8 +19,11 @@ interface GetLocationOptions {
   altitude?: boolean
   isHighAccuracy?: boolean
   highAccuracyExpireTime?: number
+  /** 接口调用成功的回调函数 */
   success?: GetLocationSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetLocationFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetLocationCompleteCallback
 }
 
@@ -57,8 +60,11 @@ export function getLocation<T extends GetLocationOptions = GetLocationOptions>(
 
 interface StartLocationUpdateOptions {
   type?: "wgs84" | "gcj02"
+  /** 接口调用成功的回调函数 */
   success?: StartLocationUpdateSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: StartLocationUpdateFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: StartLocationUpdateCompleteCallback
 }
 
@@ -84,8 +90,11 @@ export function startLocationUpdate<
 }
 
 interface StopLocationUpdateOptions {
+  /** 接口调用成功的回调函数 */
   success?: StopLocationUpdateSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: StopLocationUpdateFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: StopLocationUpdateCompleteCallback
 }
 

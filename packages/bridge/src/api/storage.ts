@@ -114,8 +114,11 @@ function dataToDataType(data: unknown) {
 
 interface GetStorageOptions<T> {
   key: string
+  /** 接口调用成功的回调函数 */
   success?: GetStorageSuccessCallback<T>
+  /** 接口调用失败的回调函数 */
   fail?: GetStorageFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetStorageCompleteCallback
 }
 
@@ -175,8 +178,11 @@ export function getStorageSync(key: string): any {
 interface SetStorageOptions<T> {
   key: string
   data: T
+  /** 接口调用成功的回调函数 */
   success?: SetStorageSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: SetStorageFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: SetStorageCompleteCallback
 }
 
@@ -229,8 +235,11 @@ export function setStorageSync<T = any>(key: string, data: T) {
 
 interface RemoveStorageOptions {
   key: string
+  /** 接口调用成功的回调函数 */
   success?: RemoveStorageSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: RemoveStorageFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: RemoveStorageCompleteCallback
 }
 
@@ -268,8 +277,11 @@ export function removeStorageSync(key: string) {
 }
 
 interface ClearStorageOptions {
+  /** 接口调用成功的回调函数 */
   success?: ClearStorageSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: ClearStorageFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: ClearStorageCompleteCallback
 }
 
@@ -299,8 +311,11 @@ export function clearStorageSync() {
 }
 
 interface GetStorageInfoOptions {
+  /** 接口调用成功的回调函数 */
   success?: GetStorageInfoSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetStorageInfoFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetStorageInfoCompleteCallback
 }
 

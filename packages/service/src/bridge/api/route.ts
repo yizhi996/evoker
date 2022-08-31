@@ -85,9 +85,13 @@ const enum Events {
 }
 
 interface NavigateToOptions {
+  /** 需要跳转的应用内非 tabBar 的页面的路径 (代码包路径), 路径后可以带参数 */
   url: string
+  /** 接口调用成功的回调函数 */
   success?: NavigateToSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: NavigateToFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: NavigateToCompleteCallback
 }
 
@@ -97,6 +101,7 @@ type NavigateToFailCallback = (res: GeneralCallbackResult) => void
 
 type NavigateToCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 保留当前页面，跳转到应用内的某个页面。但是不能跳到 tabBar 页面 */
 export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
   options: T
 ): AsyncReturn<T, NavigateToOptions> {
@@ -147,9 +152,13 @@ export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
 }
 
 interface NavigateBackOptions {
+  /** 返回的页面数，如果 delta 大于现有页面数，则返回到首页 */
   delta?: number
+  /** 接口调用成功的回调函数 */
   success?: NavigateBackSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: NavigateBackFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: NavigateBackCompleteCallback
 }
 
@@ -159,6 +168,7 @@ type NavigateBackFailCallback = (res: GeneralCallbackResult) => void
 
 type NavigateBackCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 关闭当前页面，返回上一页面或多级页面 */
 export function navigateBack<T extends NavigateBackOptions = NavigateBackOptions>(
   options: T
 ): AsyncReturn<T, NavigateBackOptions> {
@@ -182,9 +192,13 @@ export function navigateBack<T extends NavigateBackOptions = NavigateBackOptions
 }
 
 interface RedirectToOptions {
+  /** 需要跳转的应用内非 tabBar 的页面的路径 (代码包路径), 路径后可以带参数 */
   url: string
+  /** 接口调用成功的回调函数 */
   success?: RedirectToSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: RedirectToFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: RedirectToCompleteCallback
 }
 
@@ -194,6 +208,7 @@ type RedirectToFailCallback = (res: GeneralCallbackResult) => void
 
 type RedirectToCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 关闭当前页面，跳转到应用内的某个页面。但是不允许跳转到 tabBar 页面 */
 export function redirectTo<T extends RedirectToOptions = RedirectToOptions>(
   options: T
 ): AsyncReturn<T, RedirectToOptions> {
@@ -233,9 +248,13 @@ export function redirectTo<T extends RedirectToOptions = RedirectToOptions>(
 }
 
 interface ReLaunchOptions {
+  /** 需要跳转的应用内页面路径 (代码包路径)，路径后可以带参数 */
   url: string
+  /** 接口调用成功的回调函数 */
   success?: ReLaunchSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: ReLaunchFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: ReLaunchCompleteCallback
 }
 
@@ -245,6 +264,7 @@ type ReLaunchFailCallback = (res: GeneralCallbackResult) => void
 
 type ReLaunchCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 关闭所有页面，打开到应用内的某个页面，并非真的重启应用 */
 export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
   options: T
 ): AsyncReturn<T, ReLaunchOptions> {
@@ -283,9 +303,13 @@ export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
 }
 
 interface SwitchTabOptions {
+  /** 需要跳转的 tabBar 页面的路径 (代码包路径)（需在 app.json 的 tabBar 字段定义的页面），路径后不能带参数 */
   url: string
+  /** 接口调用成功的回调函数 */
   success?: SwitchTabSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: SwitchTabFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: SwitchTabCompleteCallback
 }
 
@@ -295,6 +319,7 @@ type SwitchTabFailCallback = (res: GeneralCallbackResult) => void
 
 type SwitchTabCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面 */
 export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
   options: T
 ): AsyncReturn<T, SwitchTabOptions> {

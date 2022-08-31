@@ -17,12 +17,16 @@ const enum Events {
 }
 
 interface GetClipboardDataOptions {
+  /** 接口调用成功的回调函数 */
   success?: GetClipboardDataSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetClipboardDataFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetClipboardDataCompleteCallback
 }
 
 interface GetClipboardDataSuccessCallbackResult {
+  /** 剪贴板的内容 */
   data: string
 }
 
@@ -32,6 +36,7 @@ type GetClipboardDataFailCallback = (res: GeneralCallbackResult) => void
 
 type GetClipboardDataCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 获取系统剪贴板的内容 */
 export function getClipboardData<T extends GetClipboardDataOptions = GetClipboardDataOptions>(
   options: T
 ): AsyncReturn<T, GetClipboardDataOptions> {
@@ -54,9 +59,13 @@ export function getClipboardData<T extends GetClipboardDataOptions = GetClipboar
 }
 
 interface SetClipboardDataOptions {
+  /** 剪贴板的内容 */
   data: string
+  /** 接口调用成功的回调函数 */
   success?: SetClipboardDataSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: SetClipboardDataFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: SetClipboardDataCompleteCallback
 }
 
@@ -66,6 +75,7 @@ type SetClipboardDataFailCallback = (res: GeneralCallbackResult) => void
 
 type SetClipboardDataCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 设置系统剪贴板的内容 */
 export function setClipboardData<T extends SetClipboardDataOptions = SetClipboardDataOptions>(
   options: T
 ): AsyncReturn<T, SetClipboardDataOptions> {

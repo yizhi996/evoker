@@ -21,8 +21,11 @@ export function getFileSystemManager() {
 
 interface AccessOptions {
   path: string
+  /** 接口调用成功的回调函数 */
   success?: AccessSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: AccessFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: AccessCompleteCallback
 }
 
@@ -35,8 +38,11 @@ type AccessCompleteCallback = (res: GeneralCallbackResult) => void
 interface MkdirOptions {
   dirPath: string
   recursive?: boolean
+  /** 接口调用成功的回调函数 */
   success?: MkdirSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: MkdirFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: MkdirCompleteCallback
 }
 
@@ -49,8 +55,11 @@ type MkdirCompleteCallback = (res: GeneralCallbackResult) => void
 interface RmdirOptions {
   dirPath: string
   recursive?: boolean
+  /** 接口调用成功的回调函数 */
   success?: RmdirSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: RmdirFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: RmdirCompleteCallback
 }
 
@@ -62,8 +71,11 @@ type RmdirCompleteCallback = (res: GeneralCallbackResult) => void
 
 interface ReaddirOptions {
   dirPath: string
+  /** 接口调用成功的回调函数 */
   success?: ReaddirSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: ReaddirFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: ReaddirCompleteCallback
 }
 
@@ -95,8 +107,11 @@ interface ReadFileOptions {
   encoding?: Encoding
   position?: number
   length?: number
+  /** 接口调用成功的回调函数 */
   success?: ReadFileSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: ReadFileFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: ReadFileCompleteCallback
 }
 
@@ -114,8 +129,11 @@ interface WriteFileOptions {
   filePath: string
   data: string | ArrayBuffer
   encoding?: Encoding
+  /** 接口调用成功的回调函数 */
   success?: WriteFileSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: WriteFileFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: WriteFileCompleteCallback
 }
 
@@ -128,8 +146,11 @@ type WriteFileCompleteCallback = (res: GeneralCallbackResult) => void
 interface RenameOptions {
   oldPath: string
   newPath: string
+  /** 接口调用成功的回调函数 */
   success?: RenameSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: RenameFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: RenameCompleteCallback
 }
 
@@ -142,8 +163,11 @@ type RenameCompleteCallback = (res: GeneralCallbackResult) => void
 interface CopyOptions {
   srcPath: string
   destPath: string
+  /** 接口调用成功的回调函数 */
   success?: CopySuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: CopyFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: CopyCompleteCallback
 }
 
@@ -157,8 +181,11 @@ interface AppendFileOptions {
   filePath: string
   data: string | ArrayBuffer
   encoding: Encoding
+  /** 接口调用成功的回调函数 */
   success?: AppendFileSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: AppendFileFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: AppendFileCompleteCallback
 }
 
@@ -170,8 +197,11 @@ type AppendFileCompleteCallback = (res: GeneralCallbackResult) => void
 
 interface UnlinkOptions {
   filePath: string
+  /** 接口调用成功的回调函数 */
   success?: UnlinkSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: UnlinkFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: UnlinkCompleteCallback
 }
 
@@ -184,8 +214,11 @@ type UnlinkCompleteCallback = (res: GeneralCallbackResult) => void
 interface StatOptions {
   path: string
   recursive?: boolean
+  /** 接口调用成功的回调函数 */
   success?: StatSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: StatFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: StatCompleteCallback
 }
 
@@ -202,8 +235,11 @@ type StatCompleteCallback = (res: GeneralCallbackResult) => void
 interface SaveFileOptions {
   tempFilePath: string
   filePath?: string
+  /** 接口调用成功的回调函数 */
   success?: SaveFileSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: SaveFileFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: SaveFileCompleteCallback
 }
 
@@ -222,8 +258,11 @@ type Flag = "a" | "ax" | "a+" | "ax+" | "as" | "as+" | "r" | "r+" | "w" | "wx" |
 interface OpenOptions {
   filePath: string
   flag: Flag
+  /** 接口调用成功的回调函数 */
   success?: OpenSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: OpenFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: OpenCompleteCallback
 }
 
@@ -239,8 +278,11 @@ type OpenCompleteCallback = (res: GeneralCallbackResult) => void
 
 interface CloseOptions {
   fd: string
+  /** 接口调用成功的回调函数 */
   success?: CloseSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: CloseFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: CloseCompleteCallback
 }
 
@@ -252,8 +294,11 @@ type CloseCompleteCallback = (res: GeneralCallbackResult) => void
 
 interface FstatOptions {
   fd: string
+  /** 接口调用成功的回调函数 */
   success?: FstatSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: FstatFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: FstatCompleteCallback
 }
 
@@ -279,8 +324,11 @@ type FstatCompleteCallback = (res: GeneralCallbackResult) => void
 interface FtruncateOptions {
   fd: string
   length: number
+  /** 接口调用成功的回调函数 */
   success?: FtruncateSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: FtruncateFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: FtruncateCompleteCallback
 }
 
@@ -296,8 +344,11 @@ interface ReadOptions {
   offset?: number
   length?: number
   position?: number
+  /** 接口调用成功的回调函数 */
   success?: ReadSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: ReadFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: ReadCompleteCallback
 }
 
@@ -319,8 +370,11 @@ interface WriteOptions {
   offset?: number
   length?: number
   position?: number
+  /** 接口调用成功的回调函数 */
   success?: WriteSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: WriteFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: WriteCompleteCallback
 }
 

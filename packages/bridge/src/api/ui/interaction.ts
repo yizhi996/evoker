@@ -18,13 +18,28 @@ const enum Events {
 }
 
 interface ShowToastOptions {
+  /** 提示的内容 */
   title: string
+  /** 图标
+   *
+   * 可选值：
+   * - success: 显示成功图标
+   * - error: 显示失败图标
+   * - loading: 显示加载图标
+   * - none: 不显示图标
+   */
   icon?: "success" | "error" | "loading" | "none"
+  /** 自定义图标的本地路径，image 的优先级高于 icon */
   image?: string
+  /** 提示的持续时间 */
   duration?: number
+  /** 是否显示半透明蒙层，防止触摸穿透 */
   mask?: boolean
+  /** 接口调用成功的回调函数 */
   success?: ShowToastSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: ShowToastFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: ShowToastCompleteCallback
 }
 
@@ -34,6 +49,7 @@ type ShowToastFailCallback = (res: GeneralCallbackResult) => void
 
 type ShowToastCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 显示消息提示框 */
 export function showToast<T extends ShowToastOptions = ShowToastOptions>(
   options: T
 ): AsyncReturn<T, ShowToastOptions> {
@@ -55,8 +71,11 @@ export function showToast<T extends ShowToastOptions = ShowToastOptions>(
 }
 
 interface HideToastOptions {
+  /** 接口调用成功的回调函数 */
   success?: HideToastSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: HideToastFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: HideToastCompleteCallback
 }
 
@@ -66,6 +85,7 @@ type HideToastFailCallback = (res: GeneralCallbackResult) => void
 
 type HideToastCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 隐藏消息提示框 */
 export function hideToast<T extends HideToastOptions = HideToastOptions>(
   options: T
 ): AsyncReturn<T, HideToastOptions> {
@@ -78,23 +98,38 @@ export function hideToast<T extends HideToastOptions = HideToastOptions>(
 }
 
 interface ShowModalOptions {
+  /** 标题 */
   title?: string
+  /** 内容 */
   content?: string
+  /** 是否显示取消按钮 */
   showCancel?: boolean
+  /** 取消按钮的文字 */
   cancelText?: string
+  /** 取消按钮的文字颜色，必须是 16 进制格式 */
   cancelColor?: string
+  /** 确认按钮的文字 */
   confirmText?: string
+  /** 确认按钮的文字颜色，必须是 16 进制格式 */
   confirmColor?: string
+  /** 是否显示输入框 */
   editable?: boolean
+  /** 显示输入框时的提示文本 */
   placeholderText?: string
+  /** 接口调用成功的回调函数 */
   success?: ShowModalSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: ShowModalFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: ShowModalCompleteCallback
 }
 
 interface ShowModalSuccessCallbackResult {
+  /** editable 为 true 时，用户输入的文本 */
   content?: string
+  /** 为 true 时，表示用户点击了确定按钮 */
   confirm: boolean
+  /** 为 true 时，表示用户点击了取消 */
   cancel: boolean
 }
 
@@ -104,6 +139,7 @@ type ShowModalFailCallback = (res: GeneralCallbackResult) => void
 
 type ShowModalCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 显示模态对话框 */
 export function showModal<T extends ShowModalOptions = ShowModalOptions>(
   options: T
 ): AsyncReturn<T, ShowModalOptions> {
@@ -133,10 +169,15 @@ export function showModal<T extends ShowModalOptions = ShowModalOptions>(
 }
 
 interface ShowLoadingOptions {
+  /** 提示的内容 */
   title: string
+  /** 是否显示半透明蒙层，防止触摸穿透 */
   mask?: boolean
+  /** 接口调用成功的回调函数 */
   success?: ShowLoadingSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: ShowLoadingFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: ShowLoadingCompleteCallback
 }
 
@@ -146,6 +187,7 @@ type ShowLoadingFailCallback = (res: GeneralCallbackResult) => void
 
 type ShowLoadingCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 显示 loading 提示框，需主动调用 `ek.hideLoading` 才能关闭提示框 */
 export function showLoading<T extends ShowLoadingOptions = ShowLoadingOptions>(
   options: T
 ): AsyncReturn<T, ShowLoadingOptions> {
@@ -161,8 +203,11 @@ export function showLoading<T extends ShowLoadingOptions = ShowLoadingOptions>(
 }
 
 interface HideLoadingOptions {
+  /** 接口调用成功的回调函数 */
   success?: HideLoadingSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: HideLoadingFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: HideLoadingCompleteCallback
 }
 
@@ -172,6 +217,7 @@ type HideLoadingFailCallback = (res: GeneralCallbackResult) => void
 
 type HideLoadingCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 隐藏 loading 提示框 */
 export function hideLoading<T extends HideLoadingOptions = HideLoadingOptions>(
   options: T
 ): AsyncReturn<T, HideLoadingOptions> {
@@ -183,15 +229,22 @@ export function hideLoading<T extends HideLoadingOptions = HideLoadingOptions>(
 }
 
 interface ShowActionSheetOptions {
+  /** 警示文案 */
   alertText?: string
+  /** 按钮的文字数组，数组长度最大为 6 */
   itemList: string[]
+  /** 按钮的文字颜色，必须是 16 进制格式 */
   itemColor?: string
+  /** 接口调用成功的回调函数 */
   success?: ShowActionSheetSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: ShowActionSheetFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: ShowActionSheetCompleteCallback
 }
 
 interface ShowActionSheetSuccessCallbackResult {
+  /** 用户点击的按钮序号，从上到下的顺序，从0开始 */
   tapIndex: number
 }
 
@@ -201,6 +254,7 @@ type ShowActionSheetFailCallback = (res: GeneralCallbackResult) => void
 
 type ShowActionSheetCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 显示操作菜单 */
 export function showActionSheet<T extends ShowActionSheetOptions = ShowActionSheetOptions>(
   options: T
 ): AsyncReturn<T, ShowActionSheetOptions> {

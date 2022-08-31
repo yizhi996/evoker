@@ -23,8 +23,11 @@ interface ConnectSocketOptions {
   header?: Record<string, any>
   protocols?: string[]
   timeout?: number
+  /** 接口调用成功的回调函数 */
   success?: ConnectSocketSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: ConnectSocketFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: ConnectSocketCompleteCallback
 }
 
@@ -61,8 +64,11 @@ export function connectSocket(options: ConnectSocketOptions) {
 interface CloseSocketOptions {
   code?: number
   reason?: string
+  /** 接口调用成功的回调函数 */
   success?: CloseSocketSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: CloseSocketFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: CloseSocketCompleteCallback
 }
 
@@ -87,8 +93,11 @@ export function closeSocket<T extends CloseSocketOptions = CloseSocketOptions>(
 
 interface SendSocketMessageOptions {
   data: string | ArrayBuffer
+  /** 接口调用成功的回调函数 */
   success?: SendSocketMessageSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: SendSocketMessageFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: SendSocketMessageCompleteCallback
 }
 
@@ -165,8 +174,11 @@ export function OnSocketMessage(callback: OnSocketMessageCallback) {
 
 interface SocketTaskSendOptions {
   data: string | ArrayBuffer
+  /** 接口调用成功的回调函数 */
   success?: SocketTaskSendSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: SocketTaskSendFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: SocketTaskSendCompleteCallback
 }
 
@@ -179,8 +191,11 @@ type SocketTaskSendCompleteCallback = (res: GeneralCallbackResult) => void
 interface SocketTaskCloseOptions {
   code?: number
   reason?: string
+  /** 接口调用成功的回调函数 */
   success?: SocketTaskCloseSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: SocketTaskCloseFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: SocketTaskCloseCompleteCallback
 }
 

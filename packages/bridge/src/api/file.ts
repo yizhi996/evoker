@@ -20,13 +20,18 @@ const enum Events {
 }
 
 interface SaveFileOptions {
+  /** 需要保存的文件的临时路径 (本地路径) */
   tempFilePath: string
+  /** 接口调用成功的回调函数 */
   success?: SaveFileSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: SaveFileFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: SaveFileCompleteCallback
 }
 
 interface SaveFileSuccessCallbackResult {
+  /** 存储后的文件路径 (本地路径) */
   savedFilePath: string
 }
 
@@ -36,6 +41,10 @@ type SaveFileFailCallback = (res: GeneralCallbackResult) => void
 
 type SaveFileCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 保存文件到本地
+ *
+ * 注意：saveFile 会把临时文件移动，因此调用成功后传入的 tempFilePath 将不可用
+ */
 export function saveFile<T extends SaveFileOptions = SaveFileOptions>(
   options: T
 ): AsyncReturn<T, SaveFileOptions> {
@@ -59,9 +68,13 @@ export function saveFile<T extends SaveFileOptions = SaveFileOptions>(
 }
 
 export interface RemoveSavedFileOptions {
+  /** 需要删除的文件路径 (本地路径) */
   filePath: string
+  /** 接口调用成功的回调函数 */
   success?: RemoveSavedFileSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: RemoveSavedFileFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: RemoveSavedFileCompleteCallback
 }
 
@@ -71,6 +84,7 @@ type RemoveSavedFileFailCallback = (res: GeneralCallbackResult) => void
 
 type RemoveSavedFileCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 删除本地缓存文件 */
 export function removeSavedFile<T extends RemoveSavedFileOptions = RemoveSavedFileOptions>(
   options: T
 ): AsyncReturn<T, RemoveSavedFileOptions> {
@@ -94,18 +108,25 @@ export function removeSavedFile<T extends RemoveSavedFileOptions = RemoveSavedFi
 }
 
 export interface GetSavedFileListOptions {
+  /** 接口调用成功的回调函数 */
   success?: GetSavedFileListSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetSavedFileListFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetSavedFileListCompleteCallback
 }
 
 interface FileItem {
+  /** 文件路径 (本地路径) */
   filePath: string
+  /** 本地文件大小，以字节为单位 */
   size: number
+  /** 文件保存时的时间戳，从1970/01/01 08:00:00 到当前时间的秒数 */
   createTime: number
 }
 
 interface GetSavedFileListSuccessCallbackResult {
+  /** 文件数组 */
   fileList: FileItem[]
 }
 
@@ -115,6 +136,7 @@ type GetSavedFileListFailCallback = (res: GeneralCallbackResult) => void
 
 type GetSavedFileListCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 获取该小程序下已保存的本地缓存文件列表 */
 export function getSavedFileList<T extends GetSavedFileListOptions = GetSavedFileListOptions>(
   options: T
 ): AsyncReturn<T, GetSavedFileListOptions> {
@@ -127,14 +149,20 @@ export function getSavedFileList<T extends GetSavedFileListOptions = GetSavedFil
 }
 
 interface GetSavedFileInfoOptions {
+  /** 文件路径 (本地路径) */
   filePath: string
+  /** 接口调用成功的回调函数 */
   success?: GetSavedFileInfoSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetSavedFileInfoFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetSavedFileInfoCompleteCallback
 }
 
 interface GetSavedFileInfoSuccessCallbackResult {
+  /** 文件大小，单位 B */
   size: number
+  /** 文件保存时的时间戳，从1970/01/01 08:00:00 到该时刻的秒数 */
   createTime: number
 }
 
@@ -144,6 +172,7 @@ type GetSavedFileInfoFailCallback = (res: GeneralCallbackResult) => void
 
 type GetSavedFileInfoCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 获取本地文件的文件信息。此接口只能用于获取已保存到本地的文件 */
 export function getSavedFileInfo<T extends GetSavedFileInfoOptions = GetSavedFileInfoOptions>(
   options: T
 ): AsyncReturn<T, GetSavedFileInfoOptions> {
@@ -169,8 +198,11 @@ export function getSavedFileInfo<T extends GetSavedFileInfoOptions = GetSavedFil
 export interface GetFileInfoOptions {
   filePath: string
   digestAlgorithm?: "md5" | "sha1"
+  /** 接口调用成功的回调函数 */
   success?: GetFileInfoSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetFileInfoFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetFileInfoCompleteCallback
 }
 

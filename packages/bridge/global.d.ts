@@ -142,7 +142,7 @@ export interface SafeArea {
 
 export interface AppBaseInfo {
   SDKVersion: string
-  enableDebug: boolean
+  nativeSDKVersion: string
   language: string
   version: string
   theme: "light" | "dark"

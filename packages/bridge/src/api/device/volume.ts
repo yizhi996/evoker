@@ -15,9 +15,13 @@ const enum Events {
 }
 
 interface SetVolumeOptions {
+  /** 音量 0 ~ 1 */
   volume: number
+  /** 接口调用成功的回调函数 */
   success?: SetVolumeSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: SetVolumeFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: SetVolumeCompleteCallback
 }
 
@@ -43,12 +47,16 @@ export function setVolume<T extends SetVolumeOptions = SetVolumeOptions>(
 }
 
 interface GetVolumeOptions {
+  /** 接口调用成功的回调函数 */
   success?: GetVolumeSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetVolumeFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetVolumeCompleteCallback
 }
 
 interface GetVolumeSuccessCallbackResult {
+  /** 音量 0 ~ 1 */
   volume: number
 }
 

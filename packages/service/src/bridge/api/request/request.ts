@@ -4,7 +4,10 @@ import {
   GeneralCallbackResult,
   invokeFailure,
   invokeSuccess,
-  fetchArrayBuffer
+  fetchArrayBuffer,
+  ERR_INVALID_ARG_TYPE,
+  ERR_INVALID_ARG_VALUE,
+  ERR_CANNOT_EMPTY
 } from "@evoker/bridge"
 import { isArrayBuffer } from "@evoker/shared"
 import { isString, extend, isPlainObject } from "@vue/shared"
@@ -28,22 +31,57 @@ class RequestTask extends Task {
 type RequestMethod = "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT"
 
 interface RequestOptions {
+  /** 服务器接口地址 */
   url: string
-  data?: string | Record<any, any> | ArrayBuffer
+  /** 请求的参数 */
+  data?: string | Object | ArrayBuffer
+  /** 设置请求的 header，content-type 默认为 application/json */
   header?: Record<string, string>
+  /** 超时时间，单位为毫秒 */
   timeout?: number
+  /** HTTP 请求方法
+   *
+   * 可选值：
+   * - OPTIONS:	HTTP 请求 OPTIONS
+   * - GET:	HTTP 请求 GET
+   * - HEAD: HTTP 请求 HEAD
+   * - POST: HTTP 请求 POST
+   * - PUT: HTTP 请求 PUT
+   * - DELETE: HTTP 请求 DELETE
+   * - TRACE: HTTP 请求 TRACE
+   * - CONNECT: HTTP 请求 CONNECT
+   */
   method?: RequestMethod
+  /** 返回的数据格式
+   *
+   * 可选值：
+   * - json: 返回的数据为 JSON，返回后会对返回的数据进行一次 JSON.parse
+   * - 其他: 不对返回的内容进行 JSON.parse
+   */
   dataType?: "json" | string
+  /** 响应的数据类型
+   *
+   * 可选值：
+   * - text: 响应的数据为文本
+   * - arraybuffer: 响应的数据为 ArrayBuffer
+   */
   responseType?: "text" | "arraybuffer"
+  /** 接口调用成功的回调函数 */
   success?: RequestSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: RequestFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: RequestCompleteCallback
 }
 
 interface RequestSuccessCallbackResult {
+  /** 服务器返回的数据 */
   data: string | Record<any, any> | ArrayBuffer
+  /** 服务器返回的 HTTP 状态码 */
   statusCode: number
+  /** 服务器返回的 HTTP Response Header */
   header: Record<string, string>
+  /** 服务器返回的 cookies，格式为字符串数组 */
   cookies: string[]
 }
 
@@ -53,6 +91,7 @@ type RequestFailCallback = (res: GeneralCallbackResult) => void
 
 type RequestCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 发起 HTTP 网络请求 */
 export function request<T extends RequestOptions = RequestOptions>(
   options: T
 ): RequestTask | undefined {
@@ -66,13 +105,22 @@ export function request<T extends RequestOptions = RequestOptions>(
     timeout = MAX_TIMEOUT
   } = options
 
-  if (!url || !isString(url)) {
-    invokeFailure(event, options, "request url cannot be empty")
+  if (!isString(url)) {
+    invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.url", "string", url))
+    return
+  }
+
+  if (!url) {
+    invokeFailure(event, options, ERR_INVALID_ARG_VALUE("options.url", url, ERR_CANNOT_EMPTY))
     return
   }
 
   if (!/^https?:\/\//.test(url)) {
-    invokeFailure(event, options, "request url scheme wrong, need http / https")
+    invokeFailure(
+      event,
+      options,
+      ERR_INVALID_ARG_VALUE("options.url", url, "scheme wrong, needs http / https")
+    )
     return
   }
 
@@ -137,13 +185,9 @@ export function request<T extends RequestOptions = RequestOptions>(
   InnerJSBridge.invoke<SuccessResult<T>>(event, request, result => {
     if (result.errMsg) {
       invokeFailure(event, options, result.errMsg)
-      return
+    } else if (task.isCancel) {
+      invokeFailure(event, options, "abort")
     } else {
-      if (task.isCancel) {
-        invokeFailure(event, options, "abort")
-        return
-      }
-
       if (request.responseType === "arraybuffer") {
         fetchArrayBuffer(result.data, "data")
       } else {

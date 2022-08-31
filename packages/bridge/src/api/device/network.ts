@@ -15,12 +15,16 @@ const enum Events {
 }
 
 interface GetNetworkTypeOptions {
+  /** 接口调用成功的回调函数 */
   success?: GetNetworkTypeSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetNetworkTypeFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetNetworkTypeCompleteCallback
 }
 
 interface GetNetworkTypeSuccessCallbackResult {
+  /** 网络类型 */
   networkType: "wifi" | "2g" | "3g" | "4g" | "5g" | "unknown" | "none"
 }
 
@@ -30,6 +34,7 @@ type GetNetworkTypeFailCallback = (res: GeneralCallbackResult) => void
 
 type GetNetworkTypeCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 获取当前的网络类型 */
 export function getNetworkType<T extends GetNetworkTypeOptions = GetNetworkTypeOptions>(
   options: T
 ): AsyncReturn<T, GetNetworkTypeOptions> {
@@ -42,8 +47,11 @@ export function getNetworkType<T extends GetNetworkTypeOptions = GetNetworkTypeO
 }
 
 interface GetLocalIPAddressOptions {
+  /** 接口调用成功的回调函数 */
   success?: GetLocalIPAddressSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetLocalIPAddressFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetLocalIPAddressCompleteCallback
 }
 

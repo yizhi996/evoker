@@ -28,12 +28,14 @@ class UploadTask extends Task {
     uploadTasks.set(this.taskId, this)
   }
 
+  /** 监听上传进度变化事件 */
   onProgressUpdate(callback: UploadProgressCallback) {
     if (!this.progressCallbacks.includes(callback)) {
       this.progressCallbacks.push(callback)
     }
   }
 
+  /** 取消监听上传进度变化事件 */
   offProgressUpdate(callback: UploadProgressCallback) {
     const index = this.progressCallbacks.indexOf(callback)
     if (index > -1) {
@@ -68,22 +70,32 @@ InnerJSBridge.subscribe<UploadProgressResult & { taskId: string }>(
 )
 
 interface UploadFileOptions {
+  /** 服务器地址 */
   url: string
+  /** 要上传文件资源的路径 (本地路径) */
   filePath: string
+  /** 文件对应的 key，开发者在服务端可以通过这个 key 获取文件的二进制内容 */
   name: string
+  /** HTTP 请求的 Header */
   header?: Record<string, string>
+  /** HTTP 请求中其他额外的 form data */
   formData?: Record<string, any>
+  /** 超时时间，单位为毫秒 */
   timeout?: number
+  /** 接口调用成功的回调函数 */
   success?: UploadFileSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: UploadFileFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: UploadFileCompleteCallback
 }
 
 interface UploadFileSuccessCallbackResult {
-  dataLength: number
+  /** 服务器返回的数据 */
+  data: string
+  /** 服务器返回的 HTTP Response Header */
   header: Record<string, string>
-  tempFilePath: string
-  filePath: string
+  /** 服务器返回的 HTTP 状态码 */
   statusCode: number
 }
 
@@ -93,6 +105,7 @@ type UploadFileFailCallback = (res: GeneralCallbackResult) => void
 
 type UploadFileCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 将本地资源上传到服务器。客户端发起一个 HTTPS POST 请求，其中 content-type 为 multipart/form-data */
 export function uploadFile<T extends UploadFileOptions = UploadFileOptions>(
   options: T
 ): UploadTask | undefined {

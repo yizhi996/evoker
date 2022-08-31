@@ -77,33 +77,65 @@ class ScanCodeViewModel {
         }
     }
     
+    
     func converScanType(_ type: AVMetadataObject.ObjectType) -> String {
         var scanType = ""
-        switch type {
-        case .qr:
-            scanType = "QR_CODE"
-        case .aztec:
-            scanType = "AZTEC"
-        case .code39:
-            scanType = "CODE_39"
-        case .code93:
-            scanType = "CODE_93"
-        case .code128:
-            scanType = "CODE_128"
-        case .dataMatrix:
-            scanType = "DATA_MATRIX"
-        case .ean8:
-            scanType = "EAN_8"
-        case .ean13:
-            scanType = "EAN_13"
-        case .itf14:
-            scanType = "ITF"
-        case .pdf417:
-            scanType = "PDF_417"
-        case .upce:
-            scanType = "UPC_E"
-        default:
-            scanType = "UNKNOWN"
+        if #available(iOS 15.4, *) {
+            switch type {
+            case .qr:
+                scanType = "QR_CODE"
+            case .aztec:
+                scanType = "AZTEC"
+            case .codabar:
+                scanType = "CODABAR"
+            case .code39:
+                scanType = "CODE_39"
+            case .code93:
+                scanType = "CODE_93"
+            case .code128:
+                scanType = "CODE_128"
+            case .dataMatrix:
+                scanType = "DATA_MATRIX"
+            case .ean8:
+                scanType = "EAN_8"
+            case .ean13:
+                scanType = "EAN_13"
+            case .itf14:
+                scanType = "ITF"
+            case .pdf417:
+                scanType = "PDF_417"
+            case .upce:
+                scanType = "UPC_E"
+            default:
+                scanType = "UNKNOWN"
+            }
+        } else {
+            switch type {
+            case .qr:
+                scanType = "QR_CODE"
+            case .aztec:
+                scanType = "AZTEC"
+            case .code39:
+                scanType = "CODE_39"
+            case .code93:
+                scanType = "CODE_93"
+            case .code128:
+                scanType = "CODE_128"
+            case .dataMatrix:
+                scanType = "DATA_MATRIX"
+            case .ean8:
+                scanType = "EAN_8"
+            case .ean13:
+                scanType = "EAN_13"
+            case .itf14:
+                scanType = "ITF"
+            case .pdf417:
+                scanType = "PDF_417"
+            case .upce:
+                scanType = "UPC_E"
+            default:
+                scanType = "UNKNOWN"
+            }
         }
         return scanType
     }

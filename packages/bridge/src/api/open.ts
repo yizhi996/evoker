@@ -13,8 +13,11 @@ const enum Events {
 }
 
 interface LoginOptions {
+  /** 接口调用成功的回调函数 */
   success?: LoginSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: LoginFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: LoginCompleteCallback
 }
 
@@ -40,8 +43,11 @@ export function login<T extends LoginOptions = LoginOptions>(
 }
 
 interface CheckSessionOptions {
+  /** 接口调用成功的回调函数 */
   success?: CheckSessionSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: CheckSessionFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: CheckSessionCompleteCallback
 }
 

@@ -17,9 +17,13 @@ const enum Events {
 }
 
 interface MakePhoneCallOptions {
+  /** 需要拨打的电话号码 */
   phoneNumber: string
+  /** 接口调用成功的回调函数 */
   success?: MakePhoneCallSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: MakePhoneCallFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: MakePhoneCallCompleteCallback
 }
 
@@ -29,6 +33,7 @@ type MakePhoneCallFailCallback = (res: GeneralCallbackResult) => void
 
 type MakePhoneCallCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 拨打电话 */
 export function makePhoneCall<T extends MakePhoneCallOptions = MakePhoneCallOptions>(
   options: T
 ): AsyncReturn<T, MakePhoneCallOptions> {

@@ -1,14 +1,15 @@
 import { InnerJSBridge } from "../../bridge"
 
 export class Task {
-  taskId: string
+  readonly taskId: string
 
-  isCancel: boolean = false
+  isCancel = false
 
   constructor(kind: string) {
     this.taskId = `${kind}_${Date.now()}`
   }
 
+  /** 中断请求任务 */
   abort() {
     this.isCancel = true
     InnerJSBridge.invoke("cancelRequest", { taskId: this.taskId })

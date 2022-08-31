@@ -6,4 +6,8 @@ export const EKFILE_STORE = EKFILE_SCHEME + "store_"
 
 export const USER_DATA_PATH = EKFILE_SCHEME + "usr"
 
-export const env = { USER_DATA_PATH }
+/** 环境变量 */
+export const env = {
+  /** 文件系统中的用户目录路径 (本地路径) */
+  USER_DATA_PATH
+}

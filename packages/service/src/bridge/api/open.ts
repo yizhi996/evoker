@@ -21,8 +21,11 @@ const enum Events {
 interface GetUserProfileOptions {
   lang?: "en" | "zh_CN" | "zh_TW"
   desc: string
+  /** 接口调用成功的回调函数 */
   success?: GetUserProfileSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetUserProfileFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetUserProfileCompleteCallback
 }
 
@@ -32,6 +35,10 @@ type GetUserProfileFailCallback = (res: GeneralCallbackResult) => void
 
 type GetUserProfileCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 统一的获取用户信息接口，需要在 Native 自行实现，也可以不使用本接口，直接在 JS 端自行实现。
+ *
+ * 本接口只能在 @click 事件内调用，每次调用都会弹窗请求授权。
+ */
 export function getUserProfile<T extends GetUserProfileOptions = GetUserProfileOptions>(
   options: T
 ): AsyncReturn<T, GetUserProfileOptions> {
@@ -57,10 +64,11 @@ export function getUserProfile<T extends GetUserProfileOptions = GetUserProfileO
 }
 
 interface GetUserInfoOptions {
-  withCredentials?: boolean
-  lang?: "en" | "zh_CN" | "zh_TW"
+  /** 接口调用成功的回调函数 */
   success?: GetUserInfoSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: GetUserInfoFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: GetUserInfoCompleteCallback
 }
 
@@ -70,6 +78,10 @@ type GetUserInfoFailCallback = (res: GeneralCallbackResult) => void
 
 type GetUserInfoCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 统一的获取用户信息接口，需要在 Native 自行实现，也可以不使用本接口，直接在 JS 端自行实现
+ * 
+ * 需要用户授权 `scope.userInfo`
+ */
 export function getUserInfo<T extends GetUserInfoOptions = GetUserInfoOptions>(
   options: T
 ): AsyncReturn<T, GetUserInfoOptions> {

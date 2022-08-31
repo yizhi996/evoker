@@ -1,7 +1,9 @@
 import { invoke } from "../../bridge"
 
 export interface TempFile {
+  /** 本地临时文件路径 (本地路径) */
   path: string
+  /** 本地临时文件大小，单位 B */
   size: number
 }
 

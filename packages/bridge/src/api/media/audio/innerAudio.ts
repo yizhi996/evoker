@@ -385,8 +385,11 @@ interface SetInnerAudioOptionOptions {
   mixWithOther?: boolean
   obeyMuteSwitch?: boolean
   speakerOn?: boolean
+  /** 接口调用成功的回调函数 */
   success?: SetInnerAudioOptionSuccessCallback
+  /** 接口调用失败的回调函数 */
   fail?: SetInnerAudioOptionFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
   complete?: SetInnerAudioOptionCompleteCallback
 }
 
