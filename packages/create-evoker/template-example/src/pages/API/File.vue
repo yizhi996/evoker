@@ -24,7 +24,8 @@ const src = computed(() => {
 const { onLoad } = usePage()
 
 onLoad(async () => {
-  savedFilePath.value = await ek.getStorage({ key: KEY })
+  const res = await ek.getStorage({ key: KEY })
+  savedFilePath.value = res.data
 })
 
 const chooseImage = async () => {

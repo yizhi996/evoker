@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 const navigateTo = () => {
-  ek.navigateTo({ url: "api/navigator" })
+  ek.navigateTo({ url: "./Navigator" })
 }
 
 const navigateBack = () => {
@@ -16,14 +16,14 @@ const navigateBack = () => {
 }
 
 const redirectTo = () => {
-  ek.redirectTo({ url: "api/navigator" })
+  ek.redirectTo({ url: "./Navigator" })
 }
 
 const switchTab = () => {
-  ek.switchTab({ url: "component" })
+  ek.switchTab({ url: "../components/Index" })
 }
 
 const reLaunch = () => {
-  ek.reLaunch({ url: "component" })
+  ek.reLaunch({ url: "../components/Index" })
 }
 </script>
