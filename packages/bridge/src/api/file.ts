@@ -196,7 +196,14 @@ export function getSavedFileInfo<T extends GetSavedFileInfoOptions = GetSavedFil
 }
 
 export interface GetFileInfoOptions {
+  /** 本地文件路径 (本地路径) */
   filePath: string
+  /** 计算文件摘要的算法
+   * 
+   * 可选值：
+   * - md5: md5 算法
+   * - sha1: sha1 算法
+   */
   digestAlgorithm?: "md5" | "sha1"
   /** 接口调用成功的回调函数 */
   success?: GetFileInfoSuccessCallback
@@ -207,7 +214,9 @@ export interface GetFileInfoOptions {
 }
 
 interface GetFileInfoSuccessCallbackResult {
+  /** 文件大小，单位 B */
   size: number
+  /** 按照传入的 digestAlgorithm 计算得出的的文件摘要 */
   digest: string
 }
 
@@ -217,6 +226,7 @@ type GetFileInfoFailCallback = (res: GeneralCallbackResult) => void
 
 type GetFileInfoCompleteCallback = (res: GeneralCallbackResult) => void
 
+/** 获取文件信息 */
 export function getFileInfo<T extends GetFileInfoOptions = GetFileInfoOptions>(
   options: T
 ): AsyncReturn<T, GetFileInfoOptions> {

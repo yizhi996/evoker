@@ -27,7 +27,7 @@ import JavaScriptCore
     
     func rename(_ oldPath: String, _ newPath: String) -> [String: Any]
     
-    func copy(_ srcPath: String, _ destPath: String) -> [String: Any]
+    func copyFile(_ srcPath: String, _ destPath: String) -> [String: Any]
     
     func appendFile(_ filePath: String, _ data: JSValue, _ encoding: String) -> [String: Any]
     
@@ -259,7 +259,7 @@ import JavaScriptCore
         }
     }
     
-    func copy(_ srcPath: String, _ destPath: String) -> [String: Any] {
+    func copyFile(_ srcPath: String, _ destPath: String) -> [String: Any] {
         guard let srcURL = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: srcPath) else {
             return [ERR_MSG: "invalid srcPath"]
         }

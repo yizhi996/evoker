@@ -16,4 +16,5 @@ const JSBridge = {
     return subscribeHandler
   }
 }
-;(globalThis as any).JSBridge = JSBridge
+
+globalThis.JSBridge = JSBridge

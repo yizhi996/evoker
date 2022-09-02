@@ -34,7 +34,7 @@ interface FileSystem {
 
   rename(oldPath: string, newPath: string): FileSystemGeneralResult
 
-  copy(srcPath: string, destPath: string): FileSystemGeneralResult
+  copyFile(srcPath: string, destPath: string): FileSystemGeneralResult
 
   appendFile(
     filePath: string,
