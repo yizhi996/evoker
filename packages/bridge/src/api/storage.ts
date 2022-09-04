@@ -10,7 +10,11 @@ import {
   SuccessResult,
   wrapperAsyncAPI
 } from "../async"
-import { ErrorCodes, errorMessage } from "../errors"
+import {
+  ERR_CANNOT_EMPTY,
+  ERR_INVALID_ARG_TYPE,
+  ERR_INVALID_ARG_VALUE
+} from "../errors"
 
 const enum Events {
   GET = "getStorage",
@@ -138,9 +142,19 @@ export function getStorage<T = any, U extends GetStorageOptions<T> = GetStorageO
   return wrapperAsyncAPI(options => {
     const event = Events.GET
     if (!isString(options.key)) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.key", "string", options.key))
       return
     }
+
+    if (!options.key) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.key", options.key, ERR_CANNOT_EMPTY)
+      )
+      return
+    }
+
     invoke<{ data: string; dataType: DataType }>(event, { key: options.key }, result => {
       if (result.errMsg) {
         invokeFailure(event, options, result.errMsg)
@@ -197,8 +211,18 @@ export function setStorage<T = any, U extends SetStorageOptions<T> = SetStorageO
 ): AsyncReturn<U, SetStorageOptions<T>> {
   return wrapperAsyncAPI(options => {
     const event = Events.SET
+
     if (!isString(options.key)) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.key", "string", options.key))
+      return
+    }
+
+    if (!options.key) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.key", options.key, ERR_CANNOT_EMPTY)
+      )
       return
     }
 
@@ -220,11 +244,7 @@ export function setStorageSync<T = any>(key: string, data: T) {
   }
   try {
     const { data: dataString, dataType } = dataToDataType(data)
-    const { errMsg } = globalThis.__Storage.setStorageSync(
-      key,
-      dataString,
-      dataType
-    )
+    const { errMsg } = globalThis.__Storage.setStorageSync(key, dataString, dataType)
     if (errMsg) {
       return
     }
@@ -254,8 +274,18 @@ export function removeStorage<T extends RemoveStorageOptions = RemoveStorageOpti
 ): AsyncReturn<T, RemoveStorageOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.REMOVE
+
     if (!isString(options.key)) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.key", "string", options.key))
+      return
+    }
+
+    if (!options.key) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.key", options.key, ERR_CANNOT_EMPTY)
+      )
       return
     }
 

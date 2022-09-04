@@ -9,8 +9,9 @@ import {
   wrapperAsyncAPI,
   invokeSuccess
 } from "../async"
-import { ErrorCodes, errorMessage } from "../errors"
 import { fetchArrayBuffer } from "../utils"
+import { isString } from "@vue/shared"
+import { ERR_CANNOT_EMPTY, ERR_INVALID_ARG_TYPE } from "../errors"
 
 const enum Events {
   RSA = "rsa",
@@ -52,22 +53,44 @@ type RSACompleteCallback = (res: GeneralCallbackResult) => void
 export function rsa<T extends RSAOptions = RSAOptions>(options: T): AsyncReturn<T, RSAOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.RSA
+    if (!isString(options.key)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.key", "string", options.key))
+      return
+    }
+
     if (!options.key) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "key"))
-      return
-    }
-    if (!options.text) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "text"))
-      return
-    }
-    if (!["encrypt", "decrypt"].includes(options.action)) {
       invokeFailure(
         event,
         options,
-        errorMessage(ErrorCodes.ILLEGAL_VALUE, "action, this valid values are encrypt or decrypt")
+        ERR_INVALID_ARG_TYPE("options.key", options.key, ERR_CANNOT_EMPTY)
       )
       return
     }
+
+    if (!isString(options.text)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.text", "string", options.text))
+      return
+    }
+
+    if (!options.text) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.text", options.text, ERR_CANNOT_EMPTY)
+      )
+      return
+    }
+
+    const validTypes = ["encrypt", "decrypt"]
+    if (!validTypes.includes(options.action)) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.action", validTypes, options.action)
+      )
+      return
+    }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })

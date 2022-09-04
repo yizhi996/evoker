@@ -1,23 +1,5 @@
 import { isString } from "@vue/shared"
 
-export const enum ErrorCodes {
-  MISSING_REQUIRED_PRAMAR = 0,
-  INVALID_TYPE,
-  CANNOT_BE_EMPTY,
-  ILLEGAL_VALUE
-}
-
-const errorMessages: Record<ErrorCodes, string> = {
-  [ErrorCodes.MISSING_REQUIRED_PRAMAR]: "missing required params: ",
-  [ErrorCodes.INVALID_TYPE]: "`The ${} must be of type ${}. Received ${url}`",
-  [ErrorCodes.CANNOT_BE_EMPTY]: "cannot be empty: ",
-  [ErrorCodes.ILLEGAL_VALUE]: "illegal value: "
-}
-
-export function errorMessage(code: ErrorCodes, additionalMessage?: string) {
-  return errorMessages[code] + (additionalMessage || "")
-}
-
 const getNameType = (name: string) => (name.includes(".") ? "property" : "argument")
 
 export const ERR_INVALID_ARG_TYPE = (name: string, types: string | string[], actual: unknown) =>
@@ -27,8 +9,13 @@ export const ERR_INVALID_ARG_TYPE = (name: string, types: string | string[], act
 
 export const ERR_CANNOT_EMPTY = "cannot be empty"
 
+export const ERR_INVALID = (name: string) => `${name} invalid`
+
 export const ERR_INVALID_ARG_VALUE = (
   name: string,
   value: unknown,
   reason: string = "is invalid"
 ) => `The "${name}" ${getNameType(name)} ${reason}, Received ${value}`
+
+export const ERR_OUT_OF_RANGE = (name: string, input: unknown, range: string) =>
+  `The value of "${name}" is out of range. It must be ${range}. Received ${input}`

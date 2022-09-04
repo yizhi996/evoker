@@ -1,6 +1,6 @@
 import { GeneralCallbackResult, invokeSuccess, invokeFailure } from "../async"
 import { isString } from "@vue/shared"
-import { ErrorCodes, errorMessage } from "../errors"
+import { ERR_CANNOT_EMPTY, ERR_INVALID_ARG_TYPE, ERR_INVALID_ARG_VALUE } from "../errors"
 import { EKFILE_SCHEME, EKFILE_TMP, USER_DATA_PATH } from "./const"
 import { isArrayBuffer } from "@evoker/shared"
 import { getFileInfo, getSavedFileList, removeSavedFile } from "./file"
@@ -927,9 +927,7 @@ class FileSystemManager {
 
     const { fd } = options
 
-    if (!fd || !isString(fd)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
-    }
+    validString(event, fd, "options.fd")
 
     const { errMsg } = globalThis.__FileSystem.close(fd)
     if (errMsg) {
@@ -956,9 +954,7 @@ class FileSystemManager {
 
     const { fd } = options
 
-    if (!fd || !isString(fd)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
-    }
+    validString(event, fd, "options.fd")
 
     const { stats, errMsg } = globalThis.__FileSystem.fstat(fd)
     if (errMsg) {
@@ -994,9 +990,7 @@ class FileSystemManager {
 
     const { fd, length = 0 } = options
 
-    if (!fd || !isString(fd)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
-    }
+    validString(event, fd, "options.fd")
 
     const { errMsg } = globalThis.__FileSystem.ftruncate(fd, length)
     if (errMsg) {
@@ -1023,9 +1017,7 @@ class FileSystemManager {
 
     const { fd, arrayBuffer, offset = 0, length = 0, position = 0 } = options
 
-    if (!fd || !isString(fd)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
-    }
+    validString(event, fd, "options.fd")
 
     if (!isArrayBuffer(arrayBuffer)) {
       throw new Error(`${event}:fail arrayBuffer must be an ArrayBuffer`)
@@ -1067,9 +1059,7 @@ class FileSystemManager {
 
     const { fd, data, encoding = "utf8", offset = 0, length = 0, position = 0 } = options
 
-    if (!fd || !isString(fd)) {
-      throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "fd")}`)
-    }
+    validString(event, fd, "options.fd")
 
     if (!isString(data) && !isArrayBuffer(data)) {
       throw new Error(`${event}:fail arrayBuffer must be a string or ArrayBuffer`)
@@ -1110,19 +1100,27 @@ class FileSystemManager {
   }
 }
 
-function validFilePath(event: string, path: string, name: string, startsWith: string) {
-  if (!path || !isString(path)) {
-    throw new Error(`${event}:fail ${errorMessage(ErrorCodes.CANNOT_BE_EMPTY, name)}`)
+function validString(event: string, prop: string, name: string) {
+  if (!isString(prop)) {
+    throw new Error(`${event}:fail ${ERR_INVALID_ARG_TYPE(name, "string", prop)}`)
   }
 
+  if (!prop) {
+    throw new Error(`${event}:fail ${ERR_INVALID_ARG_VALUE(name, prop, ERR_CANNOT_EMPTY)}`)
+  }
+}
+
+function validFilePath(event: string, path: string, name: string, startsWith: string) {
+  validString(event, path, name)
+
   if (!path.startsWith(startsWith)) {
-    throw new Error(`${event}:fail ${path} is not startsWith ${startsWith}`)
+    throw new Error(`${event}:fail ${path} is not starts with ${startsWith}`)
   }
 }
 
 function formatAndValidEncoding(event: string, encoding?: Encoding) {
   if (!encoding) {
-    throw new Error(`${event}:fail unknown encoding`)
+    throw new Error(`${event}:fail encoding ${ERR_CANNOT_EMPTY}`)
   }
 
   const noHyphenEncoding = encoding.replaceAll("-", "")
@@ -1131,7 +1129,7 @@ function formatAndValidEncoding(event: string, encoding?: Encoding) {
       noHyphenEncoding
     )
   ) {
-    throw new Error(`${event}:fail unknown encoding: ${encoding}`)
+    throw new Error(`${event}:fail invalid encoding: ${encoding}`)
   }
   return noHyphenEncoding
 }

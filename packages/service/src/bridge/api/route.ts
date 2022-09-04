@@ -7,10 +7,12 @@ import {
   invokeFailure,
   invokeSuccess,
   wrapperAsyncAPI,
-  errorMessage,
-  ErrorCodes
+  ERR_INVALID_ARG_TYPE,
+  ERR_INVALID_ARG_VALUE,
+  ERR_CANNOT_EMPTY
 } from "@evoker/bridge"
 import { innerAppData } from "../../app"
+import { isString } from "@vue/shared"
 
 function parseURL(url: string) {
   const [path, query] = url.split("?")
@@ -116,8 +118,17 @@ export function navigateTo<T extends NavigateToOptions = NavigateToOptions>(
       return
     }
 
+    if (!isString(options.url)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.url", "string", options.url))
+      return
+    }
+
     if (!options.url) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "url"))
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.url", options.url, ERR_CANNOT_EMPTY)
+      )
       return
     }
 
@@ -214,8 +225,17 @@ export function redirectTo<T extends RedirectToOptions = RedirectToOptions>(
 ): AsyncReturn<T, RedirectToOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.REDIRECT_TO
+    if (!isString(options.url)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.url", "string", options.url))
+      return
+    }
+
     if (!options.url) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "url"))
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.url", options.url, ERR_CANNOT_EMPTY)
+      )
       return
     }
 
@@ -270,8 +290,17 @@ export function reLaunch<T extends ReLaunchOptions = ReLaunchOptions>(
 ): AsyncReturn<T, ReLaunchOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.RE_LAUNCH
+    if (!isString(options.url)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.url", "string", options.url))
+      return
+    }
+
     if (!options.url) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "url"))
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.url", options.url, ERR_CANNOT_EMPTY)
+      )
       return
     }
 
@@ -325,11 +354,19 @@ export function switchTab<T extends SwitchTabOptions = SwitchTabOptions>(
 ): AsyncReturn<T, SwitchTabOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.SWITCH_TAB
-    if (!options.url) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "url"))
+    if (!isString(options.url)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.url", "string", options.url))
       return
     }
 
+    if (!options.url) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.url", options.url, ERR_CANNOT_EMPTY)
+      )
+      return
+    }
     if (globalThis.__Config.tabBar) {
       const relativePath = (options as any).relativePath
         ? (options as any).relativePath

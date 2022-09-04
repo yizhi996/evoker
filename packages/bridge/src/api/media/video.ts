@@ -12,8 +12,9 @@ import {
 } from "../../async"
 import { invoke } from "../../bridge"
 import { clamp } from "@evoker/shared"
-import { ErrorCodes, errorMessage } from "../../errors"
 import { requestAuthorization } from "../auth"
+import { isString } from "@vue/shared"
+import { ERR_CANNOT_EMPTY, ERR_INVALID_ARG_TYPE, ERR_INVALID_ARG_VALUE } from "../../errors"
 
 const enum Events {
   CHOOSE_VIDEO = "chooseVideo",
@@ -35,7 +36,7 @@ interface ChooseVideoOptions {
   /** 摄视频最长拍摄时间，单位秒 */
   maxDuration?: number
   /** 默认拉起的是前置或者后置摄像头
-   * 
+   *
    * 可选值：
    * - back: 默认拉起后置摄像头
    * -front: 默认拉起前置摄像头
@@ -161,8 +162,21 @@ export function saveVideoToPhotosAlbum<
 >(options: T): AsyncReturn<T, SaveVideoToPhotosAlbumOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.SAVE_VIDEO_TO_PHTOTS_ALBUM
+    if (!isString(options.filePath)) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.filePath", "string", options.filePath)
+      )
+      return
+    }
+
     if (!options.filePath) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "filePath"))
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.filePath", options.filePath, ERR_CANNOT_EMPTY)
+      )
       return
     }
 
@@ -219,10 +233,20 @@ export function getVideoInfo<T extends GetVideoInfoOptions = GetVideoInfoOptions
 ): AsyncReturn<T, GetVideoInfoOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.GET_VIDEO_INFO
-    if (!options.src) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "src"))
+    if (!isString(options.src)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.src", "string", options.src))
       return
     }
+
+    if (!options.src) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.src", options.src, ERR_CANNOT_EMPTY)
+      )
+      return
+    }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -233,7 +257,7 @@ interface CompressVideoOptions {
   /** 视频文件路径，可以是临时文件路径也可以是永久文件路径 */
   src: string
   /** 压缩质量
-   * 
+   *
    * 可选值：
    * - low: 低
    * - medium: 中
@@ -258,7 +282,7 @@ interface CompressVideoSuccessCallbackResult {
   /** 压缩后的临时文件地址 */
   tempFilePath: string
   /** 压缩后的大小，单位 KB */
-  size:number
+  size: number
 }
 
 type CompressVideoSuccessCallback = (res: CompressVideoSuccessCallbackResult) => void
@@ -268,7 +292,7 @@ type CompressVideoFailCallback = (res: GeneralCallbackResult) => void
 type CompressVideoCompleteCallback = (res: GeneralCallbackResult) => void
 
 /** 压缩视频
- * 
+ *
  * 当需要更精细的控制时，可指定 bitrate、fps、和 resolution，当 quality 传入时，这三个参数将被忽略。 */
 export function compressVideo<T extends CompressVideoOptions = CompressVideoOptions>(
   options: T
@@ -276,10 +300,20 @@ export function compressVideo<T extends CompressVideoOptions = CompressVideoOpti
   return wrapperAsyncAPI(
     options => {
       const event = Events.COMPTESS_VIDEO
-      if (!options.src) {
-        invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "src"))
+      if (!isString(options.src)) {
+        invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.src", "string", options.src))
         return
       }
+
+      if (!options.src) {
+        invokeFailure(
+          event,
+          options,
+          ERR_INVALID_ARG_VALUE("options.src", options.src, ERR_CANNOT_EMPTY)
+        )
+        return
+      }
+
       invoke<SuccessResult<T>>(event, options, result => {
         invokeCallback(event, options, result)
       })

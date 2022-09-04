@@ -1,5 +1,4 @@
 import { isString } from "@vue/shared"
-import { isNumber } from "@evoker/shared"
 import { invoke } from "../../bridge"
 import {
   invokeCallback,
@@ -10,7 +9,7 @@ import {
   invokeFailure
 } from "../../async"
 import { showActionSheet } from "../ui/interaction"
-import { ErrorCodes, errorMessage } from "../../errors"
+import { ERR_CANNOT_EMPTY, ERR_INVALID_ARG_TYPE, ERR_INVALID_ARG_VALUE } from "../../errors"
 
 const enum Events {
   MAKE_PHONE_CALL = "makePhoneCall"
@@ -39,22 +38,27 @@ export function makePhoneCall<T extends MakePhoneCallOptions = MakePhoneCallOpti
 ): AsyncReturn<T, MakePhoneCallOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.MAKE_PHONE_CALL
-    if (options.phoneNumber == null) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "phoneNumber"))
+    if (!isString(options.phoneNumber)) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.phoneNumber", "string", options.phoneNumber)
+      )
       return
-    }
-    if (!options.phoneNumber) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "phoneNumber"))
-      return
-    }
-    let phoneNumber = options.phoneNumber
-    if (isNumber(phoneNumber) || !isString(phoneNumber)) {
-      phoneNumber = options.phoneNumber.toString()
     }
 
-    showActionSheet({ alertText: phoneNumber, itemList: ["呼叫"] })
+    if (!options.phoneNumber) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.phoneNumber", options.phoneNumber, ERR_CANNOT_EMPTY)
+      )
+      return
+    }
+
+    showActionSheet({ alertText: options.phoneNumber, itemList: ["呼叫"] })
       .then(() => {
-        invoke<SuccessResult<T>>(event, { phoneNumber }, result => {
+        invoke<SuccessResult<T>>(event, options, result => {
           invokeCallback(event, options, result)
         })
       })

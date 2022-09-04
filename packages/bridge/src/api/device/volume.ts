@@ -7,7 +7,8 @@ import {
   wrapperAsyncAPI,
   invokeFailure
 } from "../../async"
-import { ErrorCodes, errorMessage } from "../../errors"
+import { ERR_INVALID_ARG_TYPE } from "../../errors"
+import { isNumber } from "@evoker/shared"
 
 const enum Events {
   SET = "setVolume",
@@ -36,10 +37,16 @@ export function setVolume<T extends SetVolumeOptions = SetVolumeOptions>(
 ): AsyncReturn<T, SetVolumeOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.SET
-    if (options.volume == null) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "volume"))
+
+    if (!isNumber(options.volume)) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.volume", "number", options.volume)
+      )
       return
     }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })

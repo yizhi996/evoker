@@ -8,8 +8,8 @@ import {
   invokeFailure
 } from "../async"
 import { isString } from "@vue/shared"
-import { ErrorCodes, errorMessage } from "../errors"
 import { EKFILE_SCHEME, EKFILE_TMP, EKFILE_STORE } from "./const"
+import { ERR_CANNOT_EMPTY, ERR_INVALID_ARG_TYPE, ERR_INVALID_ARG_VALUE } from "../errors"
 
 const enum Events {
   SAVE_FILE = "saveFile",
@@ -51,8 +51,21 @@ export function saveFile<T extends SaveFileOptions = SaveFileOptions>(
   return wrapperAsyncAPI(options => {
     const event = Events.SAVE_FILE
 
-    if (!options.tempFilePath || !isString(options.tempFilePath)) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "tempFilePath"))
+    if (!isString(options.tempFilePath)) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.tempFilePath", "string", options.tempFilePath)
+      )
+      return
+    }
+
+    if (!options.tempFilePath) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.tempFilePath", options.tempFilePath, ERR_CANNOT_EMPTY)
+      )
       return
     }
 
@@ -91,8 +104,21 @@ export function removeSavedFile<T extends RemoveSavedFileOptions = RemoveSavedFi
   return wrapperAsyncAPI(options => {
     const event = Events.REMOVE_SAVED_FILE
 
-    if (!options.filePath || !isString(options.filePath)) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "filePath"))
+    if (!isString(options.filePath)) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.filePath", "string", options.filePath)
+      )
+      return
+    }
+
+    if (!options.filePath) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.filePath", options.filePath, ERR_CANNOT_EMPTY)
+      )
       return
     }
 
@@ -179,8 +205,21 @@ export function getSavedFileInfo<T extends GetSavedFileInfoOptions = GetSavedFil
   return wrapperAsyncAPI(options => {
     const event = Events.GET_SAVEF_FILE_INFO
 
-    if (!options.filePath || !isString(options.filePath)) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "filePath"))
+    if (!isString(options.filePath)) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.filePath", "string", options.filePath)
+      )
+      return
+    }
+
+    if (!options.filePath) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.filePath", options.filePath, ERR_CANNOT_EMPTY)
+      )
       return
     }
 
@@ -199,7 +238,7 @@ export interface GetFileInfoOptions {
   /** 本地文件路径 (本地路径) */
   filePath: string
   /** 计算文件摘要的算法
-   * 
+   *
    * 可选值：
    * - md5: md5 算法
    * - sha1: sha1 算法
@@ -234,8 +273,21 @@ export function getFileInfo<T extends GetFileInfoOptions = GetFileInfoOptions>(
     options => {
       const event = Events.GET_FILE_INFO
 
-      if (!options.filePath || !isString(options.filePath)) {
-        invokeFailure(event, options, errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "filePath"))
+      if (!isString(options.filePath)) {
+        invokeFailure(
+          event,
+          options,
+          ERR_INVALID_ARG_TYPE("options.filePath", "string", options.filePath)
+        )
+        return
+      }
+
+      if (!options.filePath) {
+        invokeFailure(
+          event,
+          options,
+          ERR_INVALID_ARG_VALUE("options.filePath", options.filePath, ERR_CANNOT_EMPTY)
+        )
         return
       }
 

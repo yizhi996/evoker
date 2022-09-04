@@ -9,7 +9,7 @@ import {
   wrapperAsyncAPI
 } from "../../async"
 import { showToast } from "../ui/interaction"
-import { ErrorCodes, errorMessage } from "../../errors"
+import { ERR_INVALID_ARG_TYPE } from "../../errors"
 
 const enum Events {
   GET_CLIPBOARD_DATA = "getClipboardData",
@@ -82,7 +82,7 @@ export function setClipboardData<T extends SetClipboardDataOptions = SetClipboar
   return wrapperAsyncAPI(options => {
     const event = Events.SET_CLIPBOARD_DATA
     if (!isString(options.data)) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "data"))
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.data", "string", options.data))
       return
     }
     invoke<SuccessResult<T>>(event, options, result => {

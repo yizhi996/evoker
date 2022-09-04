@@ -6,10 +6,12 @@ import {
   wrapperAsyncAPI,
   AsyncReturn,
   invokeFailure,
-  ErrorCodes,
-  errorMessage
+  ERR_INVALID_ARG_TYPE,
+  ERR_CANNOT_EMPTY,
+  ERR_INVALID_ARG_VALUE
 } from "@evoker/bridge"
 import { innerAppData } from "../../app"
+import { isString } from "@vue/shared"
 
 const enum Events {
   NAVIGATE_TO_MINI_PROGRAM = "navigateToMiniProgram",
@@ -47,13 +49,31 @@ export function navigateToMiniProgram<
     options => {
       const event = Events.NAVIGATE_TO_MINI_PROGRAM
 
-      if (!options.appId) {
-        invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "appId"))
+      if (!isString(options.appId)) {
+        invokeFailure(
+          event,
+          options,
+          ERR_INVALID_ARG_TYPE("options.appId", "string", options.appId)
+        )
         return
       }
 
-      if (!["release", "trial", "develop"].includes(options.envVersion!)) {
-        invokeFailure(event, options, "options envVersion required release, trial or develop")
+      if (!options.appId) {
+        invokeFailure(
+          event,
+          options,
+          ERR_INVALID_ARG_VALUE("options.appId", options.appId, ERR_CANNOT_EMPTY)
+        )
+        return
+      }
+
+      const validEnv = ["release", "trial", "develop"]
+      if (!validEnv.includes(options.envVersion!)) {
+        invokeFailure(
+          event,
+          options,
+          ERR_INVALID_ARG_TYPE("options.envVersion", validEnv, options.envVersion)
+        )
         return
       }
 

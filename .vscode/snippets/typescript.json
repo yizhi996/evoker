@@ -65,5 +65,28 @@
       "}",
       ""
     ]
+  },
+
+  "EvokerERRString": {
+    "prefix": "ekerrstr",
+    "body": [
+      "if (!isString(options.$0)) {",
+      "  invokeFailure(",
+      "    event,",
+      "    options,",
+      "    ERR_INVALID_ARG_TYPE(\"options.$0\", \"string\", options.$0)",
+      "  )",
+      "  return",
+      " }",
+      "",
+      "  if (!options.$0) {",
+      "  invokeFailure(",
+      "    event,",
+      "    options,",
+      "    ERR_INVALID_ARG_VALUE(\"options.$0\", options.$0, ERR_CANNOT_EMPTY)",
+      "  )",
+      "  return",
+      "}"
+    ]
   }
 }

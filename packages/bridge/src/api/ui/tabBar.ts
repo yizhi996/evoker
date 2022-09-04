@@ -7,7 +7,14 @@ import {
   wrapperAsyncAPI,
   invokeFailure
 } from "../../async"
-import { ErrorCodes, errorMessage } from "../../errors"
+import {
+  ERR_CANNOT_EMPTY,
+  ERR_INVALID_ARG_TYPE,
+  ERR_INVALID_ARG_VALUE,
+  ERR_OUT_OF_RANGE
+} from "../../errors"
+import { isNumber } from "@evoker/shared"
+import { isString } from "@vue/shared"
 
 const enum Events {
   SET_TAB_BAR_BADGE = "setTabBarBadge",
@@ -43,14 +50,30 @@ export function setTabBarBadge<T extends SetTabBarBadgeOptions = SetTabBarBadgeO
 ): AsyncReturn<T, SetTabBarBadgeOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.SET_TAB_BAR_BADGE
-    if (options.index == null) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
+    if (!isNumber(options.index)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.index", "number", options.index))
       return
     }
+
+    if (options.index < 0) {
+      invokeFailure(event, options, ERR_OUT_OF_RANGE("options.index", options.index, ">= 0"))
+      return
+    }
+
+    if (!isString(options.text)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.text", "string", options.text))
+      return
+    }
+
     if (!options.text) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.CANNOT_BE_EMPTY, "text"))
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.text", options.text, ERR_CANNOT_EMPTY)
+      )
       return
     }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -80,10 +103,16 @@ export function removeTabBarBadge<T extends RemoveTabBarBadgeOptions = RemoveTab
 ): AsyncReturn<T, RemoveTabBarBadgeOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.REMOVE_TAB_BAR_BADGE
-    if (options.index == null) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
+    if (!isNumber(options.index)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.index", "number", options.index))
       return
     }
+
+    if (options.index < 0) {
+      invokeFailure(event, options, ERR_OUT_OF_RANGE("options.index", options.index, ">= 0"))
+      return
+    }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -113,10 +142,16 @@ export function showTabBarRedDot<T extends ShowTabBarRedDotOptions = ShowTabBarR
 ): AsyncReturn<T, ShowTabBarRedDotOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.SHOW_TAB_BAR_RED_DOT
-    if (options.index == null) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
+    if (!isNumber(options.index)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.index", "number", options.index))
       return
     }
+
+    if (options.index < 0) {
+      invokeFailure(event, options, ERR_OUT_OF_RANGE("options.index", options.index, ">= 0"))
+      return
+    }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -146,10 +181,16 @@ export function hideTabBarRedDot<T extends HideTabBarRedDotOptions = HideTabBarR
 ): AsyncReturn<T, HideTabBarRedDotOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.HIDE_TAB_BAR_RED_DOT
-    if (options.index == null) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
+    if (!isNumber(options.index)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.index", "number", options.index))
       return
     }
+
+    if (options.index < 0) {
+      invokeFailure(event, options, ERR_OUT_OF_RANGE("options.index", options.index, ">= 0"))
+      return
+    }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -184,10 +225,16 @@ export function setTabBarItem<T extends SetTabBarItemOptions = SetTabBarItemOpti
 ): AsyncReturn<T, SetTabBarItemOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.SET_TAB_BAR_ITEM
-    if (options.index == null) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "index"))
+    if (!isNumber(options.index)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.index", "number", options.index))
       return
     }
+
+    if (options.index < 0) {
+      invokeFailure(event, options, ERR_OUT_OF_RANGE("options.index", options.index, ">= 0"))
+      return
+    }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })

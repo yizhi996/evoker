@@ -7,7 +7,11 @@ import {
   wrapperAsyncAPI,
   invokeFailure
 } from "../../async"
-import { ErrorCodes, errorMessage } from "../../errors"
+import {
+  ERR_CANNOT_EMPTY,
+  ERR_INVALID_ARG_VALUE,
+  ERR_INVALID_ARG_TYPE
+} from "../../errors"
 
 const enum Events {
   SHORT = "vibrateShort",
@@ -44,9 +48,20 @@ export function vibrateShort<T extends VibrateShortOptions = VibrateShortOptions
   return wrapperAsyncAPI(options => {
     const event = Events.SHORT
     if (!options.type) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "type"))
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.type", options.type, ERR_CANNOT_EMPTY)
+      )
       return
     }
+
+    const validTypes = ["heavy", "medium", "light"]
+    if (!validTypes.includes(options.type)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.type", validTypes, options.type))
+      return
+    }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })

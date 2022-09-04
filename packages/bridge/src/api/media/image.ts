@@ -12,7 +12,8 @@ import {
   wrapperAsyncAPI
 } from "../../async"
 import { requestAuthorization } from "../auth"
-import { ErrorCodes, errorMessage } from "../../errors"
+import { ERR_CANNOT_EMPTY, ERR_INVALID_ARG_TYPE, ERR_INVALID_ARG_VALUE } from "../../errors"
+import { isArray, isString } from "@vue/shared"
 
 const enum Events {
   PREVIEW_IMAGE = "previewImage",
@@ -47,10 +48,20 @@ export function previewImage<T extends PreviewImageOptions = PreviewImageOptions
 ): AsyncReturn<T, PreviewImageOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.PREVIEW_IMAGE
-    if (!options.urls || options.urls.length === 0) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "urls"))
+    if (!isArray(options.urls)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.urls", "string[]", options.urls))
       return
     }
+
+    if (options.urls.length === 0) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.urls", options.urls, ERR_CANNOT_EMPTY)
+      )
+      return
+    }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -191,8 +202,21 @@ export function saveImageToPhotosAlbum<
   return wrapperAsyncAPI(options => {
     const event = Events.SAVE_IMAGE_TO_PHOTOS_ALBUM
 
+    if (!isString(options.filePath)) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.filePath", "string", options.filePath)
+      )
+      return
+    }
+
     if (!options.filePath) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "filePath"))
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.filePath", options.filePath, ERR_CANNOT_EMPTY)
+      )
       return
     }
 
@@ -253,10 +277,20 @@ export function getImageInfo<T extends GetImageInfoOptions = GetImageInfoOptions
 ): AsyncReturn<T, GetImageInfoOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.GET_IMAGE_INFO
-    if (!options.src) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "src"))
+    if (!isString(options.src)) {
+      invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.src", "string", options.src))
       return
     }
+
+    if (!options.src) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_VALUE("options.src", options.src, ERR_CANNOT_EMPTY)
+      )
+      return
+    }
+
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })
@@ -294,8 +328,17 @@ export function compressImage<T extends CompressImageOptions = CompressImageOpti
   return wrapperAsyncAPI(
     options => {
       const event = Events.COMPRESS_IMAGE
+      if (!isString(options.src)) {
+        invokeFailure(event, options, ERR_INVALID_ARG_TYPE("options.src", "string", options.src))
+        return
+      }
+
       if (!options.src) {
-        invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "src"))
+        invokeFailure(
+          event,
+          options,
+          ERR_INVALID_ARG_VALUE("options.src", options.src, ERR_CANNOT_EMPTY)
+        )
         return
       }
 

@@ -7,8 +7,8 @@ import {
   wrapperAsyncAPI,
   invokeFailure
 } from "../../async"
-import { extend } from "@vue/shared"
-import { errorMessage, ErrorCodes } from "../../errors"
+import { extend, isString } from "@vue/shared"
+import { ERR_CANNOT_EMPTY, ERR_INVALID_ARG_TYPE, ERR_INVALID_ARG_VALUE } from "../../errors"
 
 const enum Events {
   SET_NAVIGATION_BAR_TITLE = "setNavigationBarTitle",
@@ -91,7 +91,7 @@ interface SetNavigationBarColorAnimation {
   /** 动画变化时间，单位 ms */
   duration?: number
   /** 动画类型
-   * 
+   *
    * 可选值：
    * - linear: 线性
    * - easeIn: 缓入
@@ -113,19 +113,30 @@ export function setNavigationBarColor<
 >(options: T): AsyncReturn<T, SetNavigationBarColorOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.SET_NAVIGATION_BAR_COLOR
-    if (!options.frontColor) {
-      invokeFailure(event, options, errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "frontColor"))
+    const validTypes = ["#ffffff", "#000000"]
+    if (!validTypes.includes(options.frontColor)) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.frontColor", validTypes, options.frontColor)
+      )
       return
     }
-    if (!["#ffffff", "#000000"].includes(options.frontColor)) {
-      invokeFailure(event, options, "frontColor valid value: #ffffff, #000000")
+
+    if (!isString(options.backgroundColor)) {
+      invokeFailure(
+        event,
+        options,
+        ERR_INVALID_ARG_TYPE("options.backgroundColor", "string", options.backgroundColor)
+      )
       return
     }
+
     if (!options.backgroundColor) {
       invokeFailure(
         event,
         options,
-        errorMessage(ErrorCodes.MISSING_REQUIRED_PRAMAR, "backgroundColor")
+        ERR_INVALID_ARG_VALUE("options.backgroundColor", options.backgroundColor, ERR_CANNOT_EMPTY)
       )
       return
     }
