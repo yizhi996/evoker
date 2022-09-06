@@ -4,7 +4,7 @@ import color from "picocolors"
 import { extend, isString } from "@vue/shared"
 import fs from "fs"
 import { resolve } from "path"
-import { outputAppConfig } from "./app"
+import { outputAppConfig, resetOutputAppConfig } from "./app"
 
 export interface PageInfo {
   path: string
@@ -41,7 +41,7 @@ export default function vitePluginEvokerRouter(): Plugin {
       }
 
       const appConfig = getAppConfig()
-
+      resetOutputAppConfig()
       extend(outputAppConfig, appConfig)
 
       outputAppConfig.pages = []

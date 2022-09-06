@@ -8,6 +8,10 @@ let outputAppConfig: {
 
 export { outputAppConfig }
 
+export function resetOutputAppConfig() {
+  outputAppConfig = {}
+}
+
 export default function vitePluginEvokerConfig(): Plugin {
   let config: ResolvedConfig
 
