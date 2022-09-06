@@ -56,6 +56,8 @@ open class WebPage: Page {
     
     var isFromTabItemTap = false
     
+    var didLoadHandler: EmptyBlock?
+    
     public lazy var webView: WebView = {
         assert(appService != nil, "AppService 不能为空")
         let appService = appService!
@@ -173,6 +175,9 @@ open class WebPage: Page {
         
         Engine.shared.config.hooks.pageLifeCycle.onShow?(self)
         appService.modules.values.forEach { $0.onShow(self) }
+        
+        didLoadHandler?()
+        didLoadHandler = nil
     }
 
     func publishOnShow() {

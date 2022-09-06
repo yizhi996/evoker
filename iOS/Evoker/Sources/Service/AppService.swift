@@ -428,16 +428,18 @@ extension AppService {
     
     func waitPageFirstRendered(page: Page, finishHandler: @escaping () -> Void) {
         if let webPage = page as? WebPage {
-            var isRendered = false
-            let exec: () -> Void = {
-                if !isRendered {
-                    isRendered = true
-                    webPage.publishOnReady()
-                    finishHandler()
+            webPage.didLoadHandler = {
+                var isRendered = false
+                let exec: () -> Void = {
+                    if !isRendered {
+                        isRendered = true
+                        webPage.publishOnReady()
+                        finishHandler()
+                    }
                 }
+                webPage.webView.firstRenderCompletionHandler = exec
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: exec)
             }
-            webPage.webView.firstRenderCompletionHandler = exec
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: exec)
         } else {
             finishHandler()
         }
