@@ -156,21 +156,30 @@ function update(clients: WebSocket[]) {
 
       let sdk: Buffer | null = null
       if (sdkFiles.length) {
-        sdk = await zip("dist/", sdkFiles)
-        files.push("sdk")
+        try {
+          sdk = await zip("dist/", sdkFiles)
+          files.push("sdk")
+        } catch (e) {
+          console.error(e)
+        }
       }
 
       let app: Buffer | null = null
       if (appFiles.length) {
-        app = await zip(config.build.outDir + "/", appFiles)
-        files.push("app")
+        try {
+          app = await zip(config.build.outDir + "/", appFiles)
+          files.push("app")
+        } catch (e) {
+          console.error(e)
+        }
       }
 
-      if (files.length && clients.length) {
+      if (files.length && clients.length && (app || sdk)) {
+        const version = serviceVersion.toString()
         const message = JSON.stringify({
           appId,
           files,
-          version: serviceVersion.toString(),
+          version: version,
           launchOptions: options.launchOptions
         })
 
@@ -178,12 +187,12 @@ function update(clients: WebSocket[]) {
         send(data, clients)
 
         if (sdk) {
-          const data = createFileMessage(appId, "sdk", sdk)
+          const data = createFileMessage(appId, version, "sdk", sdk)
           send(data, clients)
         }
 
         if (app) {
-          const data = createFileMessage(appId, "app", app)
+          const data = createFileMessage(appId, version, "app", app)
           send(data, clients)
         }
 

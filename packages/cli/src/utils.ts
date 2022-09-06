@@ -61,35 +61,38 @@ export function zip(root: string, files: string[]): Promise<Buffer> {
     tmp.file({ postfix: ".zip" }, function (err, dir, _, cleanup) {
       if (err) {
         reject(err)
-      } else {
-        const stream = fs.createWriteStream(dir)
-
-        const archive = archiver.create("zip", {
-          zlib: { level: 9 }
-        })
-
-        archive
-          .on("error", err => {
-            cleanup()
-            reject(err)
-          })
-          .pipe(stream)
-
-        stream.on("finish", () => {
-          cleanup()
-          const data = fs.readFileSync(dir)
-          resolve(data)
-        })
-
-        files.forEach(file => {
-          const name = getRelativeFilePath(root, file)
-          if (fs.existsSync(file)) {
-            const data = fs.readFileSync(file)
-            archive.append(data, { name })
-          }
-        })
-        archive.finalize()
+        return
       }
+
+      const stream = fs.createWriteStream(dir)
+      const archive = archiver.create("zip", { zlib: { level: 9 } })
+
+      archive
+        .on("error", err => {
+          cleanup()
+          reject(err)
+        })
+        .pipe(stream)
+
+      stream.on("finish", () => {
+        cleanup()
+        const data = fs.readFileSync(dir)
+        resolve(data)
+      })
+
+      for (const file of files) {
+        const name = getRelativeFilePath(root, file)
+        if (fs.existsSync(file)) {
+          const data = fs.readFileSync(file)
+          archive.append(data, { name })
+        } else {
+          cleanup()
+          reject(new Error(`${file} not found`))
+          return
+        }
+      }
+
+      archive.finalize()
     })
   })
 }

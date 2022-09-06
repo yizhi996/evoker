@@ -144,14 +144,17 @@ private extension DevServer {
     }
     
     func recvFile(_ body: Data, header: [String]) {
-        guard header.count >= 2 else { return }
+        guard header.count >= 3 else { return }
         
         let appId = header[0]
-        let package = header[1]
+        let version = header[1]
+        let package = header[2]
         
         lock.lock()
-        defer { lock.unlock() }
-        guard var options = needUpdateApps[appId] else { return }
+        guard var options = needUpdateApps[appId], options.version == version else {
+            lock.unlock()
+            return
+        }
         
         var packageURL: URL
         if package == "sdk" {
@@ -159,6 +162,7 @@ private extension DevServer {
         } else if package == "app" {
             packageURL = FilePath.appDist(appId: appId, envVersion: .develop)
         } else {
+            lock.unlock()
             return
         }
 
@@ -184,10 +188,14 @@ private extension DevServer {
                             info["launchOptions"] = launchOptions
                         }
                         NotificationCenter.default.post(name: DevServer.didUpdateNotification, object: info)
+                        self.lock.unlock()
                     }
+                } else {
+                    lock.unlock()
                 }
             }
         } catch {
+            lock.unlock()
             DispatchQueue.main.async {
                 NotifyType.fail(error.localizedDescription).show()
             }
