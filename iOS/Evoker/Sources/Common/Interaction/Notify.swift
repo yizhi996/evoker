@@ -30,22 +30,27 @@ private class NotifyQueue {
     
     func enqueue(_ notify: NotifyView) {
         guard let text = notify.label.text, !text.isEmpty, let window = UIApplication.shared.keyWindow else { return }
-        let maxWidth = Constant.windowWidth - 40 - 20
+        let padding: CGFloat = 10
+        let margin: CGFloat = 20
+        
+        let maxWidth = Constant.windowWidth - margin * 2 - padding * 2
         let size = notify.label.sizeThatFits(CGSize(width: maxWidth, height: .infinity))
-        let height = size.height + 10
-        notify.frame = CGRect(x: 20, y: -height, width: maxWidth, height: height)
+        let height = size.height + padding
+        notify.frame = CGRect(x: margin, y: -height, width: maxWidth + padding * 2, height: height)
+        notify.layer.zPosition = 9999
         window.addSubview(notify)
         queue.append(notify)
         
         UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut]) {
-            notify.frame.origin.y = Constant.statusBarHeight + notify.frame.height + 10
+            let spacing: CGFloat = 10
+            notify.frame.origin.y = Constant.statusBarHeight + notify.frame.height + spacing
             if self.queue.count > 1 {
                 self.queue[0..<self.queue.count - 1].forEach { label in
-                    label.frame.origin.y += notify.frame.height + 10
+                    label.frame.origin.y += notify.frame.height + spacing
                 }
             }
         } completion: { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 notify.removeFromSuperview()
                 self.queue.removeFirst()
             }
