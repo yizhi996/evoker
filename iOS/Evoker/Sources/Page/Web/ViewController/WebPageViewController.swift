@@ -45,12 +45,6 @@ open class WebPageViewController: PageViewController {
         webView.scrollView.contentInsetAdjustmentBehavior = .never
         webView.scrollView.contentInset = .zero
         webView.scrollView.delegate = self
-        let navigationBarHeight = page.navigationStyle == .default ? Constant.topHeight : 0
-        let tabBarHeight = page.isTabBarPage ? Constant.tabBarHeight : 0
-        webView.frame = CGRect(x: 0,
-                               y: navigationBarHeight,
-                               width: view.frame.width,
-                               height: view.frame.height - tabBarHeight - navigationBarHeight)
         view.insertSubview(webView, at: 0)
     }
     

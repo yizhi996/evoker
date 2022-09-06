@@ -440,9 +440,14 @@ extension AppService {
                 webPage.webView.firstRenderCompletionHandler = exec
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: exec)
             }
-            if let viewController = page.viewController, !viewController.isViewLoaded {
-                viewController.loadViewIfNeeded()
-            }
+            
+            let navigationBarHeight = page.navigationStyle == .default ? Constant.topHeight : 0
+            let tabBarHeight = page.isTabBarPage ? Constant.tabBarHeight : 0
+            
+            webPage.webView.frame = CGRect(x: 0,
+                                           y: navigationBarHeight,
+                                           width: Constant.windowWidth,
+                                           height: Constant.windowHeight - tabBarHeight - navigationBarHeight)
         } else {
             finishHandler()
         }
