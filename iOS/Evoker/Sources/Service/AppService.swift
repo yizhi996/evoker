@@ -440,6 +440,9 @@ extension AppService {
                 webPage.webView.firstRenderCompletionHandler = exec
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: exec)
             }
+            if let viewController = page.viewController, !viewController.isViewLoaded {
+                viewController.loadViewIfNeeded()
+            }
         } else {
             finishHandler()
         }
