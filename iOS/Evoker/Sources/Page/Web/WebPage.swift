@@ -170,14 +170,15 @@ open class WebPage: Page {
                                                                                          "fromTabItemTap": isFromTabItemTap,
                                                                                          "tabText": tabText,
                                                                                          "path": url])
+        
+        didLoadHandler?()
+        didLoadHandler = nil
+        
         Engine.shared.config.hooks.pageLifeCycle.onLoad?(self)
         appService.modules.values.forEach { $0.onLoad(self) }
         
         Engine.shared.config.hooks.pageLifeCycle.onShow?(self)
         appService.modules.values.forEach { $0.onShow(self) }
-        
-        didLoadHandler?()
-        didLoadHandler = nil
     }
 
     func publishOnShow() {

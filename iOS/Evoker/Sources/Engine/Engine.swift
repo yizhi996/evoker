@@ -427,13 +427,18 @@ public extension Engine {
         config.setURLSchemeHandler(webPHandler, forURLScheme: "webphttp")
         config.setURLSchemeHandler(webPHandler, forURLScheme: "webphttps")
         
-        let rect = CGRect(x: -Constant.windowWidth, y: 0, width: Constant.windowWidth, height: Constant.windowHeight)
+        let navigationBarHeight = Constant.topHeight
+        let rect = CGRect(x:  -Constant.windowWidth,
+                          y: navigationBarHeight,
+                          width: Constant.windowWidth,
+                          height: Constant.windowHeight - navigationBarHeight)
         let webView = WebView(frame: rect, configuration: config)
         let version = PackageManager.shared.localJSSDKVersion
         let jsSDKDir = FilePath.jsSDK(version: version)
         let indexHTMLFileURL = jsSDKDir.appendingPathComponent("index.html")
         webView.loadFileURL(indexHTMLFileURL, allowingReadAccessTo: FilePath.documentDirectory())
         UIApplication.shared.keyWindow!.addSubview(webView)
+        webView.removeFromSuperview()
         return webView
     }
     

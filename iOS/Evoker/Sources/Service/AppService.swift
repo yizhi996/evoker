@@ -701,10 +701,7 @@ public extension AppService {
         }
         
         waitPageFirstRendered(page: page) {
-            // 不使用 CATransaction 会有一定几率造成跳转延迟或者动画消失
-            CATransaction.begin()
             self.rootViewController?.pushViewController(viewController, animated: true)
-            CATransaction.commit()
         }
     }
     
