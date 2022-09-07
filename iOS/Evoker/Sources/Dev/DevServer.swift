@@ -15,10 +15,10 @@ class DevServer: WebSocket {
         let appId: String
         var files: [String]
         let version: String
-        var launchOptions: LaunchOptions?
+        let launchOptions: LaunchOptions?
         
         struct LaunchOptions: Decodable {
-            let page: String
+            let page: String?
         }
     }
     

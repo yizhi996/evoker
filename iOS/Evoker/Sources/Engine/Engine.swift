@@ -195,8 +195,9 @@ final public class Engine {
               !appId.isEmpty else { return }
         var options = AppLaunchOptions()
         options.envVersion = .develop
-        if let launchOptions = info["launchOptions"] as? DevServer.AppUpdateOptions.LaunchOptions {
-            options.path = launchOptions.page
+        if let launchOptions = info["launchOptions"] as? DevServer.AppUpdateOptions.LaunchOptions,
+           let launchPage = launchOptions.page {
+            options.path = launchPage
         }
         if let appService = runningApp.first(where: { $0.appId == appId && $0.envVersion == .develop }) {
             appService.reLaunch(launchOptions: options)
