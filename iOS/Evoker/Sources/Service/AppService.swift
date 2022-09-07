@@ -75,7 +75,7 @@ final public class AppService {
     
     private var killTimer: Timer?
     
-    lazy var context: JSContext = {
+    public lazy var context: JSContext = {
         return Engine.shared.jsContextPool.idle()
     }()
     

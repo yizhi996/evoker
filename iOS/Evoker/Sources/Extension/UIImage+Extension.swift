@@ -11,7 +11,7 @@ import UIKit
 
 extension UIImage {
     
-    convenience init?(builtIn name: String) {
+    public convenience init?(builtIn name: String) {
         self.init(named: name, in: Constant.assetsBundle, compatibleWith: nil)
     }
     

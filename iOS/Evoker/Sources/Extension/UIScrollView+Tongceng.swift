@@ -18,7 +18,7 @@ extension UIScrollView {
         get {
             objc_getAssociatedObject(self, &UIScrollView.tongcengIdKey) as! String?
         } set {
-            objc_setAssociatedObject(self, &UIScrollView.tongcengIdKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &UIScrollView.tongcengIdKey, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
         }
     }
 }
