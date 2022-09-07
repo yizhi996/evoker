@@ -45,8 +45,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
+        config.hooks.app.shareAppMessage = { appService, content in
+            NotifyType.success("title: \(content.title)\npath: \(content.path)\n请在 Native 自行实现转发界面").show()
+        }
+        
+        config.dev.useDevJSSDK = true
         config.dev.useDevServer = true
         Engine.shared.connectDevService()
+        
+        Engine.shared.injectModule(TestModule.self)
         
         PackageManager.shared.updateJSSDK { _ in
             Engine.shared.preload()

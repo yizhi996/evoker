@@ -1,5 +1,6 @@
-import { isArray, isPromise, isString } from "@vue/shared"
-import { ref } from "vue"
+import { isArray, isString } from "@vue/shared"
+import { ref, Ref, isRef } from "vue"
+import isEqual from "lodash.isequal"
 
 type Factory = (context: Context) => void
 
@@ -10,111 +11,119 @@ const enum State {
   FAILURE
 }
 
-interface Task {
-  id: number
+export interface Task {
   name: string
   state: State
-  fn: Factory
-  tasks: Task[]
-  startAt: number
-  endAt: number
+  factory: Factory
+  tests: Test[]
 }
 
-export const tasks = ref<Task[]>([])
-
-let incTaskId = 0
+interface Test {
+  name: string
+  id: number
+  state: State
+  factory: Factory
+  startAt: number
+  endAt: number
+  error?: string
+  timeout: number
+}
 
 class Context {
   task: Task
 
-  queue: number[] = []
+  private queue: number[] = []
 
-  waitQueue: number[] = []
+  private waitQueue: number[] = []
 
-  incTestId = 0
+  private currentTestId: number = 0
 
   constructor(task: Task) {
     this.task = task
   }
 
-  test(name: string, fn: Factory) {
-    const id = this.task.tasks.length
-    const test = { id, name, fn, state: State.WAITING, tasks: [], startAt: 0, endAt: 0 }
-    this.task.tasks.push(test)
+  test(name: string, factory: Factory, timeout: number = 0) {
+    const id = this.task.tests.length
+    const test = { name, id, factory, state: State.WAITING, startAt: 0, endAt: 0, timeout }
+    this.task.tests.push(test)
 
-    const exec = async (id: number) => {
-      this.queue.push(id)
-      const sub = this.task.tasks[id]
-      sub.state = State.RUNNING
-      sub.startAt = Date.now()
-      await sub.fn(this)
+    if (this.queue.length) {
+      this.waitQueue.push(id)
+    } else {
+      this.exec(id)
+    }
+  }
 
-      const i = this.queue.indexOf(id)
+  expect<T>(test: T) {
+    const assertion = new Assertion(this, test)
+    setTimeout(() => {
+      const i = this.queue.indexOf(this.currentTestId)
       if (i > -1) {
         this.queue.splice(i, 1)
       }
       const next = this.waitQueue.shift()
       if (next) {
-        exec(next)
+        this.exec(next)
       }
+    })
+    return assertion
+  }
+
+  private exec(id: number) {
+    this.queue.push(id)
+    this.currentTestId = id
+    const test = this.task.tests[id]
+
+    let that = this
+    function work() {
+      test.state = State.RUNNING
+      test.startAt = Date.now()
+      test.factory(that)
     }
 
-    if (this.queue.length) {
-      this.waitQueue.push(id)
+    if (test.timeout > 0) {
+      setTimeout(work, test.timeout)
     } else {
-      exec(id)
+      work()
     }
-  }
-
-  expect<T>(test: T) {
-    return new Assertion(this, test)
-  }
-}
-
-export function describe(name: string, factory: Factory) {
-  const id = incTaskId++
-  const task = { id, name, state: State.WAITING, fn: factory, tasks: [], startAt: 0, endAt: 0 }
-  tasks.value.push(task)
-}
-
-export function run() {
-  for (const task of tasks.value) {
-    task.state = State.RUNNING
-    const ctx = new Context(task)
-    task.fn(ctx)
   }
 }
 
 class Assertion<T = any> {
   private object?: T
 
-  private toggle: boolean
+  private reversal: boolean
 
   private context: Context
 
   not!: Assertion
 
-  constructor(context: Context, object: T, toggle: boolean = false) {
+  constructor(context: Context, object: T, reversal: boolean = false) {
     this.context = context
     this.object = object
-    this.toggle = toggle
+    this.reversal = reversal
 
-    if (!toggle) {
+    if (!reversal) {
       this.not = new Assertion(context, object, true)
     }
   }
 
-  assert(equal: boolean) {
-    const e = this.toggle ? !equal : equal
-    const task = this.context.task.tasks.find(t => t.state === State.RUNNING)
-    if (task) {
-      task.state = e ? State.SUCCESSFULLY : State.FAILURE
-      task.endAt = Date.now()
+  assert(equal: boolean, expected: unknown) {
+    const e = this.reversal ? !equal : equal
+    const test = this.context.task.tests.find(t => t.state === State.RUNNING)
+    if (test) {
+      if (e) {
+        test.state = State.SUCCESSFULLY
+      } else {
+        test.state = State.FAILURE
+        test.error = `must be ${expected}, received ${this.object}`
+      }
+      test.endAt = Date.now()
     }
 
-    if (!this.context.task.tasks.find(t => t.state === State.WAITING)) {
+    if (!this.context.task.tests.find(t => t.state === State.WAITING)) {
       let state = State.SUCCESSFULLY
-      for (const t of this.context.task.tasks) {
+      for (const t of this.context.task.tests) {
         if (t.state !== State.SUCCESSFULLY) {
           state = State.FAILURE
         }
@@ -125,17 +134,15 @@ class Assertion<T = any> {
 
   toBe(expected: T) {
     const equal = this.object === expected
-    this.assert(equal)
+    this.assert(equal, expected)
   }
 
   toBeNull() {
-    this.assert(this.object === null)
+    this.assert(this.object === null, "null")
   }
 
   toEqual(expected: T) {
-    if (isArray(expected) && isArray(this.object)) {
-      this.assert(arrayEqual(this.object, expected))
-    }
+    this.assert(isEqual(expected, this.object), expected)
   }
 
   toContain<E>(item: E) {
@@ -145,24 +152,17 @@ class Assertion<T = any> {
     } else if (item && isArray(this.object)) {
       contain = this.object.includes(item)
     }
-    return this.assert(contain)
+    this.assert(contain, item)
   }
 }
 
-function arrayEqual(a: any[], b: any[]) {
-  if (a.length === 0 && b.length === 0) {
-    return true
-  }
-  if (a.length !== b.length) {
-    return false
-  }
+export function describe(name: string, factory: Factory): Ref<Task> {
+  return ref({ name, state: State.WAITING, factory, tests: [] })
+}
 
-  let equal = true
-  for (let i = 0; i < a.length; i++) {
-    const aa = [i]
-    if (aa !== b[i]) {
-      return false
-    }
-  }
-  return equal
+export function run(task: Task | Ref<Task>) {
+  const raw = isRef(task) ? task.value : task
+  raw.state = State.RUNNING
+  const ctx = new Context(raw)
+  raw.factory(ctx)
 }

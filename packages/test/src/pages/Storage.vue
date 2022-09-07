@@ -1,6 +1,12 @@
-import { describe } from "../test"
+<template>
+  <task-board :task="task"></task-board>
+</template>
 
-describe("storage", async ctx => {
+<script setup lang="ts">
+import { usePage } from "evoker"
+import { describe, run } from "../test"
+
+const task = describe("storage", async ctx => {
   await ek.clearStorage({})
 
   ctx.test("set", async () => {
@@ -30,3 +36,10 @@ describe("storage", async ctx => {
     ctx.expect(res.keys).toEqual([])
   })
 })
+
+const { onReady } = usePage()
+
+onReady(() => {
+  run(task)
+})
+</script>

@@ -1,6 +1,12 @@
-import { describe } from "../test"
+<template>
+  <task-board :task="task"></task-board>
+</template>
 
-describe("system", ctx => {
+<script setup lang="ts">
+import { usePage } from "evoker"
+import { describe, run } from "../test"
+
+const task = describe("system", ctx => {
   ctx.test("window", () => {
     const info = ek.getWindowInfo()
     ctx.expect(info).not.toBeNull()
@@ -31,3 +37,10 @@ describe("system", ctx => {
     ctx.expect(setting).not.toBeNull()
   })
 })
+
+const { onReady } = usePage()
+
+onReady(() => {
+  run(task)
+})
+</script>

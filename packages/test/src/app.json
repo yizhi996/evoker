@@ -8,5 +8,13 @@
     "navigationStyle": "default",
     "backgroundColor": "#f3f4f6"
   },
-  "pages": ["components/Main"]
+  "pages": [
+    "pages/Index",
+    "pages/Base",
+    "pages/System",
+    "pages/Interaction",
+    "pages/Storage",
+    "pages/Network",
+    "pages/WebSocket"
+  ]
 }

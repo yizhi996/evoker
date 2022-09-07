@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8614CBB927377A7D001CBE07 /* LaunchpadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8614CBB827377A7D001CBE07 /* LaunchpadViewController.swift */; };
 		861ADB2E26DC719800C3D62F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 861ADB2D26DC719800C3D62F /* Assets.xcassets */; };
+		8677142028C8566200D9C367 /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8677141F28C8566200D9C367 /* TestUtils.swift */; };
 		868A758626786BB100BDC6A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868A758526786BB100BDC6A1 /* AppDelegate.swift */; };
 		868A759226786BB700BDC6A1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 868A759026786BB700BDC6A1 /* LaunchScreen.storyboard */; };
 		B728097ED6CF9A032F72FF8E /* Pods_Test.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9DCC541E9C2F390EDE08AE8 /* Pods_Test.framework */; };
@@ -32,6 +33,7 @@
 		10CF4B8582E0BF470359A821 /* Pods-Test.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Test.release.xcconfig"; path = "Target Support Files/Pods-Test/Pods-Test.release.xcconfig"; sourceTree = "<group>"; };
 		8614CBB827377A7D001CBE07 /* LaunchpadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchpadViewController.swift; sourceTree = "<group>"; };
 		861ADB2D26DC719800C3D62F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8677141F28C8566200D9C367 /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		868A758226786BB100BDC6A1 /* Test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Test.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		868A758526786BB100BDC6A1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		868A759126786BB700BDC6A1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 			children = (
 				868A758526786BB100BDC6A1 /* AppDelegate.swift */,
 				8614CBB827377A7D001CBE07 /* LaunchpadViewController.swift */,
+				8677141F28C8566200D9C367 /* TestUtils.swift */,
 				868A759026786BB700BDC6A1 /* LaunchScreen.storyboard */,
 				861ADB2D26DC719800C3D62F /* Assets.xcassets */,
 				868A759326786BB700BDC6A1 /* Info.plist */,
@@ -252,6 +255,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				868A758626786BB100BDC6A1 /* AppDelegate.swift in Sources */,
+				8677142028C8566200D9C367 /* TestUtils.swift in Sources */,
 				8614CBB927377A7D001CBE07 /* LaunchpadViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

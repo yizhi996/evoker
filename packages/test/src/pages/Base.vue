@@ -1,6 +1,12 @@
-import { describe } from "../test"
+<template>
+  <task-board :task="task"></task-board>
+</template>
 
-describe("base", ctx => {
+<script setup lang="ts">
+import { usePage } from "evoker"
+import { describe, run } from "../test"
+
+const task = describe("base", ctx => {
   ctx.test("env", () => {
     const usr = ek.env.USER_DATA_PATH
     ctx.expect(usr).toBe("ekfile://usr")
@@ -13,3 +19,10 @@ describe("base", ctx => {
     ctx.expect(base64).toBe(_base64)
   })
 })
+
+const { onReady } = usePage()
+
+onReady(() => {
+  run(task)
+})
+</script>

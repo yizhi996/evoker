@@ -1,7 +1,13 @@
-import { describe } from "../test"
+<template>
+  <task-board :task="task"></task-board>
+</template>
 
-describe("request", async ctx => {
-  ctx.test("get", async () => {
+<script setup lang="ts">
+import { usePage } from "evoker"
+import { describe, run } from "../test"
+
+const task = describe("request", ctx => {
+  ctx.test("get", () => {
     ek.request({
       url: "https://lilithvue.com/api/test",
       data: { id: "100" },
@@ -12,7 +18,7 @@ describe("request", async ctx => {
     })
   })
 
-  ctx.test("post", async () => {
+  ctx.test("post", () => {
     ek.request({
       url: "https://lilithvue.com/api/test",
       method: "POST",
@@ -23,10 +29,8 @@ describe("request", async ctx => {
       }
     })
   })
-})
 
-describe("download", async ctx => {
-  ctx.test("download", async () => {
+  ctx.test("download", () => {
     ek.downloadFile({
       url: "https://file.lilithvue.com/lilith-test-assets/wallhaven-43y68y.jpg?imageMogr2/thumbnail/512x",
       filePath: ek.env.USER_DATA_PATH + "/test_img.jpg",
@@ -37,16 +41,9 @@ describe("download", async ctx => {
   })
 })
 
-describe("web socket", async ctx => {
-  ctx.test("send", async () => {
-    const ws = ek.connectSocket({ url: "wss://lilithvue.com/echo" })!
-    ws.onOpen(() => {
-      ws.send({ data: "hello" })
-    })
+const { onReady } = usePage()
 
-    ws.onMessage(res => {
-      ws.close()
-      ctx.expect(res.data).toBe("hello")
-    })
-  })
+onReady(() => {
+  run(task)
 })
+</script>
