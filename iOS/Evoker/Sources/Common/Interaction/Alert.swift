@@ -27,6 +27,7 @@ class Alert: UIView, TransitionView {
     
     lazy var titleLabel = UILabel()
     let contentTextView = UITextView()
+    lazy var placeholderLabel = UILabel()
     let confirmButton = UIButton()
     lazy var cancelButton = UIButton()
     
@@ -65,7 +66,13 @@ class Alert: UIView, TransitionView {
             contentTextView.textColor = "#000000".hexColor()
             contentTextView.backgroundColor = UIColor.color("#f7f7f7".hexColor(), dark: "#1c1c1e".hexColor())
             contentTextView.becomeFirstResponder()
+            
+            placeholderLabel.font = UIFont.systemFont(ofSize: 17)
+            placeholderLabel.numberOfLines = 1
+            placeholderLabel.textColor = "#808080".hexColor()
+            placeholderLabel.text = params.placeholderText
         }
+        
         contentTextView.font = UIFont.systemFont(ofSize: 17)
         contentTextView.text = params.content
         addSubview(contentTextView)
@@ -77,7 +84,13 @@ class Alert: UIView, TransitionView {
         contentTextView.autoPinEdge(toSuperviewEdge: .left, withInset: 25)
         contentTextView.autoPinEdge(toSuperviewEdge: .right, withInset: 25)
         if params.editable {
+            contentTextView.delegate = self
             contentTextView.autoSetDimension(.height, toSize: 40)
+            addSubview(placeholderLabel)
+            placeholderLabel.autoPinEdge(.left, to: .left, of: contentTextView, withOffset: 4)
+            placeholderLabel.autoPinEdge(.right, to: .right, of: contentTextView, withOffset: 4)
+            placeholderLabel.autoPinEdge(.top, to: .top, of: contentTextView)
+            placeholderLabel.autoPinEdge(.bottom, to: .bottom, of: contentTextView)
         }
         
         confirmButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
@@ -179,5 +192,14 @@ extension Alert {
             cancelHandler?()
         }
         subView.show(to: view)
+    }
+}
+
+
+extension Alert: UITextViewDelegate {
+    
+    func textViewDidChange(_ textView: UITextView) {
+        let text = textView.text ?? ""
+        placeholderLabel.isHidden = !text.isEmpty
     }
 }
