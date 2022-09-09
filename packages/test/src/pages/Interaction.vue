@@ -64,7 +64,7 @@ const task = describe("interaction", ctx => {
       const title = "Title"
       const confirmColor = "#ff00ff".toLowerCase()
       ek.showModal({ title, showCancel: false, confirmColor })
-      const button = __TestUtils.findButton("确定")!
+      const button = __TestUtils.findUIButtonWithTitle("确定")!
       ctx.expect(button.titleColor).toBe(confirmColor)
       __TestUtils.clickButtonWithId(button.id)
     },
@@ -86,15 +86,15 @@ const task = describe("interaction", ctx => {
       })
       const input = __TestUtils.findFirstResponderInput()!
       __TestUtils.setInput(input, inputValue)
-      const button = __TestUtils.findButton("确定")!
+      const button = __TestUtils.findUIButtonWithTitle("确定")!
       __TestUtils.clickButtonWithId(button.id)
     },
     ANIMATION_DURATION
   )
 
-  ctx.test("showLoading", () => {
+  ctx.test("showLoading", async () => {
     const title = "Loading"
-    ek.showLoading({ title })
+    await ek.showLoading({ title })
     ctx.expect(__TestUtils.findText(title) && __TestUtils.findImage("hud-loading-icon")).toBe(true)
   })
 
@@ -112,7 +112,9 @@ const task = describe("interaction", ctx => {
         ctx.expect(res.tapIndex).toBe(1)
       }
     })
-    __TestUtils.clickTableViewCellWithTitle("macOS")
+    setTimeout(() => {
+      __TestUtils.clickTableViewCellWithTitle("macOS")
+    }, ANIMATION_DURATION)
   })
 })
 

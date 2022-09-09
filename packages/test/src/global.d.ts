@@ -1,5 +1,28 @@
-interface Button {
+interface CGRect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+interface UIView {
   id: string
+  rect: CGRect
+  backgroundColor: string
+}
+
+interface UIFont {
+  size: number
+  weight: string
+}
+
+interface UILabel extends UIView {
+  text: string
+  textColor: string
+  font: UIFont
+}
+
+interface UIButton extends UIView {
   title: string
   titleColor: string
 }
@@ -9,9 +32,13 @@ interface TestUtils {
 
   findImage(name: string): boolean
 
-  findButton(title: string): Button | undefined
-
   findFirstResponderInput(): string | undefined
+
+  findUIViewWithClass(className: string): UIView | undefined
+
+  findUIButtonWithTitle(title: string): UIButton | undefined
+
+  findUILabelWithText(text: string): UILabel | undefined
 
   setInput(id: string, text: string): void
 

@@ -13,6 +13,7 @@
     "pages/Base",
     "pages/System",
     "pages/Interaction",
+    "pages/Navigation",
     "pages/Storage",
     "pages/Network",
     "pages/WebSocket"

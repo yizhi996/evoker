@@ -11,16 +11,16 @@ import UIKit
 
 public extension UIView {
     
-    func dfsFindSubview<T>(ofType: T.Type) -> T? {
+    func dfsFindSubview<T>(reversed: Bool = false, ofType: T.Type) -> T? {
         return dfsFindSubview(where: { $0 as? T != nil }) as? T
     }
     
-    func dfsFindSubview(where predicate: (UIView) throws -> Bool) rethrows -> UIView? {
+    func dfsFindSubview(reversed: Bool = false, where predicate: (UIView) throws -> Bool) rethrows -> UIView? {
         if try predicate(self) {
             return self
         }
-        for sub in subviews {
-            if let res = try sub.dfsFindSubview(where: predicate) {
+        for subview in reversed ? subviews.reversed() : subviews {
+            if let res = try subview.dfsFindSubview(reversed: reversed, where: predicate) {
                 return res
             }
         }

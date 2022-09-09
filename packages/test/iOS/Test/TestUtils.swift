@@ -34,9 +34,13 @@ class TestModule: Module {
     
     func findImage(_ name: String) -> Bool
     
-    func findButton(_ title: String) -> [String: Any]
-    
     func findFirstResponderInput() -> String?
+    
+    func findUIButtonWithTitle(_ title: String) -> [String: Any]
+    
+    func findUIViewWithClass(_ class: String) -> [String: Any]
+    
+    func findUILabelWithText(_ text: String) -> [String: Any]
     
     func setInput(_ id: String, _ text: String)
     
@@ -68,10 +72,14 @@ class TestModule: Module {
         return result
     }
     
+    func findView(where predicate: (UIView) throws -> Bool) rethrows -> UIView? {
+        guard let appService = appService else { return nil }
+        return try appService.rootViewController?.view.dfsFindSubview(reversed: true, where: predicate)
+    }
+    
     func findText(_ text: String) -> Bool {
-        guard let appService = appService else { return false }
         return performMainThread { result, leave in
-            result = appService.rootViewController?.view.dfsFindSubview{ view in
+            result = self.findView { view in
                 if let label = view as? UILabel, label.text == text {
                     return true
                 } else if let textView = view as? UITextView, textView.text == text {
@@ -87,11 +95,10 @@ class TestModule: Module {
     }
     
     func findImage(_ name: String) -> Bool {
-        guard let appService = appService else { return false }
         return performMainThread { result, leave in
             let target = UIImage(builtIn: name)
-            result = appService.rootViewController?.view.dfsFindSubview{ view in
-                if let imageView = view as? UIImageView, imageView.image == target {
+            result = self.findView { view in
+                if let imageView = view as? UIImageView, !imageView.isHidden, imageView.image == target {
                     return true
                 } else {
                     return false
@@ -101,23 +108,17 @@ class TestModule: Module {
         } != nil
     }
     
-    func findButton(_ title: String) -> [String: Any] {
-        guard let appService = appService else { return [:] }
+    func findUIButtonWithTitle(_ title: String) -> [String: Any] {
         return performMainThread { result, leave in
-            let button = appService.rootViewController?.view.dfsFindSubview{ view in
+            let button = self.findView { view in
                 if let button = view as? UIButton, button.title(for: .normal) == title {
                     return true
                 } else {
                     return false
                 }
-            } as? UIButton
+            }
             if let button = button {
-                if button.id == nil {
-                    button.id = String.random(length: 5)
-                }
-                result = ["id": button.id,
-                          "title": button.title(for: .normal) ?? "",
-                          "titleColor": button.titleColor(for: .normal)?.hexString() ?? ""]
+                result = button.toObject()
             } else {
                 result = [:]
             }
@@ -126,9 +127,8 @@ class TestModule: Module {
     }
     
     func findFirstResponderInput() -> String? {
-        guard let appService = appService else { return nil }
         return performMainThread { result, leave in
-            let input = appService.rootViewController?.view.dfsFindSubview{ view in
+            let input = self.findView { view in
                 if let input = view as? UITextView, input.isFirstResponder {
                     return true
                 } else if let input = view as? UITextField, input.isFirstResponder {
@@ -136,7 +136,7 @@ class TestModule: Module {
                 } else {
                     return false
                 }
-            } as? UIView
+            }
             if let input = input {
                 if input.id == nil {
                     input.id = String.random(length: 5)
@@ -149,16 +149,52 @@ class TestModule: Module {
         } as! String?
     }
     
+    func findUIViewWithClass(_ className: String) -> [String: Any] {
+        guard let cls = NSClassFromString(className) else { return [:] }
+        return performMainThread { result, leave in
+            let view = self.findView { view in
+                if view.isKind(of: cls) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            if let view = view {
+                result = view.toObject()
+            } else {
+                result = [:]
+            }
+            leave()
+        } as! [String : Any]
+    }
+    
+    func findUILabelWithText(_ text: String) -> [String: Any] {
+        return performMainThread { result, leave in
+            let label = self.findView { view in
+                if let label = view as? UILabel, label.text == text {
+                    return true
+                } else {
+                    return false
+                }
+            }
+            if let label = label {
+                result = label.toObject()
+            } else {
+                result = [:]
+            }
+            leave()
+        } as! [String : Any]
+    }
+    
     func setInput(_ id: String, _ text: String) {
-        guard let appService = appService else { return }
         performMainThread { result, leave in
-            let input = appService.rootViewController?.view.dfsFindSubview{ view in
+            let input = self.findView { view in
                 if view.id == id {
                     return true
                 } else {
                     return false
                 }
-            } as? UIView
+            }
             if let input = input as? UITextView {
                 input.text = text
                 input.delegate?.textViewDidChange?(input)
@@ -170,9 +206,8 @@ class TestModule: Module {
     }
     
     func clickButtonWithId(_ id: String) {
-        guard let appService = appService else { return }
         performMainThread { result, leave in
-            let button = appService.rootViewController?.view.dfsFindSubview{ view in
+            let button = self.findView { view in
                 if let button = view as? UIButton, button.id == id {
                     return true
                 } else {
@@ -187,9 +222,8 @@ class TestModule: Module {
     }
     
     func clickButtonWithTitle(_ title: String) {
-        guard let appService = appService else { return }
         performMainThread { result, leave in
-            let button = appService.rootViewController?.view.dfsFindSubview{ view in
+            let button = self.findView { view in
                 if let button = view as? UIButton, button.title(for: .normal) == title {
                     return true
                 } else {
@@ -204,9 +238,8 @@ class TestModule: Module {
     }
     
     func clickTableViewCellWithTitle(_ title: String) {
-        guard let appService = appService else { return }
         performMainThread { result, leave in
-            let label = appService.rootViewController?.view.dfsFindSubview{ view in
+            let label = self.findView { view in
                 if let label = view as? UILabel, label.text == title {
                     return true
                 } else {
@@ -224,6 +257,45 @@ class TestModule: Module {
     }
 }
 
+extension UIView {
+    
+    @objc
+    func toObject() -> [String: Any] {
+        if id == nil {
+            id = String.random(length: 6)
+        }
+        return ["id": id!,
+                "rect": ["x": frame.minX,
+                         "y": frame.minY,
+                         "width": frame.width,
+                         "height": frame.height],
+                "backgroundColor": backgroundColor?.hexString() ?? ""]
+    }
+}
+
+extension UILabel {
+    
+    override func toObject() -> [String: Any] {
+        var object = super.toObject()
+        
+        object["text"] = text ?? ""
+        object["textColor"] = textColor.hexString()
+        object["font"] = ["size": font.pointSize,
+                          "weight": font.fontDescriptor.object(forKey: .face) as! String]
+        return object
+    }
+}
+
+extension UIButton {
+    
+    override func toObject() -> [String: Any] {
+        var object = super.toObject()
+        
+        object["title"] = title(for: .normal) ?? ""
+        object["titleColor"] = titleColor(for: .normal)?.hexString() ?? ""
+        return object
+    }
+}
 
 extension UIColor {
     
