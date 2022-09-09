@@ -30,23 +30,17 @@ class TestModule: Module {
     
     init()
     
-    func findText(_ text: String) -> Bool
+    func containText(_ text: String) -> Bool
     
-    func findImage(_ name: String) -> Bool
+    func containImage(_ name: String) -> Bool
     
-    func findFirstResponderInput() -> String?
+    func findFirstResponderInput() -> UIViewObject?
     
-    func findUIButtonWithTitle(_ title: String) -> [String: Any]
+    func findUIButtonWithTitle(_ title: String) -> UIButtonObject?
     
-    func findUIViewWithClass(_ class: String) -> [String: Any]
+    func findUIViewWithClass(_ class: String) -> UIViewObject?
     
-    func findUILabelWithText(_ text: String) -> [String: Any]
-    
-    func setInput(_ id: String, _ text: String)
-    
-    func clickButtonWithId(_ id: String)
-    
-    func clickButtonWithTitle(_ title: String)
+    func findUILabelWithText(_ text: String) -> UILabelObject?
     
     func clickTableViewCellWithTitle(_ title: String)
     
@@ -77,7 +71,7 @@ class TestModule: Module {
         return try appService.rootViewController?.view.dfsFindSubview(reversed: true, where: predicate)
     }
     
-    func findText(_ text: String) -> Bool {
+    func containText(_ text: String) -> Bool {
         return performMainThread { result, leave in
             result = self.findView { view in
                 if let label = view as? UILabel, label.text == text {
@@ -94,7 +88,7 @@ class TestModule: Module {
         } != nil
     }
     
-    func findImage(_ name: String) -> Bool {
+    func containImage(_ name: String) -> Bool {
         return performMainThread { result, leave in
             let target = UIImage(builtIn: name)
             result = self.findView { view in
@@ -108,7 +102,7 @@ class TestModule: Module {
         } != nil
     }
     
-    func findUIButtonWithTitle(_ title: String) -> [String: Any] {
+    func findUIButtonWithTitle(_ title: String) -> UIButtonObject? {
         return performMainThread { result, leave in
             let button = self.findView { view in
                 if let button = view as? UIButton, button.title(for: .normal) == title {
@@ -117,16 +111,12 @@ class TestModule: Module {
                     return false
                 }
             }
-            if let button = button {
-                result = button.toObject()
-            } else {
-                result = [:]
-            }
+            result = button?.toObject()
             leave()
-        } as! [String : Any]
+        } as? UIButtonObject
     }
     
-    func findFirstResponderInput() -> String? {
+    func findFirstResponderInput() -> UIViewObject? {
         return performMainThread { result, leave in
             let input = self.findView { view in
                 if let input = view as? UITextView, input.isFirstResponder {
@@ -137,20 +127,13 @@ class TestModule: Module {
                     return false
                 }
             }
-            if let input = input {
-                if input.id == nil {
-                    input.id = String.random(length: 5)
-                }
-                result = input.id!
-            } else {
-                result = nil
-            }
+            result = input?.toObject()
             leave()
-        } as! String?
+        } as? UIViewObject
     }
     
-    func findUIViewWithClass(_ className: String) -> [String: Any] {
-        guard let cls = NSClassFromString(className) else { return [:] }
+    func findUIViewWithClass(_ className: String) -> UIViewObject? {
+        guard let cls = NSClassFromString(className) else { return nil }
         return performMainThread { result, leave in
             let view = self.findView { view in
                 if view.isKind(of: cls) {
@@ -159,16 +142,12 @@ class TestModule: Module {
                     return false
                 }
             }
-            if let view = view {
-                result = view.toObject()
-            } else {
-                result = [:]
-            }
+            result = view?.toObject()
             leave()
-        } as! [String : Any]
+        } as? UIViewObject
     }
     
-    func findUILabelWithText(_ text: String) -> [String: Any] {
+    func findUILabelWithText(_ text: String) -> UILabelObject? {
         return performMainThread { result, leave in
             let label = self.findView { view in
                 if let label = view as? UILabel, label.text == text {
@@ -177,64 +156,9 @@ class TestModule: Module {
                     return false
                 }
             }
-            if let label = label {
-                result = label.toObject()
-            } else {
-                result = [:]
-            }
+            result = label?.toObject()
             leave()
-        } as! [String : Any]
-    }
-    
-    func setInput(_ id: String, _ text: String) {
-        performMainThread { result, leave in
-            let input = self.findView { view in
-                if view.id == id {
-                    return true
-                } else {
-                    return false
-                }
-            }
-            if let input = input as? UITextView {
-                input.text = text
-                input.delegate?.textViewDidChange?(input)
-            } else if let input = input as? UITextField {
-                input.text = text
-            }
-            leave()
-        }
-    }
-    
-    func clickButtonWithId(_ id: String) {
-        performMainThread { result, leave in
-            let button = self.findView { view in
-                if let button = view as? UIButton, button.id == id {
-                    return true
-                } else {
-                    return false
-                }
-            } as? UIButton
-            if let button = button {
-                button.sendActions(for: .touchUpInside)
-            }
-            leave()
-        }
-    }
-    
-    func clickButtonWithTitle(_ title: String) {
-        performMainThread { result, leave in
-            let button = self.findView { view in
-                if let button = view as? UIButton, button.title(for: .normal) == title {
-                    return true
-                } else {
-                    return false
-                }
-            } as? UIButton
-            if let button = button {
-                button.sendActions(for: .touchUpInside)
-            }
-            leave()
-        }
+        } as? UILabelObject
     }
     
     func clickTableViewCellWithTitle(_ title: String) {
@@ -257,43 +181,186 @@ class TestModule: Module {
     }
 }
 
+@objc protocol UIViewExport: JSExport {
+    
+    var rect: [String: CGFloat] { get }
+    
+    var backgroundColor: String { get set }
+    
+    init()
+    
+}
+
+@objc class UIViewObject: NSObject, UIViewExport {
+    
+    var view: UIView!
+    
+    var rect: [String: CGFloat] {
+        return ["x": view.frame.minX,
+                "y": view.frame.minY,
+                "width": view.frame.width,
+                "height": view.frame.height]
+    }
+    
+    var backgroundColor: String {
+        get {
+            return view.backgroundColor?.hexString() ?? ""
+        } set {
+            DispatchQueue.main.async {
+                self.view.backgroundColor = newValue.hexColor()
+            }
+        }
+    }
+    
+    required override init() {
+        super.init()
+    }
+    
+    init(view: UIView) {
+        self.view = view
+        super.init()
+    }
+}
+
 extension UIView {
     
     @objc
-    func toObject() -> [String: Any] {
-        if id == nil {
-            id = String.random(length: 6)
-        }
-        return ["id": id!,
-                "rect": ["x": frame.minX,
-                         "y": frame.minY,
-                         "width": frame.width,
-                         "height": frame.height],
-                "backgroundColor": backgroundColor?.hexString() ?? ""]
+    func toObject() -> JSExport {
+        return UIViewObject(view: self)
     }
+}
+
+@objc protocol UILabelExport: JSExport, UIViewExport {
+    
+    var text: String { get set }
+    
+    var textColor: String { get set }
+    
+    var font: [String: Any] { get }
+    
+    init()
+    
+}
+
+@objc class UILabelObject: UIViewObject, UILabelExport {
+    
+    var label: UILabel {
+        return view as! UILabel
+    }
+    
+    var text: String {
+        get {
+            return label.text ?? ""
+        } set {
+            DispatchQueue.main.async {
+                self.label.text = newValue
+            }
+        }
+    }
+    
+    var textColor: String {
+        get {
+            return label.textColor.hexString()
+        } set {
+            DispatchQueue.main.async {
+                self.label.textColor = newValue.hexColor()
+            }
+        }
+    }
+        
+    var font: [String: Any] {
+        get {
+            let label = (view as! UILabel)
+            return ["size": label.font.pointSize,
+                    "weight": label.font.fontDescriptor.object(forKey: .face) as! String]
+        }
+    }
+    
 }
 
 extension UILabel {
     
-    override func toObject() -> [String: Any] {
-        var object = super.toObject()
-        
-        object["text"] = text ?? ""
-        object["textColor"] = textColor.hexString()
-        object["font"] = ["size": font.pointSize,
-                          "weight": font.fontDescriptor.object(forKey: .face) as! String]
-        return object
+    override func toObject() -> JSExport {
+        return UILabelObject(view: self)
+    }
+}
+
+@objc protocol UIButtonExport: JSExport, UIViewExport {
+    
+    var title: String { get }
+    
+    var titleColor: String { get }
+    
+    func click()
+    
+    init()
+    
+}
+
+@objc class UIButtonObject: UIViewObject, UIButtonExport {
+    
+    
+    var button: UIButton {
+        return view as! UIButton
+    }
+    
+    var title: String {
+        get {
+            return button.title(for: .normal) ?? ""
+        }
+    }
+    
+    var titleColor: String {
+        get {
+            return button.titleColor(for: .normal)?.hexString() ?? ""
+        }
+    }
+    
+    func click() {
+        DispatchQueue.main.async {
+            self.button.sendActions(for: .touchUpInside)
+        }
     }
 }
 
 extension UIButton {
     
-    override func toObject() -> [String: Any] {
-        var object = super.toObject()
-        
-        object["title"] = title(for: .normal) ?? ""
-        object["titleColor"] = titleColor(for: .normal)?.hexString() ?? ""
-        return object
+    override func toObject() -> JSExport {
+        return  UIButtonObject(view: self)
+    }
+}
+
+@objc protocol UITextViewExport: JSExport, UIViewExport {
+    
+    var text: String { get set }
+    
+    init()
+    
+}
+
+@objc class UITextViewObject: UIViewObject, UITextViewExport {
+    
+    var textView: UITextView {
+        return view as! UITextView
+    }
+    
+    var text: String {
+        get {
+            return textView.text
+        } set {
+            DispatchQueue.main.async {
+                self.textView.text = newValue
+                self.textView.delegate?.textViewDidChange?(self.textView)
+            }
+        }
+    }
+    
+}
+
+extension UITextView {
+    
+    override func toObject() -> JSExport {
+        return  UITextViewObject(view: self)
     }
 }
 
@@ -317,24 +384,57 @@ extension UIColor {
     }
 }
 
+extension String {
+    
+    func hexColor(alpha: CGFloat = 1.0) -> UIColor {
+        return UIColor(hexString: self, alpha: alpha) ?? .black
+    }
+}
 
-extension UIView {
+private extension Int {
+    func duplicate4bits() -> Int {
+        return (self << 4) + self
+    }
+}
+
+private extension UIColor {
     
-    private static var idKey = "TEST_ID"
-    
-    var id: String? {
-        get {
-            objc_getAssociatedObject(self, &Self.idKey) as! String?
-        } set {
-            objc_setAssociatedObject(self, &Self.idKey, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+    convenience init?(hexString: String, alpha: CGFloat = 1.0) {
+        var hex = hexString
+        
+        if hex.hasPrefix("#") {
+            hex = String(hex[hex.index(hex.startIndex, offsetBy: 1)...])
+        }
+        
+        guard let hexVal = Int(hex, radix: 16) else {
+            return nil
+        }
+        
+        switch hex.count {
+        case 3:
+            self.init(hex3: hexVal, alpha: alpha)
+        case 6:
+            self.init(hex6: hexVal, alpha: alpha)
+        default:
+            return nil
         }
     }
 }
 
-extension String {
+private extension UIColor {
     
-    static func random(length: Int) -> String {
-        let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return String((0..<length).map{ _ in letters.randomElement()! })
+    convenience init?(hex3: Int, alpha: CGFloat) {
+        self.init(red:   CGFloat( ((hex3 & 0xF00) >> 8).duplicate4bits() ) / 255.0,
+                  green: CGFloat( ((hex3 & 0x0F0) >> 4).duplicate4bits() ) / 255.0,
+                  blue:  CGFloat( ((hex3 & 0x00F) >> 0).duplicate4bits() ) / 255.0,
+                  alpha: alpha)
     }
+    
+    convenience init?(hex6: Int, alpha: CGFloat) {
+        self.init(red:   CGFloat( (hex6 & 0xFF0000) >> 16 ) / 255.0,
+                  green: CGFloat( (hex6 & 0x00FF00) >> 8 ) / 255.0,
+                  blue:  CGFloat( (hex6 & 0x0000FF) >> 0 ) / 255.0,
+                  alpha: alpha)
+    }
+
 }

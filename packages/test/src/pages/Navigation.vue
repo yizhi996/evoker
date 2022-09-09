@@ -9,18 +9,18 @@ import { describe, run } from "../test"
 const task = describe("navigation", ctx => {
   ctx.test("showNavigationBarLoading", () => {
     ek.showNavigationBarLoading()
-    ctx.expect(__TestUtils.findImage("navigation-loading")).toBe(true)
+    ctx.expect(__TestUtils.containImage("navigation-loading")).toBe(true)
   })
 
   ctx.test("hideNavigationBarLoading", () => {
     ek.hideNavigationBarLoading()
-    ctx.expect(__TestUtils.findImage("navigation-loading")).toBe(false)
+    ctx.expect(__TestUtils.containImage("navigation-loading")).toBe(false)
   })
 
   const title = "Evoker!!!"
   ctx.test("setNavigationBarTitle", () => {
     ek.setNavigationBarTitle({ title })
-    ctx.expect(__TestUtils.findText(title)).toBe(true)
+    ctx.expect(__TestUtils.containText(title)).toBe(true)
   })
 
   const backgroundColor = "#ff00ff"

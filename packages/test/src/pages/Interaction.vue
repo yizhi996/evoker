@@ -12,7 +12,7 @@ const task = describe("interaction", ctx => {
   ctx.test("showToast", async () => {
     const title = "Test"
     await ek.showToast({ title })
-    ctx.expect(__TestUtils.findText(title) && __TestUtils.findImage("hud-success-icon")).toBe(true)
+    ctx.expect(__TestUtils.containText(title) && __TestUtils.containImage("hud-success-icon")).toBe(true)
     ek.hideToast()
   })
 
@@ -20,7 +20,7 @@ const task = describe("interaction", ctx => {
     "showToast none icon",
     async () => {
       await ek.showToast({ title: "None", icon: "none" })
-      ctx.expect(__TestUtils.findImage("hud-success-icon")).toBe(false)
+      ctx.expect(__TestUtils.containImage("hud-success-icon")).toBe(false)
       ek.hideToast()
     },
     ANIMATION_DURATION
@@ -33,7 +33,7 @@ const task = describe("interaction", ctx => {
       await ek.showToast({ title })
       await ek.hideToast()
       setTimeout(() => {
-        ctx.expect(__TestUtils.findText(title)).toBe(false)
+        ctx.expect(__TestUtils.containText(title)).toBe(false)
       }, ANIMATION_DURATION)
     },
     ANIMATION_DURATION
@@ -43,8 +43,8 @@ const task = describe("interaction", ctx => {
     const title = "Title"
     const content = "Content"
     ek.showModal({ title, content })
-    ctx.expect(__TestUtils.findText(title) && __TestUtils.findText(content)).toBe(true)
-    __TestUtils.clickButtonWithTitle("确定")
+    ctx.expect(__TestUtils.containText(title) && __TestUtils.containText(content)).toBe(true)
+    __TestUtils.findUIButtonWithTitle("确定")?.click()
   })
 
   ctx.test(
@@ -52,8 +52,8 @@ const task = describe("interaction", ctx => {
     () => {
       const title = "Title"
       ek.showModal({ title, showCancel: false })
-      ctx.expect(__TestUtils.findText("取消")).toBe(false)
-      __TestUtils.clickButtonWithTitle("确定")
+      ctx.expect(__TestUtils.containText("取消")).toBe(false)
+      __TestUtils.findUIButtonWithTitle("确定")?.click()
     },
     ANIMATION_DURATION
   )
@@ -61,12 +61,13 @@ const task = describe("interaction", ctx => {
   ctx.test(
     "showModal confirmColor",
     () => {
-      const title = "Title"
+      const title = "1Title"
       const confirmColor = "#ff00ff".toLowerCase()
       ek.showModal({ title, showCancel: false, confirmColor })
       const button = __TestUtils.findUIButtonWithTitle("确定")!
+      console.log(button)
       ctx.expect(button.titleColor).toBe(confirmColor)
-      __TestUtils.clickButtonWithId(button.id)
+      button.click()
     },
     ANIMATION_DURATION
   )
@@ -85,9 +86,9 @@ const task = describe("interaction", ctx => {
         }
       })
       const input = __TestUtils.findFirstResponderInput()!
-      __TestUtils.setInput(input, inputValue)
+      input.text = inputValue
       const button = __TestUtils.findUIButtonWithTitle("确定")!
-      __TestUtils.clickButtonWithId(button.id)
+      button.click()
     },
     ANIMATION_DURATION
   )
@@ -95,13 +96,13 @@ const task = describe("interaction", ctx => {
   ctx.test("showLoading", async () => {
     const title = "Loading"
     await ek.showLoading({ title })
-    ctx.expect(__TestUtils.findText(title) && __TestUtils.findImage("hud-loading-icon")).toBe(true)
+    ctx.expect(__TestUtils.containText(title) && __TestUtils.containImage("hud-loading-icon")).toBe(true)
   })
 
   ctx.test("hideLoading", () => {
     ek.hideLoading()
     setTimeout(() => {
-      ctx.expect(__TestUtils.findImage("hud-loading-icon")).toBe(false)
+      ctx.expect(__TestUtils.containImage("hud-loading-icon")).toBe(false)
     }, ANIMATION_DURATION)
   })
 

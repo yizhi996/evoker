@@ -5,6 +5,10 @@ interface CGRect {
   height: number
 }
 
+interface UITextView {
+  text: string
+}
+
 interface UIView {
   id: string
   rect: CGRect
@@ -25,26 +29,25 @@ interface UILabel extends UIView {
 interface UIButton extends UIView {
   title: string
   titleColor: string
+  click(): void
 }
 
+interface UITextView extends UIView {}
+
+interface UITextField extends UIView {}
+
 interface TestUtils {
-  findText(text: string): boolean
+  containText(text: string): boolean
 
-  findImage(name: string): boolean
+  containImage(name: string): boolean
 
-  findFirstResponderInput(): string | undefined
+  findFirstResponderInput(): UITextView | undefined
 
   findUIViewWithClass(className: string): UIView | undefined
 
   findUIButtonWithTitle(title: string): UIButton | undefined
 
   findUILabelWithText(text: string): UILabel | undefined
-
-  setInput(id: string, text: string): void
-
-  clickButtonWithId(id: string): void
-
-  clickButtonWithTitle(title: string): void
 
   clickTableViewCellWithTitle(title: string): void
 }
