@@ -69,7 +69,7 @@ export function saveFile<T extends SaveFileOptions = SaveFileOptions>(
       return
     }
 
-    if (!options.tempFilePath.startsWith(EKFILE_TMP + "_")) {
+    if (!options.tempFilePath.startsWith(EKFILE_TMP)) {
       invokeFailure(event, options, `${options.tempFilePath} is not tmp file`)
       return
     }
