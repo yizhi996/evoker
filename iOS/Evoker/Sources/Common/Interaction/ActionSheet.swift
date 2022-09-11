@@ -46,6 +46,9 @@ class ActionSheet: UIView, TransitionView {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .evWhite
+        if #available(iOS 15.0, *) {
+            tableView.sectionHeaderTopPadding = 0
+        }
         tableView.register(ActionSheetCell.self)
         addSubview(tableView)
         tableView.autoPinEdge(toSuperviewEdge: .top)
