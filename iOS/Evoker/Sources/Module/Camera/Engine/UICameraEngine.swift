@@ -47,6 +47,10 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
                        to viewController: UIViewController,
                        completionHandler: @escaping (PhotoData) -> Void) {
         let imagePickerViewController = UIImagePickerController()
+        if !UIImagePickerController.isSourceTypeAvailable(.camera) {
+            errorHandler?("Camera not available")
+           return
+        }
         imagePickerViewController.sourceType = .camera
         imagePickerViewController.mediaTypes = [kUTTypeImage as String]
         imagePickerViewController.allowsEditing = false
@@ -67,6 +71,10 @@ class UICameraEngine: NSObject, UINavigationControllerDelegate {
                          to viewController: UIViewController,
                          completionHandler: @escaping (VideoData) -> Void) {
         let imagePickerViewController = UIImagePickerController()
+        if !UIImagePickerController.isSourceTypeAvailable(.camera) {
+            errorHandler?("Camera not available")
+           return
+        }
         imagePickerViewController.sourceType = .camera
         imagePickerViewController.mediaTypes = [kUTTypeMovie as String, kUTTypeVideo as String]
         imagePickerViewController.allowsEditing = false
