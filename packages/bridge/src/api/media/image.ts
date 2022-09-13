@@ -13,7 +13,7 @@ import {
 } from "../../async"
 import { requestAuthorization } from "../auth"
 import { ERR_CANNOT_EMPTY, ERR_INVALID_ARG_TYPE, ERR_INVALID_ARG_VALUE } from "../../errors"
-import { isArray, isString } from "@vue/shared"
+import { extend, isArray, isString } from "@vue/shared"
 
 const enum Events {
   PREVIEW_IMAGE = "previewImage",
@@ -27,7 +27,7 @@ interface PreviewImageOptions {
   /** 需要预览的图片链接列表 */
   urls: string[]
   /** 当前显示图片的链接 */
-  current: string
+  current?: string
   /** 接口调用成功的回调函数 */
   success?: PreviewImageSuccessCallback
   /** 接口调用失败的回调函数 */
@@ -62,7 +62,13 @@ export function previewImage<T extends PreviewImageOptions = PreviewImageOptions
       return
     }
 
-    invoke<SuccessResult<T>>(event, options, result => {
+    let current = 0
+    if (options.current) {
+      current = options.urls.indexOf(options.current)
+    }
+    current < 0 && (current = 0)
+
+    invoke<SuccessResult<T>>(event, extend({}, options, { current }), result => {
       invokeCallback(event, options, result)
     })
   }, options)
