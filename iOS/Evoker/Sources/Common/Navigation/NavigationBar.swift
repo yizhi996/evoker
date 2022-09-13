@@ -11,6 +11,8 @@ import UIKit
 
 class NavigationBar: UIView {
     
+    private let contentView = UIView()
+    
     private let titleLabel = UILabel()
     
     private var backButton: UIButton?
@@ -20,7 +22,7 @@ class NavigationBar: UIView {
     private lazy var loadingImage: UIImageView = {
         let img = UIImage(builtIn: "navigation-loading")
         let imageView = UIImageView(image: img)
-        addSubview(imageView)
+        contentView.addSubview(imageView)
         imageView.autoSetDimensions(to: CGSize(width: 16, height: 16))
         imageView.autoPinEdge(.right, to: .left, of: titleLabel, withOffset: -4)
         imageView.autoAlignAxis(.horizontal, toSameAxisOf: titleLabel)
@@ -34,11 +36,9 @@ class NavigationBar: UIView {
         let button = UIButton()
         button.setImage(homeIcon, for: .normal)
         button.addTarget(self, action: #selector(gotoHomePage), for: .touchUpInside)
-        addSubview(button)
-        let safeAreaTop = Constant.safeAreaInsets.top
+        contentView.addSubview(button)
         let buttonSize = 32.0
-        let top = safeAreaTop + (Constant.navigationBarHeight - buttonSize) / 2
-        button.autoPinEdge(toSuperviewEdge: .top, withInset: top)
+        button.autoAlignAxis(toSuperviewAxis: .horizontal)
         button.autoPinEdge(toSuperviewEdge: .left, withInset: 7)
         button.autoSetDimensions(to: CGSize(width: buttonSize, height: buttonSize))
         return button
@@ -62,13 +62,16 @@ class NavigationBar: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        addSubview(contentView)
+        contentView.autoPinEdgesToSuperviewSafeArea(with: .zero, excludingEdge: .top)
+        contentView.autoSetDimension(.height, toSize: Constant.navigationBarHeight)
+        
         titleLabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         titleLabel.textColor = color
-        addSubview(titleLabel)
+        contentView.addSubview(titleLabel)
         
         titleLabel.autoAlignAxis(toSuperviewAxis: .vertical)
-        titleLabel.autoSetDimension(.height, toSize: 20)
-        titleLabel.autoPinEdge(toSuperviewSafeArea: .top, withInset: 12)
+        titleLabel.autoAlignAxis(toSuperviewAxis: .horizontal)
     }
     
     required init?(coder: NSCoder) {
@@ -84,11 +87,11 @@ class NavigationBar: UIView {
         backButton!.imageView?.tintColor = color
         backButton!.setImage(backIcon, for: .normal)
         backButton!.addTarget(self, action: #selector(onBack), for: .touchUpInside)
-        addSubview(backButton!)
+        contentView.addSubview(backButton!)
         
         backButton!.autoSetDimensions(to: CGSize(width: 24, height: 44))
         backButton!.autoPinEdge(toSuperviewEdge: .left, withInset: 15)
-        backButton!.autoPinEdge(toSuperviewSafeArea: .top)
+        backButton!.autoAlignAxis(toSuperviewAxis: .horizontal)
     }
     
     func setTitle(_ title: String) {

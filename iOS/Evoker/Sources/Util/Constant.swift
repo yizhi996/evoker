@@ -115,6 +115,17 @@ struct Constant {
     }
     
     static var statusBarHeight: CGFloat {
+        if #available(iOS 13.0, *),
+           let height = UIApplication
+            .shared
+            .windows
+            .first(where: {$0.isKeyWindow})?
+            .windowScene?
+            .statusBarManager?
+            .statusBarFrame
+            .height {
+            return height
+        }
         return UIApplication.shared.statusBarFrame.height
     }
     

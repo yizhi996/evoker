@@ -61,8 +61,7 @@ class CapsuleView: UIView {
         closeButton.addTarget(self, action: #selector(close), for: .touchUpInside)
         moreButton.addTarget(self, action: #selector(showMore), for: .touchUpInside)
         view.addSubview(self)
-        autoPinEdge(toSuperviewSafeArea: .top,
-                                withInset:  (Constant.navigationBarHeight - buttonHeight) / 2)
+        autoPinEdge(toSuperviewEdge: .top, withInset: Constant.statusBarHeight + (Constant.navigationBarHeight - buttonHeight) / 2)
         autoPinEdge(toSuperviewEdge: .right, withInset: 7)
     }
     
