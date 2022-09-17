@@ -40,6 +40,8 @@ open class WebPageViewController: PageViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = webPage.backgroundColor
+        
         webPage.state = .loaded
         
         webView.scrollView.contentInsetAdjustmentBehavior = .never
@@ -70,6 +72,7 @@ open class WebPageViewController: PageViewController {
 extension WebPageViewController: UIScrollViewDelegate {
     
     open func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        scrollView.backgroundColor = .clear
         onScroll.invoke { [unowned self] in
             if self.webPage.isSubscribeOnPageScroll {
                 self.page.appService?.bridge.subscribeHandler(method: WebPage.onPageScrollSubscribeKey,
