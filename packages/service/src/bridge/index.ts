@@ -37,7 +37,8 @@ import {
   showNavigationBarLoading,
   hideNavigationBarLoading,
   setNavigationBarColor,
-  hideHomeButton
+  hideHomeButton,
+  hideCapsule
 } from "@evoker/bridge"
 import { startPullDownRefresh, stopPullDownRefresh } from "@evoker/bridge"
 import {
@@ -165,6 +166,7 @@ export default {
   hideNavigationBarLoading,
   setNavigationBarColor,
   hideHomeButton,
+  hideCapsule,
   previewImage,
   saveImageToPhotosAlbum,
   getImageInfo,

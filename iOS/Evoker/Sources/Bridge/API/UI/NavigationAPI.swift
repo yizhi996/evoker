@@ -15,6 +15,7 @@ enum NavigationAPI: String, CaseIterableAPI {
     case hideNavigationBarLoading
     case setNavigationBarColor
     case hideHomeButton
+    case hideCapsule
     
     func onInvoke(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
         DispatchQueue.main.async {
@@ -29,6 +30,8 @@ enum NavigationAPI: String, CaseIterableAPI {
                 setNavigationBarColor(appService: appService, bridge: bridge, args: args)
             case .hideHomeButton:
                 hideHomeButton(appService: appService, bridge: bridge, args: args)
+            case .hideCapsule:
+                hideCapsule(appService: appService, bridge: bridge, args: args)
             }
         }
     }
@@ -140,5 +143,16 @@ enum NavigationAPI: String, CaseIterableAPI {
         appService.currentPage?.viewController?.navigationBar.hideGotoHomeButton()
         bridge.invokeCallbackSuccess(args: args)
     }
-
+    
+    private func hideCapsule(appService: AppService, bridge: JSBridge, args: JSBridge.InvokeArgs) {
+        let allow = Engine.shared.config.hooks.app.allowHideCapsule?(appService) ?? false
+        if allow {
+            appService.uiControl.alwaysHideCapsuleView = true
+            appService.uiControl.hideCapsule()
+            bridge.invokeCallbackSuccess(args: args)
+        } else {
+            let error = EKError.bridgeFailed(reason: .permissionDenied)
+            bridge.invokeCallbackFail(args: args, error: error)
+        }
+    }
 }

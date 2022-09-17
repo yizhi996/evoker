@@ -12,6 +12,8 @@ import PureLayout
 
 public class AppUIControl {
     
+    var alwaysHideCapsuleView = false
+    
     let capsuleView = CapsuleView()
     
     lazy var tabBarView = TabBarView()
@@ -19,7 +21,9 @@ public class AppUIControl {
     lazy var tabBarViewControllers: [String: PageViewController] = [:]
     
     public func showCapsule() {
-        capsuleView.isHidden = false
+        if !alwaysHideCapsuleView {
+            capsuleView.isHidden = false
+        }
     }
     
     public func hideCapsule() {

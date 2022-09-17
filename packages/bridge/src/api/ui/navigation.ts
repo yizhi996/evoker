@@ -15,7 +15,8 @@ const enum Events {
   SHOW_NAVIGATION_BAR_LOADING = "showNavigationBarLoading",
   HIDE_NAVIGATION_BAR_LOADING = "hideNavigationBarLoading",
   SET_NAVIGATION_BAR_COLOR = "setNavigationBarColor",
-  HIDE_HOMM_BUTTON = "hideHomeButton"
+  HIDE_HOMM_BUTTON = "hideHomeButton",
+  HIDE_CAPSULE = "hideCapsule"
 }
 
 interface ShowNavigationBarLoadingOptions {
@@ -214,6 +215,36 @@ export function hideHomeButton<T extends HideHomeButtonOptions = HideHomeButtonO
 ): AsyncReturn<T, HideHomeButtonOptions> {
   return wrapperAsyncAPI(options => {
     const event = Events.HIDE_HOMM_BUTTON
+    invoke<SuccessResult<T>>(event, options, result => {
+      invokeCallback(event, options, result)
+    })
+  }, options)
+}
+
+interface HideCapsuleOptions {
+  /** 接口调用成功的回调函数 */
+  success?: HideCapsuleSuccessCallback
+  /** 接口调用失败的回调函数 */
+  fail?: HideCapsuleFailCallback
+  /** 接口调用结束的回调函数（调用成功、失败都会执行）*/
+  complete?: HideCapsuleCompleteCallback
+}
+
+type HideCapsuleSuccessCallback = (res: GeneralCallbackResult) => void
+
+type HideCapsuleFailCallback = (res: GeneralCallbackResult) => void
+
+type HideCapsuleCompleteCallback = (res: GeneralCallbackResult) => void
+
+/** 隐藏右上角的胶囊按钮
+ *
+ * 需要 Native 允许
+ */
+export function hideCapsule<T extends HideCapsuleOptions = HideCapsuleOptions>(
+  options: T
+): AsyncReturn<T, HideCapsuleOptions> {
+  return wrapperAsyncAPI(options => {
+    const event = Events.HIDE_CAPSULE
     invoke<SuccessResult<T>>(event, options, result => {
       invokeCallback(event, options, result)
     })

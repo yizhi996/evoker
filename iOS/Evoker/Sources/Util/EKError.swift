@@ -97,6 +97,8 @@ public enum EKError: Error {
         
         case outOfRange(String)
         
+        case permissionDenied
+        
         case custom(String)
     }
 }
@@ -173,6 +175,8 @@ extension EKError.BridgeFailureReason {
             return "filePath \(filePath) is invalid"
         case .outOfRange(let name):
             return "\(name) out of range"
+        case .permissionDenied:
+            return "permission denied"
         case .custom(let error):
             return "\(error)"
         }
