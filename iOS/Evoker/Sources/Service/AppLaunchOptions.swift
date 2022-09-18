@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum AppEnvVersion: String {
+public enum AppEnvVersion: String, Codable {
     
     case develop
     

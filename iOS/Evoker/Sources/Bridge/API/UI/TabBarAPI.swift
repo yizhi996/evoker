@@ -279,6 +279,7 @@ enum TabBarAPI: String, CaseIterableAPI {
             } else {
                 let iconFile = FilePath.appStaticFilePath(appId: appService.appId,
                                                           envVersion: appService.envVersion,
+                                                          version: appService.version,
                                                           src: iconPath)
                 let image = UIImage(contentsOfFile: iconFile.path)
                 item.setImage(image, for: state)

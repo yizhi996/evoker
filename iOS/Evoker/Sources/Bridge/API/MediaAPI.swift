@@ -79,9 +79,7 @@ enum MediaAPI: String, CaseIterableAPI {
         var filePath = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: path)
         let isEKFile = filePath != nil
         if !isEKFile {
-            filePath = FilePath.appStaticFilePath(appId: appService.appId,
-                                                  envVersion: appService.envVersion,
-                                                  src: path)
+            filePath = FilePath.appStaticFilePath(appService: appService, src: path)
         }
         
         let key = filePath!.absoluteString
@@ -384,11 +382,10 @@ enum MediaAPI: String, CaseIterableAPI {
         }
     }
     
-    private func loadImage(appId: String,
-                           envVersion: AppEnvVersion,
+    private func loadImage(appService: AppService,
                            src: String,
                            completionHandler handler: @escaping (UIImage?) -> Void) {
-        if let url = FilePath.ekFilePathToRealFilePath(appId: appId, filePath: src) {
+        if let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: src) {
             handler(UIImage(contentsOfFile: url.path))
         } else if let url = URL(string: src), (url.scheme == "http" || url.scheme == "https") {
             SDWebImageManager.shared.loadImage(with: url, options: [.retryFailed], progress: nil) { image, data, error, _, _, _ in
@@ -404,7 +401,7 @@ enum MediaAPI: String, CaseIterableAPI {
             }
             handler(nil)
         } else {
-            let url = FilePath.appStaticFilePath(appId: appId, envVersion: envVersion, src: src)
+            let url = FilePath.appStaticFilePath(appService: appService, src: src)
             handler(UIImage(contentsOfFile: url.path))
         }
     }
@@ -499,7 +496,7 @@ enum MediaAPI: String, CaseIterableAPI {
         
         let toBase64 = dict["toBase64"] as? Bool ?? false
         
-        loadImage(appId: appService.appId, envVersion: appService.envVersion, src: src) { image in
+        loadImage(appService: appService, src: src) { image in
             if let image = image {
                 if toBase64, let path = imageToBase64(image: image) {
                     let result = result(width: image.size.width,
@@ -565,7 +562,7 @@ enum MediaAPI: String, CaseIterableAPI {
                 bridge.invokeCallbackFail(args: args, error: error)
             }
         } else {
-            let url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: params.src)
+            let url = FilePath.appStaticFilePath(appService: appService, src: params.src)
             if let image = UIImage(contentsOfFile: url.path) {
                 let (ekfile, destination) = FilePath.generateTmpEKFilePath(ext: "jpg")
                 let success = FileManager.default.createFile(atPath: destination.path,
@@ -671,7 +668,7 @@ enum MediaAPI: String, CaseIterableAPI {
         if let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: src) {
             _getVideoInfo(url: url)
         } else {
-            let url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: src)
+            let url = FilePath.appStaticFilePath(appService: appService, src: src)
             _getVideoInfo(url: url)
         }
     }
@@ -693,7 +690,7 @@ enum MediaAPI: String, CaseIterableAPI {
         
         var url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: params.src)
         if url == nil {
-            url = FilePath.appStaticFilePath(appId: appService.appId, envVersion: appService.envVersion, src: params.src)
+            url = FilePath.appStaticFilePath(appService: appService, src: params.src)
         }
         
         if let url = url {

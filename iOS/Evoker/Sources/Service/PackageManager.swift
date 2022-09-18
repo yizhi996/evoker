@@ -43,10 +43,16 @@ public class PackageManager {
     }
 
     public func localAppVersion(appId: String, envVersion: AppEnvVersion) -> String {
+        if envVersion == .develop {
+            return "dev"
+        }
         return UserDefaults.standard.string(forKey: "evoker:version:app:\(appId):\(envVersion)") ?? ""
     }
     
     public func setLocalAppVersion(appId: String, envVersion: AppEnvVersion, version: String) {
+        if envVersion == .develop {
+            return
+        }
         UserDefaults.standard.set(version, forKey: "evoker:version:app:\(appId):\(envVersion)")
     }
     
@@ -75,8 +81,8 @@ public class PackageManager {
         try unpack(src: filePath, dest: dest)
     }
     
-    public func unpackAppService(appId: String, envVersion: AppEnvVersion, filePath: URL) throws {
-        let dest = FilePath.appDist(appId: appId, envVersion: envVersion)
+    public func unpackAppService(appId: String, envVersion: AppEnvVersion, version: String, filePath: URL) throws {
+        let dest = FilePath.appDist(appId: appId, envVersion: envVersion, version: version)
         try unpack(src: filePath, dest: dest)
     }
     

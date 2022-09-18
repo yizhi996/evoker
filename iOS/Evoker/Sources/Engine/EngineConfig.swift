@@ -56,13 +56,13 @@ extension EngineConfig.Hooks {
     
     public class App {
         
-        public typealias GetAppInfoCompletionHandler = (AppInfo?, EKError?) -> Void
+        public typealias GetAppInfoCompletionHandler = (AppInfo) -> Void
         
         /// App 在启动时需要获取 App Info
-        public var getAppInfo: ((String, AppEnvVersion, GetAppInfoCompletionHandler) -> Void)?
+        public var getAppInfo: ((String, AppEnvVersion, @escaping GetAppInfoCompletionHandler) -> Void)?
         
-        /// App 在首次启动时检查释放需要更新
-        public var checkAppUpdate: ((String, AppEnvVersion, String, String, BoolBlock) -> Void)?
+        /// App 在首次启动时检查是否需要更新
+        public var checkAppUpdate: ((String, AppEnvVersion, String, String, @escaping BoolBlock) -> Void)?
         
         /// 自定义点击胶囊的更多按钮时显示的 action
         /// - returns:
@@ -74,6 +74,9 @@ extension EngineConfig.Hooks {
         
         /// 点击分享应用时返回的内容
         public var shareAppMessage: ((AppService, ShareAppMessageContent) -> Void)?
+            
+        /// 是否允许隐藏右上角的胶囊
+        public var allowHideCapsule: ((AppService) -> Bool)?
     }
 
 }
@@ -137,8 +140,6 @@ extension EngineConfig {
     public struct DevConfig {
         
         public var useDevJSSDK = false
-        
-        public var useDevServer = false
 
         init() {
             

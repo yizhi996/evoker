@@ -31,13 +31,7 @@ enum NavigateAPI: String, CaseIterableAPI {
             let appId: String
             let path: String?
             let extraDataString: String?
-            let envVersion: EnvVersion
-        }
-        
-        enum EnvVersion: String, Decodable {
-            case develop
-            case trial
-            case release
+            let envVersion: AppEnvVersion
         }
         
         guard let params: Params = args.paramsString.toModel() else {
@@ -51,13 +45,9 @@ enum NavigateAPI: String, CaseIterableAPI {
             envVersion = AppEnvVersion(rawValue: params.envVersion.rawValue) ?? .release
         }
         
-        Engine.shared.getAppInfo(appId: params.appId, envVersion: envVersion) { appInfo, error in
-            if let error = error {
-                bridge.invokeCallbackFail(args: args, error: error)
-                return
-            }
+        Engine.shared.getAppInfo(appId: params.appId, envVersion: envVersion) { appInfo in
             let targetView = appService.rootViewController!.view!
-            Alert.show(title: "即将打开“\(appInfo!.appName)”小程序",
+            Alert.show(title: "即将打开“\(appInfo.appName)”小程序",
                              confirm: "允许",
                              mask: true,
                              to: targetView, cancelHandler: {

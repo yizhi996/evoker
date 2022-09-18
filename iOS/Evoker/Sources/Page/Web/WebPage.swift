@@ -156,7 +156,8 @@ open class WebPage: Page {
         
         if let css = pageInfo.css {
             let path = FilePath.appDist(appId: appService.appId,
-                                          envVersion: appService.envVersion).appendingPathComponent(css).absoluteString
+                                        envVersion: appService.envVersion,
+                                        version: appService.version).appendingPathComponent(css).absoluteString
             webView.evaluateJavaScript(JavaScriptGenerator.injectCSS(path: path))
         }
         

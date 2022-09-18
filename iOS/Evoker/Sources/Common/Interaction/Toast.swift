@@ -34,7 +34,7 @@ class Toast: UIView, TransitionView {
     lazy var titleLabel = UILabel()
     lazy var iconImageView = UIImageView()
     
-    init(params: Params, appId: String? = nil, envVersion: AppEnvVersion? = nil) {
+    init(params: Params, appService: AppService? = nil) {
         self.params = params
         super.init(frame: .zero)
         
@@ -48,8 +48,8 @@ class Toast: UIView, TransitionView {
         borderView.autoCenterInSuperview()
         
         var image: UIImage?
-        if let customImagePath = params.image, let appId = appId, let envVersion = envVersion {
-            let url = FilePath.appStaticFilePath(appId: appId, envVersion: envVersion, src: customImagePath)
+        if let customImagePath = params.image, let appService = appService {
+            let url = FilePath.appStaticFilePath(appService: appService, src: customImagePath)
             image = UIImage(contentsOfFile: url.path)
         } else if params.icon != .none {
             switch params.icon {

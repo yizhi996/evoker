@@ -99,8 +99,10 @@ public struct AppConfig: Codable {
         
     }
     
-    static func load(appId: String, envVersion: AppEnvVersion) -> AppConfig? {
-        let configURL = FilePath.appDist(appId: appId, envVersion: envVersion).appendingPathComponent("app.json")
+    static func load(appId: String, envVersion: AppEnvVersion, version: String) -> AppConfig? {
+        let configURL = FilePath.appDist(appId: appId,
+                                         envVersion: envVersion,
+                                         version: version).appendingPathComponent("app.json")
         guard let configData = FileManager.default.contents(atPath: configURL.path) else { return nil }
         return configData.toModel()
     }

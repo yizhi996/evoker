@@ -71,8 +71,6 @@ final public class Engine {
     
     var shouldInteractivePopGesture = true
     
-    private var devServer: DevServer?
-    
     private var isLaunch = false
     
     private init() {
@@ -200,7 +198,11 @@ final public class Engine {
             options.path = launchPage
         }
         if let appService = runningApp.first(where: { $0.appId == appId && $0.envVersion == .develop }) {
-            appService.reLaunch(launchOptions: options)
+            appService.reLaunch(launchOptions: options) { error in
+                if let error = error {
+                    NotifyType.fail(error.localizedDescription).show()
+                }
+            }
         } else {
             launchApp(appId: appId, launchOptions: options) { error in
                 if let error = error {
@@ -243,29 +245,29 @@ final public class Engine {
 //MARK: App
 extension Engine {
     
+    /// 打开应用的方式
+    public enum OpenMethod {
+        /// 从底部弹出
+        case persent
+        /// 覆盖当前 window
+        case redirect
+    }
+    
     /// 打开应用
     /// - Parameters:
     ///     - appId: 应用唯一标识
     ///     - launchOptions: 应用启动参数
-    ///     - presentTo: 打开在目标 ViewController
+    ///     - method: 打开应用的方式
+    ///     - persentTo: 在目标 ViewController 打开
     ///     - completionHandler: 打开完成时调用
     public func openApp(appId: String,
                         launchOptions: AppLaunchOptions = AppLaunchOptions(),
-                        presentTo viewController: UIViewController? = nil,
+                        method: OpenMethod = .persent,
+                        persentTo viewController: UIViewController? = nil,
                         completionHandler: ((EKError?) -> Void)? = nil) {
         assert(!appId.isEmpty, "appId cannot be empty")
         
         if let appService = runningApp.first(where: { $0.appId == appId && $0.envVersion == launchOptions.envVersion }) {
-            guard let rootViewController = appService.rootViewController else {
-                completionHandler?(.appRootViewControllerNotFound)
-                return
-            }
-            
-            guard let presentViewController = viewController ?? UIViewController.visibleViewController() else {
-                completionHandler?(.presentViewControllerNotFound)
-                return
-            }
-            
             var showOptions = AppShowOptions()
             showOptions.path = launchOptions.path
             showOptions.referrerInfo = launchOptions.referrerInfo
@@ -281,11 +283,18 @@ extension Engine {
                 completionHandler?(error)
                 return
             }
-            presentViewController.present(rootViewController, animated: true)
-            completionHandler?(nil)
+            appService.openMethod = method
+            appService.persentViewController = viewController
+            
+            do {
+                try appService.open()
+                completionHandler?(nil)
+            } catch {
+                completionHandler?(error as? EKError)
+            }
         } else {
             let updateFinishedHandler: BoolBlock = { success in
-                self.launchApp(appId: appId, launchOptions: launchOptions) { error in
+                self.launchApp(appId: appId, launchOptions: launchOptions, method: method, presentTo: viewController) { error in
                     completionHandler?(error)
                 }
             }
@@ -366,33 +375,32 @@ extension Engine {
     
     func launchApp(appId: String,
                    launchOptions: AppLaunchOptions,
+                   method: OpenMethod = .persent,
                    presentTo viewController: UIViewController? = nil,
                    completionHandler handler: @escaping EKErrorBlock) {
         assert(!appId.isEmpty, "appId cannot be empty")
-        getAppInfo(appId: appId, envVersion: launchOptions.envVersion) { appInfo, error in
-            if let error = error {
-                handler(error)
-                return
-            }
-            guard let appService = AppService(appId: appId, appInfo: appInfo!, launchOptions: launchOptions) else {
+        getAppInfo(appId: appId, envVersion: launchOptions.envVersion) { appInfo in
+            guard let appService = AppService(appId: appId, appInfo: appInfo, launchOptions: launchOptions) else {
                 handler(.loadAppConfigFailed)
                 return
             }
-            if let error = appService.launch(to: viewController) {
-                handler(error)
-            } else {
+            
+            do {
+                try appService.launch(method: method, persentTo: viewController)
                 self.runningApp.append(appService)
                 self.currentApp = appService
                 handler(nil)
+            } catch {
+                handler(error as? EKError)
             }
         }
     }
     
-    public func getAppInfo(appId: String, envVersion: AppEnvVersion, completionHandler: (AppInfo?, EKError?) -> Void) {
+    public func getAppInfo(appId: String, envVersion: AppEnvVersion, completionHandler: @escaping (AppInfo) -> Void) {
         if let getAppInfoHandler = Engine.shared.config.hooks.app.getAppInfo {
             getAppInfoHandler(appId, envVersion, completionHandler)
         } else {
-            completionHandler(AppInfo(appName: appId, appIconURL: ""), nil)
+            completionHandler(AppInfo(appName: appId, appIconURL: ""))
         }
     }
 }
@@ -475,14 +483,6 @@ extension Engine {
     
     func reportLog(_ log: String) {
         print(log)
-    }
-}
-
-extension Engine {
-    
-    public func connectDevService(host: String = "", port: UInt16 = 5173) {
-        devServer = DevServer(host: host, port: port)
-        devServer!.connect()
     }
 }
 

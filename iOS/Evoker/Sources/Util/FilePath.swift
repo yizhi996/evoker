@@ -165,18 +165,26 @@ extension FilePath {
         return app(appId: appId).appendingPathComponent("packages/\(envVersion)/\(version).evpkg")
     }
     
-    /// Document/com.evokerdev/app/{appId}/dist/{envVersion}/
-    public static func appDist(appId: String, envVersion: AppEnvVersion) -> URL {
-        return app(appId: appId).appendingPathComponent("dist/\(envVersion)/")
+    /// Document/com.evokerdev/app/{appId}/dist/{envVersion}/{version}/
+    public static func appDist(appId: String, envVersion: AppEnvVersion, version: String) -> URL {
+        return app(appId: appId).appendingPathComponent("dist/\(envVersion)/\(version)/")
     }
     
     /// Document/com.evokerdev/app/{appId}/dist/{envVersion}/{src}
-    public static func appStaticFilePath(appId: String, envVersion: AppEnvVersion, src: String) -> URL {
+    public static func appStaticFilePath(appId: String, envVersion: AppEnvVersion, version: String, src: String) -> URL {
         var path = src
         if path.starts(with: "/src") {
             let end = path.index(path.startIndex, offsetBy: 4)
             path.replaceSubrange(path.startIndex..<end, with: "")
         }
-        return appDist(appId: appId, envVersion: envVersion).appendingPathComponent(path)
+        return appDist(appId: appId, envVersion: envVersion, version: version).appendingPathComponent(path)
+    }
+    
+    /// Document/com.evokerdev/app/{appId}/dist/{envVersion}/{src}
+    public static func appStaticFilePath(appService: AppService, src: String) -> URL {
+        return appStaticFilePath(appId: appService.appId,
+                                 envVersion: appService.envVersion,
+                                 version: appService.version,
+                                 src: src)
     }
 }

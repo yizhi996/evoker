@@ -34,7 +34,7 @@ class TabBarView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func load(config: AppConfig, envVersion: AppEnvVersion) {
+    func load(config: AppConfig, envVersion: AppEnvVersion, version: String) {
         guard let tabBarInfo = config.tabBar else { return }
         
         backgroundColor = (tabBarInfo.backgroundColor ?? "#ffffff").hexColor()
@@ -59,12 +59,18 @@ class TabBarView: UIView {
             tabBarItem.setTitleColor((tabBarInfo.color ?? "#353535").hexColor(), for: .normal)
             tabBarItem.setTitleColor((tabBarInfo.selectedColor ?? "#1989fa").hexColor(), for: .selected)
             if let iconPath = item.iconPath, !iconPath.isEmpty {
-                let iconFile = FilePath.appStaticFilePath(appId: config.appId, envVersion: envVersion, src: iconPath)
+                let iconFile = FilePath.appStaticFilePath(appId: config.appId,
+                                                          envVersion: envVersion,
+                                                          version: version,
+                                                          src: iconPath)
                 let image = UIImage(contentsOfFile: iconFile.path)
                 tabBarItem.setImage(image, for: .normal)
             }
             if let iconPath = item.selectedIconPath, !iconPath.isEmpty {
-                let iconFile = FilePath.appStaticFilePath(appId: config.appId, envVersion: envVersion, src: iconPath)
+                let iconFile = FilePath.appStaticFilePath(appId: config.appId,
+                                                          envVersion: envVersion,
+                                                          version: version,
+                                                          src: iconPath)
                 let image = UIImage(contentsOfFile: iconFile.path)
                 tabBarItem.setImage(image, for: .selected)
             }

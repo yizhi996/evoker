@@ -30,6 +30,8 @@ final public class AppService {
         return config.appId
     }
     
+    public internal(set) var version = ""
+    
     public var envVersion: AppEnvVersion {
         return launchOptions.envVersion
     }
@@ -83,12 +85,18 @@ final public class AppService {
     
     var keepScreenOn = false
     
+    var openMethod: Engine.OpenMethod = .persent
+    
+    var persentViewController: UIViewController?
+    
     lazy var fileQueue = DispatchQueue(label: "com.evokerdev.fileQueue")
     
     init?(appId: String, appInfo: AppInfo, launchOptions: AppLaunchOptions) {
+        let version = PackageManager.shared.localAppVersion(appId: appId, envVersion: launchOptions.envVersion)
         guard !appId.isEmpty,
-              let config = AppConfig.load(appId: appId, envVersion: launchOptions.envVersion),
+              let config = AppConfig.load(appId: appId, envVersion: launchOptions.envVersion, version: version),
               !config.pages.isEmpty else { return nil }
+        self.version = version
         self.appInfo = appInfo
         if appInfo.appName.isEmpty {
             self.appInfo.appName = appId
@@ -179,13 +187,11 @@ final public class AppService {
         Engine.shared.allModules().forEach { modules[$0.name] = $0.init(appService: self) }
     }
     
-    func launch(to viewController: UIViewController? = nil) -> EKError? {
+    func launch(method: Engine.OpenMethod, persentTo viewController: UIViewController? = nil) throws {
         let path = launchOptions.path
-        guard let info = generateFirstViewController(with: path) else { return .appLaunchPathNotFound(path) }
+        guard let info = generateFirstViewController(with: path) else { throw EKError.appLaunchPathNotFound(path) }
         
-        if let error = loadAppPackage() {
-            return error
-        }
+        try loadAppPackage()
         
         if haveTabBar {
             setupTabBar(current: info.tabBarSelectedIndex)
@@ -209,8 +215,10 @@ final public class AppService {
         }
         rootViewController = navigationController
         
-        let presentViewController = viewController ?? UIViewController.visibleViewController()
-        presentViewController?.present(navigationController, animated: true)
+        openMethod = method
+        persentViewController = viewController
+        try open()
+        
         if info.page.isTabBarPage {
             uiControl.tabBarView.add(to: info.viewController.view)
         }
@@ -220,24 +228,39 @@ final public class AppService {
         showOptions.path = path
         showOptions.referrerInfo = launchOptions.referrerInfo
         publishAppOnShow(options: showOptions)
-        return nil
     }
     
-    func loadAppPackage() -> EKError? {
+    func open() throws {
+        guard let rootViewController = rootViewController else { throw EKError.appRootViewControllerNotFound }
+        switch openMethod {
+        case .persent:
+            guard let presentViewController = persentViewController ?? UIViewController.visibleViewController() else {
+                throw EKError.presentViewControllerNotFound
+            }
+            presentViewController.present(rootViewController, animated: true)
+        case .redirect:
+            let window = UIApplication
+             .shared
+             .windows
+             .first(where: {$0.isKeyWindow})!
+            window.rootViewController = rootViewController
+        }
+    }
+    
+    func loadAppPackage() throws {
         let configScript = JavaScriptGenerator.defineConfig(appConfig: config)
         let appInfoScript = JavaScriptGenerator.setAppInfo(appInfo: appInfo)
         context.evaluateScript(configScript + appInfoScript)
         
-        let dist = FilePath.appDist(appId: appId, envVersion: launchOptions.envVersion)
+        let dist = FilePath.appDist(appId: appId, envVersion: launchOptions.envVersion, version: version)
         let fileName = "app-service.js"
         let appServiceURL = dist.appendingPathComponent(fileName)
         if let js = try? String(contentsOfFile: appServiceURL.path) {
             context.evaluateScript(js, name: fileName)
         } else {
             Logger.error("load app code failed: \(appServiceURL.path) file not exist")
-            return EKError.appServiceBundleNotFound
+            throw EKError.appServiceBundleNotFound
         }
-        return nil
     }
     
     func genPageId() -> Int {
@@ -257,18 +280,19 @@ final public class AppService {
         return modules[T.name] as? T
     }
     
-    public func reLaunch(launchOptions: AppLaunchOptions? = nil) {
+    public func reLaunch(launchOptions: AppLaunchOptions? = nil, completionHandler handler: EKErrorBlock?) {
         dismiss(animated: false) {
             self.killApp()
-            if Engine.shared.config.dev.useDevServer {
+            if Engine.shared.config.dev.useDevJSSDK {
                 Engine.shared.webViewPool.clean()
             }
             let launchOptions = launchOptions ?? self.launchOptions
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                Engine.shared.launchApp(appId: self.appId, launchOptions: launchOptions) { error in
-                    if let error = error {
-                        Logger.error(error.localizedDescription)
-                    }
+                Engine.shared.launchApp(appId: self.appId,
+                                        launchOptions: launchOptions,
+                                        method: self.openMethod,
+                                        presentTo: self.persentViewController) { error in
+                    handler?(error)
                 }
             }
         }
@@ -454,7 +478,7 @@ extension AppService {
     }
     
     func setupTabBar(current index: Int) {
-        uiControl.tabBarView.load(config: config, envVersion: envVersion)
+        uiControl.tabBarView.load(config: config, envVersion: envVersion, version: version)
         uiControl.tabBarView.didSelectTabBarItemHandler = { [unowned self] index in
             self.didSelectTabBarItem(at: index, fromTap: true)
         }
@@ -584,7 +608,11 @@ extension AppService {
         case AppMoreAction.builtInReLaunchKey:
             var options = AppLaunchOptions()
             options.envVersion = envVersion
-            reLaunch(launchOptions: options)
+            reLaunch(launchOptions: options) { error in
+                if let error = error {
+                    NotifyType.fail(error.localizedDescription).show()
+                }
+            }
         case AppMoreAction.builtInShareKey:
             fetchShareAppMessageContent(from: .menu)
         default:
@@ -613,7 +641,8 @@ extension AppService {
             
             self.config.chunkCSS?.forEach { css in
                 let path = FilePath.appDist(appId: self.appId,
-                                              envVersion: self.envVersion).appendingPathComponent(css).absoluteString
+                                            envVersion: self.envVersion,
+                                            version: self.version).appendingPathComponent(css).absoluteString
                 let script = JavaScriptGenerator.injectCSS(path: path)
                 webView.evaluateJavaScript(script) { _, error in
                     if let error = error as? WKError, error.code != .javaScriptResultTypeIsUnsupported {

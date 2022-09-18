@@ -70,7 +70,7 @@ enum InteractionAPI: String, CaseIterableAPI {
             return
         }
         
-        let toast = Toast(params: params, appId: appService.appId, envVersion: appService.envVersion)
+        let toast = Toast(params: params, appService: appService)
         toast.show(to: viewController.view)
         
         bridge.invokeCallbackSuccess(args: args)
