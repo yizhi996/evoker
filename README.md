@@ -6,6 +6,21 @@
 
 [evokerdev.com](https://evokerdev.com)
 
+## Packages
+
+| Package                                                                                      | desc            |
+| -------------------------------------------------------------------------------------------- | --------------- |
+| [evoker](https://github.com/yizhi996/evoker/tree/main/packages/evoker)                       | 最终产物        |
+| [@evoker/bridge](https://github.com/yizhi996/evoker/tree/main/packages/bridge)               | 通用 Bridge API |
+| [@evoker/cli](https://github.com/yizhi996/evoker/tree/main/packages/cli)                     | cli & dev       |
+| [@evoker/create-evoker](https://github.com/yizhi996/evoker/tree/main/packages/create-evoker) | template        |
+| [@evoker/service](https://github.com/yizhi996/evoker/tree/main/packages/service)                     | 运行时和 Bridge API     |
+| [@evoker/shared](https://github.com/yizhi996/evoker/tree/main/packages/shared)                       | 公共库                  |
+| [@evoker/test](https://github.com/yizhi996/evoker/tree/main/packages/test)                           | e2e 测试                |
+| [@evoker/vue](https://github.com/yizhi996/vue-next)                                                  | 定制的 Vue              |
+| [@evoker/webview](https://github.com/yizhi996/evoker/tree/main/packages/webview)                     | WebView 渲染层          |
+| [@evoker/launcher](https://github.com/yizhi996/evoker/tree/main/packages/launcher)                   | 「wip」全新的应用启动器 |
+
 ## Getting Started
 
 1. Create project with template
