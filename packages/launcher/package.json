@@ -1,0 +1,31 @@
+{
+  "name": "launcher",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "evoker dev",
+    "build": "evoker build"
+  },
+  "dependencies": {
+    "@evoker/shared": "^0.11.0",
+    "@vue/shared": "^3.2.37",
+    "evoker": "^0.11.0",
+    "pinia": "^2.0.14",
+    "tailwindcss": "^3.0.15",
+    "url-parse": "^1.5.10",
+    "vue": "^3.2.37"
+  },
+  "devDependencies": {
+    "@evoker/cli": "0.11.0",
+    "@types/url-parse": "^1.4.8",
+    "@vitejs/plugin-vue": "^3.1.0",
+    "autoprefixer": "^10.4.2",
+    "postcss": "^8.4.5",
+    "typescript": "^4.7.4",
+    "vite": "^3.1.3"
+  },
+  "browserslist": [
+    "iOS >= 11",
+    "Android >= 7.0"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "appId": "com.evokerdev.launcher",
+  "version": "1.0.0",
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "",
+    "navigationStyle": "default",
+    "backgroundColor": "#f2f2f7"
+  },
+  "pages": [{ "path": "pages/Index", "style": { "navigationStyle": "custom" } }, "pages/Config"]
+}
