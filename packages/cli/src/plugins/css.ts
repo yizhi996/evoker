@@ -43,7 +43,7 @@ export default function vitePluginEvokerCSS(): Plugin {
       return
     },
 
-    renderChunk(code, chunk, opts) {
+    async renderChunk(code, chunk, opts) {
       const mainCSSName = chunk.facadeModuleId
         ? normalizePath(path.relative(config.root, chunk.facadeModuleId))
         : chunk.name
@@ -64,13 +64,12 @@ export default function vitePluginEvokerCSS(): Plugin {
         }
       }
 
-      chunkCSS.forEach(async (css, fileName) => {
-        css = await finalizeCss(css, true, config)
-
+      for (const [fileName, css] of chunkCSS) {
+        const newCSS = await finalizeCss(css, true, config)
         const cssAssetName = normalizePath(path.relative(config.root, fileName))
         const cssFileName = ensureFileExt(cssAssetName, ".css")
         const assetFileNames = path.posix.join(config.build.assetsDir, "[name].[hash][extname]")
-        const dest = assetFileNamesToFileName(assetFileNames, cssFileName, getHash(css))
+        const dest = assetFileNamesToFileName(assetFileNames, cssFileName, getHash(newCSS))
 
         const parsed = path.parse(normalizePath(path.relative("src", cssAssetName)))
         const pagePath = path.join(parsed.dir, parsed.name)
@@ -86,10 +85,9 @@ export default function vitePluginEvokerCSS(): Plugin {
           name: cssFileName,
           fileName: dest,
           type: "asset",
-          source: css
+          source: newCSS
         })
-      })
-
+      }
       return null
     },
 
