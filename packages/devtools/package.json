@@ -1,6 +1,6 @@
 {
   "name": "@evoker/devtools",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "evoker devtools",
   "author": "yizhi996",
   "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/devtools",
@@ -20,8 +20,8 @@
     ]
   },
   "dependencies": {
-    "@evoker/bridge": "0.11.0",
-    "@evoker/shared": "0.11.0",
+    "@evoker/bridge": "0.12.0",
+    "@evoker/shared": "0.12.0",
     "@vue/shared": "^3.2.37",
     "hammer-touchemulator": "^0.0.2",
     "ws": "^8.8.0"
