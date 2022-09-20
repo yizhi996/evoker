@@ -3,6 +3,11 @@ import path from "path"
 import crypto from "crypto"
 import tmp from "tmp"
 import archiver from "archiver"
+import colors from "picocolors"
+
+export const log = msg => console.log(colors.inverse(" [Evoker] "), msg)
+
+export const warn = msg => console.warn(colors.bgYellow(colors.white(" [Evoker] ")), msg)
 
 export function getRelativeFilePath(p: string, filepath: string) {
   const i = filepath.indexOf(p)

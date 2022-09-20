@@ -19,8 +19,6 @@ async function main() {
     case Commands.BUILD:
       await build("production")
       break
-    case Commands.PACK:
-      break
     default:
       console.error("command is invalid.")
       break

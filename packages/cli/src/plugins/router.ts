@@ -1,5 +1,5 @@
 import type { Plugin, ResolvedConfig } from "vite"
-import { getAppConfig } from "../utils"
+import { getAppConfig, log } from "../utils"
 import color from "picocolors"
 import { extend, isString } from "@vue/shared"
 import fs from "fs"
@@ -78,14 +78,14 @@ export default function vitePluginEvokerRouter(): Plugin {
         console.log()
         for (const page of addPages) {
           const path = getPath(page)
-          console.log(`loaded page: ${color.cyan(path)} `)
+          log(`loaded page: ${color.cyan(path)} `)
         }
 
         prevPages = prevPages.concat(addPages)
 
         for (const page of delPages) {
           const path = getPath(page)
-          console.log(`remove page: ${color.cyan(path)}`)
+          log(`remove page: ${color.cyan(path)}`)
           const i = prevPages.findIndex(y => getPath(y) === path)
           if (i > -1) {
             prevPages.splice(i, 1)

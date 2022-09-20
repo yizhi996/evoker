@@ -4,7 +4,7 @@ import { resolve } from "path"
 import fs from "fs"
 import router from "./plugins/router"
 import { vue } from "./vue"
-import pack from "./pack"
+import pack from "./plugins/pack"
 import app from "./plugins/app"
 import dev from "./plugins/dev"
 import css from "./plugins/css"
@@ -75,9 +75,9 @@ export async function build(mode: string = "development") {
       css(),
       router(),
       DEV ? dev(evokerConfig.dev || {}) : pack(),
+      /** @ts-ignore */
       copy({
         targets: [
-          // { src: resolve("src/app.json"), dest: resolve(outDir) },
           {
             src: resolve(`src/${defaultConfig.build.assetsDir}`),
             dest: resolve(outDir)

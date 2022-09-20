@@ -1,7 +1,7 @@
 import vuePlugin from "@vitejs/plugin-vue"
 import type { Options as VueOptions } from "@vitejs/plugin-vue"
 import { isHTMLTag, isSVGTag } from "@vue/shared"
-import compiler, { baseParse, transformModel } from "@vue/compiler-core"
+import compiler, { baseParse } from "@vue/compiler-core"
 import type { RootNode, CompilerOptions } from "@vue/compiler-core"
 
 const builtInComponentTags = new Set([
@@ -45,11 +45,6 @@ export function vue(options: VueOptions) {
       compilerOptions: {
         isNativeTag: tag => {
           return isHTMLTag(tag) || isSVGTag(tag) || isBuiltInComponent(tag)
-        },
-        directiveTransforms: {
-          model: (dir, node, context) => {
-            return transformModel(dir, node, context)
-          }
         }
       },
       transformAssetUrls: { image: ["src"] },
@@ -65,5 +60,6 @@ export function vue(options: VueOptions) {
     },
     ...options
   }
+
   return vuePlugin(vueOptions)
 }
