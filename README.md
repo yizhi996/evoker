@@ -19,50 +19,23 @@
 
 [evokerdev.com](https://evokerdev.com)
 
+[Getting Started](https://evokerdev.com/guide/quick-start.html)
+
 ## Packages
 
-| Package                                                                                      | desc                    |
-| -------------------------------------------------------------------------------------------- | ----------------------- |
-| [evoker](https://github.com/yizhi996/evoker/tree/main/packages/evoker)                       | 最终产物                |
-| [@evoker/bridge](https://github.com/yizhi996/evoker/tree/main/packages/bridge)               | 通用 Bridge API         |
-| [@evoker/cli](https://github.com/yizhi996/evoker/tree/main/packages/cli)                     | cli & dev               |
-| [@evoker/create-evoker](https://github.com/yizhi996/evoker/tree/main/packages/create-evoker) | template                |
-| [@evoker/service](https://github.com/yizhi996/evoker/tree/main/packages/service)             | 逻辑层和 Bridge API     |
-| [@evoker/shared](https://github.com/yizhi996/evoker/tree/main/packages/shared)               | 一些公共库                  |
-| [test](https://github.com/yizhi996/evoker/tree/main/packages/test)                   | 对 API 进行 e2e 测试      |
-| [@evoker/vue](https://github.com/yizhi996/vue-next)                                          | 定制的 Vue              |
-| [@evoker/webview](https://github.com/yizhi996/evoker/tree/main/packages/webview)             | WebView 渲染层          |
-| [launcher](https://github.com/yizhi996/evoker/tree/main/packages/launcher)           | 应用启动器 |
-| [example](https://github.com/yizhi996/evoker/tree/main/packages/example)           | 内置组件和 API 的 example |
-
-## Getting Started
-
-1. Create project with template
-
-- use [hello world](https://github.com/yizhi996/evoker/blob/main/packages/create-evoker/template-blank)
-```
-pnpm create evoker my-app --template blank --platform iOS
-```
-
-2. Install dependencies
-
-```
-cd my-app
-
-pnpm install
-
-cd iOS
-
-pod install --repo-update
-```
-
-3. Run
-
-```
-pnpm dev
-```
-
-open iOS/Launcher.xcworkspace
+| Package                                                                                      | desc                      |
+| -------------------------------------------------------------------------------------------- | ------------------------- |
+| [evoker](https://github.com/yizhi996/evoker/tree/main/packages/evoker)                       | 最终产物                  |
+| [@evoker/bridge](https://github.com/yizhi996/evoker/tree/main/packages/bridge)               | 通用 Bridge API           |
+| [@evoker/cli](https://github.com/yizhi996/evoker/tree/main/packages/cli)                     | cli & dev                 |
+| [@evoker/create-evoker](https://github.com/yizhi996/evoker/tree/main/packages/create-evoker) | template                  |
+| [@evoker/service](https://github.com/yizhi996/evoker/tree/main/packages/service)             | 逻辑层和 Bridge API       |
+| [@evoker/shared](https://github.com/yizhi996/evoker/tree/main/packages/shared)               | 一些公共库                |
+| [test](https://github.com/yizhi996/evoker/tree/main/packages/test)                           | 对 API 进行 e2e 测试      |
+| [@evoker/vue](https://github.com/yizhi996/vue-next)                                          | 定制的 Vue                |
+| [@evoker/webview](https://github.com/yizhi996/evoker/tree/main/packages/webview)             | WebView 渲染层            |
+| [launcher](https://github.com/yizhi996/evoker/tree/main/packages/launcher)                   | 应用启动器                |
+| [example](https://github.com/yizhi996/evoker/tree/main/packages/example)                     | 内置组件和 API 的 example |
 
 ## Licenses
 
