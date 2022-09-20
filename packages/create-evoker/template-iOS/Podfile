@@ -2,8 +2,9 @@ platform :ios, '11.0'
 
 use_frameworks!
     
-target 'Runner' do
+target 'Launcher' do
   
-  pod 'Evoker', '~> 0.11.0'
+  pod 'Evoker', '~> 0.12.0'
+  pod 'Evoker/Map', '~> 0.12.0'
   
 end

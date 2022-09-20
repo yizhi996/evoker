@@ -11,7 +11,7 @@ import { execa } from "execa"
 
 const args = minimist(process.argv.slice(2))
 
-const TEMPLATES = ["blank", "example"]
+const TEMPLATES = ["blank"]
 
 const PLATFORMS = ["iOS"]
 
@@ -118,10 +118,10 @@ async function main() {
   })
 
   if (platform === "iOS") {
-    copyiOS(path.resolve(root, "template-iOS"), dest, projectName)
+    copyiOS(path.resolve(root, "template-iOS"), dest)
     const builtIniOSDir = path.resolve(templateDir, "iOS")
     if (fs.existsSync(builtIniOSDir)) {
-      copyiOS(builtIniOSDir, path.resolve(dest), projectName)
+      copyiOS(builtIniOSDir, path.resolve(dest))
     }
   }
 
@@ -148,12 +148,6 @@ function sanitizedName(string) {
   })
 }
 
-function firstLetterUpperCase(string) {
-  return string.replace(/\b\w/g, w => {
-    return w.toUpperCase()
-  })
-}
-
 function copyDir(src, dest) {
   fs.mkdirSync(dest, { recursive: true })
   fs.readdirSync(src).forEach(file => {
@@ -176,39 +170,15 @@ function modifyJSON(src, modify) {
   fs.writeFileSync(src, JSON.stringify(data, null, 2), { encoding: "utf-8" })
 }
 
-function copyiOS(root, dest, projectName) {
+function copyiOS(root, dest) {
   const files = fs.readdirSync(root)
 
   const dir = path.join(dest, "iOS")
   !fs.existsSync(dir) && fs.mkdirSync(dir, { recursive: true })
 
-  const name = firstLetterUpperCase(sanitizedName(projectName))
-
   files.forEach(file => {
-    copy(path.resolve(root, file), path.resolve(dir, file.replace(/Runner/g, name)))
+    copy(path.resolve(root, file), path.resolve(dir, file))
   })
-
-  replaceiOSProjectConfig(dir, projectName)
-}
-
-function replaceiOSProjectConfig(dest, projectName) {
-  const files = fs.readdirSync(dest)
-  files.forEach(file => {
-    replace(path.resolve(dest, file), projectName)
-  })
-}
-
-function replace(src, projectName) {
-  if (fs.statSync(src).isDirectory()) {
-    fs.readdirSync(src).forEach(file => {
-      replace(path.resolve(src, file), projectName)
-    })
-  } else {
-    let data = fs.readFileSync(src, { encoding: "utf-8" })
-    const name = sanitizedName(projectName)
-    data = data.replace(/Runner/g, firstLetterUpperCase(name)).replace(/runner/g, name)
-    fs.writeFileSync(src, data, { encoding: "utf-8" })
-  }
 }
 
 main()

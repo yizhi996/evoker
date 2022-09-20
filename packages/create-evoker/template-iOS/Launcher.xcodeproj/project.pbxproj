@@ -7,11 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8614CBB927377A7D001CBE07 /* LaunchpadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8614CBB827377A7D001CBE07 /* LaunchpadViewController.swift */; };
 		861ADB2E26DC719800C3D62F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 861ADB2D26DC719800C3D62F /* Assets.xcassets */; };
 		868A758626786BB100BDC6A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 868A758526786BB100BDC6A1 /* AppDelegate.swift */; };
 		868A759226786BB700BDC6A1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 868A759026786BB700BDC6A1 /* LaunchScreen.storyboard */; };
-		B728097ED6CF9A032F72FF8E /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9DCC541E9C2F390EDE08AE8 /* Pods_Runner.framework */; };
+		869D678928D6243000EA6836 /* Codable+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 869D678828D6243000EA6836 /* Codable+Extension.swift */; };
+		86CBEE2628D6EA9100D3E263 /* LauncherAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86CBEE2528D6EA9000D3E263 /* LauncherAPI.swift */; };
+		86CBEE2928D706AA00D3E263 /* Launcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86CBEE2828D706AA00D3E263 /* Launcher.swift */; };
+		86CBEE3328D96E0200D3E263 /* app-service.evpkg in Resources */ = {isa = PBXBuildFile; fileRef = 86CBEE3228D96E0100D3E263 /* app-service.evpkg */; };
+		B728097ED6CF9A032F72FF8E /* Pods_Launcher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9DCC541E9C2F390EDE08AE8 /* Pods_Launcher.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,15 +31,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		064889B1B63C410470B86C95 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
-		10CF4B8582E0BF470359A821 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
-		8614CBB827377A7D001CBE07 /* LaunchpadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchpadViewController.swift; sourceTree = "<group>"; };
+		064889B1B63C410470B86C95 /* Pods-Launcher.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Launcher.debug.xcconfig"; path = "Target Support Files/Pods-Launcher/Pods-Launcher.debug.xcconfig"; sourceTree = "<group>"; };
+		10CF4B8582E0BF470359A821 /* Pods-Launcher.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Launcher.release.xcconfig"; path = "Target Support Files/Pods-Launcher/Pods-Launcher.release.xcconfig"; sourceTree = "<group>"; };
 		861ADB2D26DC719800C3D62F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		868A758226786BB100BDC6A1 /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		868A758226786BB100BDC6A1 /* Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Launcher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		868A758526786BB100BDC6A1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		868A759126786BB700BDC6A1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		868A759326786BB700BDC6A1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		B9DCC541E9C2F390EDE08AE8 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		869D678828D6243000EA6836 /* Codable+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Codable+Extension.swift"; sourceTree = "<group>"; };
+		86CBEE2528D6EA9000D3E263 /* LauncherAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LauncherAPI.swift; sourceTree = "<group>"; };
+		86CBEE2828D706AA00D3E263 /* Launcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Launcher.swift; sourceTree = "<group>"; };
+		86CBEE3228D96E0100D3E263 /* app-service.evpkg */ = {isa = PBXFileReference; lastKnownFileType = file; path = "app-service.evpkg"; sourceTree = "<group>"; };
+		B9DCC541E9C2F390EDE08AE8 /* Pods_Launcher.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Launcher.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,7 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B728097ED6CF9A032F72FF8E /* Pods_Runner.framework in Frameworks */,
+				B728097ED6CF9A032F72FF8E /* Pods_Launcher.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,8 +60,8 @@
 		5FA6D45ADF580CB020EED0C8 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				064889B1B63C410470B86C95 /* Pods-Runner.debug.xcconfig */,
-				10CF4B8582E0BF470359A821 /* Pods-Runner.release.xcconfig */,
+				064889B1B63C410470B86C95 /* Pods-Launcher.debug.xcconfig */,
+				10CF4B8582E0BF470359A821 /* Pods-Launcher.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -63,7 +69,7 @@
 		868A757926786BB100BDC6A1 = {
 			isa = PBXGroup;
 			children = (
-				868A758426786BB100BDC6A1 /* Runner */,
+				868A758426786BB100BDC6A1 /* Launcher */,
 				868A758326786BB100BDC6A1 /* Products */,
 				5FA6D45ADF580CB020EED0C8 /* Pods */,
 				C1F1E26D8679FBA8040F60FC /* Frameworks */,
@@ -73,27 +79,30 @@
 		868A758326786BB100BDC6A1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				868A758226786BB100BDC6A1 /* Runner.app */,
+				868A758226786BB100BDC6A1 /* Launcher.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		868A758426786BB100BDC6A1 /* Runner */ = {
+		868A758426786BB100BDC6A1 /* Launcher */ = {
 			isa = PBXGroup;
 			children = (
+				86CBEE3228D96E0100D3E263 /* app-service.evpkg */,
+				86CBEE2828D706AA00D3E263 /* Launcher.swift */,
+				86CBEE2528D6EA9000D3E263 /* LauncherAPI.swift */,
+				869D678828D6243000EA6836 /* Codable+Extension.swift */,
 				868A758526786BB100BDC6A1 /* AppDelegate.swift */,
-				8614CBB827377A7D001CBE07 /* LaunchpadViewController.swift */,
 				868A759026786BB700BDC6A1 /* LaunchScreen.storyboard */,
 				861ADB2D26DC719800C3D62F /* Assets.xcassets */,
 				868A759326786BB700BDC6A1 /* Info.plist */,
 			);
-			path = Runner;
+			path = Launcher;
 			sourceTree = "<group>";
 		};
 		C1F1E26D8679FBA8040F60FC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B9DCC541E9C2F390EDE08AE8 /* Pods_Runner.framework */,
+				B9DCC541E9C2F390EDE08AE8 /* Pods_Launcher.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -101,9 +110,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		868A758126786BB100BDC6A1 /* Runner */ = {
+		868A758126786BB100BDC6A1 /* Launcher */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 868A759626786BB700BDC6A1 /* Build configuration list for PBXNativeTarget "Runner" */;
+			buildConfigurationList = 868A759626786BB700BDC6A1 /* Build configuration list for PBXNativeTarget "Launcher" */;
 			buildPhases = (
 				8F6AD7DD5D72D7E915110EC7 /* [CP] Check Pods Manifest.lock */,
 				868A757E26786BB100BDC6A1 /* Sources */,
@@ -118,9 +127,9 @@
 			);
 			dependencies = (
 			);
-			name = Runner;
+			name = Launcher;
 			productName = iOS;
-			productReference = 868A758226786BB100BDC6A1 /* Runner.app */;
+			productReference = 868A758226786BB100BDC6A1 /* Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -139,7 +148,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 868A757D26786BB100BDC6A1 /* Build configuration list for PBXProject "Runner" */;
+			buildConfigurationList = 868A757D26786BB100BDC6A1 /* Build configuration list for PBXProject "Launcher" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -152,7 +161,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				868A758126786BB100BDC6A1 /* Runner */,
+				868A758126786BB100BDC6A1 /* Launcher */,
 			);
 		};
 /* End PBXProject section */
@@ -164,6 +173,7 @@
 			files = (
 				868A759226786BB700BDC6A1 /* LaunchScreen.storyboard in Resources */,
 				861ADB2E26DC719800C3D62F /* Assets.xcassets in Resources */,
+				86CBEE3328D96E0200D3E263 /* app-service.evpkg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,15 +186,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Launcher/Pods-Launcher-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Launcher/Pods-Launcher-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Launcher/Pods-Launcher-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		8679B851286FE87100BF28BF /* Get Local IP Address */ = {
@@ -220,7 +230,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Runner-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Launcher-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -233,15 +243,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Launcher/Pods-Launcher-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-Launcher/Pods-Launcher-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Launcher/Pods-Launcher-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -251,8 +261,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				869D678928D6243000EA6836 /* Codable+Extension.swift in Sources */,
+				86CBEE2628D6EA9100D3E263 /* LauncherAPI.swift in Sources */,
+				86CBEE2928D706AA00D3E263 /* Launcher.swift in Sources */,
 				868A758626786BB100BDC6A1 /* AppDelegate.swift in Sources */,
-				8614CBB927377A7D001CBE07 /* LaunchpadViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,11 +400,12 @@
 		};
 		868A759726786BB700BDC6A1 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 064889B1B63C410470B86C95 /* Pods-Runner.debug.xcconfig */;
+			baseConfigurationReference = 064889B1B63C410470B86C95 /* Pods-Launcher.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = UN9334RZ73;
 				ENABLE_BITCODE = YES;
@@ -400,7 +413,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/Runner/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Launcher/Info.plist";
 				LD_GENERATE_MAP_FILE = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -413,8 +426,9 @@
 					"-l\"c++\"",
 					"-l\"z\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.evokerdev.runner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.evokerdev.launcher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -424,11 +438,12 @@
 		};
 		868A759826786BB700BDC6A1 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 10CF4B8582E0BF470359A821 /* Pods-Runner.release.xcconfig */;
+			baseConfigurationReference = 10CF4B8582E0BF470359A821 /* Pods-Launcher.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = UN9334RZ73;
 				ENABLE_BITCODE = YES;
@@ -436,7 +451,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/Runner/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Launcher/Info.plist";
 				LD_GENERATE_MAP_FILE = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -449,8 +464,9 @@
 					"-l\"c++\"",
 					"-l\"z\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.evokerdev.runner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.evokerdev.launcher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -460,7 +476,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		868A757D26786BB100BDC6A1 /* Build configuration list for PBXProject "Runner" */ = {
+		868A757D26786BB100BDC6A1 /* Build configuration list for PBXProject "Launcher" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				868A759426786BB700BDC6A1 /* Debug */,
@@ -469,7 +485,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		868A759626786BB700BDC6A1 /* Build configuration list for PBXNativeTarget "Runner" */ = {
+		868A759626786BB700BDC6A1 /* Build configuration list for PBXNativeTarget "Launcher" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				868A759726786BB700BDC6A1 /* Debug */,

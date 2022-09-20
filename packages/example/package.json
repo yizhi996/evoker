@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "example",
   "private": true,
   "version": "0.0.0",
   "scripts": {
@@ -14,11 +14,11 @@
   },
   "devDependencies": {
     "@evoker/cli": "^0.11.0",
-    "@vitejs/plugin-vue": "^3.0.1",
+    "@vitejs/plugin-vue": "^3.1.0",
     "autoprefixer": "^10.4.2",
     "postcss": "^8.4.5",
     "typescript": "^4.7.4",
-    "vite": "^3.0.2",
+    "vite": "^3.1.3",
     "vue-tsc": "^0.34.17"
   },
   "browserslist": [
