@@ -1,6 +1,6 @@
 import { DataType, GetStorageInfoSuccessCallbackResult } from "./src/api/storage"
 import { DevtoolsBridgeCommands, InvokeArgs, PublishArgs } from "@evoker/shared"
-import { InvokeCallbackResult } from "./src"
+import { InvokeCallback, InvokeCallbackResult, SubscribeCallback } from "./src"
 
 interface Base64 {
   base64ToArrayBuffer(string: string): ArrayBuffer
@@ -229,6 +229,12 @@ interface Devtools {
 }
 
 interface JSBridge {
+  invoke: <T = unknown>(
+    event: string,
+    params: Record<string, any>,
+    callback?: InvokeCallback<T>
+  ) => void
+  subscribe: <T = unknown>(event: string, callback: SubscribeCallback<T>) => void
   invokeCallbackHandler: (result: InvokeCallbackResult) => void
   subscribeHandler: (event: string, message: any, webViewId: number) => void
 }

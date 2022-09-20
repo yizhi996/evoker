@@ -9,6 +9,12 @@ export const InnerJSBridge = {
 }
 
 const JSBridge = {
+  get invoke() {
+    return invoke
+  },
+  get subscribe() {
+    return subscribe
+  },
   get invokeCallbackHandler() {
     return invokeCallbackHandler
   },

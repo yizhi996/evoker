@@ -141,6 +141,8 @@ import "./fromWebView"
 
 export type { VideoContext } from "./api/media/video"
 
+export type { SocketTask } from "./api/request"
+
 export default {
   env,
   base64ToArrayBuffer,

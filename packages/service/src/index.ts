@@ -10,6 +10,8 @@ export { createApp, getApp, getCurrentPages } from "./app"
 export { defineRouter } from "./router"
 export { global }
 export * from "./bridge"
+export type { SuccessResult, GeneralCallbackResult, AsyncReturn } from "@evoker/bridge"
+export { wrapperAsyncAPI, invokeFailure, invokeSuccess, invokeCallback } from "@evoker/bridge"
 
 function hijack() {
   return {}

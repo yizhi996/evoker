@@ -35,3 +35,5 @@ export type { InvokeCallback, InvokeCallbackResult, SubscribeCallback } from "./
 export * from "./pipeline"
 
 export * from "./utils"
+
+export * from "./async"
