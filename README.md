@@ -11,7 +11,7 @@
 
 # Evoker
  
-小程序引擎（开发中）
+小程序引擎（开发中），大概率每次发版都会出现破坏性更新👻
 
 <img src="https://user-images.githubusercontent.com/10255725/191271152-ea971aaf-7a21-4d5e-b976-2e754cff2db5.gif" alt="launcher" width="180"/>
 
