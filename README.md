@@ -1,6 +1,19 @@
-# Evoker ![platform](https://img.shields.io/badge/platform-iOS%2011-lightgrey?style=flat-square) [![npm](https://img.shields.io/npm/v/evoker?style=flat-square)](https://www.npmjs.com/package/evoker) ![Cocoapods](https://img.shields.io/cocoapods/v/Evoker?color=blue&style=flat-square)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/10255725/191271816-5b937328-eb00-4941-9854-ee217af407d8.svg" alt="logo" width="180"/>
+</p>
+<br/>
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-iOS%2011-lightgrey?style=flat-square" alt="platform">
+  <a href="https://www.npmjs.com/package/evoker"><img src="https://img.shields.io/npm/v/evoker?style=flat-square" alt="npm"></a>
+  <img src="https://img.shields.io/cocoapods/v/Evoker?color=blue&style=flat-square" alt="Cocoapods">
+</p>
+<br/>
 
-小程序容器（开发中）
+# Evoker
+ 
+小程序引擎（开发中），大概率每次发版都会出现破坏性更新👻
+
+<img src="https://user-images.githubusercontent.com/10255725/191271152-ea971aaf-7a21-4d5e-b976-2e754cff2db5.gif" alt="launcher" width="180"/>
 
 ## Documentation
 
@@ -15,11 +28,12 @@
 | [@evoker/cli](https://github.com/yizhi996/evoker/tree/main/packages/cli)                     | cli & dev               |
 | [@evoker/create-evoker](https://github.com/yizhi996/evoker/tree/main/packages/create-evoker) | template                |
 | [@evoker/service](https://github.com/yizhi996/evoker/tree/main/packages/service)             | 逻辑层和 Bridge API     |
-| [@evoker/shared](https://github.com/yizhi996/evoker/tree/main/packages/shared)               | 公共库                  |
-| [@evoker/test](https://github.com/yizhi996/evoker/tree/main/packages/test)                   | e2e 测试                |
+| [@evoker/shared](https://github.com/yizhi996/evoker/tree/main/packages/shared)               | 一些公共库                  |
+| [test](https://github.com/yizhi996/evoker/tree/main/packages/test)                   | 对 API 进行 e2e 测试      |
 | [@evoker/vue](https://github.com/yizhi996/vue-next)                                          | 定制的 Vue              |
 | [@evoker/webview](https://github.com/yizhi996/evoker/tree/main/packages/webview)             | WebView 渲染层          |
-| [@evoker/launcher](https://github.com/yizhi996/evoker/tree/main/packages/launcher)           | 「wip」全新的应用启动器 |
+| [launcher](https://github.com/yizhi996/evoker/tree/main/packages/launcher)           | 应用启动器 |
+| [example](https://github.com/yizhi996/evoker/tree/main/packages/example)           | 内置组件和 API 的 example |
 
 ## Getting Started
 
@@ -28,11 +42,6 @@
 - use [hello world](https://github.com/yizhi996/evoker/blob/main/packages/create-evoker/template-blank)
 ```
 pnpm create evoker my-app --template blank --platform iOS
-```
-
-- use [example](https://github.com/yizhi996/evoker/blob/main/packages/create-evoker/template-example)
-```
-pnpm create evoker my-app --template example --platform iOS
 ```
 
 2. Install dependencies
@@ -53,8 +62,7 @@ pod install --repo-update
 pnpm dev
 ```
 
-open iOS/Myapp.xcworkspace
-
+open iOS/Launcher.xcworkspace
 
 ## Licenses
 
