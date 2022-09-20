@@ -41,19 +41,32 @@ public class PackageManager {
     func setLocalJSSDKVersion(_ version: String) {
         UserDefaults.standard.set(version, forKey: jsSDKVersionkey)
     }
+    
+    public func localAppVersionKey(appId: String, envVersion: AppEnvVersion) -> String {
+        return "evoker:version:app:\(appId):\(envVersion)"
+    }
 
     public func localAppVersion(appId: String, envVersion: AppEnvVersion) -> String {
         if envVersion == .develop {
             return "dev"
         }
-        return UserDefaults.standard.string(forKey: "evoker:version:app:\(appId):\(envVersion)") ?? ""
+        return UserDefaults.standard.string(forKey: localAppVersionKey(appId: appId, envVersion: envVersion)) ?? ""
     }
     
     public func setLocalAppVersion(appId: String, envVersion: AppEnvVersion, version: String) {
         if envVersion == .develop {
             return
         }
-        UserDefaults.standard.set(version, forKey: "evoker:version:app:\(appId):\(envVersion)")
+        UserDefaults.standard.set(version, forKey: localAppVersionKey(appId: appId, envVersion: envVersion))
+    }
+    
+    public func appExists(appId: String, envVersion: AppEnvVersion, version: String) -> Bool {
+        let filePath = FilePath.appDist(appId: appId, envVersion: envVersion, version: version).appendingPathComponent("app.json")
+        return FileManager.default.fileExists(atPath: filePath.path)
+    }
+    
+    public func removeLocalAppVersion(appId: String, envVersion: AppEnvVersion) {
+        UserDefaults.standard.removeObject(forKey: localAppVersionKey(appId: appId, envVersion: envVersion))
     }
     
     public func updateJSSDK(resultHandler handler: @escaping BoolBlock) {
@@ -83,6 +96,9 @@ public class PackageManager {
     
     public func unpackAppService(appId: String, envVersion: AppEnvVersion, version: String, filePath: URL) throws {
         let dest = FilePath.appDist(appId: appId, envVersion: envVersion, version: version)
+        if checkPackIntegrity(filePath: dest) {
+            return
+        }
         try unpack(src: filePath, dest: dest)
     }
     

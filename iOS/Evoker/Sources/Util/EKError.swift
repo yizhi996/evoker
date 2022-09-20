@@ -22,6 +22,8 @@ public enum EKError: Error {
     
     case presentViewControllerNotFound
     
+    case persentViewControllerCannotBeItself
+    
     case httpRequestFailed
     
     case urlInvalidated(String)
@@ -193,6 +195,8 @@ extension EKError: LocalizedError {
             return "load app.json failed"
         case .appServiceBundleNotFound:
             return "app-service.js not found"
+        case .persentViewControllerCannotBeItself:
+            return "present view controller cannot be itself"
         case .appLaunchPathNotFound(let path):
             return "app launch failed, path: \(path) not found"
         case .appRootViewControllerNotFound:

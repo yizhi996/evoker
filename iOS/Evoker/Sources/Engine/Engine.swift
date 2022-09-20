@@ -188,23 +188,21 @@ final public class Engine {
     
     @objc
     private func appDevelopUpdateNotification(_ notification: Notification) {
-        guard let info = notification.object as? [String: Any],
-              let appId = info["appId"] as? String,
-              !appId.isEmpty else { return }
+        guard let info = notification.userInfo?["info"] as? DevServer.UpdatedInfo else { return }
         var options = AppLaunchOptions()
         options.envVersion = .develop
-        if let launchOptions = info["launchOptions"] as? DevServer.AppUpdateOptions.LaunchOptions,
+        if let launchOptions = info.launchOptions,
            let launchPage = launchOptions.page {
             options.path = launchPage
         }
-        if let appService = runningApp.first(where: { $0.appId == appId && $0.envVersion == .develop }) {
+        if let appService = runningApp.first(where: { $0.appId == info.appId && $0.envVersion == .develop }) {
             appService.reLaunch(launchOptions: options) { error in
                 if let error = error {
                     NotifyType.fail(error.localizedDescription).show()
                 }
             }
         } else {
-            launchApp(appId: appId, launchOptions: options) { error in
+            launchApp(appId: info.appId, launchOptions: options) { error in
                 if let error = error {
                     NotifyType.fail(error.localizedDescription).show()
                 }
@@ -341,7 +339,7 @@ extension Engine {
         }
     }
     
-    public func clearAppData(appId: String, userId: String, options: ClearOptions) {
+    public func clearAppData(appId: String, userId: String = Engine.shared.userId, options: ClearOptions) {
         lazy var storage = AppStorage(appId: appId)
         if options.contains(.data) {
             if let error = storage.clear() {
@@ -364,6 +362,9 @@ extension Engine {
             }
         }
         if options.contains(.compile) {
+            UserDefaults.standard.removeObject(forKey: DevServer.devVersionKey(appId: appId))
+            PackageManager.shared.removeLocalAppVersion(appId: appId, envVersion: .release)
+            PackageManager.shared.removeLocalAppVersion(appId: appId, envVersion: .trail)
             let dir = FilePath.app(appId: appId)
             do {
                 try FileManager.default.removeItem(at: dir)

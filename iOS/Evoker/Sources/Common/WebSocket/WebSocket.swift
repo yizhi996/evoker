@@ -20,7 +20,7 @@ public class WebSocket: NSObject {
     
     private var client: SRWebSocket?
     
-    var readyState: SRReadyState {
+    public var readyState: SRReadyState {
         return client?.readyState ?? .CONNECTING
     }
     

@@ -234,10 +234,13 @@ final public class AppService {
         guard let rootViewController = rootViewController else { throw EKError.appRootViewControllerNotFound }
         switch openMethod {
         case .persent:
-            guard let presentViewController = persentViewController ?? UIViewController.visibleViewController() else {
+            guard let persentViewController = persentViewController ?? UIViewController.visibleViewController() else {
                 throw EKError.presentViewControllerNotFound
             }
-            presentViewController.present(rootViewController, animated: true)
+            if  rootViewController.viewControllers.contains(where: { $0 === persentViewController }) {
+                throw EKError.persentViewControllerCannotBeItself
+            }
+            persentViewController.present(rootViewController, animated: true)
         case .redirect:
             let window = UIApplication
              .shared

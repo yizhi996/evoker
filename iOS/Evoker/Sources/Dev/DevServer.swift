@@ -9,26 +9,40 @@
 import Foundation
 import Zip
 
-class DevServer: WebSocket {
+public class DevServer: WebSocket {
     
     struct AppUpdateOptions: Decodable {
         let appId: String
         var files: [String]
         let version: String
         let launchOptions: LaunchOptions?
-        
-        struct LaunchOptions: Decodable {
-            let page: String?
-        }
+    }
+    
+    public struct LaunchOptions: Decodable {
+        public let page: String?
+    }
+    
+    public struct AppInfo: Codable {
+        public let appId: String
+        public let version: String
+        public let envVersion: AppEnvVersion
+    }
+    
+    public struct UpdatedInfo {
+        public let appId: String
+        public let version: String
+        public let launchOptions: LaunchOptions?
     }
     
     private var attemptCount = 0
     
     private let lock = Lock()
     
-    private var needUpdateApps: [String: AppUpdateOptions] = [:]
+    private var updateOptions: AppUpdateOptions?
     
     private var heartTimer: Timer?
+    
+    private var forceDisconnect = false
     
     public init(host: String = "", port: UInt16 = 5173) {
         var ip = host
@@ -43,14 +57,14 @@ class DevServer: WebSocket {
         super.init(url: URL(string: "ws://\(ip):\(port)")!)
     }
     
-    override func appWillEnterForeground() {
+    public override func appWillEnterForeground() {
         super.appWillEnterForeground()
         
         attemptCount = 0
         reconnect()
     }
     
-    override func onOpen() {
+    public override func onOpen() {
         Logger.debug("dev server: connected")
         
         attemptCount = 0
@@ -66,11 +80,11 @@ class DevServer: WebSocket {
         RunLoop.main.add(heartTimer!, forMode: .common)
     }
     
-    override func onError(_ error: Error) {
+    public override func onError(_ error: Error) {
         NotifyType.fail("connect dev server fail, please check network, error: \(error.localizedDescription)").show()
     }
     
-    override func onClose(_ code: Int, reason: String?) {
+    public override func onClose(_ code: Int, reason: String?) {
         Logger.debug("dev server disconnected")
         
         heartTimer?.invalidate()
@@ -79,7 +93,7 @@ class DevServer: WebSocket {
         reconnect()
     }
     
-    override func onRecv(_ data: Data) {
+    public override func onRecv(_ data: Data) {
         guard data.count > 64 else { return }
         
         let headerData = data.subdata(in: 0..<64)
@@ -88,8 +102,8 @@ class DevServer: WebSocket {
                 .replacingOccurrences(of: "\0", with: "") else { return }
         
         switch headerString {
-        case "--CHECKVERSION--":
-            checkVersion(bodyData)
+        case "--APPINFO--":
+            setAppInfo(bodyData)
         case "--UPDATE--":
             update(bodyData)
         default:
@@ -98,12 +112,16 @@ class DevServer: WebSocket {
         }
     }
     
-    override func connect() {
-        guard Engine.shared.config.dev.useDevServer else { return }
-        super.connect()
+    public func destroy() {
+        forceDisconnect = true
+        disconnect()
     }
     
-    override func reconnect() {
+    public override func reconnect() {
+        if forceDisconnect {
+            return
+        }
+        
         if attemptCount + 1 > 10 {
             return
         }
@@ -120,14 +138,19 @@ class DevServer: WebSocket {
     func sendHeart() {
         try? send("ping")
     }
+    
+    public class func devVersionKey(appId: String) -> String {
+        return "evoker:version:app:\(appId):dev"
+    }
 }
 
 private extension DevServer {
     
-    func checkVersion(_ body: Data) {
-        guard let message = body.toDict(),
-              let appId = message["appId"] as? String else { return }
-        let version = PackageManager.shared.localAppVersion(appId: appId, envVersion: .develop)
+    func setAppInfo(_ body: Data) {
+        guard let appInfo: AppInfo = body.toModel() else { return }
+        NotificationCenter.default.post(name: Self.setAppInfoNotification, object: self, userInfo: ["info": appInfo])
+        // check server version
+        let version = UserDefaults.standard.string(forKey: Self.devVersionKey(appId: appInfo.appId)) ?? ""
         if let msg = ["event": "version", "data": ["version": version]].toJSONString() {
             try? send(msg)
         }
@@ -135,12 +158,8 @@ private extension DevServer {
     
     func update(_ body: Data) {
         guard let options: AppUpdateOptions = body.toModel() else { return }
-        PackageManager.shared.setLocalAppVersion(appId: options.appId,
-                                                   envVersion: .develop,
-                                                   version: options.version)
-        lock.lock()
-        needUpdateApps[options.appId] = options
-        lock.unlock()
+        UserDefaults.standard.set(options.version, forKey: Self.devVersionKey(appId: options.appId))
+        updateOptions = options
     }
     
     func recvFile(_ body: Data, header: [String]) {
@@ -150,9 +169,7 @@ private extension DevServer {
         let version = header[1]
         let package = header[2]
         
-        lock.lock()
-        guard var options = needUpdateApps[appId], options.version == version else {
-            lock.unlock()
+        guard let options = updateOptions, options.version == version else {
             return
         }
         
@@ -160,9 +177,8 @@ private extension DevServer {
         if package == "sdk" {
             packageURL = FilePath.jsSDK(version: "dev")
         } else if package == "app" {
-            packageURL = FilePath.appDist(appId: appId, envVersion: .develop)
+            packageURL = FilePath.appDist(appId: appId, envVersion: .develop, version: "dev")
         } else {
-            lock.unlock()
             return
         }
 
@@ -174,28 +190,24 @@ private extension DevServer {
                 try FilePath.createDirectory(at: packageURL)
                 try Zip.unzipFile(filePath, destination: packageURL, overwrite: true, password: nil, progress: nil)
                 
-                if let index = options.files.firstIndex(of: package) {
-                    options.files.remove(at: index)
-                    needUpdateApps[appId] = options
+                lock.lock()
+                if let index = updateOptions!.files.firstIndex(of: package) {
+                    updateOptions!.files.remove(at: index)
                 }
+                lock.unlock()
                 
-                if options.files.isEmpty {
+                if updateOptions!.files.isEmpty {
                     DispatchQueue.main.async {
                         NotifyType.success("DEV_RELOAD").show()
-                        self.needUpdateApps[appId] = nil
-                        var info: [String: Any] = ["appId": appId]
-                        if let launchOptions = options.launchOptions {
-                            info["launchOptions"] = launchOptions
-                        }
-                        NotificationCenter.default.post(name: DevServer.didUpdateNotification, object: info)
-                        self.lock.unlock()
+                        let info = UpdatedInfo(appId: appId, version: version, launchOptions: options.launchOptions)
+                        NotificationCenter.default.post(name: Self.didUpdateNotification,
+                                                        object: self,
+                                                        userInfo: ["info": info])
+                        self.updateOptions = nil
                     }
-                } else {
-                    lock.unlock()
                 }
             }
         } catch {
-            lock.unlock()
             DispatchQueue.main.async {
                 NotifyType.fail(error.localizedDescription).show()
             }
@@ -203,7 +215,10 @@ private extension DevServer {
     }
 }
 
-extension DevServer {
+public extension DevServer {
+    
+    static let setAppInfoNotification = Notification.Name("EvokerDevServerSetAppInfoNotification")
     
     static let didUpdateNotification = Notification.Name("EvokerDevServerDidUpdateNotification")
+    
 }

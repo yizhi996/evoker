@@ -74,10 +74,12 @@ struct Constant {
         return "\(platfrom) \(UIDevice.current.systemVersion)"
     }
     
+    /// Evoker 原生库版本
     static var nativeSDKVersion: String {
         return assetsBundle.infoDictionary!["CFBundleShortVersionString"] as! String
     }
     
+    /// 宿主版本
     static var hostVersion: String {
         return Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
     }
