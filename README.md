@@ -25,17 +25,18 @@
 
 | Package                                                                                      | desc                      |
 | -------------------------------------------------------------------------------------------- | ------------------------- |
-| [evoker](https://github.com/yizhi996/evoker/tree/main/packages/evoker)                       | 最终产物                  |
+| [evoker](https://github.com/yizhi996/evoker/tree/main/packages/evoker)                       | Runtime                 |
 | [@evoker/bridge](https://github.com/yizhi996/evoker/tree/main/packages/bridge)               | 通用 Bridge API           |
-| [@evoker/cli](https://github.com/yizhi996/evoker/tree/main/packages/cli)                     | cli & dev                 |
-| [@evoker/create-evoker](https://github.com/yizhi996/evoker/tree/main/packages/create-evoker) | template                  |
+| [@evoker/cli](https://github.com/yizhi996/evoker/tree/main/packages/cli)                     | build 和 dev 的实现和 vite 插件 |
+| [@evoker/create-evoker](https://github.com/yizhi996/evoker/tree/main/packages/create-evoker) | 快速创建脚手架                |
 | [@evoker/service](https://github.com/yizhi996/evoker/tree/main/packages/service)             | 逻辑层和 Bridge API       |
-| [@evoker/shared](https://github.com/yizhi996/evoker/tree/main/packages/shared)               | 一些公共库                |
-| [test](https://github.com/yizhi996/evoker/tree/main/packages/test)                           | 对 API 进行 e2e 测试      |
+| [@evoker/shared](https://github.com/yizhi996/evoker/tree/main/packages/shared)               | 一些公共方法                |
 | [@evoker/vue](https://github.com/yizhi996/vue-next)                                          | 定制的 Vue                |
-| [@evoker/webview](https://github.com/yizhi996/evoker/tree/main/packages/webview)             | WebView 渲染层            |
+| [@evoker/webview](https://github.com/yizhi996/evoker/tree/main/packages/webview)             | WebView 渲染层，包含组件的实现            |
 | [launcher](https://github.com/yizhi996/evoker/tree/main/packages/launcher)                   | 应用启动器                |
 | [example](https://github.com/yizhi996/evoker/tree/main/packages/example)                     | 内置组件和 API 的 example |
+| [test](https://github.com/yizhi996/evoker/tree/main/packages/test)                           | 对 API 进行 e2e 测试      |
+| [iOS](https://github.com/yizhi996/evoker/tree/main/iOS)                                      | iOS 容器                |
 
 ## Licenses
 
