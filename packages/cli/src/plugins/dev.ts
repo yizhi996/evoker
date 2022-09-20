@@ -1,7 +1,7 @@
 import type { Plugin, ResolvedConfig } from "vite"
 import colors from "picocolors"
 import path from "path"
-import { getDirAllFiles, getFileHash, getAppId, zip } from "../utils"
+import { getDirAllFiles, getFileHash, getAppId, zip, log } from "../utils"
 import { createWebSocketServer, createMessage, createFileMessage } from "../webSocket"
 import chokidar from "chokidar"
 import debounce from "lodash.debounce"
@@ -49,7 +49,7 @@ export default function vitePluginEvokerDevtools(_options: Options = {}): Plugin
         host: config.server.host,
         port: config.server.port,
         onConnect: client => {
-          checkClientVersion(client)
+          sendAppInfo(client)
         },
         onRecv(client, message) {
           try {
@@ -73,10 +73,15 @@ export default function vitePluginEvokerDevtools(_options: Options = {}): Plugin
       }
     },
 
-    closeBundle() {
-      firstBuildFinished = true
-      serviceVersion = Date.now()
-      update(ws.clients())
+    closeBundle: {
+      sequential: true,
+      order: "post",
+      handler() {
+        firstBuildFinished = true
+        serviceVersion = Date.now()
+        update(ws.clients())
+        log(`address: ${ws.address()}`)
+      }
     }
   }
 }
@@ -104,17 +109,19 @@ function onRecv(client: WebSocket, message: { event: Events; data: Record<string
 }
 
 const enum Methods {
+  APP_INFO = "--APPINFO--",
   CHECK_VERSION = "--CHECKVERSION--",
   UPDATE = "--UPDATE--"
 }
 
-/**
- * 查询客户端是否需要更新
- */
-function checkClientVersion(client: WebSocket) {
+function sendAppInfo(client: WebSocket) {
   const appId = getAppId()
-  const message = JSON.stringify({ appId })
-  const data = createMessage(Methods.CHECK_VERSION, message)
+  const message = JSON.stringify({
+    appId,
+    version: serviceVersion.toString(),
+    envVersion: "develop"
+  })
+  const data = createMessage(Methods.APP_INFO, message)
   send(data, [client])
 }
 
@@ -134,7 +141,7 @@ function update(clients: WebSocket[]) {
   return new Promise(async () => {
     const appId = getAppId()
 
-    config.logger.info(colors.cyan(`\ncheck ${appId} update...`))
+    log(`check ${appId} update...\n`)
 
     const updateFiles: string[] = []
 
@@ -150,7 +157,7 @@ function update(clients: WebSocket[]) {
     updateFiles.push(...appFiles)
 
     if (updateFiles.length) {
-      config.logger.info(`\n${colors.green(`✓`)} ${updateFiles.length} files need to update.\n`)
+      log(`${colors.green(`✓`)} ${updateFiles.length} files need to update.\n`)
 
       const files: string[] = []
 
@@ -196,10 +203,10 @@ function update(clients: WebSocket[]) {
           send(data, clients)
         }
 
-        config.logger.info(colors.cyan(`push ${appId} update files completed.\n`))
+        log(`push ${appId} update files completed.\n`)
       }
     } else {
-      config.logger.info(colors.cyan("\nno update"))
+      log("no update")
     }
     return Promise.resolve()
   })

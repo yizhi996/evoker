@@ -1,9 +1,7 @@
 import ws from "ws"
-import { isString, isFunction } from "@vue/shared"
-
-const log = msg => console.log(`[Evoker devServer] ${msg}`)
-
-const warn = msg => console.warn(`[Evoker devServer] ${msg}`)
+import ip from "ip"
+import { isString, isFunction, extend } from "@vue/shared"
+import { log, warn } from "./utils"
 
 export type Client = ws & { _id: number }
 
@@ -27,7 +25,7 @@ export function createWebSocketServer(options: CreateWebSockerServerOptions) {
     if (isString(options.host) && options.host.length) {
       host = options.host
     } else {
-      host = "0.0.0.0"
+      host = ip.address()
     }
   }
 
@@ -37,7 +35,7 @@ export function createWebSocketServer(options: CreateWebSockerServerOptions) {
 
   let webSocketServer = new ws.WebSocketServer({ host, port })
 
-  webSocketServer.on("connection", (client: Client) => {
+  const onConnection = (client: Client) => {
     console.log()
     log("client connected")
 
@@ -60,19 +58,26 @@ export function createWebSocketServer(options: CreateWebSockerServerOptions) {
         options.onRecv && options.onRecv(client, message)
       }
     })
-  })
+  }
 
-  webSocketServer.on("error", (error: Error & { code?: string }) => {
+  webSocketServer.on("connection", onConnection)
+
+  const onError = (error: Error & { code?: string }) => {
     if (error.code === "EADDRINUSE") {
       log(`port: ${port} is already in use`)
-      webSocketServer = new ws.WebSocketServer({ host, port: ++port })
-      log(`run: ${host}:${port}`)
+      webSocketServer.off("connection", onConnection)
+      webSocketServer.off("error", onError)
+      const { wss } = createWebSocketServer(extend(options, { port: ++port }))
+      webSocketServer = wss
     } else {
       warn(`error: ${error}`)
     }
-  })
+  }
+
+  webSocketServer.on("error", onError)
 
   return {
+    address: () => `ws://${host}:${port}`,
     wss: webSocketServer,
     clients: () => Array.from(webSocketServer.clients)
   }
