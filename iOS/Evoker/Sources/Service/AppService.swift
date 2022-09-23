@@ -81,6 +81,10 @@ final public class AppService {
         return Engine.shared.jsContextPool.idle()
     }()
     
+    lazy var loadingView: LoadingView = {
+        return LoadingView(appInfo: appInfo)
+    }()
+    
     var webViewPool: Pool<WebView>!
     
     var keepScreenOn = false
@@ -207,6 +211,12 @@ final public class AppService {
         waitPageFirstRendered(page: info.page) { }
         
         publishAppOnLaunch(options: launchOptions)
+        
+        info.viewController.view.addSubview(loadingView)
+        loadingView.autoPinEdge(toSuperviewEdge: .leading)
+        loadingView.autoPinEdge(toSuperviewEdge: .trailing)
+        loadingView.autoPinEdge(toSuperviewEdge: .top)
+        loadingView.autoPinEdge(toSuperviewEdge: .bottom)
         
         let navigationController = NavigationController(rootViewController: info.viewController)
         navigationController.modalPresentationStyle = .fullScreen
@@ -456,6 +466,7 @@ extension AppService {
     func waitPageFirstRendered(page: Page, finishHandler: @escaping () -> Void) {
         if let webPage = page as? WebPage {
             webPage.didLoadHandler = {
+                self.loadingView.removeFromSuperview()
                 var isRendered = false
                 let exec: () -> Void = {
                     if !isRendered {

@@ -39,6 +39,7 @@ class Launcher {
             var appInfo = AppInfo(appName: appId, appIconURL: "")
             if appId == Self.launcherAppId {
                 appInfo.appName = "Launcher"
+                appInfo.appIconURL = "https://file.lilithvue.com/app/com.evokerdev.example/assets/LOGO.png?imageMogr2/crop/256x256"
             } else if let app = self.findApp(appId: appId, envVersion: envVersion) {
                 appInfo.appName = app.name ?? app.appId
                 appInfo.appIconURL = app.icon ?? ""
