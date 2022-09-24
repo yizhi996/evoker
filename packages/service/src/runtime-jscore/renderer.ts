@@ -58,13 +58,13 @@ const nodeOps: Omit<RendererOptions<EvokerNode, EvokerElement>, "patchProp"> = {
     el.setAttribute(id, "")
   },
 
-  cloneNode(el) {
-    const cloned = el.cloneNode(true)
-    if ("_value" in el) {
-      ;(cloned as any)._value = (el as any)._value
-    }
-    return cloned
-  },
+  // cloneNode(el) {
+  //   const cloned = el.cloneNode(true)
+  //   if ("_value" in el) {
+  //     ;(cloned as any)._value = (el as any)._value
+  //   }
+  //   return cloned
+  // },
 
   forcePatchProp(el: EvokerElement, key: string) {
     const keys = forcePatchProp[el.tagName]
