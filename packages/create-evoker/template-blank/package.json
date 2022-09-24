@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "evoker": "^0.12.0",
-    "vue": "^3.2.37"
+    "vue": "^3.2.39"
   },
   "devDependencies": {
     "@evoker/cli": "^0.12.0",

@@ -22,7 +22,7 @@
   "dependencies": {
     "@evoker/bridge": "0.12.0",
     "@evoker/shared": "0.12.0",
-    "@vue/shared": "^3.2.37",
+    "@vue/shared": "^3.2.39",
     "hammer-touchemulator": "^0.0.2",
     "ws": "^8.8.0"
   },

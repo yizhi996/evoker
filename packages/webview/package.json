@@ -24,11 +24,11 @@
     "@evoker/bridge": "0.12.0",
     "@evoker/shared": "0.12.0",
     "@tweenjs/tween.js": "^18.6.4",
-    "@vue/runtime-core": "^3.2.37",
-    "@vue/shared": "^3.2.37",
+    "@vue/runtime-core": "^3.2.39",
+    "@vue/shared": "^3.2.39",
     "intersection-observer": "^0.12.0",
     "lodash.throttle": "^4.1.1",
-    "vue": "^3.2.37"
+    "vue": "^3.2.39"
   },
   "devDependencies": {
     "@types/lodash.throttle": "^4.1.7",

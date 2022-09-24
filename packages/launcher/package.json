@@ -7,16 +7,16 @@
     "build": "evoker build"
   },
   "dependencies": {
-    "@evoker/shared": "^0.11.0",
-    "@vue/shared": "^3.2.37",
-    "evoker": "^0.11.0",
+    "@evoker/shared": "^0.12.0",
+    "@vue/shared": "^3.2.39",
+    "evoker": "^0.12.0",
     "pinia": "^2.0.14",
     "tailwindcss": "^3.0.15",
     "url-parse": "^1.5.10",
-    "vue": "^3.2.37"
+    "vue": "^3.2.39"
   },
   "devDependencies": {
-    "@evoker/cli": "0.11.0",
+    "@evoker/cli": "0.12.0",
     "@types/url-parse": "^1.4.8",
     "@vitejs/plugin-vue": "^3.1.0",
     "autoprefixer": "^10.4.2",

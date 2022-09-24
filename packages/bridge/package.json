@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "@evoker/shared": "0.12.0",
-    "vue": "^3.2.37",
-    "@vue/shared": "^3.2.37"
+    "vue": "^3.2.39",
+    "@vue/shared": "^3.2.39"
   }
 }
