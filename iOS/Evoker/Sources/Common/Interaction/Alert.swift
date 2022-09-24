@@ -71,6 +71,8 @@ class Alert: UIView, TransitionView {
             placeholderLabel.numberOfLines = 1
             placeholderLabel.textColor = "#808080".hexColor()
             placeholderLabel.text = params.placeholderText
+            
+            KeyboardManager.shared.addObserver(self)
         }
         
         contentTextView.font = UIFont.systemFont(ofSize: 17)
@@ -135,6 +137,10 @@ class Alert: UIView, TransitionView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        KeyboardManager.shared.removeObserver(self)
+    }
+    
     @objc func onClickConfirm() {
         confirmHandler?(contentTextView.text)
     }
@@ -156,6 +162,7 @@ class Alert: UIView, TransitionView {
         fadeOut() {
             self.removeFromSuperview()
         }
+        KeyboardManager.shared.removeObserver(self)
     }
 }
 
@@ -201,5 +208,24 @@ extension Alert: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         let text = textView.text ?? ""
         placeholderLabel.isHidden = !text.isEmpty
+    }
+}
+
+extension Alert: KeyboardObserver {
+    
+    func keyboardChanged(_ transition: KeyboardTransition) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            let margin: CGFloat = 20
+            let keyboardY = transition.toFrame.minY
+            let maxY = self.frame.maxY
+            if maxY > keyboardY + margin {
+                UIView.animate(withDuration: transition.animationDuration,
+                               delay: 0,
+                               options: transition.animationOptions) {
+                    let transform = CGAffineTransform.identity
+                    self.transform = transform.translatedBy(x: 0, y: keyboardY - maxY - margin)
+                }
+            }
+        }
     }
 }
