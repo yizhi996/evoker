@@ -141,6 +141,16 @@ public extension FilePath {
         return nil
     }
     
+    static func srcToRealURL(appService: AppService, src: String) -> URL? {
+        if let url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: src) {
+            return url
+        } else if let url = URL(string: src), url.scheme == "http" || url.scheme == "https" {
+            return url
+        } else {
+            return FilePath.appStaticFilePath(appService: appService, src: src)
+        }
+    }
+    
 }
 
 extension FilePath {

@@ -114,8 +114,7 @@ enum AudioAPI: String, CaseIterableAPI {
         switch params.method {
         case .play:
             if case .play(var data) = params.data {
-                let src = data.src
-                data._url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: src) ?? URL(string: src)
+                data._url = FilePath.srcToRealURL(appService: appService, src: data.src)
                 if let player = module.players.get(page.pageId, params.audioId) {
                     player.params = data
                     player.play()

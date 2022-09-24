@@ -56,7 +56,7 @@ enum VideoAPI: String, CaseIterableAPI {
         }
         
         if !params.url.isEmpty {
-            params._url = FilePath.ekFilePathToRealFilePath(appId: appService.appId, filePath: params.url) ?? URL(string: params.url)
+            params._url = FilePath.srcToRealURL(appService: appService, src: params.url)
         }
         
         let playerView = VideoPlayerView(params: params)
