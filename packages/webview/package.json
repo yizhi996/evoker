@@ -1,6 +1,6 @@
 {
   "name": "@evoker/webview",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "evoker webview",
   "author": "yizhi996",
   "homepage": "https://github.com/yizhi996/evoker/tree/main/packages/webview",
@@ -21,8 +21,8 @@
     "dist"
   ],
   "dependencies": {
-    "@evoker/bridge": "0.12.0",
-    "@evoker/shared": "0.12.0",
+    "@evoker/bridge": "0.13.0",
+    "@evoker/shared": "0.13.0",
     "@tweenjs/tween.js": "^18.6.4",
     "@vue/runtime-core": "^3.2.39",
     "@vue/shared": "^3.2.39",

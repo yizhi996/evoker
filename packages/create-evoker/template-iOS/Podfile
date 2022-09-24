@@ -4,8 +4,8 @@ use_frameworks!
     
 target 'Launcher' do
   
-  pod 'Evoker', '~> 0.12.0'
-  pod 'Evoker/Map', '~> 0.12.0'
+  pod 'Evoker', '~> 0.13.0'
+  pod 'Evoker/Map', '~> 0.13.0'
   
 end
 
