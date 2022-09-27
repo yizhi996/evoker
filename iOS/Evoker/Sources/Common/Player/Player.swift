@@ -24,6 +24,8 @@ class Player: NSObject {
         case stoped
         
         case failed
+        
+        case ended
     }
     
     var readyToPlayHandler: DoubleBlock?
@@ -166,6 +168,9 @@ class Player: NSObject {
     
     func play() {
         guard let player = player else { return }
+        if playStatus == .ended {
+            player.seek(to: .zero)
+        }
         player.play()
         player.isMuted = isMuted
         player.rate = playbackRate
@@ -255,6 +260,7 @@ class Player: NSObject {
         guard let playerItem = playerItem,
               let object = notification.object as? AVPlayerItem,
               object == playerItem else { return }
+        playStatus = .ended
         endedHandler?()
     }
     
