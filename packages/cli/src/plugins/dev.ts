@@ -110,7 +110,6 @@ function onRecv(client: WebSocket, message: { event: Events; data: Record<string
 
 const enum Methods {
   APP_INFO = "--APPINFO--",
-  CHECK_VERSION = "--CHECKVERSION--",
   UPDATE = "--UPDATE--"
 }
 

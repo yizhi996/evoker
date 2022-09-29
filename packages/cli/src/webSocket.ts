@@ -20,12 +20,14 @@ interface CreateWebSockerServerOptions {
 
 export function createWebSocketServer(options: CreateWebSockerServerOptions) {
   let host = "127.0.0.1"
+  let address = host
 
   if (options.host) {
     if (isString(options.host) && options.host.length) {
-      host = options.host
+      address = host = options.host
     } else {
-      host = ip.address()
+      host = "0.0.0.0"
+      address = ip.address()
     }
   }
 
@@ -77,7 +79,7 @@ export function createWebSocketServer(options: CreateWebSockerServerOptions) {
   webSocketServer.on("error", onError)
 
   return {
-    address: () => `ws://${host}:${port}`,
+    address: () => `ws://${address}:${port}`,
     wss: webSocketServer,
     clients: () => Array.from(webSocketServer.clients)
   }
