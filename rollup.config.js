@@ -114,6 +114,9 @@ function createConfig(format, output, plugins = []) {
   } else if (name === "evoker" && isGlobalBuild) {
     external.push("vue")
     output.globals = { vue: "Vue" }
+  } else if (name === "devtools") {
+    // @ts-ignore
+    plugins.push(require("@rollup/plugin-commonjs")())
   } else {
     external.push(...Object.keys(pkg.dependencies || {}))
 

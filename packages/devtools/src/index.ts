@@ -5,4 +5,5 @@ export { invokeHandler, publishHandler }
 
 if (globalThis.__Config.env === "webview") {
   TouchEmulator()
+  TouchEmulator.ignoreTags = []
 }
