@@ -17,8 +17,14 @@ export const enum AppState {
   BACK_GROUND
 }
 
+export const enum TaskState {
+  ACTIVE = 0,
+  SUSPEND
+}
+
 export const innerAppData = {
   appState: AppState.FORE_GROUND,
+  taskState: TaskState.ACTIVE,
   globalData: {},
   pages: new Map<number, EvokerPage>(),
   pageStack: new Map<number, EvokerPage[]>(),

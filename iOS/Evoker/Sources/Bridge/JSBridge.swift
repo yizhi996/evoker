@@ -10,15 +10,20 @@ import Foundation
 import UIKit
 import JavaScriptCore
 
+public protocol JSBridgeArgs {
+    var eventName: String { get }
+    var paramsString: String { get }
+}
+
 public class JSBridge {
     
-    public struct InvokeArgs {
+    public struct InvokeArgs: JSBridgeArgs {
         public let eventName: String
         public let paramsString: String
         public let callbackId: Int
     }
 
-    public struct PublishArgs {
+    public struct PublishArgs: JSBridgeArgs {
         public let eventName: String
         public let paramsString: String
         public let webViewId: Int

@@ -1,7 +1,7 @@
 import { InnerJSBridge } from "../bridge/bridge"
 import { dispatchEvent } from "@evoker/shared"
 import { extend, isFunction } from "@vue/shared"
-import { innerAppData, mountPage, unmountPage } from "../app"
+import { innerAppData, mountPage, unmountPage, TaskState, AppState } from "../app"
 import { decodeURL } from "../router"
 import { AppLaunchOptions } from "./useApp"
 import { PageShareAppMessageContent } from "./usePage"
@@ -14,6 +14,7 @@ export const enum LifecycleHooks {
   APP_THEME_CHANGE = "APP_THEME_CHANGE",
   APP_ON_AUDIO_INTERRUPTION_BEGIN = "APP_ON_AUDIO_INTERRUPTION_BEGIN",
   APP_ON_AUDIO_INTERRUPTION_END = "APP_ON_AUDIO_INTERRUPTION_END",
+  APP_ON_TASK_STATE_CHANGE = "APP_ON_TASK_STATE_CHANGE",
 
   PAGE_BEGIN_MOUNT = "PAGE_BEGIN_MOUNT",
   PAGE_ON_LOAD = "PAGE_ON_LOAD",
@@ -117,12 +118,14 @@ InnerJSBridge.subscribe<AppEnterMessage>(LifecycleHooks.APP_ON_LAUNCH, message =
 })
 
 InnerJSBridge.subscribe<AppEnterMessage>(LifecycleHooks.APP_ON_SHOW, message => {
+  innerAppData.appState = AppState.FORE_GROUND
   const options = processEnterOptions(message)
   invokeAppHook(LifecycleHooks.APP_ON_SHOW, options)
   dispatchEvent(LifecycleHooks.APP_ON_SHOW, options)
 })
 
 InnerJSBridge.subscribe(LifecycleHooks.APP_ON_HIDE, () => {
+  innerAppData.appState = AppState.BACK_GROUND
   invokeAppHook(LifecycleHooks.APP_ON_HIDE)
   dispatchEvent(LifecycleHooks.APP_ON_HIDE)
 })
@@ -143,6 +146,10 @@ InnerJSBridge.subscribe(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_BEGIN, message 
 
 InnerJSBridge.subscribe(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_END, message => {
   dispatchEvent(LifecycleHooks.APP_ON_AUDIO_INTERRUPTION_END, message)
+})
+
+InnerJSBridge.subscribe<{ state: TaskState }>(LifecycleHooks.APP_ON_TASK_STATE_CHANGE, message => {
+  innerAppData.taskState = message.state
 })
 
 interface PageLifecycleMessage {

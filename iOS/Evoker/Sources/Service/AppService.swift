@@ -14,12 +14,24 @@ import Alamofire
 
 final public class AppService {
     
+    /// 应用的前后台状态
     public enum State: Int {
+        /// 在前台
         case front = 0
+        /// 在后台
         case back
+    }
+    
+    /// 应用的任务状态，在应用进入后台 5 秒后 JS 逻辑层中的所有操作将被暂停
+    /// 再次进入应用后才会继续执行
+    public enum TaskState: Int {
+        /// 活跃
+        case active = 0
+        /// 暂停
         case suspend
     }
     
+    /// 应用配置，读取自包内的 app.json
     public let config: AppConfig
     
     public private(set) var appInfo: AppInfo
@@ -42,6 +54,13 @@ final public class AppService {
 
     public internal(set) var state: State = .back
     
+    public internal(set) var taskState: TaskState = .active {
+        didSet {
+            bridge.subscribeHandler(method: AppService.onTaskStateChangeSubscribeKey,
+                                    data: ["state": taskState.rawValue])
+        }
+    }
+ 
     public internal(set) var currentPage: Page?
     
     public internal(set) var pages: [Page] = []
@@ -76,6 +95,10 @@ final public class AppService {
     private var incPageId = 0
     
     private var killTimer: Timer?
+    
+    private var suspendDelayWork: DispatchWorkItem?
+    
+    private lazy var pendingTaskQueue: [JSBridgeArgs] = []
     
     public lazy var context: JSContext = {
         return Engine.shared.jsContextPool.idle()
@@ -123,7 +146,7 @@ final public class AppService {
         }
         
         uiControl.capsuleView.clickCloseHandler = { [unowned self] in
-            self.supend()
+            self.hide()
         }
         
         uiControl.capsuleView.clickMoreHandler = { [unowned self] in
@@ -149,17 +172,29 @@ final public class AppService {
             let args = JSBridge.InvokeArgs(eventName: event,
                                     paramsString: params,
                                     callbackId: callbackId)
-            self.bridge.onInvoke(args)
+            
+            if self.taskState == .suspend {
+                self.pendingTaskQueue.append(args)
+                return
+            } else {
+                self.bridge.onInvoke(args)
+            }
         }
         
         context.publishHandler = { [unowned self] message in
             guard let event = message["event"] as? String,
                   let webViewId = message["webViewId"] as? Int,
-                  let params = message["params"] as? String,
-                  let page = self.findWebPage(from: webViewId) else { return }
-            page.webView.bridge.subscribeHandler(method: SubscribeKey(event),
-                                                data: params,
-                                                webViewId: webViewId)
+                  let params = message["params"] as? String else { return }
+            if self.taskState == .suspend {
+                let args = JSBridge.PublishArgs(eventName: event, paramsString: params, webViewId: webViewId)
+                self.pendingTaskQueue.append(args)
+                return
+            } else {
+                let page = self.findWebPage(from: webViewId)
+                page?.webView.bridge.subscribeHandler(method: SubscribeKey(event),
+                                                      data: params,
+                                                      webViewId: webViewId)
+            }
         }
         
         NotificationCenter.default.addObserver(self,
@@ -331,6 +366,9 @@ final public class AppService {
         modules.values.forEach { $0.onExit(self) }
         modules = [:]
         context.exit()
+        
+        suspendDelayWork?.cancel()
+        suspendDelayWork = nil
         
         webViewPool.clean { webView in
             webView.removeFromSuperview()
@@ -584,10 +622,9 @@ extension AppService {
     }
     
     /// 隐藏小程序到后台，如果 15 分钟内没有进如前台，小程序将退出。
-    public func supend() {
+    public func hide() {
         dismiss()
         cleanKillTimer()
-        state = .suspend
         
         killTimer = Timer(timeInterval: 15 * 60,
                           target: self,
@@ -706,20 +743,52 @@ extension AppService {
     }
     
     func publishAppOnShow(options: AppShowOptions) {
+        state = .front
+        if let suspendDelayWork = suspendDelayWork {
+            suspendDelayWork.cancel()
+        }
+        if taskState == .suspend {
+            taskState = .active
+        }
         UIApplication.shared.isIdleTimerDisabled = keepScreenOn
         cleanKillTimer()
         bridge.subscribeHandler(method: AppService.onShowSubscribeKey, data: setEnterOptions(options: options))
         Engine.shared.config.hooks.appLifeCycle.onShow?(self, options)
         modules.values.forEach { $0.onShow(self, options: options) }
+        
+        if pendingTaskQueue.count != 0 {
+            pendingTaskQueue.forEach { args in
+                if let args = args as? JSBridge.InvokeArgs {
+                    bridge.onInvoke(args)
+                } else if let args = args as? JSBridge.PublishArgs {
+                    let page = findWebPage(from: args.webViewId)
+                    page?.webView.bridge.subscribeHandler(method: SubscribeKey(args.eventName),
+                                                          data: args.paramsString,
+                                                          webViewId: args.webViewId)
+                }
+            }
+            pendingTaskQueue = []
+        }
     }
     
     @objc
     func publishAppOnHide() {
+        state = .back
         UIApplication.shared.isIdleTimerDisabled = false
         bridge.subscribeHandler(method: AppService.onHideSubscribeKey, data: [:])
         Engine.shared.config.hooks.appLifeCycle.onHide?(self)
         modules.values.forEach { $0.onHide(self) }
+        
+        if let suspendDelayWork = suspendDelayWork {
+            suspendDelayWork.cancel()
+        }
+        suspendDelayWork = DispatchWorkItem { [unowned self] in
+            self.suspendDelayWork = nil
+            self.taskState = .suspend
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: suspendDelayWork!)
     }
+
 }
 
 extension AppService {
@@ -906,6 +975,8 @@ extension AppService {
     public static let userCaptureScreenSubscribeKey = SubscribeKey("APP_USER_CAPTURE_SCREEN")
     
     public static let fetchShareAppMessageContentSubscribeKey = SubscribeKey("FETCH_SHARE_APP_MESSAGE_CONTENT")
+    
+    public static let onTaskStateChangeSubscribeKey = SubscribeKey("APP_ON_TASK_STATE_CHANGE")
     
 }
 
