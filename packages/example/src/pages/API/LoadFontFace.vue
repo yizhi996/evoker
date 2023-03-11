@@ -16,7 +16,7 @@ const loaded = ref(false)
 const onLoad = async () => {
   await ek.loadFontFace({
     family: fontFamily,
-    source: 'url("https://file.lilithvue.com/lilith-test-assets/Pacifico-Regular.ttf")'
+    source: 'url("https://file.evokerdev.com/lilith-test-assets/Pacifico-Regular.ttf")'
   })
   loaded.value = true
 }

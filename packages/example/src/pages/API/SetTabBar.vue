@@ -81,7 +81,7 @@ const setTabBarItem = () => {
       index: 1,
       text: "API",
       selectedIconPath:
-        "https://file.lilithvue.com/lilith-test-assets/wallhaven-43y68y.jpg?imageMogr2/thumbnail/81x"
+        "https://file.evokerdev.com/lilith-test-assets/wallhaven-43y68y.jpg?imageMogr2/thumbnail/81x"
     })
   }
 }

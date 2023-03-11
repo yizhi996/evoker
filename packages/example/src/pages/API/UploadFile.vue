@@ -55,7 +55,7 @@ const onChooseImage = async () => {
 const getAuthToken = () => {
   return new Promise((resolve, reject) => {
     ek.request({
-      url: "https://lilithvue.com/api/cos/upload-token",
+      url: "https://evokerdev.com/api/cos/upload-token",
       method: "POST",
       success: res => {
         resolve(res.data.data)
@@ -70,7 +70,7 @@ const getAuthToken = () => {
 const deleteImage = () => {
   if (filename) {
     ek.request({
-      url: "https://lilithvue.com/api/cos/delete",
+      url: "https://evokerdev.com/api/cos/delete",
       method: "POST",
       data: { name: filename }
     })

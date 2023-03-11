@@ -39,7 +39,7 @@ ctx.onSeeked(() => {
   isSliding = false
 })
 
-ctx.src = "https://file.lilithvue.com/lilith-test-assets/3EM27_Beethoven9_Orch%2BCho.mp3"
+ctx.src = "https://file.evokerdev.com/lilith-test-assets/3EM27_Beethoven9_Orch%2BCho.mp3"
 ctx.volume = 0.3
 ctx.loop = true
 

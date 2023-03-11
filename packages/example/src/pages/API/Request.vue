@@ -15,7 +15,7 @@ import { ref } from "vue"
 
 const { getDeviceId } = useLocalStore()
 
-const url = ref("https://lilithvue.com/api/test")
+const url = ref("https://evokerdev.com/api/test")
 const result = ref<Record<string, any>>({})
 const header = ref<Record<string, string>>({})
 

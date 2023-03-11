@@ -8,7 +8,7 @@ import { describe, run } from "../test"
 
 const task = describe("web socket", async ctx => {
   ctx.test("send / recv", async () => {
-    const ws = ek.connectSocket({ url: "wss://lilithvue.com/echo" })!
+    const ws = ek.connectSocket({ url: "wss://evokerdev.com/echo" })!
     ws.onOpen(() => {
       ws.send({ data: "hello" })
     })

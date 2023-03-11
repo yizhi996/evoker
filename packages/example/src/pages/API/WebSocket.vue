@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { onUnmounted, ref } from "vue"
 
-const address = ref("wss://lilithvue.com/echo")
+const address = ref("wss://evokerdev.com/echo")
 
 const inputValue = ref("在吗？")
 

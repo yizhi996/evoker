@@ -5,7 +5,7 @@
     <span>WebP Internet Image</span>
     <img
       class="w-40"
-      src="https://file.lilithvue.com/lilith-test-assets/rocket_top.webp"
+      src="https://file.evokerdev.com/lilith-test-assets/rocket_top.webp"
       mode="widthFix"
       webp
     />
@@ -27,6 +27,6 @@ const files = [
 ]
 
 const images = files.map(
-  f => `https://file.lilithvue.com/lilith-test-assets/${f}?imageMogr2/thumbnail/512x`
+  f => `https://file.evokerdev.com/lilith-test-assets/${f}?imageMogr2/thumbnail/512x`
 )
 </script>

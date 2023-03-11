@@ -29,18 +29,18 @@ export const useLocalStore = defineStore("local", () => {
         key: KEY_APPS,
         data: [
           {
-            url: "https://lilithvue.com",
+            url: "https://evokerdev.com",
             appId: "com.evokerdev.blank",
             name: "Hello world",
             version: "1.0.0",
             envVersion: "release"
           },
           {
-            url: "https://lilithvue.com",
+            url: "https://evokerdev.com",
             appId: "com.evokerdev.example",
             name: "Example",
             desc: "Components and APIs example",
-            icon: "https://file.lilithvue.com/app/com.evokerdev.example/assets/LOGO.png?imageMogr2/crop/256x256",
+            icon: "https://file.evokerdev.com/app/com.evokerdev.example/assets/LOGO.png?imageMogr2/crop/256x256",
             version: "1.0.0",
             envVersion: "release"
           }

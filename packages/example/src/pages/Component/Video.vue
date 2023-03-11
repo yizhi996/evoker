@@ -47,8 +47,8 @@ onReady(() => {
 })
 
 const videos = [
-  "https://file.lilithvue.com/lilith-test-assets/v0200fg10000c8fdbqbc77ufgqhbio20.mp4",
-  "https://file.lilithvue.com/lilith-test-assets/BigBuckBunny.mp4"
+  "https://file.evokerdev.com/lilith-test-assets/v0200fg10000c8fdbqbc77ufgqhbio20.mp4",
+  "https://file.evokerdev.com/lilith-test-assets/BigBuckBunny.mp4"
 ]
 
 const data = reactive({

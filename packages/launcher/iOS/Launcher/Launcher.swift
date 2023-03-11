@@ -25,6 +25,8 @@ class Launcher {
     
     var devServer: DevServer?
     
+    let envVersion: AppEnvVersion = .release
+    
     lazy var devServers: [String: DevServer] = [:]
     
     deinit {
@@ -34,12 +36,16 @@ class Launcher {
     func setupEvoker() {
         setupUserId()
         
+        Engine.shared.config.dev.useDevJSSDK = false
+//        devServer = DevServer()
+//        devServer!.connect()
+        
         let config = Engine.shared.config
         config.hooks.app.getAppInfo = { appId, envVersion, completionHandler in
             var appInfo = AppInfo(appName: appId, appIconURL: "")
             if appId == Self.launcherAppId {
                 appInfo.appName = "Launcher"
-                appInfo.appIconURL = "https://file.lilithvue.com/app/com.evokerdev.example/assets/LOGO.png?imageMogr2/crop/256x256"
+                appInfo.appIconURL = "https://file.evokerdev.com/app/com.evokerdev.example/assets/LOGO.png?imageMogr2/crop/256x256"
             } else if let app = self.findApp(appId: appId, envVersion: envVersion) {
                 appInfo.appName = app.name ?? app.appId
                 appInfo.appIconURL = app.icon ?? ""
@@ -70,7 +76,9 @@ class Launcher {
                                                            version: version,
                                                            filePath: pkgURL)
                 PackageManager.shared.setLocalAppVersion(appId: Self.launcherAppId, envVersion: .release, version: version)
-                Engine.shared.openApp(appId: Self.launcherAppId, method: .redirect)
+                var options = AppLaunchOptions()
+                options.envVersion = envVersion
+                Engine.shared.openApp(appId: Self.launcherAppId, launchOptions: options, method: .redirect)
             } catch {
                 NotifyType.fail("\(error.localizedDescription)").show()
             }
@@ -135,7 +143,7 @@ class Launcher {
     }
     
     func fetchLauncherAppService() -> AppService? {
-        return Engine.shared.getAppService(appId: Self.launcherAppId, envVersion: .release)
+        return Engine.shared.getAppService(appId: Self.launcherAppId, envVersion: envVersion)
     }
     
     func findApp(appId: String, envVersion: AppEnvVersion) -> App? {
