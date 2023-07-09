@@ -100,3 +100,6 @@ iOSInjectionProject/
 gen/
 
 temp/
+
+!packages/vue/dist/
+packages/vue/dist/*.prod.js
